@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/screen/loginscreen.dart';
+import 'package:nexus/screen/registerScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 
 class authScreen extends StatelessWidget {
@@ -95,27 +96,32 @@ class authScreen extends StatelessWidget {
                   opacity: 0.0,
                   child: Divider(height: displayHeight(context)*0.03,),
                 ),
-                Container(
-                  height: displayHeight(context) * 0.07,
-                  width: displayWidth(context) * 0.8,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [
-                      Colors.deepOrange,
-                      Colors.deepOrangeAccent,
-                      Colors.orange[600]!,
-                    ]),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: displayWidth(context) * 0.04),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => registerScreen(),));
+                  },
+                  child: Container(
+                    height: displayHeight(context) * 0.07,
+                    width: displayWidth(context) * 0.8,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [
+                        Colors.deepOrange,
+                        Colors.deepOrangeAccent,
+                        Colors.orange[600]!,
+                      ]),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: displayWidth(context) * 0.04),
+                      ),
                     ),
                   ),
                 )

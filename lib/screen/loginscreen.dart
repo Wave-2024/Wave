@@ -37,7 +37,7 @@ class _loginScreenState extends State<loginScreen> {
                 child: Container(
                   height: displayHeight(context) * 0.45,
                   width: displayWidth(context),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage('images/login.jpg'),
                         fit: BoxFit.cover),
@@ -54,7 +54,7 @@ class _loginScreenState extends State<loginScreen> {
                       fontSize: displayWidth(context) * 0.065),
                 ),
               ),
-              Opacity(
+              const Opacity(
                 opacity: 0.0,
                 child: Divider(),
               ),
@@ -69,7 +69,7 @@ class _loginScreenState extends State<loginScreen> {
                   ),
                 ),
               ),
-              Opacity(
+              const Opacity(
                 opacity: 0.0,
                 child: Divider(),
               ),
