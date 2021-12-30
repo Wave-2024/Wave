@@ -1,19 +1,53 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/screen/authscreen.dart';
-import 'screen/homescreen.dart';
+import 'package:nexus/screen/homescreen.dart';
+import 'package:nexus/services/AuthService.dart';
+import 'package:nexus/services/auth_notifier.dart';
+import 'package:provider/provider.dart';
 
-void main(){
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: authScreen(),
-    );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => AuthNotifier(),
+          ),
+          Provider<authservice>(
+              create: (_) => authservice(FirebaseAuth.instance)),
+
+          // ignore: missing_required_param
+          StreamProvider(
+            create: (context) => context.read<authservice>().austhStateChanges,
+            initialData: null,
+          ),
+        ],
+        child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Consumer<AuthNotifier>(
+              builder: (context, notifier, child) {
+                return notifier.user != null ? const authScreen() : wrapper();
+              },
+            )));
+  }
+}
+
+class wrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User?>();
+
+    if (firebaseUser != null) {
+      return const homescreen();
+    } else
+      return const authScreen();
   }
 }
