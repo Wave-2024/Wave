@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/authscreen.dart';
 import 'package:nexus/screen/homescreen.dart';
 import 'package:nexus/services/AuthService.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
             create: (context) => context.read<authservice>().austhStateChanges,
             initialData: null,
           ),
+          ChangeNotifierProvider(create: (context) => usernameProvider()),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
