@@ -5,6 +5,8 @@ import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
 
+import 'homescreen.dart';
+
 class registerScreen extends StatefulWidget {
   const registerScreen({Key? key}) : super(key: key);
 
@@ -28,7 +30,7 @@ class _registerScreenState extends State<registerScreen> {
   void initState() {
     super.initState();
     isScreenLoading = true;
-    isLoading=false;
+    isLoading = false;
     email = TextEditingController();
     password = TextEditingController();
     fullName = TextEditingController();
@@ -303,10 +305,10 @@ class _registerScreenState extends State<registerScreen> {
                       Center(
                         child: GestureDetector(
                           onTap: () {
-                            setState(() {
-                              isLoading = true;
-                            });
                             if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
                               _auth
                                   .signUp(
                                       email: email!.text.toString(),
@@ -328,6 +330,13 @@ class _registerScreenState extends State<registerScreen> {
                                                   child: Text("Try again"))
                                             ],
                                           ));
+                                } else {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const homescreen(),
+                                      ));
                                 }
                               });
                             }
@@ -366,13 +375,15 @@ class _registerScreenState extends State<registerScreen> {
                       Center(
                         child: TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child:(isLoading!)?CircularProgressIndicator(): Text(
-                              'Back',
-                              style: TextStyle(
-                                fontSize: displayWidth(context) * 0.045,
-                                color: Colors.black54,
-                              ),
-                            )),
+                            child: (isLoading!)
+                                ? CircularProgressIndicator()
+                                : Text(
+                                    'Back',
+                                    style: TextStyle(
+                                      fontSize: displayWidth(context) * 0.045,
+                                      color: Colors.black54,
+                                    ),
+                                  )),
                       ),
                     ],
                   ),
