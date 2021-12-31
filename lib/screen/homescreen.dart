@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
+import 'package:nexus/screen/chatScreen.dart';
+import 'package:nexus/screen/feedScreen.dart';
+import 'package:nexus/screen/profileScreen.dart';
+import 'package:nexus/screen/searchScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
 
 class homescreen extends StatelessWidget {
-  const homescreen({Key? key}) : super(key: key);
+
+  final List<dynamic> screens = [
+    feedScreen(),
+    searchScreen(),
+    chatScreen(),
+    profiletScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +31,7 @@ class homescreen extends StatelessWidget {
               height: displayHeight(context),
               width: displayWidth(context),
               color: Colors.white70,
+              child: screens[screenIndex],
             ),
             Positioned(
                 bottom: displayHeight(context) * 0.04,
@@ -44,7 +55,7 @@ class homescreen extends StatelessWidget {
                                 ? CircleAvatar(
                                     radius: displayWidth(context) * 0.052,
                                     backgroundColor: Colors.orange[600],
-                                    child:const Icon(
+                                    child: const Icon(
                                       Icons.home,
                                       color: Colors.white,
                                     ),
@@ -54,71 +65,78 @@ class homescreen extends StatelessWidget {
                                     color: Colors.black54,
                                     icon: const Icon(Icons.home_outlined),
                                     onPressed: () {
-                                      Provider.of<screenIndexProvider>(context,listen: false).updateIndex(0);
+                                      Provider.of<screenIndexProvider>(context,
+                                              listen: false)
+                                          .updateIndex(0);
                                     },
                                   )),
                         Expanded(
-                          child:  (screenIndex == 1)
+                            child: (screenIndex == 1)
                                 ? CircleAvatar(
-                              radius: displayWidth(context) * 0.052,
-                              backgroundColor: Colors.orange[600],
-                              child:const Icon(
-                                Icons.search,
-                                color: Colors.white,
-                              ),
-                            )
+                                    radius: displayWidth(context) * 0.052,
+                                    backgroundColor: Colors.orange[600],
+                                    child: const Icon(
+                                      Icons.search,
+                                      color: Colors.white,
+                                    ),
+                                  )
                                 : IconButton(
-                              iconSize: displayWidth(context) * 0.06,
-                              color: Colors.black54,
-                              icon: const Icon(Icons.search),
-                              onPressed: () {
-                                Provider.of<screenIndexProvider>(context,listen: false).updateIndex(1);
-                              },
-                            )
-                        ),
+                                    iconSize: displayWidth(context) * 0.06,
+                                    color: Colors.black54,
+                                    icon: const Icon(Icons.search),
+                                    onPressed: () {
+                                      Provider.of<screenIndexProvider>(context,
+                                              listen: false)
+                                          .updateIndex(1);
+                                    },
+                                  )),
                         Expanded(
                             child: IconButton(
-                              iconSize: displayWidth(context) * 0.06,
-                              color: Colors.black54,
-                              icon: const Icon(Icons.add),
-                              onPressed: () {},
-                            )),
+                          iconSize: displayWidth(context) * 0.06,
+                          color: Colors.black54,
+                          icon: const Icon(Icons.add),
+                          onPressed: () {},
+                        )),
+                        Expanded(
+                            child: (screenIndex == 2)
+                                ? CircleAvatar(
+                                    radius: displayWidth(context) * 0.052,
+                                    backgroundColor: Colors.orange[600],
+                                    child: const Icon(
+                                      Icons.mail,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : IconButton(
+                                    iconSize: displayWidth(context) * 0.06,
+                                    color: Colors.black54,
+                                    icon: const Icon(Icons.mail),
+                                    onPressed: () {
+                                      Provider.of<screenIndexProvider>(context,
+                                              listen: false)
+                                          .updateIndex(2);
+                                    },
+                                  )),
                         Expanded(
                             child: (screenIndex == 3)
                                 ? CircleAvatar(
-                              radius: displayWidth(context) * 0.052,
-                              backgroundColor: Colors.orange[600],
-                              child: const Icon(
-                                Icons.mail,
-                                color: Colors.white,
-                              ),
-                            )
+                                    radius: displayWidth(context) * 0.052,
+                                    backgroundColor: Colors.orange[600],
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
+                                  )
                                 : IconButton(
-                              iconSize: displayWidth(context) * 0.06,
-                              color: Colors.black54,
-                              icon: const Icon(Icons.mail),
-                              onPressed: () {
-                                Provider.of<screenIndexProvider>(context,listen: false).updateIndex(3);
-                              },
-                            )),
-                        Expanded(
-                            child:(screenIndex == 4)
-                                ? CircleAvatar(
-                              radius: displayWidth(context) * 0.052,
-                              backgroundColor: Colors.orange[600],
-                              child: const Icon(
-                                Icons.person,
-                                color: Colors.white,
-                              ),
-                            )
-                                : IconButton(
-                              iconSize: displayWidth(context) * 0.06,
-                              color: Colors.black54,
-                              icon: const Icon(Icons.person_outlined),
-                              onPressed: () {
-                                Provider.of<screenIndexProvider>(context,listen: false).updateIndex(4);
-                              },
-                            )),
+                                    iconSize: displayWidth(context) * 0.06,
+                                    color: Colors.black54,
+                                    icon: const Icon(Icons.person_outlined),
+                                    onPressed: () {
+                                      Provider.of<screenIndexProvider>(context,
+                                              listen: false)
+                                          .updateIndex(3);
+                                    },
+                                  )),
                       ],
                     ),
                   ),
