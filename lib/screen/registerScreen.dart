@@ -312,7 +312,10 @@ class _registerScreenState extends State<registerScreen> {
                               _auth
                                   .signUp(
                                       email: email!.text.toString(),
-                                      password: password!.text.toString())
+                                      password: password!.text.toString(),
+                                      title: fullName!.text.toString(),
+                                      username: username!.text.toString(),
+                                      )
                                   .then((value) {
                                 setState(() {
                                   isLoading = false;
@@ -335,7 +338,7 @@ class _registerScreenState extends State<registerScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const homescreen(),
+                                            homescreen(),
                                       ));
                                 }
                               });
