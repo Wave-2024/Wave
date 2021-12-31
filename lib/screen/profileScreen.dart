@@ -224,7 +224,7 @@ class _profiletScreenState extends State<profiletScreen> {
                             : Text('Posts',style: TextStyle(
                             color: Colors.black87,
                             fontSize: displayWidth(context) * 0.042,
-                            fontWeight: FontWeight.bold),),
+                            fontWeight: FontWeight.w400),),
                       ),
                     ),
                     Padding(
@@ -259,7 +259,7 @@ class _profiletScreenState extends State<profiletScreen> {
                             : Text('Saved',style: TextStyle(
                             color: Colors.black87,
                             fontSize: displayWidth(context) * 0.042,
-                            fontWeight: FontWeight.bold),),
+                            fontWeight: FontWeight.w400),),
                       ),
                     ),
                   ],
