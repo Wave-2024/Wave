@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nexus/utils/devicesize.dart';
 
-class profiletScreen extends StatelessWidget {
+class profiletScreen extends StatefulWidget {
+  @override
+  State<profiletScreen> createState() => _profiletScreenState();
+}
+
+class _profiletScreenState extends State<profiletScreen> {
+  bool viewPosts = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +96,12 @@ class profiletScreen extends StatelessWidget {
                     fontSize: displayWidth(context) * 0.045,
                     fontWeight: FontWeight.bold),
               ),
-              const Opacity(opacity: 0.0,child: Divider(height: 2,),),
+              const Opacity(
+                opacity: 0.0,
+                child: Divider(
+                  height: 2,
+                ),
+              ),
               Container(
                 height: displayHeight(context) * 0.1,
                 width: displayWidth(context),
@@ -172,11 +183,86 @@ class profiletScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                height: displayHeight(context)*0.1,
-                width: displayWidth(context)*0.8,
+                height: displayHeight(context) * 0.08,
+                width: displayWidth(context) * 0.62,
                 decoration: BoxDecoration(
-                  color: Colors.grey[500],
-                  borderRadius : BorderRadius.circular(15)
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(15)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            if(!viewPosts){
+                              viewPosts=!viewPosts;
+                            }
+                          });
+                        },
+                        child: (viewPosts)
+                            ? Card(
+                          elevation: 6,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 45.0,right: 45,top: 8,bottom: 8),
+                                    child: Text(
+                                      'Posts',
+                                      style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: displayWidth(context) * 0.042,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Text('Posts',style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: displayWidth(context) * 0.042,
+                            fontWeight: FontWeight.bold),),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            if(viewPosts){
+                              viewPosts=!viewPosts;
+                            }
+                          });
+                        },
+                        child: (!viewPosts)
+                            ? Card(
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 45.0,right: 45,top: 8,bottom: 8),
+                              child: Text(
+                                'Saved',
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: displayWidth(context) * 0.042,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        )
+                            : Text('Saved',style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: displayWidth(context) * 0.042,
+                            fontWeight: FontWeight.bold),),
+                      ),
+                    ),
+                  ],
                 ),
               )
             ],
