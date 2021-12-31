@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nexus/utils/firebaseServices.dart';
 
 class authservice {
   // Create an instance of firebase authentication.
@@ -42,14 +43,15 @@ class authservice {
 
   Future<String?> signUp(
       {required String email,
-        String? displayName,
-        required String password}) async {
+      String? displayName,
+      required String title,
+      required String username,
+      required String password}) async {
     try {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
-          .then((value) {
-        value.user!.updateDisplayName(displayName);
-        value.user!.sendEmailVerification();
+          .then((value) async {
+        await createNewNexusUser(email, title, username,value.user!.uid);
       });
       return "valid";
     } on FirebaseAuthException catch (e) {
