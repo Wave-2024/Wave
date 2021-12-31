@@ -50,7 +50,7 @@ class wrapper extends StatelessWidget {
     final firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
-      return const homescreen();
+      return homescreen();
     } else
       return const authScreen();
   }
