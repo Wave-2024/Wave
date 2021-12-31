@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
-Future<void> createNewNexusUser(String email,String title,String username) async {
-  final String api = constants().fetchApi + 'users.json';
+Future<void> createNewNexusUser(String email,String title,String username,String uid) async {
+  final String api = constants().fetchApi + 'users/$uid.json';
   try {
     await http.put(Uri.parse(api), body: json.encode({
       'title' : title,
