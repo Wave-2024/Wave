@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
-import 'package:nexus/providers/useersProvider.dart';
+import 'package:nexus/providers/manager.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/authscreen.dart';
 import 'package:nexus/screen/homescreen.dart';
