@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
-import 'package:nexus/providers/useersProvider.dart';
+import 'package:nexus/providers/manager.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
 import 'package:provider/provider.dart';
