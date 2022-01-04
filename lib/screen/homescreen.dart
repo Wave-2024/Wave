@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
-import 'package:nexus/providers/useersProvider.dart';
+import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/addPostScreen.dart';
 import 'package:nexus/screen/chatScreen.dart';
 import 'package:nexus/screen/feedScreen.dart';
@@ -99,14 +99,12 @@ class homescreen extends StatelessWidget {
                           color: Colors.black54,
                           icon: const Icon(Icons.add),
                           onPressed: () {
-                            /*Navigator.push(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => addPostScreen(),
-                                ));*/
-                            User? currentUser = FirebaseAuth.instance.currentUser;
-                            PostModel p = PostModel(caption: 'helo', image: 'new image', uid: '123', post_id: '5', likes: 5);
-                            Provider.of<usersProvider>(context,listen: false).addNewPostTest(p, currentUser!.uid.toString());
+                                ));
+                            
                           },
                         )),
                         Expanded(
