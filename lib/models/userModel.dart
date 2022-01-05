@@ -6,8 +6,8 @@ class NexusUser {
   final String bio;
   final String dp;
   final String coverImage;
-  final List<String> followers;
-  final List<String> followings;
+  final List<dynamic> followers;
+  final List<dynamic> followings;
   final List<dynamic> posts;
   NexusUser(
       {required this.title,
