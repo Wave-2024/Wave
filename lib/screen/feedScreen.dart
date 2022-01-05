@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 
 class feedScreen extends StatelessWidget {
+  final authservice _auth = authservice(FirebaseAuth.instance);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +46,9 @@ class feedScreen extends StatelessWidget {
                               icon:
                                   const Icon(Icons.notification_add_outlined)),
                           IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _auth.signOut();
+                              },
                               icon: const Icon(Icons.settings))
                         ],
                       )
