@@ -187,7 +187,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                     fontSize: displayWidth(context) * 0.04),
                               ),
                               Text(
-                                'Followings',
+                                'Following',
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w600,
