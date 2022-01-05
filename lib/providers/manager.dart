@@ -8,6 +8,7 @@ import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class usersProvider extends ChangeNotifier {
+  List<NexusUser> searchUsers = [];
   NexusUser? currentUser;
   Map<String, NexusUser> followers =
       {}; // map to store uid as key and user model as value
@@ -16,7 +17,37 @@ class usersProvider extends ChangeNotifier {
     return followers;
   }
 
+  List<NexusUser> get fetchSearchList {
+    return [...searchUsers];
+  }
+
   Map<String, NexusUser> followings = {};
+
+  Future<void> setUsers() async {
+    final String api = constants().fetchApi + 'users.json';
+    List<NexusUser> temp = [];
+    try {
+      final response = await http.get(Uri.parse(api));
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      data.forEach((key, value) {
+        temp.add(NexusUser(
+            title: value['title'],
+            posts: value['posts'] ?? [],
+            coverImage: value['coverImage'],
+            uid: key,
+            username: value['username'],
+            email: value['email'],
+            bio: value['bio'],
+            dp: value['dp'],
+            followers: value['followers'] ?? [],
+            followings: value['followings'] ?? []));
+      });
+      searchUsers = temp;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
 
   Map<String, NexusUser> get fetchFollowings {
     // function to return the user map
