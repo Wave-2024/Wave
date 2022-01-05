@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ class _profiletScreenState extends State<profiletScreen> {
   bool? loadScreen;
   User? currentUser;
   bool init = true;
+  final authservice _auth = authservice(FirebaseAuth.instance);
   @override
   void initState() {
     super.initState();
