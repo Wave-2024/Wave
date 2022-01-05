@@ -43,7 +43,7 @@ class _searchScreenState extends State<searchScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => userProfile(
-                  user: user,
+                  uid: user.uid,
                 ),
               ));
         },
