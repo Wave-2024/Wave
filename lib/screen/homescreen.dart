@@ -33,7 +33,7 @@ class homescreen extends StatelessWidget {
             Container(
               height: displayHeight(context),
               width: displayWidth(context),
-              color: Colors.white70,
+              //color: Colors.white70,
               child: screens[screenIndex],
             ),
             Positioned(
