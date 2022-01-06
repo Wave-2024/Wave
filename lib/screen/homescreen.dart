@@ -37,9 +37,9 @@ class homescreen extends StatelessWidget {
               child: screens[screenIndex],
             ),
             Positioned(
-                bottom: displayHeight(context) * 0.025,
+                bottom: displayHeight(context) * 0.015,
                 child: Card(
-                  elevation: 12.0,
+                  elevation: 6.0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
