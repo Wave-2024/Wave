@@ -5,7 +5,7 @@ class PostModel {
   final String image;
   final String uid;
   final String post_id;
-  final List<String> likes;
+  final List<dynamic> likes;
   final List<dynamic> comments;
 
   PostModel(
