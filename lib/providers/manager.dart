@@ -50,18 +50,18 @@ class usersProvider extends ChangeNotifier {
       await http.patch(Uri.parse(api1),
           body: json.encode({'followings': followings}));
       final response2 = await http.get(Uri.parse(api2));
-      final data2 = json.decode(response.body) as Map<String, dynamic>;
+      final data2 = json.decode(response2.body) as Map<String, dynamic>;
       peopleProfile = NexusUser(
-        title: data['title'],
-        coverImage: data['coverImage'],
+        title: data2['title'],
+        coverImage: data2['coverImage'],
         uid: myUid,
-        username: data['username'],
-        email: data['email'],
-        bio: data['bio'],
-        dp: data['dp'],
-        followers: data['followers'] ?? [],
-        followings: data['followings'] ?? [],
-        posts: data['posts'] ?? [],
+        username: data2['username'],
+        email: data2['email'],
+        bio: data2['bio'],
+        dp: data2['dp'],
+        followers: data2['followers'] ?? [],
+        followings: data2['followings'] ?? [],
+        posts: data2['posts'] ?? [],
       );
       followers = peopleProfile.followers;
       followers.add(myUid);
@@ -109,6 +109,59 @@ class usersProvider extends ChangeNotifier {
 
   NexusUser? get fetchCurrentUser {
     return currentUser;
+  }
+
+  Future<void> removeFollower(String myUid , String personUid) async {
+    NexusUser myProfile;
+    NexusUser peopleProfile;
+    List<dynamic> followings;
+    List<dynamic> followers;
+    final String api1 = constants().fetchApi +
+        'users/${myUid}.json'; // Api to decrease my followings
+    final String api2 = constants().fetchApi +
+        'users/${personUid}.json'; // Api to decrease their followers
+    try {
+      final response = await http.get(Uri.parse(api1));
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      myProfile = NexusUser(
+        title: data['title'],
+        coverImage: data['coverImage'],
+        uid: myUid,
+        username: data['username'],
+        email: data['email'],
+        bio: data['bio'],
+        dp: data['dp'],
+        followers: data['followers'] ?? [],
+        followings: data['followings'] ?? [],
+        posts: data['posts'] ?? [],
+      );
+      followings = myProfile.followings;
+      followings.remove(personUid);
+      await http.patch(Uri.parse(api1),
+          body: json.encode({'followings': followings}));
+      final response2 = await http.get(Uri.parse(api2));
+      final data2 = json.decode(response2.body) as Map<String, dynamic>;
+      peopleProfile = NexusUser(
+        title: data2['title'],
+        coverImage: data2['coverImage'],
+        uid: personUid,
+        username: data2['username'],
+        email: data2['email'],
+        bio: data2['bio'],
+        dp: data2['dp'],
+        followers: data2['followers'] ?? [],
+        followings: data2['followings'] ?? [],
+        posts: data2['posts'] ?? [],
+      );
+      followers = peopleProfile.followers;
+      followers.remove(myUid);
+      await http.patch(Uri.parse(api2),
+          body: json.encode({
+            'followers': followers,
+          }));
+    } catch (error) {
+      print(error);
+    }
   }
 
   Future<void> addNewPostTest(PostModel post, String uid) async {
