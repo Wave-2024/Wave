@@ -201,7 +201,7 @@ class _profiletScreenState extends State<profiletScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                '18',
+                                myProfile.posts.length.toString(),
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
