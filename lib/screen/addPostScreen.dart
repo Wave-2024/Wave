@@ -56,17 +56,14 @@ class _addPostScreenState extends State<addPostScreen> {
           (imagefile != null)
               ? IconButton(
                   onPressed: () {
-                    PostModel post = PostModel(
-                        caption: captionController!.text.toString(),
-                        image: '',
-                        comments: [],
-                        uid: currentUser!.uid.toString(),
-                        post_id: '',
-                        likes: []);
-                    Provider.of<usersProvider>(context, listen: false)
-                        .addNewPostTest(post, currentUser!.uid.toString())
-                        .then((value) {
-                      print('Done');
+                    setState(() {
+                      uploadingPost = true;
+                    });
+                    Provider.of<usersProvider>(context,listen: false).addNewPost(captionController!.text.toString(), currentUser!.uid.toString(), imagefile!).then((value) {
+                      setState(() {
+                        uploadingPost = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully posted')));
                     });
                   },
                   color: Colors.green,
@@ -86,7 +83,18 @@ class _addPostScreenState extends State<addPostScreen> {
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: SingleChildScrollView(
+            child: (uploadingPost!)? Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Center(
+                child: CircularProgressIndicator(
+                  color: Colors.orange,
+                  backgroundColor: Colors.blue,
+                ),
+              ),
+              Opacity(opacity: 0.0,child: Divider()),
+              Text('Uploading Post ...',style: TextStyle(color: Colors.black54),),
+            ],)
+                :SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
