@@ -11,18 +11,22 @@ import 'package:http/http.dart' as http;
 class usersProvider extends ChangeNotifier {
   List<PostModel> postsToDisplay = [];
 
+  Map<String, NexusUser> mapOfUsers = {};
+
   List<PostModel> get fetchPostsToDisplay {
     return [...postsToDisplay];
   }
 
   Future<void> setFeedPosts(String myUid) async {
     print('reached setFeed Post Function');
+    Map<String,NexusUser> tempMap = {};
     List<dynamic> myFollowings = [];
     List<dynamic> tempPosts = [];
     List<PostModel> finalPosts = [];
     final String api = constants().fetchApi + 'users/${myUid}.json';
     final response = await http.get(Uri.parse(api));
     final user = json.decode(response.body) as Map<String, dynamic>;
+
     myFollowings = user['followings'] ?? [];
     for (int index = 0; index < myFollowings.length; ++index) {
       print('reached inside following loop');
@@ -30,6 +34,18 @@ class usersProvider extends ChangeNotifier {
           constants().fetchApi + 'users/${myFollowings[index].toString()}.json';
       final response2 = await http.get(Uri.parse(api2));
       final userData = json.decode(response2.body) as Map<String, dynamic>;
+      NexusUser ne = NexusUser(
+          title: userData['title'],
+          posts: userData['posts'] ?? [],
+          coverImage: userData['coverImage'],
+          uid: myFollowings[index].toString(),
+          username: userData['username'],
+          email: userData['email'],
+          bio: userData['bio'],
+          dp: userData['dp'],
+          followers: userData['followers'] ?? [],
+          followings: userData['followings'] ?? []);
+      tempMap[myFollowings[index].toString()] = ne;
       tempPosts = userData['posts'] ?? [];
       for (int run = 0; run < tempPosts.length; ++run) {
         finalPosts.add(PostModel(
@@ -37,22 +53,21 @@ class usersProvider extends ChangeNotifier {
             image: tempPosts[run]['image'],
             comments: tempPosts[run]['comments'] ?? [],
             uid: tempPosts[run]['uid'],
-            post_id: tempPosts[run]['post_id'],
+            post_id: tempPosts[run]['post_id'] ?? '',
             likes: tempPosts[run]['likes'] ?? []));
       }
     }
     postsToDisplay = finalPosts;
+    mapOfUsers = tempMap;
     notifyListeners();
+  }
+
+  Map<String,dynamic> get fetchMapOfUsers{
+    return mapOfUsers;
   }
 
   List<NexusUser> searchUsers = [];
   NexusUser? currentUser;
-  Map<String, NexusUser> followers =
-      {}; // map to store uid as key and user model as value
-  Map<String, NexusUser> get fetchFollowers {
-    // function to return the user map
-    return followers;
-  }
 
   List<NexusUser> get fetchSearchList {
     return [...searchUsers];
@@ -111,8 +126,6 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-  Map<String, NexusUser> followings = {};
-
   Future<void> setUsers() async {
     final String api = constants().fetchApi + 'users.json';
     List<NexusUser> temp = [];
@@ -137,11 +150,6 @@ class usersProvider extends ChangeNotifier {
     } catch (error) {
       print(error);
     }
-  }
-
-  Map<String, NexusUser> get fetchFollowings {
-    // function to return the user map
-    return followings;
   }
 
   NexusUser? get fetchCurrentUser {
