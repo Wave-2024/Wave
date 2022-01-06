@@ -16,11 +16,13 @@ class _userProfileState extends State<userProfile> {
   bool viewPosts = true;
   bool? loadScreen;
   User? currentUser;
+  bool loadAfterFollowProcess = false;
   bool init = true;
   final authservice _auth = authservice(FirebaseAuth.instance);
   @override
   void initState() {
     loadScreen = true;
+
     super.initState();
     currentUser = FirebaseAuth.instance.currentUser;
   }
@@ -28,12 +30,11 @@ class _userProfileState extends State<userProfile> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    if (init) {
-      Provider.of<usersProvider>(context).fetchUser(widget.uid!).then((value) {
-        init = false;
-        loadScreen = false;
-      });
-    }
+
+    Provider.of<usersProvider>(context).fetchUser(widget.uid!).then((value) {
+      init = false;
+      loadScreen = false;
+    });
   }
 
   @override
@@ -217,7 +218,7 @@ class _userProfileState extends State<userProfile> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                '18',
+                                user.posts.length.toString(),
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -251,9 +252,31 @@ class _userProfileState extends State<userProfile> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Provider.of<usersProvider>(context, listen: false)
-                                  .addFollower(
-                                      currentUser!.uid.toString(), user.uid);
+                              setState(() {
+                                loadAfterFollowProcess = true;
+                              });
+                              if (user.followers
+                                  .contains(currentUser!.uid.toString())) {
+                                Provider.of<usersProvider>(context,
+                                        listen: false)
+                                    .removeFollower(
+                                        currentUser!.uid.toString(), user.uid)
+                                    .then((value) {
+                                  setState(() {
+                                    loadAfterFollowProcess = false;
+                                  });
+                                });
+                              } else {
+                                Provider.of<usersProvider>(context,
+                                        listen: false)
+                                    .addFollower(
+                                        currentUser!.uid.toString(), user.uid)
+                                    .then((value) {
+                                  setState(() {
+                                    loadAfterFollowProcess = false;
+                                  });
+                                });
+                              }
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -270,13 +293,27 @@ class _userProfileState extends State<userProfile> {
                               height: displayHeight(context) * 0.065,
                               width: displayWidth(context) * 0.4,
                               child: Center(
-                                child: Text(
-                                  'Follow',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: displayWidth(context) * 0.045),
-                                ),
+                                child: (loadAfterFollowProcess)
+                                    ? const Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: CircularProgressIndicator(
+                                            color: Colors.black38,
+                                            backgroundColor: Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    : Text(
+                                        (user.followers.contains(
+                                                currentUser!.uid.toString()))
+                                            ? 'Unfollow'
+                                            : 'Follow',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize:
+                                                displayWidth(context) * 0.045),
+                                      ),
                               ),
                             ),
                           ),
