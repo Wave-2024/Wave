@@ -140,9 +140,9 @@ class _userProfileState extends State<userProfile> {
                               top: displayHeight(context) * 0.005,
                               child: IconButton(
                                 iconSize: displayWidth(context) * 0.08,
-                                icon: const Icon(Icons.settings),
+                                icon: const Icon(Icons.more_vert),
                                 onPressed: () async {
-                                  print(user.posts[0]['caption']);
+
                                 },
                                 color: Colors.white70,
                               )),
