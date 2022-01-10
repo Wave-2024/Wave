@@ -26,7 +26,6 @@ class usersProvider extends ChangeNotifier {
     final String api = constants().fetchApi + 'users/${myUid}.json';
     final response = await http.get(Uri.parse(api));
     final user = json.decode(response.body) as Map<String, dynamic>;
-
     myFollowings = user['followings'] ?? [];
     for (int index = 0; index < myFollowings.length; ++index) {
       print('reached inside following loop');
@@ -245,7 +244,6 @@ class usersProvider extends ChangeNotifier {
 
   Future<void> fetchUser(String uid) async {
     NexusUser? user;
-    print('reached');
     final String api = constants().fetchApi + 'users/${uid}.json';
     try {
       final response = await http.get(Uri.parse(api));
