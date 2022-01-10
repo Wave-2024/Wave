@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             home: Consumer<AuthNotifier>(
               builder: (context, notifier, child) {
-                return notifier.user != null ? const authScreen() : wrapper();
+                return notifier.user != null ?  homescreen() : wrapper();
               },
             )));
   }

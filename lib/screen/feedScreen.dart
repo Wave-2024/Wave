@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/authscreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -15,18 +16,19 @@ class feedScreen extends StatefulWidget {
 class _feedScreenState extends State<feedScreen> {
   final authservice _auth = authservice(FirebaseAuth.instance);
   User? currentUser;
-  bool init = true;
+  bool? init;
   bool? loadScreen;
   @override
   void initState() {
     loadScreen = true;
+    init=true;
     currentUser = FirebaseAuth.instance.currentUser;
     super.initState();
   }
 
   @override
   void didChangeDependencies() async {
-    if(init){
+    if(init!){
       Provider.of<usersProvider>(context).setFeedPosts(currentUser!.uid.toString()).then((value) {
         loadScreen = false;
         init = false;
@@ -87,7 +89,9 @@ class _feedScreenState extends State<feedScreen> {
                                   const Icon(Icons.notification_add_outlined)),
                           IconButton(
                               onPressed: () {
-                                _auth.signOut();
+                                _auth.signOut().then((value) {
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => authScreen(),));
+                                });
                               },
                               icon: const Icon(Icons.settings))
                         ],
