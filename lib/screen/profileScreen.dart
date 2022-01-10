@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/editProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
@@ -89,6 +90,7 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                           Positioned(
                               top: displayHeight(context) * 0.16,
+                              left: displayWidth(context)*0.04,
                               child: Container(
                                 height: displayHeight(context) * 0.1,
                                 width: displayWidth(context) * 0.2,
@@ -99,7 +101,19 @@ class _profiletScreenState extends State<profiletScreen> {
                                 ),
                               )),
                           Positioned(
+                            top: displayHeight(context)*0.13,
+                              right:  displayWidth(context) * 0.02,
+                              child: IconButton(
+                            iconSize: displayWidth(context) * 0.08,
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => editProfileScreen(),));
+                            },
+                            color: Colors.white70,
+                            icon: Icon(Icons.edit),
+                          )),
+                          Positioned(
                               top: displayHeight(context) * 0.1655,
+                              left: displayWidth(context)*0.052,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(25),
                                 child: Image.asset(
