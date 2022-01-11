@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 
 import 'devicesize.dart';
 
-Widget displayPosts(BuildContext context, PostModel post,Map<String,dynamic> mapOfUsers) {
- NexusUser user = mapOfUsers[post.uid];
+Widget displayPosts(
+    BuildContext context, PostModel post, Map<String, dynamic> mapOfUsers) {
+  NexusUser user = mapOfUsers[post.uid];
   return Container(
     height: displayHeight(context) * 0.7,
     width: displayWidth(context),
@@ -146,6 +147,24 @@ Widget displayPosts(BuildContext context, PostModel post,Map<String,dynamic> map
           ),
         ),
       ),
+    ),
+  );
+}
+
+Widget load(BuildContext context) {
+  return const Center(
+    child: CircularProgressIndicator(
+      color: Colors.orange,
+      backgroundColor: Colors.blue,
+    ),
+  );
+}
+
+Widget loadInsideButton(BuildContext context) {
+  return const Center(
+    child: CircularProgressIndicator(
+      color: Colors.white,
+      backgroundColor: Colors.white30,
     ),
   );
 }
