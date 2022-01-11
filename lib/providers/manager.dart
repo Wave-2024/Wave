@@ -5,11 +5,18 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
+import 'package:intl/intl.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class usersProvider extends ChangeNotifier {
   List<PostModel> postsToDisplay = [];
+
+  List<PostModel> thisProfilePosts = [];
+
+  List<PostModel> get fetchThisProfilePosts {
+    return [...thisProfilePosts];
+  }
 
   Map<String, NexusUser> mapOfUsers = {};
 
@@ -18,24 +25,22 @@ class usersProvider extends ChangeNotifier {
   }
 
   Future<void> setFeedPosts(String myUid) async {
-    print('reached setFeed Post Function');
+    //print('reached setFeed Post Function');
     Map<String, NexusUser> tempMap = {};
     List<dynamic> myFollowings = [];
-    List<dynamic> tempPosts = [];
+    List<PostModel> tempPosts = [];
     List<PostModel> finalPosts = [];
     final String api = constants().fetchApi + 'users/${myUid}.json';
     final response = await http.get(Uri.parse(api));
     final user = json.decode(response.body) as Map<String, dynamic>;
     myFollowings = user['followings'] ?? [];
     for (int index = 0; index < myFollowings.length; ++index) {
-      print('reached inside following loop');
       final String api2 =
           constants().fetchApi + 'users/${myFollowings[index].toString()}.json';
       final response2 = await http.get(Uri.parse(api2));
       final userData = json.decode(response2.body) as Map<String, dynamic>;
       NexusUser ne = NexusUser(
           title: userData['title'],
-          posts: userData['posts'] ?? [],
           coverImage: userData['coverImage'],
           uid: myFollowings[index].toString(),
           username: userData['username'],
@@ -45,15 +50,31 @@ class usersProvider extends ChangeNotifier {
           followers: userData['followers'] ?? [],
           followings: userData['followings'] ?? []);
       tempMap[myFollowings[index].toString()] = ne;
-      tempPosts = userData['posts'] ?? [];
-      for (int run = 0; run < tempPosts.length; ++run) {
-        finalPosts.add(PostModel(
-            caption: tempPosts[run]['caption'],
-            image: tempPosts[run]['image'],
-            comments: tempPosts[run]['comments'] ?? [],
-            uid: tempPosts[run]['uid'],
-            post_id: tempPosts[run]['post_id'] ?? '',
-            likes: tempPosts[run]['likes'] ?? []));
+      final String api3 =
+          constants().fetchApi + 'posts/${myFollowings[index].toString()}.json';
+      final postsResponse = await http.get(Uri.parse(api3));
+      if (json.decode(postsResponse.body) != null) {
+        final postsData =
+            json.decode(postsResponse.body) as Map<String, dynamic>;
+        print(postsResponse.body);
+        postsData.forEach((key, value) {
+          tempPosts.add(PostModel(
+            dateOfPost: value['caption'],
+              caption: value['caption'],
+              image: value['image'],
+              uid: value['uid'],
+              post_id: key,
+              likes: value['likes'] ?? []));
+        });
+        for (int run = 0; run < tempPosts.length; ++run) {
+          finalPosts.add(PostModel(
+            dateOfPost: tempPosts[run].dateOfPost,
+              caption: tempPosts[run].caption,
+              image: tempPosts[run].image,
+              uid: tempPosts[run].uid,
+              post_id: tempPosts[run].post_id,
+              likes: tempPosts[run].likes));
+        }
       }
     }
     postsToDisplay = finalPosts;
@@ -72,7 +93,6 @@ class usersProvider extends ChangeNotifier {
     return [...searchUsers];
   }
 
-
   Future<void> addCoverPicture(File? newImage, String uid) async {
     String imageLocation = 'users/${uid}/details/cp';
     final Reference storageReference =
@@ -82,9 +102,8 @@ class usersProvider extends ChangeNotifier {
     await taskSnapshot.ref.getDownloadURL().then((value) async {
       final String api = constants().fetchApi + 'users/${uid}.json';
       try {
-        await http.patch(Uri.parse(api), body: jsonEncode({
-          'coverImage': value 
-        }));
+        await http.patch(Uri.parse(api),
+            body: jsonEncode({'coverImage': value}));
       } catch (error) {
         print(error);
       }
@@ -100,8 +119,7 @@ class usersProvider extends ChangeNotifier {
     await taskSnapshot.ref.getDownloadURL().then((value) async {
       final String api = constants().fetchApi + 'users/${uid}.json';
       try {
-        await http.patch(Uri.parse(api),
-            body: jsonEncode({'dp': value}));
+        await http.patch(Uri.parse(api), body: jsonEncode({'dp': value}));
       } catch (error) {
         print(error);
       }
@@ -145,7 +163,6 @@ class usersProvider extends ChangeNotifier {
         dp: data['dp'],
         followers: data['followers'] ?? [],
         followings: data['followings'] ?? [],
-        posts: data['posts'] ?? [],
       );
       followings = myProfile.followings;
       followings.add(personUid);
@@ -163,7 +180,6 @@ class usersProvider extends ChangeNotifier {
         dp: data2['dp'],
         followers: data2['followers'] ?? [],
         followings: data2['followings'] ?? [],
-        posts: data2['posts'] ?? [],
       );
       followers = peopleProfile.followers;
       followers.add(myUid);
@@ -185,7 +201,6 @@ class usersProvider extends ChangeNotifier {
       data.forEach((key, value) {
         temp.add(NexusUser(
             title: value['title'],
-            posts: value['posts'] ?? [],
             coverImage: value['coverImage'],
             uid: key,
             username: value['username'],
@@ -228,7 +243,6 @@ class usersProvider extends ChangeNotifier {
         dp: data['dp'],
         followers: data['followers'] ?? [],
         followings: data['followings'] ?? [],
-        posts: data['posts'] ?? [],
       );
       followings = myProfile.followings;
       followings.remove(personUid);
@@ -246,7 +260,6 @@ class usersProvider extends ChangeNotifier {
         dp: data2['dp'],
         followers: data2['followers'] ?? [],
         followings: data2['followings'] ?? [],
-        posts: data2['posts'] ?? [],
       );
       followers = peopleProfile.followers;
       followers.remove(myUid);
@@ -260,10 +273,15 @@ class usersProvider extends ChangeNotifier {
   }
 
   Future<void> addNewPost(String caption, String uid, File image) async {
-    final String api = constants().fetchApi + 'users/${uid}.json';
-    List<dynamic> posts = [];
+    final String api = constants().fetchApi + 'posts/${uid}.json';
+
     try {
       var random = Random();
+      DateTime datetime = DateTime.now();
+      String day = datetime.day.toString();
+      String year = datetime.year.toString();
+      String month = datetime.month.toString();
+      final String dateOfPost = '${day}/${month}/${year}';
       int random1 = random.nextInt(999999);
       int random2 = random.nextInt(555555);
       int random3 = random.nextInt(101);
@@ -275,26 +293,48 @@ class usersProvider extends ChangeNotifier {
       final UploadTask uploadTask = storageReference.putFile(image);
       final TaskSnapshot taskSnapshot = await uploadTask;
       taskSnapshot.ref.getDownloadURL().then((value) async {
-        PostModel post = PostModel(
-            caption: caption,
-            image: value,
-            comments: [],
-            uid: uid,
-            post_id: '',
-            likes: []);
-        final response = await http.get(Uri.parse(api));
-        final data = json.decode(response.body) as Map<String, dynamic>;
-        posts = data['posts'] ?? [];
-        posts.add(post.toJson());
-        await http.patch(Uri.parse(api), body: json.encode({'posts': posts}));
+        await http.post(Uri.parse(api),
+            body: json.encode({
+              'caption': caption,
+              'image': value,
+              'uid': uid,
+              'likes': [],
+              'dateOfPost' : dateOfPost,
+            }));
       });
     } catch (error) {
       print(error);
     }
   }
 
+  Future<void> likeThisPost(String myUid,String userUid, String postUid) async {
+    final String api = constants().fetchApi + 'posts/${userUid}/${postUid}.json';
+    List<String> likes = [];
+    try {
+      final response = await http.get(Uri.parse(api));
 
-  
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      likes = data['likes'] ?? [];
+      likes.add(myUid);
+      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> disLikeThisPost(String myUid, String userUid, String postUid) async {
+    final String api = constants().fetchApi + 'posts/${userUid}/${postUid}.json';
+    List<String> likes = [];
+    try {
+      final response = await http.get(Uri.parse(api));
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      likes = data['likes'] ?? [];
+      likes.remove(myUid);
+      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
+    } catch (error) {
+      print(error);
+    }
+  }
 
   Future<void> fetchUser(String uid) async {
     NexusUser? user;
@@ -312,10 +352,29 @@ class usersProvider extends ChangeNotifier {
         dp: data['dp'],
         followers: data['followers'] ?? [],
         followings: data['followings'] ?? [],
-        posts: data['posts'] ?? [],
       );
-      print(user.title);
       currentUser = user;
+      List<PostModel> temp = [];
+      final String api2 = constants().fetchApi + 'posts/${uid}.json';
+      final response2 = await http.get(Uri.parse(api2));
+      if (json.decode(response2.body) != null) {
+        print('entered this fucking loop');
+        final data2 = json.decode(response2.body) as Map<String, dynamic>;
+        data2.forEach((key, value) {
+          temp.add(PostModel(
+            dateOfPost: value['caption'],
+              caption: value['caption'],
+              image: value['image'],
+              uid: uid,
+              post_id: key,
+              likes: value['likes'] ?? []));
+        });
+      }
+
+      thisProfilePosts = temp;
+      thisProfilePosts.sort((a,b){
+        return a.likes.length>b.likes.length ? 1 : 0;
+      });
       notifyListeners();
     } catch (error) {
       print(error);
