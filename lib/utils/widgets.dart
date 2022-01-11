@@ -105,22 +105,34 @@ Widget displayPosts(
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          (post.likes.contains(myUid))?CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: displayWidth(context) * 0.04,
-                            child: Center(
-                              child: Image.asset(
-                                'images/like.png',
-                                height: displayHeight(context) * 0.035,
+                          GestureDetector(
+                            onTap : () {
+
+                              if(post.likes.contains(myUid)){
+
+                                Provider.of<usersProvider>(context,listen: false).disLikeThisPost(myUid,post.uid,post.post_id);
+                              }
+                              else{
+                                Provider.of<usersProvider>(context,listen: false).likeThisPost(myUid,post.uid,post.post_id);
+                              }
+                            },
+                            child: (post.likes.contains(myUid))?CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              radius: displayWidth(context) * 0.04,
+                              child: Center(
+                                child: Image.asset(
+                                  'images/like.png',
+                                  height: displayHeight(context) * 0.035,
+                                ),
                               ),
-                            ),
-                          ):CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: displayWidth(context) * 0.04,
-                            child: Center(
-                              child: Image.asset(
-                                'images/like_out.png',
-                                height: displayHeight(context) * 0.035,
+                            ):CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              radius: displayWidth(context) * 0.04,
+                              child: Center(
+                                child: Image.asset(
+                                  'images/like_out.png',
+                                  height: displayHeight(context) * 0.035,
+                                ),
                               ),
                             ),
                           ),
