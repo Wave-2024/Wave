@@ -3,6 +3,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class searchScreen extends StatefulWidget {
@@ -103,12 +104,7 @@ class _searchScreenState extends State<searchScreen> {
         width: displayWidth(context),
         color: Colors.white,
         child: (screenLoading!)
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.orange,
-                  backgroundColor: Colors.blue,
-                ),
-              )
+            ? load(context)
             : SingleChildScrollView(
                 child: (Column(
                   mainAxisAlignment: MainAxisAlignment.start,
