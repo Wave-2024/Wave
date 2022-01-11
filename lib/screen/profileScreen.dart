@@ -100,7 +100,7 @@ class _profiletScreenState extends State<profiletScreen> {
                   ),
                 )
               : SingleChildScrollView(
-                child: Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -134,8 +134,14 @@ class _profiletScreenState extends State<profiletScreen> {
                                   gradient: LinearGradient(
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
-                                      colors: [Colors.transparent, Colors.white],
-                                      stops: [0, .8])),
+                                      colors: [
+                                    Colors.transparent,
+                                    Colors.white
+                                  ],
+                                      stops: [
+                                    0,
+                                    .8
+                                  ])),
                             ),
                             Positioned(
                                 top: displayHeight(context) * 0.16,
@@ -187,9 +193,9 @@ class _profiletScreenState extends State<profiletScreen> {
                                                 child: Text(
                                                   'Change Profile Picture',
                                                   style: TextStyle(
-                                                      fontSize:
-                                                          displayWidth(context) *
-                                                              0.05,
+                                                      fontSize: displayWidth(
+                                                              context) *
+                                                          0.05,
                                                       color: Colors.black45,
                                                       fontWeight:
                                                           FontWeight.bold),
@@ -213,7 +219,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => editProfileScreen(
+                                          builder: (context) =>
+                                              editProfileScreen(
                                             user: myProfile,
                                           ),
                                         ));
@@ -229,13 +236,15 @@ class _profiletScreenState extends State<profiletScreen> {
                                   child: (myProfile.dp != '')
                                       ? CachedNetworkImage(
                                           imageUrl: myProfile.dp,
-                                          height: displayHeight(context) * 0.0905,
+                                          height:
+                                              displayHeight(context) * 0.0905,
                                           width: displayWidth(context) * 0.175,
                                           fit: BoxFit.cover,
                                         )
                                       : Image.asset(
                                           'images/male.jpg',
-                                          height: displayHeight(context) * 0.0905,
+                                          height:
+                                              displayHeight(context) * 0.0905,
                                           width: displayWidth(context) * 0.175,
                                           fit: BoxFit.cover,
                                         ),
@@ -406,7 +415,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                     ? Card(
                                         elevation: 6,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                         ),
                                         child: Center(
                                           child: Padding(
@@ -451,7 +461,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                     ? Card(
                                         elevation: 6,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                         ),
                                         child: Center(
                                           child: Padding(
@@ -485,35 +496,33 @@ class _profiletScreenState extends State<profiletScreen> {
                           ],
                         ),
                       ),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        //dragStartBehavior: DragStartBehavior.down,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3),
+                        itemCount: myProfile.posts.length,
+                        padding: const EdgeInsets.all(8),
 
-                       GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          //dragStartBehavior: DragStartBehavior.down,
-                          gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3),
-                          itemCount: myProfile.posts.length,
-                          padding: EdgeInsets.all(8),
-
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: CachedNetworkImage(
-                                  height: displayHeight(context)*0.1,
-                                    width: displayWidth(context)*0.3,
-                                    fit: BoxFit.cover,
-                                    imageUrl: myProfile.posts[index]['image']),
-                              ),
-                            );
-                          },
-                        ),
-
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CachedNetworkImage(
+                                  height: displayHeight(context) * 0.1,
+                                  width: displayWidth(context) * 0.3,
+                                  fit: BoxFit.cover,
+                                  imageUrl: myProfile.posts[index]['image']),
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
-              ),
+                ),
         ),
       ),
     );
