@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 
 class PostModel {
   final String caption;
+  final String dateOfPost;
   final String image;
   final String uid;
   final String post_id;
   final List<dynamic> likes;
-  final List<dynamic> comments;
 
   PostModel(
+
       {required this.caption,
-      required this.image,
-      required this.comments,
+        required this.dateOfPost,
+        required this.image,
       required this.uid,
       required this.post_id,
       required this.likes});
@@ -23,7 +24,6 @@ class PostModel {
       'uid': uid,
       'post_uid': post_id,
       'likes': likes,
-      'comments': comments, 
     };
   }
 }
