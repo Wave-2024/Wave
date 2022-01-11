@@ -8,10 +8,8 @@ class NexusUser {
   final String coverImage;
   final List<dynamic> followers;
   final List<dynamic> followings;
-  final List<dynamic> posts;
   NexusUser(
       {required this.title,
-        required this.posts,
       required this.coverImage,
       required this.uid,
       required this.username,
