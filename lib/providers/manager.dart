@@ -19,7 +19,7 @@ class usersProvider extends ChangeNotifier {
 
   Future<void> setFeedPosts(String myUid) async {
     print('reached setFeed Post Function');
-    Map<String,NexusUser> tempMap = {};
+    Map<String, NexusUser> tempMap = {};
     List<dynamic> myFollowings = [];
     List<dynamic> tempPosts = [];
     List<PostModel> finalPosts = [];
@@ -61,7 +61,7 @@ class usersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String,dynamic> get fetchMapOfUsers{
+  Map<String, dynamic> get fetchMapOfUsers {
     return mapOfUsers;
   }
 
@@ -70,6 +70,57 @@ class usersProvider extends ChangeNotifier {
 
   List<NexusUser> get fetchSearchList {
     return [...searchUsers];
+  }
+
+
+  Future<void> addCoverPicture(File? newImage, String uid) async {
+    String imageLocation = 'users/${uid}/details/cp';
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(imageLocation);
+    final UploadTask uploadTask = storageReference.putFile(newImage!);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    await taskSnapshot.ref.getDownloadURL().then((value) async {
+      final String api = constants().fetchApi + 'users/${uid}.json';
+      try {
+        await http.patch(Uri.parse(api), body: jsonEncode({
+          'coverImage': value 
+        }));
+      } catch (error) {
+        print(error);
+      }
+    });
+  }
+
+  Future<void> addProfilePicture(File? newImage, String uid) async {
+    String imageLocation = 'users/${uid}/details/dp';
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(imageLocation);
+    final UploadTask uploadTask = storageReference.putFile(newImage!);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    await taskSnapshot.ref.getDownloadURL().then((value) async {
+      final String api = constants().fetchApi + 'users/${uid}.json';
+      try {
+        await http.patch(Uri.parse(api),
+            body: jsonEncode({'dp': value}));
+      } catch (error) {
+        print(error);
+      }
+    });
+  }
+
+  Future<void> editMyProfile(
+      String uid, String fullName, String userName, String bio) async {
+    final String api = constants().fetchApi + 'users/${uid}.json';
+    try {
+      await http.patch(Uri.parse(api),
+          body: jsonEncode({
+            'title': fullName,
+            'username': userName,
+            'bio': bio,
+          }));
+    } catch (error) {
+      print(error);
+    }
   }
 
   Future<void> addFollower(String myUid, String personUid) async {
@@ -241,6 +292,9 @@ class usersProvider extends ChangeNotifier {
       print(error);
     }
   }
+
+
+  
 
   Future<void> fetchUser(String uid) async {
     NexusUser? user;
