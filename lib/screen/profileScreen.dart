@@ -88,6 +88,7 @@ class _profiletScreenState extends State<profiletScreen> {
 
     NexusUser? myProfile =
         Provider.of<usersProvider>(context, listen: false).fetchCurrentUser;
+    List<PostModel> posts = Provider.of<usersProvider>(context,listen: false).fetchThisProfilePosts;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -371,7 +372,7 @@ class _profiletScreenState extends State<profiletScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  myProfile.posts.length.toString(),
+                                  posts.length.toString(),
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -507,7 +508,7 @@ class _profiletScreenState extends State<profiletScreen> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3),
-                        itemCount: myProfile.posts.length,
+                        itemCount: posts.length,
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
@@ -519,7 +520,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                   height: displayHeight(context) * 0.1,
                                   width: displayWidth(context) * 0.3,
                                   fit: BoxFit.cover,
-                                  imageUrl: myProfile.posts[index]['image']),
+                                  imageUrl: posts[index].image),
                             ),
                           );
                         },
