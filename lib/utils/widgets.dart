@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'devicesize.dart';
 
 Widget displayPosts(
-    BuildContext context, PostModel post, Map<String, dynamic> mapOfUsers) {
+    BuildContext context, PostModel post, Map<String, dynamic> mapOfUsers,String myUid) {
   NexusUser user = mapOfUsers[post.uid];
   return Container(
     height: displayHeight(context) * 0.7,
@@ -39,20 +39,16 @@ Widget displayPosts(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: (user.dp != '')
-                            ? CachedNetworkImage(
-                                imageUrl: user.dp,
-                                height: displayHeight(context) * 0.075,
-                                width: displayWidth(context) * 0.175,
-                              )
-                            : Image.asset(
-                                'images/male.jpg',
-                                height: displayHeight(context) * 0.075,
-                                width: displayWidth(context) * 0.175,
-                              ),
-                      ),
+                      (user.dp!='')? CircleAvatar(
+                        radius: displayWidth(context)*0.06,
+                        backgroundImage : NetworkImage(user.dp),
+
+                      ):CircleAvatar(
+                        radius: displayWidth(context)*0.06,
+                        backgroundImage : AssetImage('images/male.jpg'),
+
+                      )
+                      ,
                       const VerticalDivider(),
                       Text(
                         user.username,
@@ -69,7 +65,20 @@ Widget displayPosts(
               Opacity(
                 opacity: 0.0,
                 child: Divider(
-                  height: displayHeight(context) * 0.022,
+                  height: displayHeight(context) * 0.02,
+                ),
+              ),
+              Center(
+                child: Container(
+                  height: displayHeight(context)*0.03,
+                    width: displayWidth(context)*0.68,
+                    //color: Colors.redAccent,
+                    child: Text(post.caption,overflow: TextOverflow.ellipsis,style: TextStyle(color: Colors.black87,fontWeight: FontWeight.w600),)),
+              ),
+              Opacity(
+                opacity: 0.0,
+                child: Divider(
+                  height: displayHeight(context) * 0.02,
                 ),
               ),
               Center(
@@ -77,7 +86,7 @@ Widget displayPosts(
                   borderRadius: BorderRadius.circular(25),
                   child: CachedNetworkImage(
                     imageUrl: post.image,
-                    height: displayHeight(context) * 0.42,
+                    height: displayHeight(context) * 0.38,
                     width: displayWidth(context) * 0.68,
                     fit: BoxFit.cover,
                   ),
@@ -96,12 +105,21 @@ Widget displayPosts(
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          CircleAvatar(
+                          (post.likes.contains(myUid))?CircleAvatar(
                             backgroundColor: Colors.transparent,
                             radius: displayWidth(context) * 0.04,
                             child: Center(
                               child: Image.asset(
                                 'images/like.png',
+                                height: displayHeight(context) * 0.035,
+                              ),
+                            ),
+                          ):CircleAvatar(
+                            backgroundColor: Colors.transparent,
+                            radius: displayWidth(context) * 0.04,
+                            child: Center(
+                              child: Image.asset(
+                                'images/like_out.png',
                                 height: displayHeight(context) * 0.035,
                               ),
                             ),

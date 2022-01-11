@@ -15,19 +15,21 @@ import 'package:nexus/utils/firebaseServices.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'authscreen.dart';
+
 class profiletScreen extends StatefulWidget {
   @override
   State<profiletScreen> createState() => _profiletScreenState();
 }
 
 class _profiletScreenState extends State<profiletScreen> {
+  final authservice _auth = authservice(FirebaseAuth.instance);
   bool viewPosts = true;
   File? imagefile;
   final picker = ImagePicker();
   bool? loadScreen;
   User? currentUser;
   bool init = true;
-  final authservice _auth = authservice(FirebaseAuth.instance);
   @override
   void initState() {
     super.initState();
@@ -266,7 +268,9 @@ class _profiletScreenState extends State<profiletScreen> {
                                   iconSize: displayWidth(context) * 0.08,
                                   icon: const Icon(Icons.logout),
                                   onPressed: () async {
-                                    // Logout
+                                    _auth.signOut().then((value) {
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => authScreen(),));
+                                    });
                                   },
                                   color: Colors.white70,
                                 )),

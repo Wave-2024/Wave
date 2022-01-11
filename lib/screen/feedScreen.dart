@@ -87,13 +87,7 @@ class _feedScreenState extends State<feedScreen> {
                               onPressed: () {},
                               icon:
                                   const Icon(Icons.notification_add_outlined)),
-                          IconButton(
-                              onPressed: () {
-                                _auth.signOut().then((value) {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => authScreen(),));
-                                });
-                              },
-                              icon: const Icon(Icons.settings))
+
                         ],
                       )
                     ],
@@ -103,14 +97,17 @@ class _feedScreenState extends State<feedScreen> {
               const Opacity(opacity: 0.0, child: Divider()),
               Container(
                 //color: Colors.blue,
-                height: displayHeight(context)*0.8,
+                height: displayHeight(context)*0.81,
                 width: displayWidth(context),
                 child: Padding(
                   padding: const EdgeInsets.only(left:21.0,right: 21,top: 10),
                   child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                    return displayPosts(context, feedPosts[index], mapOfUsers);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom:18.0),
+                      child: displayPosts(context, feedPosts[index], mapOfUsers,currentUser!.uid.toString()),
+                    );
                   },
                     itemCount: feedPosts.length,
                   )
