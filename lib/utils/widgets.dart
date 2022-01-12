@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
@@ -154,7 +155,14 @@ Widget displayPosts(BuildContext context, PostModel post,
                           const Opacity(opacity: 0.0, child: VerticalDivider()),
                           InkWell(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => postDetailScreen(user: user,postId: post.post_id,),));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => postDetailScreen(
+                                      user_who_posted: user,
+                                      postId: post.post_id,
+                                    ),
+                                  ));
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.transparent,
@@ -229,5 +237,58 @@ Widget loadInsideButton(BuildContext context) {
       color: Colors.white,
       backgroundColor: Colors.white30,
     ),
+  );
+}
+RichText printComment(BuildContext context,String userName, String comment) {
+  return RichText(
+      text: TextSpan(
+          style: TextStyle(color: Colors.black),
+          children: [
+            TextSpan(
+                text: userName,
+                style: const TextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold)),
+            TextSpan(
+                text: ': ' + comment,
+                style: const TextStyle(
+                    color: Colors.black,
+
+                ))
+          ]));
+}
+
+Widget displayComment(BuildContext context,CommentModel commentModel) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      Card(
+        color: Colors.white,
+        elevation: 12.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+              height: displayHeight(context)*0.05,
+              width: displayWidth(context)*0.1,
+              fit: BoxFit.cover,
+              imageUrl: commentModel.userDp,
+            ),
+      ),
+        ),),
+      Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.02,)),
+      Flexible(
+        child: Card(
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: printComment(context, commentModel.userName, commentModel.comment),
+          ),
+        ),
+      )
+    ],
   );
 }
