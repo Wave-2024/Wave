@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:intl/intl.dart';
@@ -211,6 +212,12 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
+  PostModel? thisPost;
+
+  PostModel? fetchThisPostDetails(String postId){
+    return postToDisplay[postId];
+  }
+
   NexusUser? get fetchCurrentUser {
     return currentUser;
   }
@@ -392,5 +399,21 @@ class usersProvider extends ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+}
+
+
+List<CommentModel> listOfCommentsForThisPosts = [];
+
+List<CommentModel> get fetchCommentsForThisPost{
+  return [...listOfCommentsForThisPosts];
+}
+Future<void> setCommentsForThisPost(String postId)async{
+  final String api = constants().fetchApi + 'comments/${postId}.json';
+  try{
+
+  }
+  catch(error){
+    print(error);
   }
 }
