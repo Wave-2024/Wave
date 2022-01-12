@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/postDetailScreen.dart';
 import 'package:provider/provider.dart';
-
 import 'devicesize.dart';
 
 Widget displayPosts(BuildContext context, PostModel post,
@@ -46,6 +46,7 @@ Widget displayPosts(BuildContext context, PostModel post,
                     children: [
                       (user.dp != '')
                           ? CircleAvatar(
+                              backgroundColor: Colors.grey[200],
                               radius: displayWidth(context) * 0.06,
                               backgroundImage: NetworkImage(user.dp),
                             )
@@ -80,7 +81,7 @@ Widget displayPosts(BuildContext context, PostModel post,
                     child: Text(
                       post.caption,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.black87, fontWeight: FontWeight.w600),
                     )),
               ),
@@ -151,13 +152,18 @@ Widget displayPosts(BuildContext context, PostModel post,
                                   ),
                           ),
                           const Opacity(opacity: 0.0, child: VerticalDivider()),
-                          CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: displayWidth(context) * 0.04,
-                            child: Center(
-                              child: Image.asset(
-                                'images/comment.png',
-                                height: displayHeight(context) * 0.035,
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => postDetailScreen(user: user,postId: post.post_id,),));
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              radius: displayWidth(context) * 0.04,
+                              child: Center(
+                                child: Image.asset(
+                                  'images/comment.png',
+                                  height: displayHeight(context) * 0.035,
+                                ),
                               ),
                             ),
                           ),
