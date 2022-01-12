@@ -214,7 +214,7 @@ class usersProvider extends ChangeNotifier {
 
   PostModel? thisPost;
 
-  PostModel? fetchThisPostDetails(String postId){
+  PostModel? fetchThisPostDetails(String postId) {
     return postToDisplay[postId];
   }
 
@@ -400,20 +400,71 @@ class usersProvider extends ChangeNotifier {
       print(error);
     }
   }
-}
 
+  List<CommentModel> listOfCommentsForThisPosts = [];
 
-List<CommentModel> listOfCommentsForThisPosts = [];
-
-List<CommentModel> get fetchCommentsForThisPost{
-  return [...listOfCommentsForThisPosts];
-}
-Future<void> setCommentsForThisPost(String postId)async{
-  final String api = constants().fetchApi + 'comments/${postId}.json';
-  try{
-
+  List<CommentModel> get fetchCommentsForThisPost {
+    return [...listOfCommentsForThisPosts];
   }
-  catch(error){
-    print(error);
+
+  Future<void> setCommentsForThisPost(String postId) async {
+    List<CommentModel> tempComments = [];
+    final String api = constants().fetchApi + 'comments/${postId}.json';
+    try {
+      final commentResponse = await http.get(Uri.parse(api));
+      if (json.decode(commentResponse.body) != null) {
+        final commentData =
+        json.decode(commentResponse.body) as Map<String, dynamic>;
+        commentData.forEach((key, value) {
+          tempComments.add(CommentModel(
+            userName: value['userName'],
+              userDp: value['userDp'],
+              dateOfComment: value['dateOfComment'],
+              commentId: key,
+              comment: value['comment'],
+              uid: value['uid']));
+        });
+      }
+      listOfCommentsForThisPosts = tempComments;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
   }
+
+  Future<void> addCommentToThisPost(String myDp,String myuserName,String comment, String myUid, String postId)async{
+    final String api = constants().fetchApi+'comments/${postId}.json';
+    DateTime dateTime = DateTime.now();
+    String day = dateTime.day.toString();
+    String month = dateTime.month.toString();
+    String year = dateTime.year.toString();
+    final String dateOfComment = '${day}/${month}/${year}';
+    try{
+       http.post(Uri.parse(api),body: json.encode({
+         'dateOfComment' : dateOfComment,
+         'comment' : comment,
+         'uid' : myUid ,
+         'userDp' : myDp,
+         'userName' : myuserName,
+         'commentId' : ''
+       })).then((value) {
+         final newCommentResponseData = json.decode(value.body) as Map<String,dynamic>;
+         final commentId = newCommentResponseData['name'].toString();
+         listOfCommentsForThisPosts.add(
+             CommentModel(dateOfComment: dateOfComment, commentId: commentId,
+             userDp: myDp,
+             userName: myuserName,
+             comment: comment, uid: myUid));
+         notifyListeners();
+       });
+    }
+    catch(error){
+      print(error);
+    }
+  }
+
+
+
 }
+
+
