@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -40,6 +41,8 @@ class _userProfileState extends State<userProfile> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<usersProvider>(context).fetchCurrentUser;
+
+    List<PostModel> posts = Provider.of<usersProvider>(context,listen: false).fetchThisProfilePosts;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -218,7 +221,7 @@ class _userProfileState extends State<userProfile> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                user.posts.length.toString(),
+                                posts.length.toString(),
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,

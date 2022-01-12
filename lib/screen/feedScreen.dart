@@ -18,6 +18,7 @@ class _feedScreenState extends State<feedScreen> {
   User? currentUser;
   bool? init;
   bool? loadScreen;
+  final List<String> months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   @override
   void initState() {
     loadScreen = true;
@@ -34,13 +35,15 @@ class _feedScreenState extends State<feedScreen> {
         init = false;
       });
     }
+
+
     super.didChangeDependencies();
 
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<PostModel> feedPosts = Provider.of<usersProvider>(context).fetchPostsToDisplay;
+    final Map<String,PostModel> feedPosts = Provider.of<usersProvider>(context).fetchPostsToDisplay;
     final Map<String,dynamic> mapOfUsers = Provider.of<usersProvider>(context).fetchMapOfUsers;
     return Scaffold(
       body: SafeArea(
@@ -106,7 +109,7 @@ class _feedScreenState extends State<feedScreen> {
                     itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom:18.0),
-                      child: displayPosts(context, feedPosts[index], mapOfUsers,currentUser!.uid.toString()),
+                      child: displayPosts(context, feedPosts.values.toList()[index], mapOfUsers,currentUser!.uid.toString(),months),
                     );
                   },
                     itemCount: feedPosts.length,

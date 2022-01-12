@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
@@ -7,8 +8,12 @@ import 'package:provider/provider.dart';
 
 import 'devicesize.dart';
 
-Widget displayPosts(
-    BuildContext context, PostModel post, Map<String, dynamic> mapOfUsers,String myUid) {
+Widget displayPosts(BuildContext context, PostModel post,
+    Map<String, dynamic> mapOfUsers, String myUid, List<String> months) {
+  DateTime dateTime = DateFormat('d/MM/yyyy').parse(post.dateOfPost);
+  String day = dateTime.day.toString();
+  String year = dateTime.year.toString();
+  String month = months[dateTime.month - 1];
   NexusUser user = mapOfUsers[post.uid];
   return Container(
     height: displayHeight(context) * 0.7,
@@ -39,16 +44,15 @@ Widget displayPosts(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      (user.dp!='')? CircleAvatar(
-                        radius: displayWidth(context)*0.06,
-                        backgroundImage : NetworkImage(user.dp),
-
-                      ):CircleAvatar(
-                        radius: displayWidth(context)*0.06,
-                        backgroundImage : AssetImage('images/male.jpg'),
-
-                      )
-                      ,
+                      (user.dp != '')
+                          ? CircleAvatar(
+                              radius: displayWidth(context) * 0.06,
+                              backgroundImage: NetworkImage(user.dp),
+                            )
+                          : CircleAvatar(
+                              radius: displayWidth(context) * 0.06,
+                              backgroundImage: AssetImage('images/male.jpg'),
+                            ),
                       const VerticalDivider(),
                       Text(
                         user.username,
@@ -70,10 +74,15 @@ Widget displayPosts(
               ),
               Center(
                 child: Container(
-                  height: displayHeight(context)*0.03,
-                    width: displayWidth(context)*0.68,
+                    height: displayHeight(context) * 0.03,
+                    width: displayWidth(context) * 0.68,
                     //color: Colors.redAccent,
-                    child: Text(post.caption,overflow: TextOverflow.ellipsis,style: TextStyle(color: Colors.black87,fontWeight: FontWeight.w600),)),
+                    child: Text(
+                      post.caption,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: Colors.black87, fontWeight: FontWeight.w600),
+                    )),
               ),
               Opacity(
                 opacity: 0.0,
@@ -105,24 +114,41 @@ Widget displayPosts(
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          (post.likes.contains(myUid))?CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: displayWidth(context) * 0.04,
-                            child: Center(
-                              child: Image.asset(
-                                'images/like.png',
-                                height: displayHeight(context) * 0.035,
-                              ),
-                            ),
-                          ):CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: displayWidth(context) * 0.04,
-                            child: Center(
-                              child: Image.asset(
-                                'images/like_out.png',
-                                height: displayHeight(context) * 0.035,
-                              ),
-                            ),
+                          GestureDetector(
+                            onTap: () {
+                              if (post.likes.contains(myUid)) {
+                                Provider.of<usersProvider>(context,
+                                        listen: false)
+                                    .disLikeThisPost(
+                                        myUid, post.uid, post.post_id);
+                              } else {
+                                Provider.of<usersProvider>(context,
+                                        listen: false)
+                                    .likeThisPost(
+                                        myUid, post.uid, post.post_id);
+                              }
+                            },
+                            child: (post.likes.contains(myUid))
+                                ? CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    radius: displayWidth(context) * 0.04,
+                                    child: Center(
+                                      child: Image.asset(
+                                        'images/like.png',
+                                        height: displayHeight(context) * 0.035,
+                                      ),
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    radius: displayWidth(context) * 0.04,
+                                    child: Center(
+                                      child: Image.asset(
+                                        'images/like_out.png',
+                                        height: displayHeight(context) * 0.035,
+                                      ),
+                                    ),
+                                  ),
                           ),
                           const Opacity(opacity: 0.0, child: VerticalDivider()),
                           CircleAvatar(
@@ -152,13 +178,26 @@ Widget displayPosts(
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: Text(
-                  post.likes.length.toString() + ' likes',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: displayWidth(context) * 0.035,
-                      fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.only(left: 12.0, right: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      post.likes.length.toString() + ' likes',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: displayWidth(context) * 0.035,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${day} ${month} ${year}',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w600,
+                        fontSize: displayWidth(context) * 0.033,
+                      ),
+                    ),
+                  ],
                 ),
               )
             ],
