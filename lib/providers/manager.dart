@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/CommentModel.dart';
@@ -9,6 +10,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:intl/intl.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:nexus/utils/widgets.dart';
 
 class usersProvider extends ChangeNotifier {
   Map<String, PostModel> postToDisplay = {};
@@ -137,28 +139,13 @@ class usersProvider extends ChangeNotifier {
   }
 
   Future<void> addFollower(String myUid, String personUid) async {
-    NexusUser myProfile;
-    NexusUser peopleProfile;
     List<dynamic> followings;
     List<dynamic> followers;
-    String generatedChatKey = 'Old Value';
-    List<dynamic> myChatKeys;
-    List<dynamic> personChatKeys;
+    String? chatId;
     try {
       // Generating chat ID
-      final String apiForChatRoom = constants().fetchApi + 'chatRoom.json';
-      await http
-          .post(Uri.parse(apiForChatRoom),
-              body: json.encode({
-                'user1': myUid,
-                'user2': personUid,
-                'key': '',
-              }))
-          .then((value) {
-        final chatRoomData = json.decode(value.body) as Map<String, dynamic>;
-        generatedChatKey = chatRoomData['name'];
-      });
-
+      chatId = generateChatRoomUsingUid(myUid, personUid);
+      
       // fetch details of user 1 -> START
       final String api1 = constants().fetchApi + 'users/${myUid}.json';
       final responseForUser1 = await http.get(Uri.parse(api1));
@@ -168,6 +155,13 @@ class usersProvider extends ChangeNotifier {
       followings = dataForUser1['followings'] ?? [];
       // Increase my followings and my ChatKeys
       followings.add(personUid);
+      // Set chat id to my cloudstore
+      
+      await FirebaseFirestore.instance.collection(myUid).doc(chatId).set({
+        'chatId' : chatId,
+        'lastSent' : Timestamp.now(),
+        'user2' : personUid
+      });
 
       // Update to Server for User1
 
@@ -189,6 +183,13 @@ class usersProvider extends ChangeNotifier {
       // Increase their followers and add chatKey
       followers.add(myUid);
 
+      // Set chat id to person's cloudstore
+
+      await FirebaseFirestore.instance.collection(personUid).doc(chatId).set({
+        'chatId' : chatId,
+        'lastSent' : Timestamp.now(),
+        'user2' : myUid
+      });
 
       // Update to the server
       await http.patch(Uri.parse(api2),
@@ -512,10 +513,4 @@ class usersProvider extends ChangeNotifier {
       print(error);
     }
   }
-
-
-
-
-
-
 }

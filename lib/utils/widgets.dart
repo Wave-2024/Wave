@@ -257,6 +257,17 @@ RichText printComment(BuildContext context,String userName, String comment) {
           ]));
 }
 
+String? generateChatRoomUsingUid(String uid1,String uid2){
+  String? chatRoom;
+  if(uid1.compareTo(uid2)<0){
+    chatRoom = uid1+uid2;
+  }
+  else{
+    chatRoom = uid2+uid1;
+  }
+  return chatRoom;
+}
+
 Widget displayComment(BuildContext context,CommentModel commentModel) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
