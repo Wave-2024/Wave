@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/models/ChatRoomModel.dart';
 import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
@@ -141,47 +142,63 @@ class usersProvider extends ChangeNotifier {
     NexusUser peopleProfile;
     List<dynamic> followings;
     List<dynamic> followers;
-    final String api1 = constants().fetchApi +
-        'users/${myUid}.json'; // Api to increase my followings
-    final String api2 = constants().fetchApi +
-        'users/${personUid}.json'; // Api to increase their followers
+    String generatedChatKey = 'Old Value';
+    List<dynamic> myChatKeys;
+    List<dynamic> personChatKeys;
     try {
-      final response = await http.get(Uri.parse(api1));
-      final data = json.decode(response.body) as Map<String, dynamic>;
-      myProfile = NexusUser(
-        title: data['title'],
-        coverImage: data['coverImage'],
-        uid: myUid,
-        username: data['username'],
-        email: data['email'],
-        bio: data['bio'],
-        dp: data['dp'],
-        followers: data['followers'] ?? [],
-        followings: data['followings'] ?? [],
-      );
-      followings = myProfile.followings;
+      // Generating chat ID
+      final String apiForChatRoom = constants().fetchApi + 'chatRoom.json';
+      await http
+          .post(Uri.parse(apiForChatRoom),
+              body: json.encode({
+                'user1': myUid,
+                'user2': personUid,
+                'key': '',
+              }))
+          .then((value) {
+        final chatRoomData = json.decode(value.body) as Map<String, dynamic>;
+        generatedChatKey = chatRoomData['name'];
+      });
+
+      // fetch details of user 1 -> START
+      final String api1 = constants().fetchApi + 'users/${myUid}.json';
+      final responseForUser1 = await http.get(Uri.parse(api1));
+      final dataForUser1 =
+          json.decode(responseForUser1.body) as Map<String, dynamic>;
+
+      followings = dataForUser1['followings'] ?? [];
+      // Increase my followings and my ChatKeys
       followings.add(personUid);
+
+      // Update to Server for User1
+
       await http.patch(Uri.parse(api1),
           body: json.encode({'followings': followings}));
-      final response2 = await http.get(Uri.parse(api2));
-      final data2 = json.decode(response2.body) as Map<String, dynamic>;
-      peopleProfile = NexusUser(
-        title: data2['title'],
-        coverImage: data2['coverImage'],
-        uid: myUid,
-        username: data2['username'],
-        email: data2['email'],
-        bio: data2['bio'],
-        dp: data2['dp'],
-        followers: data2['followers'] ?? [],
-        followings: data2['followings'] ?? [],
-      );
-      followers = peopleProfile.followers;
+
+      // User 1 operations -> END
+
+
+
+      // fetch details of user 2 -> START
+      final String api2 = constants().fetchApi +
+          'users/${personUid}.json';
+      final responseForUser2 = await http.get(Uri.parse(api2));
+      final dataForUser2 = json.decode(responseForUser2.body) as Map<String, dynamic>;
+      followers = dataForUser2['followers']??[];
+
+
+      // Increase their followers and add chatKey
       followers.add(myUid);
+
+
+      // Update to the server
       await http.patch(Uri.parse(api2),
           body: json.encode({
             'followers': followers,
           }));
+
+      // Operation on User 2 -> END
+
     } catch (error) {
       print(error);
     }
@@ -195,6 +212,7 @@ class usersProvider extends ChangeNotifier {
       final data = json.decode(response.body) as Map<String, dynamic>;
       data.forEach((key, value) {
         temp.add(NexusUser(
+
             title: value['title'],
             coverImage: value['coverImage'],
             uid: key,
@@ -235,6 +253,7 @@ class usersProvider extends ChangeNotifier {
       final response = await http.get(Uri.parse(api1));
       final data = json.decode(response.body) as Map<String, dynamic>;
       myProfile = NexusUser(
+
         title: data['title'],
         coverImage: data['coverImage'],
         uid: myUid,
@@ -252,6 +271,7 @@ class usersProvider extends ChangeNotifier {
       final response2 = await http.get(Uri.parse(api2));
       final data2 = json.decode(response2.body) as Map<String, dynamic>;
       peopleProfile = NexusUser(
+
         title: data2['title'],
         coverImage: data2['coverImage'],
         uid: personUid,
@@ -363,6 +383,7 @@ class usersProvider extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       user = NexusUser(
+
         title: data['title'],
         coverImage: data['coverImage'],
         uid: uid,
@@ -378,7 +399,6 @@ class usersProvider extends ChangeNotifier {
       final String api2 = constants().fetchApi + 'posts/${uid}.json';
       final response2 = await http.get(Uri.parse(api2));
       if (json.decode(response2.body) != null) {
-        print('entered this fucking loop');
         final data2 = json.decode(response2.body) as Map<String, dynamic>;
         data2.forEach((key, value) {
           temp.add(PostModel(
@@ -390,11 +410,10 @@ class usersProvider extends ChangeNotifier {
               likes: value['likes'] ?? []));
         });
       }
+      Map<String,NexusUser?> listOfChatRooms = {};
 
       thisProfilePosts = temp;
-      thisProfilePosts.sort((a, b) {
-        return a.likes.length > b.likes.length ? 1 : 0;
-      });
+
       notifyListeners();
     } catch (error) {
       print(error);
@@ -414,10 +433,10 @@ class usersProvider extends ChangeNotifier {
       final commentResponse = await http.get(Uri.parse(api));
       if (json.decode(commentResponse.body) != null) {
         final commentData =
-        json.decode(commentResponse.body) as Map<String, dynamic>;
+            json.decode(commentResponse.body) as Map<String, dynamic>;
         commentData.forEach((key, value) {
           tempComments.add(CommentModel(
-            userName: value['userName'],
+              userName: value['userName'],
               userDp: value['userDp'],
               dateOfComment: value['dateOfComment'],
               commentId: key,
@@ -432,39 +451,72 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addCommentToThisPost(String myDp,String myuserName,String comment, String myUid, String postId)async{
-    final String api = constants().fetchApi+'comments/${postId}.json';
+  Future<void> addCommentToThisPost(String myDp, String myuserName,
+      String comment, String myUid, String postId) async {
+    final String api = constants().fetchApi + 'comments/${postId}.json';
     DateTime dateTime = DateTime.now();
     String day = dateTime.day.toString();
     String month = dateTime.month.toString();
     String year = dateTime.year.toString();
     final String dateOfComment = '${day}/${month}/${year}';
-    try{
-       http.post(Uri.parse(api),body: json.encode({
-         'dateOfComment' : dateOfComment,
-         'comment' : comment,
-         'uid' : myUid ,
-         'userDp' : myDp,
-         'userName' : myuserName,
-         'commentId' : ''
-       })).then((value) {
-         final newCommentResponseData = json.decode(value.body) as Map<String,dynamic>;
-         final commentId = newCommentResponseData['name'].toString();
-         listOfCommentsForThisPosts.add(
-             CommentModel(dateOfComment: dateOfComment, commentId: commentId,
-             userDp: myDp,
-             userName: myuserName,
-             comment: comment, uid: myUid));
-         notifyListeners();
-       });
-    }
-    catch(error){
+    try {
+      http
+          .post(Uri.parse(api),
+              body: json.encode({
+                'dateOfComment': dateOfComment,
+                'comment': comment,
+                'uid': myUid,
+                'userDp': myDp,
+                'userName': myuserName,
+                'commentId': ''
+              }))
+          .then((value) {
+        final newCommentResponseData =
+            json.decode(value.body) as Map<String, dynamic>;
+        final commentId = newCommentResponseData['name'].toString();
+        listOfCommentsForThisPosts.add(CommentModel(
+            dateOfComment: dateOfComment,
+            commentId: commentId,
+            userDp: myDp,
+            userName: myuserName,
+            comment: comment,
+            uid: myUid));
+        notifyListeners();
+      });
+    } catch (error) {
       print(error);
     }
   }
 
 
 
+
+
+  Future<NexusUser?> fetchAnyUser(String uid) async {
+    final String api = constants().fetchApi + 'users/${uid}.json';
+    NexusUser? user;
+    try {
+      final response = await http.get(Uri.parse(api));
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      user = NexusUser(
+          bio: data['bio'],
+          coverImage: data['coverImage'],
+          dp: data['dp'],
+          email: data['email'],
+          followers: data['followers'] ?? [],
+          followings: data['followings'] ?? [],
+          title: data['title'],
+          uid: data['uid'],
+          username: data['username']);
+      return user;
+    } catch (error) {
+      print(error);
+    }
+  }
+
+
+
+
+
+
 }
-
-
