@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:nexus/models/ChatRoomModel.dart';
 import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
