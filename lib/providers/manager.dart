@@ -142,6 +142,11 @@ class usersProvider extends ChangeNotifier {
     List<dynamic> followings;
     List<dynamic> followers;
     String? chatId;
+
+    NexusUser? thatUser = await fetchAnyUser(personUid);
+    NexusUser? myProfile = await fetchAnyUser(myUid);
+
+
     try {
       // Generating chat ID
       chatId = generateChatRoomUsingUid(myUid, personUid);
@@ -157,11 +162,25 @@ class usersProvider extends ChangeNotifier {
       followings.add(personUid);
       // Set chat id to my cloudstore
       
-      await FirebaseFirestore.instance.collection(myUid).doc(chatId).set({
-        'chatId' : chatId,
-        'lastSent' : Timestamp.now(),
-        'user2' : personUid
-      });
+      // Check if it already exists
+
+      var userDocRef = FirebaseFirestore.instance.collection(myUid).doc(chatId);
+      var doc = await userDocRef.get();
+      if (!doc.exists) {
+        await FirebaseFirestore.instance.collection(myUid).doc(chatId).set({
+          'chatId' : chatId,
+          'lastSent' : Timestamp.now(),
+          'uid' : personUid,
+          'dp' : thatUser!.dp,
+          'userName' : thatUser.username,
+        });
+      } else {
+        debugPrint('Already exists');
+      }
+
+
+      
+      
 
       // Update to Server for User1
 
@@ -185,11 +204,21 @@ class usersProvider extends ChangeNotifier {
 
       // Set chat id to person's cloudstore
 
-      await FirebaseFirestore.instance.collection(personUid).doc(chatId).set({
-        'chatId' : chatId,
-        'lastSent' : Timestamp.now(),
-        'user2' : myUid
-      });
+      var userDocRef2 = FirebaseFirestore.instance.collection(myUid).doc(chatId);
+      var doc2 = await userDocRef2.get();
+      if (!doc2.exists) {
+        await FirebaseFirestore.instance.collection(personUid).doc(chatId).set({
+          'chatId' : chatId,
+          'lastSent' : Timestamp.now(),
+          'uid' : myUid,
+          'userName' : myProfile!.username,
+          'dp' : myProfile.dp,
+        });
+      } else {
+        debugPrint('Already exists');
+      }
+
+
 
       // Update to the server
       await http.patch(Uri.parse(api2),
