@@ -42,7 +42,8 @@ class _userProfileState extends State<userProfile> {
   Widget build(BuildContext context) {
     final user = Provider.of<usersProvider>(context).fetchCurrentUser;
 
-    List<PostModel> posts = Provider.of<usersProvider>(context,listen: false).fetchThisProfilePosts;
+    List<PostModel> posts = Provider.of<usersProvider>(context, listen: false)
+        .fetchThisProfilePosts;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -144,9 +145,7 @@ class _userProfileState extends State<userProfile> {
                               child: IconButton(
                                 iconSize: displayWidth(context) * 0.08,
                                 icon: const Icon(Icons.more_vert),
-                                onPressed: () async {
-
-                                },
+                                onPressed: () async {},
                                 color: Colors.white70,
                               )),
                         ],

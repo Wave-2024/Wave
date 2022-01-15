@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 class CommentModel {
   final String commentId;
   final String uid;

@@ -104,7 +104,6 @@ class homescreen extends StatelessWidget {
                                 MaterialPageRoute(
                                   builder: (context) => addPostScreen(),
                                 ));
-                            
                           },
                         )),
                         Expanded(

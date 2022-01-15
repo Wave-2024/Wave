@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_box/comment/comment.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nexus/models/userModel.dart';
-import 'package:nexus/providers/manager.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
-import 'package:provider/provider.dart';
 
 class inboxScreen extends StatefulWidget {
   String? chatId;
@@ -98,7 +94,8 @@ class _inboxScreenState extends State<inboxScreen> {
           ),
           textColor: Colors.black,
           child: Padding(
-            padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16,right: 16),
+            padding:
+                const EdgeInsets.only(top: 8.0, bottom: 8, left: 16, right: 16),
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection(widget.chatId.toString())
@@ -115,7 +112,9 @@ class _inboxScreenState extends State<inboxScreen> {
                       String message = snapshot.data.docs[index]['message'];
                       String uid = snapshot.data.docs[index]['uid'];
                       return Padding(
-                        padding: const EdgeInsets.only(top: 10.0, ),
+                        padding: const EdgeInsets.only(
+                          top: 10.0,
+                        ),
                         child: messageContainer(
                             message, uid, widget.myId.toString(), context),
                       );

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class PostModel {
   final String caption;
   final String dateOfPost;
@@ -9,10 +7,9 @@ class PostModel {
   final List<dynamic> likes;
 
   PostModel(
-
       {required this.caption,
-        required this.dateOfPost,
-        required this.image,
+      required this.dateOfPost,
+      required this.image,
       required this.uid,
       required this.post_id,
       required this.likes});

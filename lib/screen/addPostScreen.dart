@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
@@ -59,11 +58,15 @@ class _addPostScreenState extends State<addPostScreen> {
                     setState(() {
                       uploadingPost = true;
                     });
-                    Provider.of<usersProvider>(context,listen: false).addNewPost(captionController!.text.toString(), currentUser!.uid.toString(), imagefile!).then((value) {
+                    Provider.of<usersProvider>(context, listen: false)
+                        .addNewPost(captionController!.text.toString(),
+                            currentUser!.uid.toString(), imagefile!)
+                        .then((value) {
                       setState(() {
                         uploadingPost = false;
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully posted')));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Successfully posted')));
                     });
                   },
                   color: Colors.green,
@@ -83,57 +86,65 @@ class _addPostScreenState extends State<addPostScreen> {
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: (uploadingPost!)? Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
-              Center(
-                child: CircularProgressIndicator(
-                  color: Colors.orange,
-                  backgroundColor: Colors.blue,
-                ),
-              ),
-              Opacity(opacity: 0.0,child: Divider()),
-              Text('Uploading Post ...',style: TextStyle(color: Colors.black54),),
-            ],)
-                :SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  (imagefile != null)
-                      ? Image.file(
-                          imagefile!,
-                          height: displayHeight(context) * 0.3,
-                          width: displayWidth(context) * 0.6,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black)),
-                          height: displayHeight(context) * 0.3,
-                          width: displayWidth(context) * 0.6,
-                          child: const Center(child: Icon(Icons.image)),
+            child: (uploadingPost!)
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.orange,
+                          backgroundColor: Colors.blue,
                         ),
-                  Opacity(
-                      opacity: 0.0,
-                      child: Divider(
-                        height: displayHeight(context) * 0.1,
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.all(25.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.multiline,
-                      maxLength: 500,
-                      maxLines: 5,
-                      minLines: 1,
-                      controller: captionController,
-                      decoration: const InputDecoration(
-                          hintText: "Write a caption...",
-                          hintStyle: TextStyle(
-                              color: Colors.grey, fontWeight: FontWeight.w400)),
+                      ),
+                      Opacity(opacity: 0.0, child: Divider()),
+                      Text(
+                        'Uploading Post ...',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    ],
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        (imagefile != null)
+                            ? Image.file(
+                                imagefile!,
+                                height: displayHeight(context) * 0.3,
+                                width: displayWidth(context) * 0.6,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black)),
+                                height: displayHeight(context) * 0.3,
+                                width: displayWidth(context) * 0.6,
+                                child: const Center(child: Icon(Icons.image)),
+                              ),
+                        Opacity(
+                            opacity: 0.0,
+                            child: Divider(
+                              height: displayHeight(context) * 0.1,
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.all(25.0),
+                          child: TextFormField(
+                            keyboardType: TextInputType.multiline,
+                            maxLength: 500,
+                            maxLines: 5,
+                            minLines: 1,
+                            controller: captionController,
+                            decoration: const InputDecoration(
+                                hintText: "Write a caption...",
+                                hintStyle: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w400)),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
           ),
         ),
       ),

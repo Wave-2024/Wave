@@ -83,11 +83,17 @@ class _postDetailScreenState extends State<postDetailScreen> {
                 errorText: 'Comment cannot be blank',
                 sendButtonMethod: () {
                   if (formKey.currentState!.validate()) {
-                    Provider.of<usersProvider>(context,listen: false).addCommentToThisPost(myProfile!.dp, myProfile.username,
-                        commentController!.text.toString(), currentUser!.uid, postDetail!.post_id).then((value) {
-                          setState(() {
-                            commentController!.clear();
-                          });
+                    Provider.of<usersProvider>(context, listen: false)
+                        .addCommentToThisPost(
+                            myProfile!.dp,
+                            myProfile.username,
+                            commentController!.text.toString(),
+                            currentUser!.uid,
+                            postDetail!.post_id)
+                        .then((value) {
+                      setState(() {
+                        commentController!.clear();
+                      });
                     });
                   }
                 },
@@ -96,61 +102,60 @@ class _postDetailScreenState extends State<postDetailScreen> {
                 labelText: "Your Comment",
                 sendWidget: Icon(Icons.send),
                 textColor: Colors.black,
-                child:  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: CachedNetworkImage(
-                                  imageUrl: widget.user_who_posted!.dp,
-                                  height: displayHeight(context) * 0.06,
-                                  width: displayWidth(context) * 0.12,
-                                  fit: BoxFit.cover,
-                                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                imageUrl: widget.user_who_posted!.dp,
+                                height: displayHeight(context) * 0.06,
+                                width: displayWidth(context) * 0.12,
+                                fit: BoxFit.cover,
                               ),
-                              const VerticalDivider(),
-                              Text(
-                                widget.user_who_posted!.username,
-                                style: TextStyle(
-                                    fontSize: displayWidth(context) * 0.045,
-                                    color: Colors.indigoAccent,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          const Opacity(opacity: 0.0, child: Divider()),
-                          Container(
-                            child: Text(
-                              postDetail!.caption,
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  fontSize: displayWidth(context) * 0.036,
-                                  color: Colors.black87),
                             ),
+                            const VerticalDivider(),
+                            Text(
+                              widget.user_who_posted!.username,
+                              style: TextStyle(
+                                  fontSize: displayWidth(context) * 0.045,
+                                  color: Colors.indigoAccent,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const Opacity(opacity: 0.0, child: Divider()),
+                        Container(
+                          child: Text(
+                            postDetail!.caption,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontSize: displayWidth(context) * 0.036,
+                                color: Colors.black87),
                           ),
-                          Divider(),
-                          ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                            return displayComment(context,comments[index]);
+                        ),
+                        Divider(),
+                        ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return displayComment(context, comments[index]);
                           },
-                            itemCount: comments.length,
-                          )
-                        ],
-                      ),
+                          itemCount: comments.length,
+                        )
+                      ],
                     ),
                   ),
                 ),
               ),
-
+      ),
     );
   }
 }

@@ -311,11 +311,11 @@ class _registerScreenState extends State<registerScreen> {
                               });
                               _auth
                                   .signUp(
-                                      email: email!.text.toString(),
-                                      password: password!.text.toString(),
-                                      title: fullName!.text.toString(),
-                                      username: username!.text.toString(),
-                                      )
+                                email: email!.text.toString(),
+                                password: password!.text.toString(),
+                                title: fullName!.text.toString(),
+                                username: username!.text.toString(),
+                              )
                                   .then((value) {
                                 setState(() {
                                   isLoading = false;
@@ -337,8 +337,7 @@ class _registerScreenState extends State<registerScreen> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            homescreen(),
+                                        builder: (context) => homescreen(),
                                       ));
                                 }
                               });

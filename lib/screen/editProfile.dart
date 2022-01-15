@@ -89,7 +89,6 @@ class _editProfileScreenState extends State<editProfileScreen> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          
                           TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
