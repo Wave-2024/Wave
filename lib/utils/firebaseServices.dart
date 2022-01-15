@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 

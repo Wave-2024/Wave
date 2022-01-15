@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexus/models/CommentModel.dart';
@@ -239,25 +240,33 @@ Widget loadInsideButton(BuildContext context) {
     ),
   );
 }
-RichText printComment(BuildContext context,String userName, String comment) {
-  return RichText(
-      text: TextSpan(
-          style: TextStyle(color: Colors.black),
-          children: [
-            TextSpan(
-                text: userName,
-                style: const TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
-            TextSpan(
-                text: ': ' + comment,
-                style: const TextStyle(
-                    color: Colors.black,
 
-                ))
-          ]));
+RichText printComment(BuildContext context, String userName, String comment) {
+  return RichText(
+      text: TextSpan(style: TextStyle(color: Colors.black), children: [
+    TextSpan(
+        text: userName,
+        style:
+            const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+    TextSpan(
+        text: ': ' + comment,
+        style: const TextStyle(
+          color: Colors.black,
+        ))
+  ]));
 }
 
-Widget displayComment(BuildContext context,CommentModel commentModel) {
+String? generateChatRoomUsingUid(String uid1, String uid2) {
+  String? chatRoom;
+  if (uid1.compareTo(uid2) < 0) {
+    chatRoom = uid1 + uid2;
+  } else {
+    chatRoom = uid2 + uid1;
+  }
+  return chatRoom;
+}
+
+Widget displayComment(BuildContext context, CommentModel commentModel) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -268,27 +277,136 @@ Widget displayComment(BuildContext context,CommentModel commentModel) {
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10),
             child: CachedNetworkImage(
-              height: displayHeight(context)*0.05,
-              width: displayWidth(context)*0.1,
+              height: displayHeight(context) * 0.05,
+              width: displayWidth(context) * 0.1,
               fit: BoxFit.cover,
               imageUrl: commentModel.userDp,
             ),
+          ),
+        ),
       ),
-        ),),
-      Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.02,)),
+      Opacity(
+          opacity: 0.0,
+          child: VerticalDivider(
+            width: displayWidth(context) * 0.02,
+          )),
       Flexible(
         child: Card(
           elevation: 4.0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: printComment(context, commentModel.userName, commentModel.comment),
+            child: printComment(
+                context, commentModel.userName, commentModel.comment),
           ),
         ),
       )
     ],
   );
+}
+
+int findDifferenc(int a, int b) {
+  return (a - b).abs();
+}
+
+String differenceOfTime(DateTime current, DateTime lastSeen) {
+  String diff = '';
+  if (findDifferenc(current.year, lastSeen.year) == 0) {
+    // same year
+    if (findDifferenc(current.month, lastSeen.month) == 0) {
+      // same month
+      if (findDifferenc(current.day, lastSeen.day) == 0) {
+        // Same day
+        if (findDifferenc(current.hour, lastSeen.hour) == 0) {
+          // Same hour
+          if (findDifferenc(current.minute, lastSeen.minute) == 0) {
+            // Same minute
+            if (findDifferenc(current.second, lastSeen.second) == 0) {
+              // Same second
+            } else {
+              diff = findDifferenc(current.second, lastSeen.second).toString() +
+                  ' seconds';
+            }
+          } else {
+            diff = findDifferenc(current.minute, lastSeen.minute).toString() +
+                ' minutes';
+          }
+        } else {
+          diff =
+              findDifferenc(current.hour, lastSeen.hour).toString() + ' hour';
+        }
+      } else {
+        diff = findDifferenc(current.day, lastSeen.day).toString() + ' day';
+      }
+    } else {
+      diff = findDifferenc(current.month, lastSeen.month).toString() + ' month';
+    }
+  } else {
+    diff = findDifferenc(current.year, lastSeen.year).toString() + ' year';
+  }
+  return 'last seen ${diff} ago';
+}
+
+void sendMessage(String chatId, String message, String uid) {
+  Timestamp time = Timestamp.now();
+  FirebaseFirestore.instance.collection(chatId).doc().set({
+    'message': message,
+    'time': time,
+    'uid': uid,
+  });
+}
+
+Widget messageContainer(
+    String message, String uid, String myUid, BuildContext context) {
+  return (uid == myUid)
+      ? Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: Colors.black87,
+                  letterSpacing: 0.08,
+                  fontSize: displayWidth(context) * 0.038,
+                ),
+              ),
+            )
+          ],
+        )
+      : Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Colors.deepOrange,
+                      Colors.deepOrangeAccent,
+                      Colors.orange[600]!,
+                    ]),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: displayWidth(context) * 0.036,
+                ),
+              ),
+            )
+          ],
+        );
 }

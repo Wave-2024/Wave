@@ -88,7 +88,8 @@ class _profiletScreenState extends State<profiletScreen> {
 
     NexusUser? myProfile =
         Provider.of<usersProvider>(context, listen: false).fetchCurrentUser;
-    List<PostModel> posts = Provider.of<usersProvider>(context,listen: false).fetchThisProfilePosts;
+    List<PostModel> posts = Provider.of<usersProvider>(context, listen: false)
+        .fetchThisProfilePosts;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -270,7 +271,11 @@ class _profiletScreenState extends State<profiletScreen> {
                                   icon: const Icon(Icons.logout),
                                   onPressed: () async {
                                     _auth.signOut().then((value) {
-                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => authScreen(),));
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => authScreen(),
+                                          ));
                                     });
                                   },
                                   color: Colors.white70,

@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
-import 'package:intl/intl.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:nexus/utils/widgets.dart';
 
 class usersProvider extends ChangeNotifier {
   Map<String, PostModel> postToDisplay = {};
@@ -137,27 +138,16 @@ class usersProvider extends ChangeNotifier {
   }
 
   Future<void> addFollower(String myUid, String personUid) async {
-    NexusUser myProfile;
-    NexusUser peopleProfile;
     List<dynamic> followings;
     List<dynamic> followers;
-    String generatedChatKey = 'Old Value';
-    List<dynamic> myChatKeys;
-    List<dynamic> personChatKeys;
+    String? chatId;
+
+    NexusUser? thatUser = await fetchAnyUser(personUid);
+    NexusUser? myProfile = await fetchAnyUser(myUid);
+
     try {
       // Generating chat ID
-      final String apiForChatRoom = constants().fetchApi + 'chatRoom.json';
-      await http
-          .post(Uri.parse(apiForChatRoom),
-              body: json.encode({
-                'user1': myUid,
-                'user2': personUid,
-                'key': '',
-              }))
-          .then((value) {
-        final chatRoomData = json.decode(value.body) as Map<String, dynamic>;
-        generatedChatKey = chatRoomData['name'];
-      });
+      chatId = generateChatRoomUsingUid(myUid, personUid);
 
       // fetch details of user 1 -> START
       final String api1 = constants().fetchApi + 'users/${myUid}.json';
@@ -168,6 +158,23 @@ class usersProvider extends ChangeNotifier {
       followings = dataForUser1['followings'] ?? [];
       // Increase my followings and my ChatKeys
       followings.add(personUid);
+      // Set chat id to my cloudstore
+
+      // Check if it already exists
+
+      var userDocRef = FirebaseFirestore.instance.collection(myUid).doc(chatId);
+      var doc = await userDocRef.get();
+      if (!doc.exists) {
+        await FirebaseFirestore.instance.collection(myUid).doc(chatId).set({
+          'chatId': chatId,
+          'lastSent': Timestamp.now(),
+          'uid': personUid,
+          'dp': thatUser!.dp,
+          'userName': thatUser.username,
+        });
+      } else {
+        debugPrint('Already exists');
+      }
 
       // Update to Server for User1
 
@@ -176,19 +183,32 @@ class usersProvider extends ChangeNotifier {
 
       // User 1 operations -> END
 
-
-
       // fetch details of user 2 -> START
-      final String api2 = constants().fetchApi +
-          'users/${personUid}.json';
+      final String api2 = constants().fetchApi + 'users/${personUid}.json';
       final responseForUser2 = await http.get(Uri.parse(api2));
-      final dataForUser2 = json.decode(responseForUser2.body) as Map<String, dynamic>;
-      followers = dataForUser2['followers']??[];
-
+      final dataForUser2 =
+          json.decode(responseForUser2.body) as Map<String, dynamic>;
+      followers = dataForUser2['followers'] ?? [];
 
       // Increase their followers and add chatKey
       followers.add(myUid);
 
+      // Set chat id to person's cloudstore
+
+      var userDocRef2 =
+          FirebaseFirestore.instance.collection(myUid).doc(chatId);
+      var doc2 = await userDocRef2.get();
+      if (!doc2.exists) {
+        await FirebaseFirestore.instance.collection(personUid).doc(chatId).set({
+          'chatId': chatId,
+          'lastSent': Timestamp.now(),
+          'uid': myUid,
+          'userName': myProfile!.username,
+          'dp': myProfile.dp,
+        });
+      } else {
+        debugPrint('Already exists');
+      }
 
       // Update to the server
       await http.patch(Uri.parse(api2),
@@ -211,7 +231,6 @@ class usersProvider extends ChangeNotifier {
       final data = json.decode(response.body) as Map<String, dynamic>;
       data.forEach((key, value) {
         temp.add(NexusUser(
-
             title: value['title'],
             coverImage: value['coverImage'],
             uid: key,
@@ -252,7 +271,6 @@ class usersProvider extends ChangeNotifier {
       final response = await http.get(Uri.parse(api1));
       final data = json.decode(response.body) as Map<String, dynamic>;
       myProfile = NexusUser(
-
         title: data['title'],
         coverImage: data['coverImage'],
         uid: myUid,
@@ -270,7 +288,6 @@ class usersProvider extends ChangeNotifier {
       final response2 = await http.get(Uri.parse(api2));
       final data2 = json.decode(response2.body) as Map<String, dynamic>;
       peopleProfile = NexusUser(
-
         title: data2['title'],
         coverImage: data2['coverImage'],
         uid: personUid,
@@ -382,7 +399,6 @@ class usersProvider extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       user = NexusUser(
-
         title: data['title'],
         coverImage: data['coverImage'],
         uid: uid,
@@ -409,7 +425,7 @@ class usersProvider extends ChangeNotifier {
               likes: value['likes'] ?? []));
         });
       }
-      Map<String,NexusUser?> listOfChatRooms = {};
+      Map<String, NexusUser?> listOfChatRooms = {};
 
       thisProfilePosts = temp;
 
@@ -487,10 +503,6 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-
-
-
-
   Future<NexusUser?> fetchAnyUser(String uid) async {
     final String api = constants().fetchApi + 'users/${uid}.json';
     NexusUser? user;
@@ -512,10 +524,4 @@ class usersProvider extends ChangeNotifier {
       print(error);
     }
   }
-
-
-
-
-
-
 }

@@ -18,6 +18,4 @@ class NexusUser {
       required this.dp,
       required this.followers,
       required this.followings});
-
-      
 }

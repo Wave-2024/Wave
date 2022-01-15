@@ -28,7 +28,6 @@ class _loginScreenState extends State<loginScreen> {
 
   @override
   void dispose() {
-    
     super.dispose();
     email!.dispose();
     password!.dispose();
@@ -131,7 +130,7 @@ class _loginScreenState extends State<loginScreen> {
                                 email: email!.text.toString(),
                                 password: password!.text.toString())
                             .then((value) {
-                              print(value);
+                          print(value);
                           if (value != 'valid') {
                             setState(() {
                               isLoading = false;

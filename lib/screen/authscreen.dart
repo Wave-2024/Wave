@@ -68,11 +68,17 @@ class authScreen extends StatelessWidget {
                 ),
                 Opacity(
                   opacity: 0.0,
-                  child: Divider(height: displayHeight(context)*0.03,),
+                  child: Divider(
+                    height: displayHeight(context) * 0.03,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => loginScreen(),));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => loginScreen(),
+                        ));
                   },
                   child: Container(
                     height: displayHeight(context) * 0.07,
@@ -94,24 +100,30 @@ class authScreen extends StatelessWidget {
                 ),
                 Opacity(
                   opacity: 0.0,
-                  child: Divider(height: displayHeight(context)*0.03,),
+                  child: Divider(
+                    height: displayHeight(context) * 0.03,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => registerScreen(),));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => registerScreen(),
+                        ));
                   },
                   child: Container(
                     height: displayHeight(context) * 0.07,
                     width: displayWidth(context) * 0.8,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: Alignment.topRight,
+                          begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
                           colors: [
-                        Colors.deepOrange,
-                        Colors.deepOrangeAccent,
-                        Colors.orange[600]!,
-                      ]),
+                            Colors.deepOrange,
+                            Colors.deepOrangeAccent,
+                            Colors.orange[600]!,
+                          ]),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Center(
