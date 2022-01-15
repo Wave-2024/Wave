@@ -303,3 +303,49 @@ Widget displayComment(BuildContext context,CommentModel commentModel) {
     ],
   );
 }
+
+int findDifferenc(int a,int b){
+  return (a-b).abs();
+}
+
+
+String differenceOfTime(DateTime current, DateTime lastSeen){
+  String diff = '';
+  if(findDifferenc(current.year,lastSeen.year) == 0){
+    // same year
+    if(findDifferenc(current.month, lastSeen.month)==0){
+      // same month
+      if(findDifferenc(current.day, lastSeen.day)==0){
+        // Same day
+        if(findDifferenc(current.hour, lastSeen.hour)==0){
+          // Same hour
+          if(findDifferenc(current.minute, lastSeen.minute)==0){
+            // Same minute
+            if(findDifferenc(current.second, lastSeen.second)==0){
+              // Same second
+            }
+            else{
+              diff = findDifferenc(current.second, lastSeen.second).toString()+' seconds';
+            }
+          }
+          else{
+            diff = findDifferenc(current.minute, lastSeen.minute).toString()+' minutes';
+          }
+        }
+        else{
+          diff = findDifferenc(current.hour, lastSeen.hour).toString()+' hour';
+        }
+      }
+      else{
+        diff = findDifferenc(current.day, lastSeen.day).toString()+' day';
+      }
+    }
+    else{
+      diff = findDifferenc(current.month, lastSeen.month).toString()+' month';
+    }
+  }
+  else{
+    diff = findDifferenc(current.year,lastSeen.year).toString()+' year';
+  }
+  return 'last seen ${diff} ago';
+}
