@@ -10,9 +10,10 @@ class inboxScreen extends StatefulWidget {
   String? myDp;
   String? personDp;
   String? personUserName;
+  int? indexForBackground;
 
   inboxScreen(
-      {this.myDp, this.personDp, this.personUserName, this.chatId, this.myId});
+      {this.myDp,this.indexForBackground, this.personDp, this.personUserName, this.chatId, this.myId});
 
   @override
   State<inboxScreen> createState() => _inboxScreenState();
@@ -39,7 +40,7 @@ class _inboxScreenState extends State<inboxScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Colors.black,
         ),
         title: Row(
@@ -57,7 +58,7 @@ class _inboxScreenState extends State<inboxScreen> {
                 )),
             Text(
               widget.personUserName!,
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),
@@ -71,7 +72,12 @@ class _inboxScreenState extends State<inboxScreen> {
         ],
       ),
       body: Container(
-        color: Colors.white,
+        //color: Colors.white,
+        height: displayHeight(context),
+        width: displayWidth(context),
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage('images/chat_bg5.jpg'),fit: BoxFit.cover)
+        ),
         child: CommentBox(
           backgroundColor: Colors.white,
           formKey: formKey,
@@ -88,11 +94,11 @@ class _inboxScreenState extends State<inboxScreen> {
           userImage: widget.myDp,
           commentController: messageController,
           labelText: "Send message",
-          sendWidget: Icon(
+          sendWidget: const Icon(
             Icons.send,
             color: Colors.deepOrange,
           ),
-          textColor: Colors.black,
+          textColor: Colors.white,
           child: Padding(
             padding:
                 const EdgeInsets.only(top: 8.0, bottom: 8, left: 16, right: 16),
@@ -105,8 +111,6 @@ class _inboxScreenState extends State<inboxScreen> {
                 if (snapshot.hasData) {
                   return ListView.builder(
                     reverse: true,
-                    //physics: NeverScrollableScrollPhysics(),
-                    //shrinkWrap: true,
                     itemCount: snapshot.data.docs.length,
                     itemBuilder: (context, index) {
                       String message = snapshot.data.docs[index]['message'];
