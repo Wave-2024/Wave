@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/utils/Encrypt_Message.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 
@@ -13,7 +14,12 @@ class inboxScreen extends StatefulWidget {
   int? indexForBackground;
 
   inboxScreen(
-      {this.myDp,this.indexForBackground, this.personDp, this.personUserName, this.chatId, this.myId});
+      {this.myDp,
+      this.indexForBackground,
+      this.personDp,
+      this.personUserName,
+      this.chatId,
+      this.myId});
 
   @override
   State<inboxScreen> createState() => _inboxScreenState();
@@ -75,17 +81,22 @@ class _inboxScreenState extends State<inboxScreen> {
         //color: Colors.white,
         height: displayHeight(context),
         width: displayWidth(context),
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('images/chat_bg5.jpg'),fit: BoxFit.cover)
-        ),
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('images/chat_bg6.jpg'), fit: BoxFit.cover)),
         child: CommentBox(
           backgroundColor: Colors.white,
           formKey: formKey,
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () {
             if (formKey.currentState!.validate()) {
-              sendMessage(widget.chatId.toString(),
-                  messageController!.text.toString(), widget.myId.toString());
+              String normalMessage = messageController!.text.toString();
+
+              String encryptedMessage =
+                  encryptMessage().encryptThisMessage(normalMessage);
+
+              sendMessage(widget.chatId.toString(), encryptedMessage,
+                  widget.myId.toString());
               setState(() {
                 messageController!.clear();
               });
@@ -101,7 +112,7 @@ class _inboxScreenState extends State<inboxScreen> {
           textColor: Colors.white,
           child: Padding(
             padding:
-                const EdgeInsets.only(top: 8.0, bottom: 8, left: 16, right: 16),
+                const EdgeInsets.only(top: 8.0, bottom: 8, left: 2, right: 10),
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection(widget.chatId.toString())
@@ -113,14 +124,21 @@ class _inboxScreenState extends State<inboxScreen> {
                     reverse: true,
                     itemCount: snapshot.data.docs.length,
                     itemBuilder: (context, index) {
-                      String message = snapshot.data.docs[index]['message'];
+                      String encryptedMessage =
+                          snapshot.data.docs[index]['message'];
                       String uid = snapshot.data.docs[index]['uid'];
+                      String message =
+                          encryptMessage().decryptThisMessage(encryptedMessage);
                       return Padding(
                         padding: const EdgeInsets.only(
                           top: 10.0,
                         ),
                         child: messageContainer(
-                            message, uid, widget.myId.toString(), context),
+                            message,
+                            uid,
+                            widget.personDp.toString(),
+                            widget.myId.toString(),
+                            context),
                       );
                     },
                   );
