@@ -337,31 +337,36 @@ String differenceOfTime(DateTime current, DateTime lastSeen) {
           }
         } else {
           diff =
-              findDifferenc(current.hour, lastSeen.hour).toString() + ' hour';
+              findDifferenc(current.hour, lastSeen.hour).toString() + ' hours';
         }
       } else {
-        diff = findDifferenc(current.day, lastSeen.day).toString() + ' day';
+        diff = findDifferenc(current.day, lastSeen.day).toString() + ' days';
       }
     } else {
-      diff = findDifferenc(current.month, lastSeen.month).toString() + ' month';
+      diff =
+          findDifferenc(current.month, lastSeen.month).toString() + ' months';
     }
   } else {
     diff = findDifferenc(current.year, lastSeen.year).toString() + ' year';
   }
-  return 'last seen ${diff} ago';
+  return 'last talked ${diff} ago';
 }
 
-void sendMessage(String chatId, String message, String uid) {
+void sendMessage(String chatId, String message, String uid) async {
   Timestamp time = Timestamp.now();
-  FirebaseFirestore.instance.collection(chatId).doc().set({
+  await FirebaseFirestore.instance.collection(chatId).doc().set({
     'message': message,
     'time': time,
     'uid': uid,
   });
+  await FirebaseFirestore.instance
+      .collection(uid)
+      .doc(chatId)
+      .update({'lastSent': time});
 }
 
 Widget messageContainer(
-    String message, String uid, String myUid, BuildContext context) {
+    String message, String uid, String dp, String myUid, BuildContext context) {
   return (uid == myUid)
       ? Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -386,6 +391,27 @@ Widget messageContainer(
       : Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Card(
+              color: Colors.white,
+              elevation: 12.0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    height: displayHeight(context) * 0.035,
+                    width: displayWidth(context) * 0.075,
+                    fit: BoxFit.cover,
+                    imageUrl: dp,
+                  ),
+                ),
+              ),
+            ),
+            const VerticalDivider(
+              width: 1.8,
+            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
