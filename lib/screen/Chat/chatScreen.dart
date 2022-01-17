@@ -44,7 +44,7 @@ class _chatScreenState extends State<chatScreen> {
     NexusUser? myProfile =
         Provider.of<usersProvider>(context, listen: false).fetchCurrentUser;
     displayChatHead(
-        String chatId, String username, String dp, String lastSeen) {
+        String chatId, String username, String dp,int chatbg, String lastSeen) {
       return GestureDetector(
         onTap: () {
           Navigator.push(
@@ -53,6 +53,7 @@ class _chatScreenState extends State<chatScreen> {
                 builder: (context) => inboxScreen(
                   chatId: chatId,
                   personDp: dp,
+                  chatbg: chatbg,
                   personUserName: username,
                   myDp: myProfile!.dp,
                   myId: currentUser!.uid.toString(),
@@ -184,10 +185,13 @@ class _chatScreenState extends State<chatScreen> {
                                       .data()['lastSent'];
                                   DateTime currentDate = DateTime.now();
                                   DateTime lastSeenDate = lastSeen.toDate();
+                                  int chatbg = snapshot.data.docs[index]
+                                      .data()['chatbg'];
                                   return displayChatHead(
                                       chatId,
                                       userName,
                                       dp,
+                                      chatbg,
                                       differenceOfTime(
                                           currentDate, lastSeenDate));
                                 },

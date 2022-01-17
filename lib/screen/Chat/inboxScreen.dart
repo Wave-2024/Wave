@@ -12,11 +12,11 @@ class inboxScreen extends StatefulWidget {
   String? myDp;
   String? personDp;
   String? personUserName;
-  int? indexForBackground;
+  int? chatbg;
 
   inboxScreen(
       {this.myDp,
-      this.indexForBackground,
+      this.chatbg,
       this.personDp,
       this.personUserName,
       this.chatId,
@@ -71,45 +71,23 @@ class _inboxScreenState extends State<inboxScreen> {
         ),
         actions: [
           IconButton(
-              color: Colors.black54,
+              color: Colors.indigo,
               onPressed: () {
-                showModalBottomSheet(context: context, builder: (context) {
-                return Container(
-                  height: displayHeight(context)*0.14,
-                  width: displayWidth(context),
-                  color: Colors.white,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap : (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => changeChatBG(),));
-                },
-                        child: Text('Change background image',style: TextStyle(
-                          color: Colors.orange[600],fontWeight: FontWeight.bold,
-                          fontSize: displayWidth(context)*0.047,
-                        ),),
-                      ),
-                      const Opacity(opacity: 0,child: Divider(color: Colors.black87,)),
-                      Text('Block user',style: TextStyle(
-                          color: Colors.orange[600],fontWeight: FontWeight.bold,
-                        fontSize: displayWidth(context)*0.047,
-                      ),),
-                    ],
-                  ),
-                );
-                },);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => changeChatBG(chatId: widget.chatId.toString(),uid: widget.myId.toString(),),));
               },
-              icon: Icon(Icons.info))
+              icon: Icon(Icons.add_a_photo_rounded))
         ],
       ),
       body: Container(
         //color: Colors.white,
         height: displayHeight(context),
         width: displayWidth(context),
-        decoration: const BoxDecoration(
+        decoration:  (
+        widget.chatbg==-1
+        )?const BoxDecoration(color: Colors.white)
+            :BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('images/chat_bg6.jpg'), fit: BoxFit.cover)),
+                image: AssetImage('images/chat_bg${widget.chatbg.toString()}.jpg'), fit: BoxFit.cover)),
         child: CommentBox(
           backgroundColor: Colors.white,
           formKey: formKey,
