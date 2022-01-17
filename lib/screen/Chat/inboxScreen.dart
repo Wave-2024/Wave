@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/screen/Chat/change_chat_bg.dart';
 import 'package:nexus/utils/Encrypt_Message.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -80,10 +81,15 @@ class _inboxScreenState extends State<inboxScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Change background image',style: TextStyle(
-                        color: Colors.orange[600],fontWeight: FontWeight.bold,
-                        fontSize: displayWidth(context)*0.047,
-                      ),),
+                      GestureDetector(
+                        onTap : (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => changeChatBG(),));
+                },
+                        child: Text('Change background image',style: TextStyle(
+                          color: Colors.orange[600],fontWeight: FontWeight.bold,
+                          fontSize: displayWidth(context)*0.047,
+                        ),),
+                      ),
                       const Opacity(opacity: 0,child: Divider(color: Colors.black87,)),
                       Text('Block user',style: TextStyle(
                           color: Colors.orange[600],fontWeight: FontWeight.bold,
