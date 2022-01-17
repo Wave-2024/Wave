@@ -72,7 +72,27 @@ class _inboxScreenState extends State<inboxScreen> {
           IconButton(
               color: Colors.black54,
               onPressed: () {
-                print('will think about it');
+                showModalBottomSheet(context: context, builder: (context) {
+                return Container(
+                  height: displayHeight(context)*0.14,
+                  width: displayWidth(context),
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Change background image',style: TextStyle(
+                        color: Colors.orange[600],fontWeight: FontWeight.bold,
+                        fontSize: displayWidth(context)*0.047,
+                      ),),
+                      const Opacity(opacity: 0,child: Divider(color: Colors.black87,)),
+                      Text('Block user',style: TextStyle(
+                          color: Colors.orange[600],fontWeight: FontWeight.bold,
+                        fontSize: displayWidth(context)*0.047,
+                      ),),
+                    ],
+                  ),
+                );
+                },);
               },
               icon: Icon(Icons.info))
         ],
@@ -143,7 +163,7 @@ class _inboxScreenState extends State<inboxScreen> {
                     },
                   );
                 } else {
-                  return Center(
+                  return const Center(
                     child: Text('Say Hello to your new friend !!'),
                   );
                 }

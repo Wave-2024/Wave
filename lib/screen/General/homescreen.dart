@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/addPostScreen.dart';
-import 'package:nexus/screen/chatScreen.dart';
-import 'package:nexus/screen/feedScreen.dart';
-import 'package:nexus/screen/profileScreen.dart';
-import 'package:nexus/screen/searchScreen.dart';
+import 'package:nexus/screen/General/addPostScreen.dart';
+import 'package:nexus/screen/Chat/chatScreen.dart';
+import 'package:nexus/screen/General/feedScreen.dart';
+import 'package:nexus/screen/General/profileScreen.dart';
+import 'package:nexus/screen/General/searchScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
 

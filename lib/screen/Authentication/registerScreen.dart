@@ -5,7 +5,7 @@ import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
 
-import 'homescreen.dart';
+import '../General/homescreen.dart';
 
 class registerScreen extends StatefulWidget {
   const registerScreen({Key? key}) : super(key: key);

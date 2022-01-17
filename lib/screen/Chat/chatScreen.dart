@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/inboxScreen.dart';
+import 'package:nexus/screen/Chat/inboxScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';

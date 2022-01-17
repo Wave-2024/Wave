@@ -8,14 +8,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/editProfile.dart';
+import 'package:nexus/screen/General/editProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'authscreen.dart';
+import '../Authentication/authscreen.dart';
 
 class profiletScreen extends StatefulWidget {
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/userProfile.dart';
+import 'package:nexus/screen/General/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nexus/screen/loginscreen.dart';
-import 'package:nexus/screen/registerScreen.dart';
+import 'package:nexus/screen/Authentication/loginscreen.dart';
+import 'package:nexus/screen/Authentication/registerScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 
 class authScreen extends StatelessWidget {

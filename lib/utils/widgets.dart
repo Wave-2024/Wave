@@ -6,7 +6,7 @@ import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/postDetailScreen.dart';
+import 'package:nexus/screen/General/postDetailScreen.dart';
 import 'package:provider/provider.dart';
 import 'devicesize.dart';
 
