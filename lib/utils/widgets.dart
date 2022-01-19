@@ -6,11 +6,13 @@ import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/postDetailScreen.dart';
+import 'package:nexus/screen/Posts/postDetailForMyPost.dart';
+import 'package:nexus/screen/Posts/postDetailScreen.dart';
+import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:provider/provider.dart';
 import 'devicesize.dart';
 
-Widget displayPosts(BuildContext context, PostModel post,
+Widget displayPostsForFeed(BuildContext context, PostModel post,
     Map<String, dynamic> mapOfUsers, String myUid, List<String> months) {
   DateTime dateTime = DateFormat('d/MM/yyyy').parse(post.dateOfPost);
   String day = dateTime.day.toString();
@@ -30,7 +32,7 @@ Widget displayPosts(BuildContext context, PostModel post,
           borderRadius: BorderRadius.circular(25),
           color: Colors.white,
         ),
-        height: displayHeight(context) * 0.65,
+        height: displayHeight(context) * 0.66,
         width: displayWidth(context) * 0.8,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -94,13 +96,25 @@ Widget displayPosts(BuildContext context, PostModel post,
                 ),
               ),
               Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: CachedNetworkImage(
-                    imageUrl: post.image,
-                    height: displayHeight(context) * 0.38,
-                    width: displayWidth(context) * 0.68,
-                    fit: BoxFit.cover,
+                child: InkWell(
+                  onDoubleTap: () {
+                    if (post.likes.contains(myUid)) {
+                      Provider.of<usersProvider>(context, listen: false)
+                          .disLikeThisPostFromFeed(
+                              myUid, post.uid, post.post_id);
+                    } else {
+                      Provider.of<usersProvider>(context, listen: false)
+                          .likeThisPostFromFeed(myUid, post.uid, post.post_id);
+                    }
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: CachedNetworkImage(
+                      imageUrl: post.image,
+                      height: displayHeight(context) * 0.38,
+                      width: displayWidth(context) * 0.68,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -223,6 +237,232 @@ Widget displayPosts(BuildContext context, PostModel post,
   );
 }
 
+Widget displayPostsForThisUser(BuildContext context, PostModel post,
+    Map<String, dynamic> mapOfUsers, String myUid, List<String> months) {
+  DateTime dateTime = DateFormat('d/MM/yyyy').parse(post.dateOfPost);
+  String day = dateTime.day.toString();
+  String year = dateTime.year.toString();
+  String month = months[dateTime.month - 1];
+  NexusUser user = mapOfUsers[post.uid];
+  return Container(
+    height: displayHeight(context) * 0.7,
+    width: displayWidth(context),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(25),
+      color: Colors.grey[200],
+    ),
+    child: Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          color: Colors.white,
+        ),
+        height: displayHeight(context) * 0.66,
+        width: displayWidth(context) * 0.8,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      (user.dp != '')
+                          ? CircleAvatar(
+                              backgroundColor: Colors.grey[200],
+                              radius: displayWidth(context) * 0.06,
+                              backgroundImage: NetworkImage(user.dp),
+                            )
+                          : CircleAvatar(
+                              radius: displayWidth(context) * 0.06,
+                              backgroundImage: AssetImage('images/male.jpg'),
+                            ),
+                      const VerticalDivider(),
+                      Text(
+                        user.username,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: displayWidth(context) * 0.042,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.chat))
+                ],
+              ),
+              Opacity(
+                opacity: 0.0,
+                child: Divider(
+                  height: displayHeight(context) * 0.02,
+                ),
+              ),
+              Center(
+                child: Container(
+                    height: displayHeight(context) * 0.03,
+                    width: displayWidth(context) * 0.68,
+                    //color: Colors.redAccent,
+                    child: Text(
+                      post.caption,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: Colors.black87, fontWeight: FontWeight.w600),
+                    )),
+              ),
+              Opacity(
+                opacity: 0.0,
+                child: Divider(
+                  height: displayHeight(context) * 0.02,
+                ),
+              ),
+              Center(
+                child: InkWell(
+                  onDoubleTap: () {
+                    if (post.likes.contains(myUid)) {
+                      Provider.of<usersProvider>(context, listen: false)
+                          .disLikePostFromThisUserProfile(
+                              myUid, post.uid, post.post_id);
+                    } else {
+                      Provider.of<usersProvider>(context, listen: false)
+                          .likeThisPostFromThisUserProfile(
+                              myUid, post.uid, post.post_id);
+                    }
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: CachedNetworkImage(
+                      imageUrl: post.image,
+                      height: displayHeight(context) * 0.38,
+                      width: displayWidth(context) * 0.68,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              //Divider(),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: Container(
+                  height: displayHeight(context) * 0.075,
+                  width: displayWidth(context) * 0.8,
+                  color: Colors.transparent,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (post.likes.contains(myUid)) {
+                                Provider.of<usersProvider>(context,
+                                        listen: false)
+                                    .disLikePostFromThisUserProfile(
+                                        myUid, post.uid, post.post_id);
+                              } else {
+                                Provider.of<usersProvider>(context,
+                                        listen: false)
+                                    .likeThisPostFromThisUserProfile(
+                                        myUid, post.uid, post.post_id);
+                              }
+                            },
+                            child: (post.likes.contains(myUid))
+                                ? CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    radius: displayWidth(context) * 0.04,
+                                    child: Center(
+                                      child: Image.asset(
+                                        'images/like.png',
+                                        height: displayHeight(context) * 0.035,
+                                      ),
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    radius: displayWidth(context) * 0.04,
+                                    child: Center(
+                                      child: Image.asset(
+                                        'images/like_out.png',
+                                        height: displayHeight(context) * 0.035,
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                          const Opacity(opacity: 0.0, child: VerticalDivider()),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => postDetailForMyPosts(
+                                      postOwner: user,
+                                      postId: post.post_id,
+                                    ),
+                                  ));
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              radius: displayWidth(context) * 0.04,
+                              child: Center(
+                                child: Image.asset(
+                                  'images/comment.png',
+                                  height: displayHeight(context) * 0.035,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: displayWidth(context) * 0.04,
+                        child: Center(
+                          child: Image.asset(
+                            'images/bookmark.png',
+                            height: displayHeight(context) * 0.035,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 12.0, right: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      post.likes.length.toString() + ' likes',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: displayWidth(context) * 0.035,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${day} ${month} ${year}',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w600,
+                        fontSize: displayWidth(context) * 0.033,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 Widget load(BuildContext context) {
   return const Center(
     child: CircularProgressIndicator(
@@ -277,16 +517,16 @@ Widget displayComment(BuildContext context, String comment, String uid) {
         elevation: 12.0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Padding(
-          padding: const EdgeInsets.all(4.0),
+          padding: const EdgeInsets.all(2.5),
           child: (user!.dp != '')
               ? ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-              height: displayHeight(context) * 0.05,
-              width: displayWidth(context) * 0.1,
-              fit: BoxFit.cover,
+                    height: displayHeight(context) * 0.05,
+                    width: displayWidth(context) * 0.1,
+                    fit: BoxFit.cover,
                     imageUrl: user.dp,
-            ),
+                  ),
                 )
               : Icon(
                   Icons.person,
@@ -442,4 +682,40 @@ Widget messageContainer(
             )
           ],
         );
+}
+
+Widget displayProfileHeads(BuildContext context, NexusUser user) {
+  return ListTile(
+      tileColor: Colors.transparent,
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => userProfile(
+                uid: user.uid,
+              ),
+            ));
+      },
+      title: Text(
+        user.title,
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        user.username,
+        style: TextStyle(color: Colors.black45),
+      ),
+      leading: (user.dp != '')
+          ? CircleAvatar(
+              backgroundImage: NetworkImage(user.dp),
+              radius: displayWidth(context) * 0.05,
+            )
+          : CircleAvatar(
+              backgroundColor: Colors.grey[200],
+              radius: displayWidth(context) * 0.05,
+              child: Icon(
+                Icons.person,
+                size: displayWidth(context) * 0.075,
+                color: Colors.orange[400],
+              ),
+            ));
 }
