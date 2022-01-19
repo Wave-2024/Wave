@@ -145,7 +145,7 @@ class _chatScreenState extends State<chatScreen> {
                     ),
                   ),
                   Container(
-                      height: displayHeight(context) * 0.8,
+                      height: displayHeight(context) * 0.835,
                       width: displayWidth(context),
                       decoration: const BoxDecoration(
                         color: Colors.white,
