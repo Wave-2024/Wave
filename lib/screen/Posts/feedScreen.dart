@@ -4,6 +4,7 @@ import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
+import 'package:nexus/screen/General/notificationScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -15,7 +16,7 @@ class feedScreen extends StatefulWidget {
 }
 
 class _feedScreenState extends State<feedScreen> {
-  final authservice _auth = authservice(FirebaseAuth.instance);
+  
   User? currentUser;
   bool? init;
   bool? loadScreen;
@@ -78,7 +79,7 @@ class _feedScreenState extends State<feedScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
-                      height: displayHeight(context) * 0.06,
+                      height: displayHeight(context) * 0.07,
                       width: displayWidth(context),
                       color: Colors.white,
                       child: Padding(
@@ -103,7 +104,14 @@ class _feedScreenState extends State<feedScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                NotificationScreen(),
+                                          ));
+                                    },
                                     icon: const Icon(
                                         Icons.notification_add_outlined)),
                               ],
@@ -125,7 +133,7 @@ class _feedScreenState extends State<feedScreen> {
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 18.0),
-                                child: displayPosts(
+                                child: displayPostsForFeed(
                                     context,
                                     feedPosts.values.toList()[index],
                                     allUsers,

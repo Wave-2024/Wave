@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -68,10 +69,10 @@ class _postDetailScreenState extends State<postDetailScreen> {
                   .collection('comments')
                   .doc()
                   .set({
-                    'comment' : commentController!.text.toString(),
-                    'time' : Timestamp.now(),
-                    'uid' : currentUser!.uid.toString()
-                  });
+                'comment': commentController!.text.toString(),
+                'time': Timestamp.now(),
+                'uid': currentUser!.uid.toString()
+              });
               setState(() {
                 commentController!.clear();
               });
@@ -89,39 +90,46 @@ class _postDetailScreenState extends State<postDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      (widget.postOwner!.dp!='')?ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          imageUrl: widget.postOwner!.dp,
-                          height: displayHeight(context) * 0.06,
-                          width: displayWidth(context) * 0.12,
-                          fit: BoxFit.cover,
-                        ),
-                      ):Icon(Icons.person,size: displayWidth(context)*0.12,color: Colors.orange[300],),
-                      const VerticalDivider(),
-                      Text(
-                        widget.postOwner!.username,
-                        style: TextStyle(
-                            fontSize: displayWidth(context) * 0.045,
-                            color: Colors.indigoAccent,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: CachedNetworkImage(
+                      imageUrl: postDetail!.image,
+                      height: displayHeight(context) * 0.15,
+                      width: displayWidth(context) * 0.3,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   const Opacity(opacity: 0.0, child: Divider()),
                   Container(
                     child: Text(
-                      postDetail!.caption,
+                      postDetail.caption,
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           fontSize: displayWidth(context) * 0.036,
                           color: Colors.black87),
                     ),
                   ),
-                  Divider(),
+                  const Opacity(opacity: 0.0, child: Divider()),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => usersWhoLikedScreen(
+                              usersWhoLiked: postDetail.likes,
+                            ),
+                          ));
+                    },
+                    child: Text(
+                      '${postDetail.likes.length} likes',
+                      style: const TextStyle(
+                          color: Colors.black87, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Divider(
+                    height: displayHeight(context) * 0.02,
+                    color: Colors.grey[200],
+                  ),
                   StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection('posts')
@@ -130,18 +138,29 @@ class _postDetailScreenState extends State<postDetailScreen> {
                           .orderBy('time', descending: true)
                           .snapshots(),
                       builder: (context, AsyncSnapshot snapshot) {
-                        return ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            String comment =
-                                snapshot.data.docs[index].data()['comment'];
-                            String uid =
-                                snapshot.data.docs[index].data()['uid'];
-                            return displayComment(context, comment, uid);
-                          },
-                          itemCount: snapshot.data.docs.length,
-                        );
+                        if (snapshot.hasData) {
+                          return (snapshot.data.docs.length == 0)
+                              ? const Center(
+                                  child: Text('No comments'),
+                                )
+                              : ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    String comment = snapshot.data.docs[index]
+                                        .data()['comment'];
+                                    String uid =
+                                        snapshot.data.docs[index].data()['uid'];
+                                    return displayComment(
+                                        context, comment, uid);
+                                  },
+                                  itemCount: snapshot.data.docs.length,
+                                );
+                        } else {
+                          return const Center(
+                            child: Text('No comments'),
+                          );
+                        }
                       })
                 ],
               ),

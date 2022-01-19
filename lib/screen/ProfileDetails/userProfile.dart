@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/ProfileDetails/viewPostsFromProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
@@ -380,15 +381,20 @@ class _userProfileState extends State<userProfile> {
                       padding: const EdgeInsets.all(8),
 
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CachedNetworkImage(
-                                height: displayHeight(context) * 0.1,
-                                width: displayWidth(context) * 0.3,
-                                fit: BoxFit.cover,
-                                imageUrl: posts.values.toList()[index].image),
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => viewPostsFromProfile(uid: thisProfile.uid,),));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CachedNetworkImage(
+                                  height: displayHeight(context) * 0.1,
+                                  width: displayWidth(context) * 0.3,
+                                  fit: BoxFit.cover,
+                                  imageUrl: posts.values.toList()[index].image),
+                            ),
                           ),
                         );
                       },

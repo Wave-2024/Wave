@@ -8,7 +8,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/editProfile.dart';
+import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
+import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
+import 'package:nexus/screen/ProfileDetails/editProfile.dart';
+import 'package:nexus/screen/ProfileDetails/viewPostsFromProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
@@ -102,7 +105,7 @@ class _profiletScreenState extends State<profiletScreen> {
               : SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         height: displayHeight(context) * 0.28,
@@ -140,7 +143,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                   ],
                                       stops: [
                                     0,
-                                    .8
+                                    .85
                                   ])),
                             ),
                             Positioned(
@@ -172,8 +175,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               TextButton(
-                                                  onPressed: () {
-                                                    pickImageForCoverPicture();
+                                                  onPressed: () async {
+                                                    pickImageForCoverPicture().then((value) => Navigator.pop(context));
                                                   },
                                                   child: Text(
                                                     'Change Cover Picture',
@@ -185,10 +188,10 @@ class _profiletScreenState extends State<profiletScreen> {
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   )),
-                                              Divider(),
+                                              const Opacity(opacity: 0.0,child: Divider()),
                                               TextButton(
-                                                onPressed: () {
-                                                  pickImageForProfilePicture();
+                                                onPressed: () async {
+                                                  pickImageForProfilePicture().then((value) => Navigator.pop(context));
                                                 },
                                                 child: Text(
                                                   'Change Profile Picture',
@@ -241,13 +244,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                           width: displayWidth(context) * 0.175,
                                           fit: BoxFit.cover,
                                         )
-                                      : Image.asset(
-                                          'images/male.jpg',
-                                          height:
-                                              displayHeight(context) * 0.0905,
-                                          width: displayWidth(context) * 0.175,
-                                          fit: BoxFit.cover,
-                                        ),
+                                      : Icon(Icons.person,color: Colors.orange[300],size: displayWidth(context)*0.045,),
                                 )),
                             Positioned(
                                 top: displayHeight(context) * 0.02,
@@ -305,7 +302,9 @@ class _profiletScreenState extends State<profiletScreen> {
                         child: (myProfile.bio != '')
                             ? Container(
                                 child: Text(
+                                  
                                   myProfile.bio,
+                                  textAlign: TextAlign.start,
                                   overflow: TextOverflow.clip,
                                 ),
                               )
@@ -326,46 +325,68 @@ class _profiletScreenState extends State<profiletScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
-                                child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  myProfile.followers.length.toString(),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: displayWidth(context) * 0.04),
-                                ),
-                                Text(
-                                  'Followers',
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: displayWidth(context) * 0.036),
-                                )
-                              ],
+                                child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FollowersScreen(
+                                          followers: myProfile.followers),
+                                    ));
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    myProfile.followers.length.toString(),
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: displayWidth(context) * 0.04),
+                                  ),
+                                  Text(
+                                    'Followers',
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize:
+                                            displayWidth(context) * 0.036),
+                                  )
+                                ],
+                              ),
                             )),
                             Expanded(
-                                child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  myProfile.followings.length.toString(),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: displayWidth(context) * 0.04),
-                                ),
-                                Text(
-                                  'Following',
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: displayWidth(context) * 0.036),
-                                ),
-                              ],
+                                child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FollowingScreen(
+                                          following: myProfile.followings),
+                                    ));
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    myProfile.followings.length.toString(),
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: displayWidth(context) * 0.04),
+                                  ),
+                                  Text(
+                                    'Following',
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize:
+                                            displayWidth(context) * 0.036),
+                                  ),
+                                ],
+                              ),
                             )),
                             Expanded(
                                 child: Column(
@@ -397,109 +418,111 @@ class _profiletScreenState extends State<profiletScreen> {
                           height: 2,
                         ),
                       ),
-                      Container(
-                        height: displayHeight(context) * 0.08,
-                        width: displayWidth(context) * 0.62,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    if (!viewPosts) {
-                                      viewPosts = !viewPosts;
-                                    }
-                                  });
-                                },
-                                child: (viewPosts)
-                                    ? Card(
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 45.0,
-                                                right: 45,
-                                                top: 8,
-                                                bottom: 8),
-                                            child: Text(
-                                              'Posts',
-                                              style: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize:
-                                                      displayWidth(context) *
-                                                          0.042,
-                                                  fontWeight: FontWeight.bold),
+                      Center(
+                        child: Container(
+                          height: displayHeight(context) * 0.08,
+                          width: displayWidth(context) * 0.62,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      if (!viewPosts) {
+                                        viewPosts = !viewPosts;
+                                      }
+                                    });
+                                  },
+                                  child: (viewPosts)
+                                      ? Card(
+                                          elevation: 6,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 45.0,
+                                                  right: 45,
+                                                  top: 8,
+                                                  bottom: 8),
+                                              child: Text(
+                                                'Posts',
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize:
+                                                        displayWidth(context) *
+                                                            0.042,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
                                             ),
                                           ),
+                                        )
+                                      : Text(
+                                          'Posts',
+                                          style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize:
+                                                  displayWidth(context) * 0.042,
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                      )
-                                    : Text(
-                                        'Posts',
-                                        style: TextStyle(
-                                            color: Colors.black45,
-                                            fontSize:
-                                                displayWidth(context) * 0.042,
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    if (viewPosts) {
-                                      viewPosts = !viewPosts;
-                                    }
-                                  });
-                                },
-                                child: (!viewPosts)
-                                    ? Card(
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 45.0,
-                                                right: 45,
-                                                top: 8,
-                                                bottom: 8),
-                                            child: Text(
-                                              'Saved',
-                                              style: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize:
-                                                      displayWidth(context) *
-                                                          0.042,
-                                                  fontWeight: FontWeight.bold),
+                              Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      if (viewPosts) {
+                                        viewPosts = !viewPosts;
+                                      }
+                                    });
+                                  },
+                                  child: (!viewPosts)
+                                      ? Card(
+                                          elevation: 6,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 45.0,
+                                                  right: 45,
+                                                  top: 8,
+                                                  bottom: 8),
+                                              child: Text(
+                                                'Saved',
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize:
+                                                        displayWidth(context) *
+                                                            0.042,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
                                             ),
                                           ),
+                                        )
+                                      : Text(
+                                          'Saved',
+                                          style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize:
+                                                  displayWidth(context) * 0.042,
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                      )
-                                    : Text(
-                                        'Saved',
-                                        style: TextStyle(
-                                            color: Colors.black45,
-                                            fontSize:
-                                                displayWidth(context) * 0.042,
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       GridView.builder(
@@ -513,15 +536,27 @@ class _profiletScreenState extends State<profiletScreen> {
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                  height: displayHeight(context) * 0.1,
-                                  width: displayWidth(context) * 0.3,
-                                  fit: BoxFit.cover,
-                                  imageUrl: posts.values.toList()[index].image),
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => viewPostsFromProfile(
+                                      uid: myProfile.uid,
+                                    ),
+                                  ));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: CachedNetworkImage(
+                                    height: displayHeight(context) * 0.1,
+                                    width: displayWidth(context) * 0.3,
+                                    fit: BoxFit.cover,
+                                    imageUrl:
+                                        posts.values.toList()[index].image),
+                              ),
                             ),
                           );
                         },
