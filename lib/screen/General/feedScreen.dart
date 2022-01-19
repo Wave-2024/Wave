@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
+import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/services/AuthService.dart';
@@ -58,8 +59,8 @@ class _feedScreenState extends State<feedScreen> {
   Widget build(BuildContext context) {
     final Map<String, PostModel> feedPosts =
         Provider.of<usersProvider>(context).fetchPostsToDisplay;
-    final Map<String, dynamic> mapOfUsers =
-        Provider.of<usersProvider>(context).fetchMapOfUsers;
+    final Map<String, NexusUser> allUsers =
+        Provider.of<usersProvider>(context).fetchAllUsers;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -127,7 +128,7 @@ class _feedScreenState extends State<feedScreen> {
                                 child: displayPosts(
                                     context,
                                     feedPosts.values.toList()[index],
-                                    mapOfUsers,
+                                    allUsers,
                                     currentUser!.uid.toString(),
                                     months),
                               );

@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
+import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -14,36 +16,36 @@ class userProfile extends StatefulWidget {
 }
 
 class _userProfileState extends State<userProfile> {
-  bool viewPosts = true;
   bool? loadScreen;
   User? currentUser;
   bool loadAfterFollowProcess = false;
   bool init = true;
-  final authservice _auth = authservice(FirebaseAuth.instance);
   @override
   void initState() {
     loadScreen = true;
-
     super.initState();
     currentUser = FirebaseAuth.instance.currentUser;
   }
 
   @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
+  void didChangeDependencies()async {
+    if(init){
+      Provider.of<usersProvider>(context).setPostsForThisProfile(widget.uid.toString()).then((value){
+        loadScreen=false;
+        init = false;
+      });
+    }
 
-    Provider.of<usersProvider>(context).fetchUser(widget.uid!).then((value) {
-      init = false;
-      loadScreen = false;
-    });
+    super.didChangeDependencies();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<usersProvider>(context).fetchCurrentUser;
 
-    List<PostModel> posts = Provider.of<usersProvider>(context, listen: false)
-        .fetchThisProfilePosts;
+    NexusUser? thisProfile = Provider.of<usersProvider>(context).fetchAllUsers[widget.uid.toString()];
+    Map<String,PostModel>? posts = Provider.of<usersProvider>(context).fetchThisUserPosts;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -110,7 +112,7 @@ class _userProfileState extends State<userProfile> {
                           Positioned(
                               top: displayHeight(context) * 0.02,
                               child: Text(
-                                user!.title,
+                                thisProfile!.title,
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -152,7 +154,7 @@ class _userProfileState extends State<userProfile> {
                       ),
                     ),
                     Text(
-                      user.username,
+                      thisProfile.username,
                       style: TextStyle(
                           color: Colors.black87,
                           fontSize: displayWidth(context) * 0.045,
@@ -178,7 +180,7 @@ class _userProfileState extends State<userProfile> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                user.followers.length.toString(),
+                                thisProfile.followers.length.toString(),
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -199,7 +201,7 @@ class _userProfileState extends State<userProfile> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                user.followings.length.toString(),
+                                thisProfile.followings.length.toString(),
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -257,12 +259,12 @@ class _userProfileState extends State<userProfile> {
                               setState(() {
                                 loadAfterFollowProcess = true;
                               });
-                              if (user.followers
+                              if (thisProfile.followers
                                   .contains(currentUser!.uid.toString())) {
                                 Provider.of<usersProvider>(context,
                                         listen: false)
-                                    .removeFollower(
-                                        currentUser!.uid.toString(), user.uid)
+                                    .unFollowUser(
+                                        currentUser!.uid.toString(), thisProfile.uid)
                                     .then((value) {
                                   setState(() {
                                     loadAfterFollowProcess = false;
@@ -271,8 +273,8 @@ class _userProfileState extends State<userProfile> {
                               } else {
                                 Provider.of<usersProvider>(context,
                                         listen: false)
-                                    .addFollower(
-                                        currentUser!.uid.toString(), user.uid)
+                                    .followUser(
+                                        currentUser!.uid.toString(), thisProfile.uid)
                                     .then((value) {
                                   setState(() {
                                     loadAfterFollowProcess = false;
@@ -306,7 +308,7 @@ class _userProfileState extends State<userProfile> {
                                         ),
                                       )
                                     : Text(
-                                        (user.followers.contains(
+                                        (thisProfile.followers.contains(
                                                 currentUser!.uid.toString()))
                                             ? 'Unfollow'
                                             : 'Follow',
@@ -346,29 +348,9 @@ class _userProfileState extends State<userProfile> {
                       height: displayHeight(context) * 0.08,
                       width: displayWidth(context) * 0.62,
                       decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(15)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  if (!viewPosts) {
-                                    viewPosts = !viewPosts;
-                                  }
-                                });
-                              },
-                              child: (viewPosts)
-                                  ? Card(
-                                      elevation: 6,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Center(
+                      child:  Center(
                                         child: Padding(
                                           padding: const EdgeInsets.only(
                                               left: 45.0,
@@ -386,65 +368,34 @@ class _userProfileState extends State<userProfile> {
                                           ),
                                         ),
                                       ),
-                                    )
-                                  : Text(
-                                      'Posts',
-                                      style: TextStyle(
-                                          color: Colors.black45,
-                                          fontSize:
-                                              displayWidth(context) * 0.042,
-                                          fontWeight: FontWeight.bold),
                                     ),
-                            ),
+                                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      //dragStartBehavior: DragStartBehavior.down,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3),
+                      itemCount: posts.values.toList().length,
+                      padding: const EdgeInsets.all(8),
+
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                                height: displayHeight(context) * 0.1,
+                                width: displayWidth(context) * 0.3,
+                                fit: BoxFit.cover,
+                                imageUrl: posts.values.toList()[index].image),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  if (viewPosts) {
-                                    viewPosts = !viewPosts;
-                                  }
-                                });
-                              },
-                              child: (!viewPosts)
-                                  ? Card(
-                                      elevation: 6,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 45.0,
-                                              right: 45,
-                                              top: 8,
-                                              bottom: 8),
-                                          child: Text(
-                                            'Saved',
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontSize:
-                                                    displayWidth(context) *
-                                                        0.042,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : Text(
-                                      'Saved',
-                                      style: TextStyle(
-                                          color: Colors.black45,
-                                          fontSize:
-                                              displayWidth(context) * 0.042,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
+                        );
+                      },
+                    ),
+
+
+
                   ],
                 ),
         ),

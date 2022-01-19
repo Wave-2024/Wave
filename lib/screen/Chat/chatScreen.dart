@@ -16,35 +16,25 @@ class chatScreen extends StatefulWidget {
 
 class _chatScreenState extends State<chatScreen> {
   User? currentUser;
-  bool init = true;
-  bool? loadScreen;
 
   @override
   void initState() {
     super.initState();
-    loadScreen = true;
     currentUser = FirebaseAuth.instance.currentUser;
   }
 
   @override
   void didChangeDependencies() async {
-    if (init) {
-      Provider.of<usersProvider>(context)
-          .fetchUser(currentUser!.uid.toString())
-          .then((value) {
-        loadScreen = false;
-        init = false;
-      });
-    }
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    NexusUser? myProfile =
-        Provider.of<usersProvider>(context, listen: false).fetchCurrentUser;
-    displayChatHead(
-        String chatId, String username, String dp,int chatbg, String lastSeen) {
+    Map<String, NexusUser>? allUsers =
+        Provider.of<usersProvider>(context, listen: false).fetchAllUsers;
+    NexusUser? myProfile = allUsers[currentUser!.uid.toString()];
+    displayChatHead(String chatId, String username, String dp, int chatbg,
+        String lastSeen) {
       return GestureDetector(
         onTap: () {
           Navigator.push(
@@ -175,12 +165,12 @@ class _chatScreenState extends State<chatScreen> {
                               return ListView.builder(
                                 itemCount: snapshot.data.docs.length,
                                 itemBuilder: (context, index) {
+                                  String uid =
+                                      snapshot.data.docs[index].data()['uid'];
                                   String chatId = snapshot.data.docs[index]
                                       .data()['chatId'];
-                                  String userName = snapshot.data.docs[index]
-                                      .data()['userName'];
-                                  String dp =
-                                      snapshot.data.docs[index].data()['dp'];
+                                  String userName = allUsers[uid]!.username;
+                                  String dp = allUsers[uid]!.dp;
                                   Timestamp lastSeen = snapshot.data.docs[index]
                                       .data()['lastSent'];
                                   DateTime currentDate = DateTime.now();

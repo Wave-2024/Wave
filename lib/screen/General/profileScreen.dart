@@ -38,20 +38,21 @@ class _profiletScreenState extends State<profiletScreen> {
   }
 
   @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-    if (init) {
-      Provider.of<usersProvider>(context)
-          .fetchUser(currentUser!.uid)
-          .then((value) {
-        loadScreen = false;
+  void didChangeDependencies()async {
+    if(init){
+      await Provider.of<usersProvider>(context).setPostsForThisProfile(currentUser!.uid.toString()).then((value){
+        loadScreen=false;
         init = false;
       });
     }
+    super.didChangeDependencies();
   }
+
 
   @override
   Widget build(BuildContext context) {
+    NexusUser? myProfile = Provider.of<usersProvider>(context).fetchAllUsers[currentUser!.uid.toString()];
+    Map<String,PostModel>? posts = Provider.of<usersProvider>(context).fetchThisUserPosts;
     Future pickImageForCoverPicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
@@ -85,11 +86,6 @@ class _profiletScreenState extends State<profiletScreen> {
         });
       }
     }
-
-    NexusUser? myProfile =
-        Provider.of<usersProvider>(context, listen: false).fetchCurrentUser;
-    List<PostModel> posts = Provider.of<usersProvider>(context, listen: false)
-        .fetchThisProfilePosts;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -513,7 +509,7 @@ class _profiletScreenState extends State<profiletScreen> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3),
-                        itemCount: posts.length,
+                        itemCount: posts.values.toList().length,
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
@@ -525,7 +521,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                   height: displayHeight(context) * 0.1,
                                   width: displayWidth(context) * 0.3,
                                   fit: BoxFit.cover,
-                                  imageUrl: posts[index].image),
+                                  imageUrl: posts.values.toList()[index].image),
                             ),
                           );
                         },

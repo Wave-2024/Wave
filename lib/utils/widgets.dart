@@ -122,12 +122,12 @@ Widget displayPosts(BuildContext context, PostModel post,
                               if (post.likes.contains(myUid)) {
                                 Provider.of<usersProvider>(context,
                                         listen: false)
-                                    .disLikeThisPost(
+                                    .disLikeThisPostFromFeed(
                                         myUid, post.uid, post.post_id);
                               } else {
                                 Provider.of<usersProvider>(context,
                                         listen: false)
-                                    .likeThisPost(
+                                    .likeThisPostFromFeed(
                                         myUid, post.uid, post.post_id);
                               }
                             },
@@ -160,7 +160,7 @@ Widget displayPosts(BuildContext context, PostModel post,
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => postDetailScreen(
-                                      user_who_posted: user,
+                                      postOwner: user,
                                       postId: post.post_id,
                                     ),
                                   ));
@@ -266,7 +266,9 @@ String? generateChatRoomUsingUid(String uid1, String uid2) {
   return chatRoom;
 }
 
-Widget displayComment(BuildContext context, CommentModel commentModel) {
+Widget displayComment(BuildContext context, String comment, String uid) {
+  NexusUser? user =
+      Provider.of<usersProvider>(context, listen: false).fetchAllUsers[uid];
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -276,15 +278,21 @@ Widget displayComment(BuildContext context, CommentModel commentModel) {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
-          child: ClipRRect(
+          child: (user!.dp != '')
+              ? ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: CachedNetworkImage(
+                  child: CachedNetworkImage(
               height: displayHeight(context) * 0.05,
               width: displayWidth(context) * 0.1,
               fit: BoxFit.cover,
-              imageUrl: commentModel.userDp,
+                    imageUrl: user.dp,
             ),
-          ),
+                )
+              : Icon(
+                  Icons.person,
+                  color: Colors.orange[300],
+                  size: displayWidth(context) * 0.082,
+                ),
         ),
       ),
       Opacity(
@@ -300,8 +308,7 @@ Widget displayComment(BuildContext context, CommentModel commentModel) {
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: printComment(
-                context, commentModel.userName, commentModel.comment),
+            child: printComment(context, user.username, comment),
           ),
         ),
       )
@@ -326,7 +333,7 @@ String differenceOfTime(DateTime current, DateTime lastSeen) {
           if (findDifferenc(current.minute, lastSeen.minute) == 0) {
             // Same minute
             if (findDifferenc(current.second, lastSeen.second) == 0) {
-              // Same second
+              return 'last talked just now';
             } else {
               diff = findDifferenc(current.second, lastSeen.second).toString() +
                   ' seconds';
@@ -397,11 +404,11 @@ Widget messageContainer(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(3.0),
+                padding: const EdgeInsets.all(2.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: CachedNetworkImage(
-                    height: displayHeight(context) * 0.035,
+                    height: displayHeight(context) * 0.0365,
                     width: displayWidth(context) * 0.075,
                     fit: BoxFit.cover,
                     imageUrl: dp,
