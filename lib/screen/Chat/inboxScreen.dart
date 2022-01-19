@@ -113,7 +113,7 @@ class _inboxScreenState extends State<inboxScreen> {
             Icons.send,
             color: Colors.deepOrange,
           ),
-          textColor: Colors.white,
+          textColor: (widget.chatbg == -1) ? Colors.black : Colors.white,
           child: Padding(
             padding:
                 const EdgeInsets.only(top: 8.0, bottom: 8, left: 2, right: 10),
