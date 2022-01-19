@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/utils/constants.dart';
@@ -133,7 +132,7 @@ class usersProvider extends ChangeNotifier {
           updateUser = NexusUser(
               bio: oldUser!.bio,
               coverImage: value,
-              dp: value.toString(),
+              dp: oldUser.dp,
               email: oldUser.email,
               followers: oldUser.followers,
               followings: oldUser.followings,
@@ -549,7 +548,7 @@ class usersProvider extends ChangeNotifier {
         final data2 = json.decode(response.body) as Map<String, dynamic>;
         data2.forEach((key, value) {
           temp[key] = PostModel(
-              dateOfPost: value['caption'],
+              dateOfPost: value['dateOfPost'],
               caption: value['caption'],
               image: value['image'],
               uid: uid,
