@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/screen/General/homescreen.dart';
+import 'package:nexus/screen/General/initScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/loginClipper.dart';
@@ -151,7 +153,7 @@ class _loginScreenState extends State<loginScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => homescreen(),
+                                  builder: (context) => welcomeScreen(),
                                 ));
                           }
                         });
@@ -199,7 +201,11 @@ class _loginScreenState extends State<loginScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => authScreen(),
+                              )),
                           child: Text(
                             'Back',
                             style: TextStyle(
