@@ -18,7 +18,7 @@ class usersWhoLikedScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
         title: const Text(
-          'Followers',
+          'Likes',
           style: TextStyle(color: Colors.black),
         ),
       ),

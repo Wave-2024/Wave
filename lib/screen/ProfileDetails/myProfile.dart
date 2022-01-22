@@ -11,7 +11,7 @@ import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
-import 'package:nexus/screen/ProfileDetails/viewPostsFromProfile.dart';
+import 'package:nexus/screen/Posts/viewPostsFromProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
@@ -43,7 +43,8 @@ class _profiletScreenState extends State<profiletScreen> {
   @override
   void didChangeDependencies()async {
     if(init){
-      await Provider.of<usersProvider>(context).setPostsForThisProfile(currentUser!.uid.toString()).then((value){
+
+      await Provider.of<usersProvider>(context,listen: false).setPostsForThisProfile(currentUser!.uid.toString()).then((value){
         loadScreen=false;
         init = false;
       });
@@ -56,6 +57,7 @@ class _profiletScreenState extends State<profiletScreen> {
   Widget build(BuildContext context) {
     NexusUser? myProfile = Provider.of<usersProvider>(context).fetchAllUsers[currentUser!.uid.toString()];
     Map<String,PostModel>? posts = Provider.of<usersProvider>(context).fetchThisUserPosts;
+    Map<String,PostModel>? savedPosts = Provider.of<usersProvider>(context).fetchSavedPosts;
     Future pickImageForCoverPicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
@@ -147,15 +149,30 @@ class _profiletScreenState extends State<profiletScreen> {
                                   ])),
                             ),
                             Positioned(
-                                top: displayHeight(context) * 0.16,
-                                left: displayWidth(context) * 0.04,
-                                child: Container(
-                                  height: displayHeight(context) * 0.1,
-                                  width: displayWidth(context) * 0.2,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25),
-                                    border: Border.all(
-                                        color: Colors.orangeAccent, width: 2.3),
+                                top: displayHeight(context) * 0.1655,
+                                left: displayWidth(context) * 0.052,
+                                child: Card(
+                                  color: Colors.orange[300],
+                                  elevation: 6.0,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: (myProfile.dp != '')
+                                          ? CachedNetworkImage(
+                                        imageUrl: myProfile.dp,
+                                        height:
+                                        displayHeight(context) * 0.0905,
+                                        width: displayWidth(context) * 0.175,
+                                        fit: BoxFit.cover,
+                                      )
+                                          : Icon(
+                                        Icons.person,
+                                        color: Colors.orange[300],
+                                        size: displayWidth(context) * 0.045,
+                                      ),
+                                    ),
                                   ),
                                 )),
                             Positioned(
@@ -231,21 +248,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                   color: Colors.white70,
                                   icon: Icon(Icons.edit),
                                 )),
-                            Positioned(
-                                top: displayHeight(context) * 0.1655,
-                                left: displayWidth(context) * 0.052,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  child: (myProfile.dp != '')
-                                      ? CachedNetworkImage(
-                                          imageUrl: myProfile.dp,
-                                          height:
-                                              displayHeight(context) * 0.0905,
-                                          width: displayWidth(context) * 0.175,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Icon(Icons.person,color: Colors.orange[300],size: displayWidth(context)*0.045,),
-                                )),
+
                             Positioned(
                                 top: displayHeight(context) * 0.02,
                                 child: Text(
@@ -532,7 +535,7 @@ class _profiletScreenState extends State<profiletScreen> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3),
-                        itemCount: posts.values.toList().length,
+                        itemCount: (viewPosts)? posts.length:savedPosts.length,
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
@@ -542,7 +545,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => viewPostsFromProfile(
-                                      uid: myProfile.uid,
+                                      uid: myProfile.uid,viewPosts: viewPosts,
+
                                     ),
                                   ));
                             },
@@ -550,12 +554,18 @@ class _profiletScreenState extends State<profiletScreen> {
                               padding: const EdgeInsets.all(4.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: CachedNetworkImage(
+                                child: (viewPosts) ? CachedNetworkImage(
                                     height: displayHeight(context) * 0.1,
                                     width: displayWidth(context) * 0.3,
                                     fit: BoxFit.cover,
                                     imageUrl:
-                                        posts.values.toList()[index].image),
+                                    posts.values.toList()[index].image) :
+                                CachedNetworkImage(
+                                    height: displayHeight(context) * 0.1,
+                                    width: displayWidth(context) * 0.3,
+                                    fit: BoxFit.cover,
+                                    imageUrl:
+                                    savedPosts.values.toList()[index].image),
                               ),
                             ),
                           );

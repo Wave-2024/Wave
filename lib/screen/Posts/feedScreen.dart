@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/screen/General/notificationScreen.dart';
-import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
@@ -58,6 +56,8 @@ class _feedScreenState extends State<feedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, PostModel> savedPosts =
+        Provider.of<usersProvider>(context).fetchSavedPosts;
     final Map<String, PostModel> feedPosts =
         Provider.of<usersProvider>(context).fetchPostsToDisplay;
     final Map<String, NexusUser> allUsers =
@@ -138,7 +138,9 @@ class _feedScreenState extends State<feedScreen> {
                                     feedPosts.values.toList()[index],
                                     allUsers,
                                     currentUser!.uid.toString(),
-                                    months),
+                                    months,
+                                  savedPosts
+                                ),
                               );
                             },
                             itemCount: feedPosts.length,

@@ -135,7 +135,7 @@ class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
                           .collection('posts')
                           .doc(widget.postId.toString())
                           .collection('comments')
-                          .orderBy('time', descending: false)
+                          .orderBy('time', descending: true)
                           .snapshots(),
                       builder: (context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {

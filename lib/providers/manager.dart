@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
@@ -14,6 +15,8 @@ class usersProvider extends ChangeNotifier {
   Map<String, PostModel> postToDisplay = {};
 
   Map<String, PostModel> thisUserPosts = {};
+
+  Map<String, PostModel> savedPosts = {};
 
   Map<String, PostModel> get fetchThisUserPosts {
     return thisUserPosts;
@@ -303,7 +306,7 @@ class usersProvider extends ChangeNotifier {
           'chatId': chatId,
           'lastSent': Timestamp.now(),
           'uid': myUid,
-          'chatbg':-1,
+          'chatbg': -1,
         });
       } else {
         debugPrint('Already exists');
@@ -515,6 +518,54 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> disLikePostFromSavedPosts(
+      String myUid, String userUid, String postUid) async {
+    final String api =
+        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
+    List<dynamic> likes = [];
+    try {
+      likes = savedPosts[postUid]!.likes;
+      likes.remove(myUid);
+      PostModel? tempPostModel = savedPosts[postUid];
+      PostModel p = PostModel(
+          caption: tempPostModel!.caption,
+          dateOfPost: tempPostModel.dateOfPost,
+          image: tempPostModel.image,
+          uid: tempPostModel.uid,
+          post_id: tempPostModel.post_id,
+          likes: likes);
+      savedPosts[postUid] = p;
+      notifyListeners();
+      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> likeThisPostFromSavedPosts(
+      String myUid, String userUid, String postUid) async {
+    final String api =
+        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
+    List<dynamic> likes = [];
+    try {
+      likes = savedPosts[postUid]!.likes;
+      likes.add(myUid);
+      PostModel? tempPostModel = savedPosts[postUid];
+      PostModel p = PostModel(
+          caption: tempPostModel!.caption,
+          dateOfPost: tempPostModel.dateOfPost,
+          image: tempPostModel.image,
+          uid: tempPostModel.uid,
+          post_id: tempPostModel.post_id,
+          likes: likes);
+      savedPosts[postUid] = p;
+      notifyListeners();
+      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
+    } catch (error) {
+      print(error);
+    }
+  }
+
   Future<void> disLikePostFromThisUserProfile(
       String myUid, String userUid, String postUid) async {
     final String api =
@@ -557,6 +608,102 @@ class usersProvider extends ChangeNotifier {
         });
       }
       thisUserPosts = temp;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> setSavedPostsOnce(String uid) async {
+    final String api = constants().fetchApi + 'saved/${uid}.json';
+    Map<String, PostModel> tempPosts = {};
+    Map<String, String> tempKeys = {};
+    try {
+      final savedPostIdResponse = await http.get(Uri.parse(api));
+      if (json.decode(savedPostIdResponse.body) != null) {
+        final savedPostIdData =
+            json.decode(savedPostIdResponse.body) as Map<String, dynamic>;
+        savedPostIdData.forEach((key, value) async {
+      
+          tempKeys[value['postId']] = value['saveId'];
+          tempPosts[value['postId'].toString()] =
+              await getThisPostDetail(value['op'], value['postId'].toString());
+        });
+      }
+      savedPosts = tempPosts;
+      savedPostsKeys = tempKeys;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Map<String, PostModel> get fetchSavedPosts {
+    return savedPosts;
+  }
+
+  Future<PostModel> getThisPostDetail(String op, String postId) async {
+    PostModel? returnThisPost;
+    final String api = constants().fetchApi + 'posts/${op}/${postId}.json';
+    try {
+      final response = await http.get(Uri.parse(api));
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      returnThisPost = PostModel(
+          caption: data['caption'],
+          dateOfPost: data['dateOfPost'],
+          image: data['image'],
+          uid: data['uid'],
+          post_id: postId,
+          likes: data[postId] ?? []);
+      return returnThisPost;
+    } catch (error) {
+      print(error);
+    }
+    return returnThisPost!;
+  }
+
+  Future<void> savePost(
+    PostModel postModel,
+    String myUid,
+  ) async {
+    String? saveId;
+    final String api = constants().fetchApi + 'saved/${myUid}.json';
+    try {
+      savedPosts[postModel.post_id] = postModel;
+      notifyListeners();
+      await http
+          .post(Uri.parse(api),
+              body: json.encode({
+                'op': postModel.uid,
+                'postId': postModel.post_id,
+              }))
+          .then((value) async {
+        final serverData = json.decode(value.body) as Map<String, dynamic>;
+        saveId = serverData['name'];
+      });
+      final String savePostApi =
+          constants().fetchApi + 'saved/${myUid}/${saveId!}.json';
+      await http.patch(Uri.parse(savePostApi),
+          body: json.encode({'saveId': saveId}));
+      savedPostsKeys[postModel.post_id] = saveId!;
+      notifyListeners();
+    } catch (error) {
+      if (savedPosts.containsKey(postModel.post_id)) {
+        savedPosts.remove(postModel.post_id);
+      }
+    }
+  }
+
+  Map<String, String> savedPostsKeys = {};
+
+  Future<void> unsavePost(String postId, String myUid) async {
+   
+    final String api = constants().fetchApi +
+        'saved/${myUid}/${savedPostsKeys[postId].toString()}.json';
+    try {
+      await http.delete(Uri.parse(api));
+      savedPosts.remove(postId);
+      savedPostsKeys.remove(postId);
       notifyListeners();
     } catch (error) {
       print(error);
