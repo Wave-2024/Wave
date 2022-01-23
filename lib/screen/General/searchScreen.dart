@@ -51,50 +51,40 @@ class _searchScreenState extends State<searchScreen> {
                 ),
               ));
         },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Container(
-            height: displayHeight(context) * 0.06,
-            width: displayWidth(context),
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                (user.dp.isEmpty)
-                    ? CircleAvatar(
-                        backgroundImage: AssetImage('images/male.jpg'),
-                        radius: displayWidth(context) * 0.06,
-                      )
-                    : CircleAvatar(
-                        backgroundImage: NetworkImage(user.dp),
-                        radius: displayWidth(context) * 0.06,
+          child: ListTile(
+              tileColor: Colors.transparent,
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => userProfile(
+                        uid: user.uid,
                       ),
-                const VerticalDivider(),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.username,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: displayWidth(context) * 0.04),
-                    ),
-                    Text(
-                      user.title,
-                      style: TextStyle(
-                          color: Colors.black45,
-                          fontWeight: FontWeight.normal,
-                          fontSize: displayWidth(context) * 0.038),
+                    ));
+              },
+              title: Text(
+                user.title,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                user.username,
+                style: TextStyle(color: Colors.black45),
+              ),
+              leading: (user.dp != '')
+                  ? CircleAvatar(
+                      backgroundImage: NetworkImage(user.dp),
+                      radius: displayWidth(context) * 0.05,
                     )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+                  : CircleAvatar(
+                      backgroundColor: Colors.grey[200],
+                      radius: displayWidth(context) * 0.05,
+                      child: Icon(
+                        Icons.person,
+                        size: displayWidth(context) * 0.075,
+                        color: Colors.orange[400],
+                      ),
+                    ))
       );
     }
 

@@ -16,7 +16,6 @@ import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../Authentication/authscreen.dart';
 
@@ -41,23 +40,32 @@ class _profiletScreenState extends State<profiletScreen> {
   }
 
   @override
-  void didChangeDependencies()async {
-    if(init){
-
-      await Provider.of<usersProvider>(context,listen: false).setPostsForThisProfile(currentUser!.uid.toString()).then((value){
-        loadScreen=false;
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+  @override
+  void didChangeDependencies() async {
+    if (init) {
+      await Provider.of<usersProvider>(context, listen: false)
+          .setPostsForThisProfile(currentUser!.uid.toString())
+          .then((value) {
+        loadScreen = false;
         init = false;
       });
     }
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    NexusUser? myProfile = Provider.of<usersProvider>(context).fetchAllUsers[currentUser!.uid.toString()];
-    Map<String,PostModel>? posts = Provider.of<usersProvider>(context).fetchThisUserPosts;
-    Map<String,PostModel>? savedPosts = Provider.of<usersProvider>(context).fetchSavedPosts;
+    NexusUser? myProfile = Provider.of<usersProvider>(context)
+        .fetchAllUsers[currentUser!.uid.toString()];
+    Map<String, PostModel>? posts =
+        Provider.of<usersProvider>(context).fetchThisUserPosts;
+    
+    Map<String, PostModel>? savedPosts =
+        Provider.of<usersProvider>(context).fetchSavedPosts;
     Future pickImageForCoverPicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
@@ -91,6 +99,7 @@ class _profiletScreenState extends State<profiletScreen> {
         });
       }
     }
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -122,13 +131,13 @@ class _profiletScreenState extends State<profiletScreen> {
                               child: (myProfile!.coverImage != '')
                                   ? CachedNetworkImage(
                                       imageUrl: myProfile.coverImage,
-                                      height: displayHeight(context) * 0.28,
+                                      height: displayHeight(context) * 0.25,
                                       width: displayWidth(context),
                                       fit: BoxFit.cover,
                                     )
                                   : Image.asset(
                                       'images/cover.jpg',
-                                      height: displayHeight(context) * 0.28,
+                                      height: displayHeight(context) * 0.25,
                                       width: displayWidth(context),
                                       fit: BoxFit.fill,
                                     ),
@@ -154,24 +163,27 @@ class _profiletScreenState extends State<profiletScreen> {
                                 child: Card(
                                   color: Colors.orange[300],
                                   elevation: 6.0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
                                   child: Padding(
                                     padding: const EdgeInsets.all(2.5),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: (myProfile.dp != '')
                                           ? CachedNetworkImage(
-                                        imageUrl: myProfile.dp,
-                                        height:
-                                        displayHeight(context) * 0.0905,
-                                        width: displayWidth(context) * 0.175,
-                                        fit: BoxFit.cover,
-                                      )
+                                              imageUrl: myProfile.dp,
+                                              height: displayHeight(context) *
+                                                  0.0905,
+                                              width:
+                                                  displayWidth(context) * 0.175,
+                                              fit: BoxFit.cover,
+                                            )
                                           : Icon(
-                                        Icons.person,
-                                        color: Colors.orange[300],
-                                        size: displayWidth(context) * 0.045,
-                                      ),
+                                              Icons.person,
+                                              color: Colors.orange[300],
+                                              size:
+                                                  displayWidth(context) * 0.045,
+                                            ),
                                     ),
                                   ),
                                 )),
@@ -193,7 +205,10 @@ class _profiletScreenState extends State<profiletScreen> {
                                             children: [
                                               TextButton(
                                                   onPressed: () async {
-                                                    pickImageForCoverPicture().then((value) => Navigator.pop(context));
+                                                    pickImageForCoverPicture()
+                                                        .then((value) =>
+                                                            Navigator.pop(
+                                                                context));
                                                   },
                                                   child: Text(
                                                     'Change Cover Picture',
@@ -205,10 +220,15 @@ class _profiletScreenState extends State<profiletScreen> {
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   )),
-                                              const Opacity(opacity: 0.0,child: Divider()),
+                                              const Opacity(
+                                                  opacity: 0.0,
+                                                  child: Divider()),
                                               TextButton(
                                                 onPressed: () async {
-                                                  pickImageForProfilePicture().then((value) => Navigator.pop(context));
+                                                  pickImageForProfilePicture()
+                                                      .then((value) =>
+                                                          Navigator.pop(
+                                                              context));
                                                 },
                                                 child: Text(
                                                   'Change Profile Picture',
@@ -248,7 +268,6 @@ class _profiletScreenState extends State<profiletScreen> {
                                   color: Colors.white70,
                                   icon: Icon(Icons.edit),
                                 )),
-
                             Positioned(
                                 top: displayHeight(context) * 0.02,
                                 child: Text(
@@ -305,7 +324,6 @@ class _profiletScreenState extends State<profiletScreen> {
                         child: (myProfile.bio != '')
                             ? Container(
                                 child: Text(
-                                  
                                   myProfile.bio,
                                   textAlign: TextAlign.start,
                                   overflow: TextOverflow.clip,
@@ -463,7 +481,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                                     fontSize:
                                                         displayWidth(context) *
                                                             0.042,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                             ),
                                           ),
@@ -509,7 +528,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                                     fontSize:
                                                         displayWidth(context) *
                                                             0.042,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                             ),
                                           ),
@@ -535,7 +555,8 @@ class _profiletScreenState extends State<profiletScreen> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3),
-                        itemCount: (viewPosts)? posts.length:savedPosts.length,
+                        itemCount:
+                            (viewPosts) ? posts.length : savedPosts.length,
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
@@ -545,8 +566,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => viewPostsFromProfile(
-                                      uid: myProfile.uid,viewPosts: viewPosts,
-
+                                      uid: myProfile.uid,
+                                      viewPosts: viewPosts,
                                     ),
                                   ));
                             },
@@ -554,18 +575,20 @@ class _profiletScreenState extends State<profiletScreen> {
                               padding: const EdgeInsets.all(4.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: (viewPosts) ? CachedNetworkImage(
-                                    height: displayHeight(context) * 0.1,
-                                    width: displayWidth(context) * 0.3,
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                    posts.values.toList()[index].image) :
-                                CachedNetworkImage(
-                                    height: displayHeight(context) * 0.1,
-                                    width: displayWidth(context) * 0.3,
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                    savedPosts.values.toList()[index].image),
+                                child: (viewPosts)
+                                    ? CachedNetworkImage(
+                                        height: displayHeight(context) * 0.1,
+                                        width: displayWidth(context) * 0.3,
+                                        fit: BoxFit.cover,
+                                        imageUrl:
+                                            posts.values.toList()[index].image)
+                                    : CachedNetworkImage(
+                                        height: displayHeight(context) * 0.1,
+                                        width: displayWidth(context) * 0.3,
+                                        fit: BoxFit.cover,
+                                        imageUrl: savedPosts.values
+                                            .toList()[index]
+                                            .image),
                               ),
                             ),
                           );

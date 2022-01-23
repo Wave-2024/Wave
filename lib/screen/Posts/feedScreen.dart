@@ -7,6 +7,8 @@ import 'package:nexus/screen/General/notificationScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:badges/badges.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class feedScreen extends StatefulWidget {
   @override
@@ -14,7 +16,6 @@ class feedScreen extends StatefulWidget {
 }
 
 class _feedScreenState extends State<feedScreen> {
-  
   User? currentUser;
   bool? init;
   bool? loadScreen;
@@ -84,7 +85,7 @@ class _feedScreenState extends State<feedScreen> {
                       color: Colors.white,
                       child: Padding(
                         padding: const EdgeInsets.only(
-                            top: 8.0, bottom: 8.0, left: 20, right: 12),
+                            top: 8.0, bottom: 8.0, left: 20, right: 18),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -99,23 +100,25 @@ class _feedScreenState extends State<feedScreen> {
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                NotificationScreen(),
-                                          ));
-                                    },
-                                    icon: const Icon(
-                                        Icons.notification_add_outlined)),
-                              ],
-                            )
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          NotificationScreen(),
+                                    ));
+                              },
+                              child: Badge(
+                                  badgeColor: Colors.red[400]!,
+                                  badgeContent: Text(
+                                    '5',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: displayWidth(context) * 0.03),
+                                  ),
+                                  child: const Icon(Icons.notifications_none)),
+                            ),
                           ],
                         ),
                       ),
@@ -131,7 +134,14 @@ class _feedScreenState extends State<feedScreen> {
                           child: ListView.builder(
                             physics: const AlwaysScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
-                              return Padding(
+                              return feedPosts.isEmpty
+                                  ? const Center(
+                                      child: Text(
+                                        'Looks like you are not following anyone',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    )
+                                  : Padding(
                                 padding: const EdgeInsets.only(bottom: 18.0),
                                 child: displayPostsForFeed(
                                     context,
@@ -139,8 +149,7 @@ class _feedScreenState extends State<feedScreen> {
                                     allUsers,
                                     currentUser!.uid.toString(),
                                     months,
-                                  savedPosts
-                                ),
+                                          savedPosts),
                               );
                             },
                             itemCount: feedPosts.length,

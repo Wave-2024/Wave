@@ -79,13 +79,13 @@ class _userProfileState extends State<userProfile> {
                               child: (thisProfile!.coverImage != '')
                                   ? CachedNetworkImage(
                                       imageUrl: thisProfile.coverImage,
-                                      height: displayHeight(context) * 0.28,
+                                      height: displayHeight(context) * 0.25,
                                       width: displayWidth(context),
                                       fit: BoxFit.cover,
                                     )
                                   : Image.asset(
                                       'images/cover.jpg',
-                                      height: displayHeight(context) * 0.2,
+                                      height: displayHeight(context) * 0.25,
                                       width: displayWidth(context),
                                       fit: BoxFit.cover,
                                     ),

@@ -145,7 +145,7 @@ class _chatScreenState extends State<chatScreen> {
                     ),
                   ),
                   Container(
-                      height: displayHeight(context) * 0.835,
+                      height: displayHeight(context) * 0.86,
                       width: displayWidth(context),
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -155,7 +155,7 @@ class _chatScreenState extends State<chatScreen> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(
-                            top: 25.0, left: 16, right: 16),
+                            top: 25.0, left: 16, right: 16, bottom: 35),
                         child: StreamBuilder(
                           stream: FirebaseFirestore.instance
                               .collection(currentUser!.uid.toString())
