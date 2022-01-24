@@ -43,7 +43,7 @@ class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
     NexusUser? myProfile = Provider.of<usersProvider>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     PostModel? postDetail =
-        Provider.of<usersProvider>(context).fetchThisUserPosts[widget.postId];
+        Provider.of<usersProvider>(context).fetchYourPostsMap[widget.postId];
 
     return Scaffold(
       appBar: AppBar(

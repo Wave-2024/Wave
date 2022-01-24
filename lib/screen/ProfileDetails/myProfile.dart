@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
@@ -11,7 +10,6 @@ import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
-import 'package:nexus/screen/Posts/viewPostsFromProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/firebaseServices.dart';
@@ -44,28 +42,17 @@ class _profiletScreenState extends State<profiletScreen> {
     // TODO: implement dispose
     super.dispose();
   }
-  @override
-  void didChangeDependencies() async {
-    if (init) {
-      await Provider.of<usersProvider>(context, listen: false)
-          .setPostsForThisProfile(currentUser!.uid.toString())
-          .then((value) {
-        loadScreen = false;
-        init = false;
-      });
-    }
-    super.didChangeDependencies();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
     NexusUser? myProfile = Provider.of<usersProvider>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     Map<String, PostModel>? posts =
-        Provider.of<usersProvider>(context).fetchThisUserPosts;
+        Provider.of<usersProvider>(context).fetchMyPostsMap;
     
     Map<String, PostModel>? savedPosts =
-        Provider.of<usersProvider>(context).fetchSavedPosts;
+        Provider.of<usersProvider>(context).fetchSavedPostsMap;
     Future pickImageForCoverPicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
@@ -106,14 +93,7 @@ class _profiletScreenState extends State<profiletScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (loadScreen!)
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.orange,
-                    backgroundColor: Colors.blue,
-                  ),
-                )
-              : SingleChildScrollView(
+          child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,14 +542,7 @@ class _profiletScreenState extends State<profiletScreen> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => viewPostsFromProfile(
-                                      uid: myProfile.uid,
-                                      viewPosts: viewPosts,
-                                    ),
-                                  ));
+                              
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),

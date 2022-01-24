@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/utils/constants.dart';
@@ -12,21 +13,56 @@ import 'package:http/http.dart' as http;
 import 'package:nexus/utils/widgets.dart';
 
 class usersProvider extends ChangeNotifier {
-  Map<String, PostModel> postToDisplay = {};
+  Map<String, PostModel> feedPostMap = {};
 
-  Map<String, PostModel> thisUserPosts = {};
+  Map<String, PostModel> yourPostsMap = {};
 
-  Map<String, PostModel> savedPosts = {};
+  Map<String, PostModel> myPostsMap = {};
 
-  Map<String, PostModel> get fetchThisUserPosts {
-    return thisUserPosts;
+  Map<String, PostModel> savedPostsMap = {};
+
+  Map<String, PostModel> get fetchSavedPostsMap => savedPostsMap;
+
+  Map<String, PostModel> get fetchFeedPostsMap => feedPostMap;
+
+  Map<String, PostModel> get fetchYourPostsMap => yourPostsMap;
+
+  Map<String, PostModel> get fetchMyPostsMap => myPostsMap;
+
+  List<PostModel> feedPostList = [];
+
+  List<PostModel> yourPostsList = [];
+
+  List<PostModel> myPostsList = [];
+
+  List<PostModel> savedPostsList = [];
+
+  List<PostModel> get fetchMyPostsList {
+    myPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
+        .parse(b.dateOfPost)
+        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
+    return [...myPostsList];
+  }
+
+  List<PostModel> get fetchYourPostsList {
+    yourPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
+        .parse(b.dateOfPost)
+        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
+    return [...yourPostsList];
+  }
+
+  List<PostModel> get fetchSavedPostList {
+    savedPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
+        .parse(b.dateOfPost)
+        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
+    return [...savedPostsList];
+  }
+
+  List<PostModel> get fetchFeedPostList {
+    return [...feedPostList];
   }
 
   Map<String, NexusUser> allUsers = {};
-
-  Map<String, PostModel> get fetchPostsToDisplay {
-    return postToDisplay;
-  }
 
   Map<String, NexusUser> get fetchAllUsers {
     return allUsers;
@@ -81,40 +117,42 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
+  // Function to set posts that will be diplayed on your feed screen
   Future<void> setFeedPosts(String myUid) async {
-    print('reached setFeed Post Function');
-
-    List<dynamic> myFollowings = [];
-    List<PostModel> tempPosts = [];
-    Map<String, PostModel> finalPosts = {};
-    final String api = constants().fetchApi + 'users/${myUid}.json';
-    final response = await http.get(Uri.parse(api));
-    final user = json.decode(response.body) as Map<String, dynamic>;
-    myFollowings = user['followings'] ?? [];
-    for (int index = 0; index < myFollowings.length; ++index) {
-      print('entering loop');
-      final String api3 =
-          constants().fetchApi + 'posts/${myFollowings[index].toString()}.json';
-      final postsResponse = await http.get(Uri.parse(api3));
-      if (json.decode(postsResponse.body) != null) {
-        final postsData =
-            json.decode(postsResponse.body) as Map<String, dynamic>;
-        postsData.forEach((key, value) {
-          tempPosts.add(PostModel(
-              dateOfPost: value['dateOfPost'],
-              caption: value['caption'],
-              image: value['image'],
-              uid: value['uid'],
-              post_id: key,
-              likes: value['likes'] ?? []));
-        });
-        for (int run = 0; run < tempPosts.length; ++run) {
-          finalPosts[tempPosts[run].post_id] = tempPosts[run];
-        }
-      }
+    List<PostModel> temp = [];
+    List<dynamic> myFollowing = allUsers[myUid]!.followings;
+    for (int i = 0; i < myFollowing.length; ++i) {
+      String uid = myFollowing[i].toString();
+      temp.addAll(await getListOfPostsUsingUid(uid));
     }
-    postToDisplay = finalPosts;
+    feedPostList = temp;
+    feedPostList.sort((a, b) => DateFormat('d/MM/yyyy')
+        .parse(b.dateOfPost)
+        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
     notifyListeners();
+  }
+
+  // Funtion that returns a future list of posts using a provided uid -> only used by setFeedPost()
+  Future<List<PostModel>> getListOfPostsUsingUid(String uid) async {
+    List<PostModel> list = [];
+    final String apiForPosts = constants().fetchApi + 'posts/${uid}.json';
+    final responseOfPosts = await http.get(Uri.parse(apiForPosts));
+    if (json.decode(responseOfPosts.body) != null) {
+      final postData =
+          json.decode(responseOfPosts.body) as Map<String, dynamic>;
+      postData.forEach((key, value) {
+        PostModel p = PostModel(
+            caption: value['caption'],
+            dateOfPost: value['dateOfPost'],
+            image: value['image'],
+            uid: value['uid'],
+            post_id: key,
+            likes: value['likes'] ?? []);
+        feedPostMap[key] = p;
+        list.add(p);
+      });
+    }
+    return list;
   }
 
   Future<void> addCoverPicture(File? newImage, String uid) async {
@@ -216,177 +254,148 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> followUser(String myUid, String personUid) async {
-    List<dynamic> followings;
-    List<dynamic> followers;
-    String? chatId;
+  Future<void> followUser(String myUid, String yourUid) async {
+    List<dynamic> myFollowings = allUsers[myUid]!.followings;
+    myFollowings.add(yourUid);
+    List<dynamic> yourFollowers = allUsers[yourUid]!.followers;
+    yourFollowers.add(myUid);
+    NexusUser myOldProfile = allUsers[myUid]!;
+    NexusUser yourOldProfile = allUsers[yourUid]!;
 
-    NexusUser? thisUser = allUsers[personUid];
-    NexusUser? myOldProfile = allUsers[myUid];
-
-    try {
-      // Generating chat ID
-      chatId = generateChatRoomUsingUid(myUid, personUid);
-
-      // fetch details of user 1 -> START
-      final String api1 = constants().fetchApi + 'users/${myUid}.json';
-      final responseForUser1 = await http.get(Uri.parse(api1));
-      final dataForUser1 =
-          json.decode(responseForUser1.body) as Map<String, dynamic>;
-
-      followings = dataForUser1['followings'] ?? [];
-      // Increase my followings
-      followings.add(personUid);
-
-      allUsers[myUid] = NexusUser(
-        dp: myOldProfile!.dp,
-        title: myOldProfile.title,
+    NexusUser myNewProfile = NexusUser(
         bio: myOldProfile.bio,
-        email: myOldProfile.email,
-        uid: myOldProfile.uid,
         coverImage: myOldProfile.coverImage,
+        dp: myOldProfile.dp,
+        email: myOldProfile.email,
         followers: myOldProfile.followers,
-        followings: followings,
-        username: myOldProfile.username,
-      );
+        followings: myFollowings,
+        title: myOldProfile.title,
+        uid: myOldProfile.uid,
+        username: myOldProfile.username);
 
-      // Set chat id to my cloudstore
+    NexusUser yourNewProfile = NexusUser(
+        bio: yourOldProfile.bio,
+        coverImage: yourOldProfile.coverImage,
+        dp: yourOldProfile.dp,
+        email: yourOldProfile.email,
+        followers: yourFollowers,
+        followings: yourOldProfile.followings,
+        title: yourOldProfile.title,
+        uid: yourOldProfile.uid,
+        username: yourOldProfile.username);
 
-      // Check if it already exists
+    allUsers[yourUid] = yourNewProfile;
+    allUsers[myUid] = myNewProfile;
+    await updateConnectionDetailToServer(
+        myUid, myFollowings, yourUid, yourFollowers);
+    notifyListeners();
+  }
 
-      var userDocRef = FirebaseFirestore.instance.collection(myUid).doc(chatId);
-      var doc = await userDocRef.get();
-      if (!doc.exists) {
-        await FirebaseFirestore.instance.collection(myUid).doc(chatId).set({
-          'chatId': chatId,
-          'lastSent': Timestamp.now(),
-          'uid': personUid,
-          'chatbg': -1,
-        });
-      } else {
-        debugPrint('Already exists');
-      }
+  Future<void> unFollowUser(String myUid, String yourUid) async {
+    List<dynamic> myFollowings = allUsers[myUid]!.followings;
+    myFollowings.remove(yourUid);
+    List<dynamic> yourFollowers = allUsers[yourUid]!.followers;
+    yourFollowers.remove(myUid);
+    NexusUser myOldProfile = allUsers[myUid]!;
+    NexusUser yourOldProfile = allUsers[yourUid]!;
 
-      // Update to Server for User1
+    NexusUser myNewProfile = NexusUser(
+        bio: myOldProfile.bio,
+        coverImage: myOldProfile.coverImage,
+        dp: myOldProfile.dp,
+        email: myOldProfile.email,
+        followers: myOldProfile.followers,
+        followings: myFollowings,
+        title: myOldProfile.title,
+        uid: myOldProfile.uid,
+        username: myOldProfile.username);
 
+    NexusUser yourNewProfile = NexusUser(
+        bio: yourOldProfile.bio,
+        coverImage: yourOldProfile.coverImage,
+        dp: yourOldProfile.dp,
+        email: yourOldProfile.email,
+        followers: yourFollowers,
+        followings: yourOldProfile.followings,
+        title: yourOldProfile.title,
+        uid: yourOldProfile.uid,
+        username: yourOldProfile.username);
+
+    allUsers[yourUid] = yourNewProfile;
+    allUsers[myUid] = myNewProfile;
+    await updateConnectionDetailToServer(
+        myUid, myFollowings, yourUid, yourFollowers);
+    notifyListeners();
+  }
+
+  Future<void> updateConnectionDetailToServer(
+      String myUid,
+      List<dynamic> myFollowings,
+      String yourUid,
+      List<dynamic> yourFollowers) async {
+    final String api1 = constants().fetchApi + 'users/${myUid}.json';
+    final String api2 = constants().fetchApi + 'users/${yourUid}.json';
+    try {
       await http.patch(Uri.parse(api1),
-          body: json.encode({'followings': followings}));
-
-      // User 1 operations -> END
-
-      // fetch details of user 2 -> START
-      final String api2 = constants().fetchApi + 'users/${personUid}.json';
-      final responseForUser2 = await http.get(Uri.parse(api2));
-      final dataForUser2 =
-          json.decode(responseForUser2.body) as Map<String, dynamic>;
-      followers = dataForUser2['followers'] ?? [];
-
-      // Increase their followers
-      followers.add(myUid);
-
-      allUsers[personUid] = NexusUser(
-        dp: thisUser!.dp,
-        title: thisUser.title,
-        bio: thisUser.bio,
-        email: thisUser.email,
-        uid: thisUser.uid,
-        coverImage: thisUser.coverImage,
-        followers: followers,
-        followings: thisUser.followings,
-        username: thisUser.username,
-      );
-
-      // Set chat id to person's cloudstore
-
-      var userDocRef2 =
-          FirebaseFirestore.instance.collection(personUid).doc(chatId);
-      var doc2 = await userDocRef2.get();
-      if (!doc2.exists) {
-        await FirebaseFirestore.instance.collection(personUid).doc(chatId).set({
-          'chatId': chatId,
-          'lastSent': Timestamp.now(),
-          'uid': myUid,
-          'chatbg': -1,
-        });
-      } else {
-        debugPrint('Already exists');
-      }
-
-      // Update to the server
+          body: json.encode({'followings': myFollowings}));
       await http.patch(Uri.parse(api2),
-          body: json.encode({
-            'followers': followers,
-          }));
-
-      // Operation on User 2 -> END
-
-      notifyListeners();
+          body: json.encode({'followers': yourFollowers}));
     } catch (error) {
       print(error);
     }
   }
 
-  Future<void> unFollowUser(String myUid, String personUid) async {
-    NexusUser? thisUser = allUsers[personUid];
-    NexusUser? myOldProfile = allUsers[myUid];
-    List<dynamic> followings;
-    List<dynamic> followers;
-
-    try {
-      final String api1 = constants().fetchApi + 'users/${myUid}.json';
-      final responseForUser1 = await http.get(Uri.parse(api1));
-      final dataForUser1 =
-          json.decode(responseForUser1.body) as Map<String, dynamic>;
-
-      followings = dataForUser1['followings'] ?? [];
-      // decrease my followings
-      followings.remove(personUid);
-
-      allUsers[myUid] = NexusUser(
-        dp: myOldProfile!.dp,
-        title: myOldProfile.title,
-        bio: myOldProfile.bio,
-        email: myOldProfile.email,
-        uid: myOldProfile.uid,
-        coverImage: myOldProfile.coverImage,
-        followers: myOldProfile.followers,
-        followings: followings,
-        username: myOldProfile.username,
-      );
-
-      await http.patch(Uri.parse(api1),
-          body: json.encode({'followings': followings}));
-      // User 1 operations -> END
-
-      final String api2 = constants().fetchApi + 'users/${personUid}.json';
-      final responseForUser2 = await http.get(Uri.parse(api2));
-      final dataForUser2 =
-          json.decode(responseForUser2.body) as Map<String, dynamic>;
-      followers = dataForUser2['followers'] ?? [];
-
-      // Decrease their followers
-      followers.remove(myUid);
-      allUsers[personUid] = NexusUser(
-        dp: thisUser!.dp,
-        title: thisUser.title,
-        bio: thisUser.bio,
-        email: thisUser.email,
-        uid: thisUser.uid,
-        coverImage: thisUser.coverImage,
-        followers: followers,
-        followings: thisUser.followings,
-        username: thisUser.username,
-      );
-      await http.patch(Uri.parse(api2),
-          body: json.encode({
-            'followers': followers,
-          }));
-      notifyListeners();
-    } catch (error) {
-      print(error);
+  // Function to set my posts
+  Future<void> setMyPosts(String uid) async {
+    List<PostModel> tempList = [];
+    Map<String, PostModel> tempMap = {};
+    final String api = constants().fetchApi + 'posts/${uid}.json';
+    final postResponse = await http.get(Uri.parse(api));
+    if (json.decode(postResponse.body) != null) {
+      final postData = json.decode(postResponse.body) as Map<String, dynamic>;
+      postData.forEach((key, value) {
+        PostModel p = PostModel(
+            caption: value['caption'],
+            dateOfPost: value['dateOfPost'],
+            image: value['image'],
+            uid: value['uid'],
+            post_id: key,
+            likes: value['likes'] ?? []);
+        tempList.add(p);
+        tempMap[key] = p;
+      });
     }
+    myPostsList = tempList;
+    myPostsMap = tempMap;
+    notifyListeners();
   }
 
+  // Function to set your posts
+  Future<void> setYourPosts(String uid) async {
+    List<PostModel> tempList = [];
+    Map<String, PostModel> tempMap = {};
+    final String api = constants().fetchApi + 'posts/${uid}.json';
+    final postResponse = await http.get(Uri.parse(api));
+    if (json.decode(postResponse.body) != null) {
+      final postData = json.decode(postResponse.body) as Map<String, dynamic>;
+      postData.forEach((key, value) {
+        PostModel p = PostModel(
+            caption: value['caption'],
+            dateOfPost: value['dateOfPost'],
+            image: value['image'],
+            uid: value['uid'],
+            post_id: key,
+            likes: value['likes'] ?? []);
+        tempList.add(p);
+        tempMap[key] = p;
+      });
+    }
+    yourPostsList = tempList;
+    yourPostsMap = tempMap;
+    notifyListeners();
+  }
+
+  // Function to add new post
   Future<void> addNewPost(String caption, String uid, File image) async {
     final String api = constants().fetchApi + 'posts/${uid}.json';
     try {
@@ -418,13 +427,21 @@ class usersProvider extends ChangeNotifier {
                 }))
             .then((v) {
           final postData = json.decode(v.body) as Map<String, dynamic>;
-          thisUserPosts[postData['name']] = PostModel(
+          myPostsMap[postData['name']] = PostModel(
               caption: caption,
               dateOfPost: dateOfPost,
               image: value,
               uid: uid,
               post_id: postData['name'],
               likes: []);
+          myPostsList.add(PostModel(
+              caption: caption,
+              dateOfPost: dateOfPost,
+              image: value,
+              uid: uid,
+              post_id: postData['name'],
+              likes: []));
+
           notifyListeners();
         });
       });
@@ -433,185 +450,278 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
+  // Function to delete post
   Future<void> deletePost(String postId) async {
     final String api = constants().fetchApi + 'posts/$postId.json';
     try {
       await http.delete(Uri.parse(api)).then((value) {
         FirebaseFirestore.instance.collection('posts').doc(postId).delete();
       });
-      thisUserPosts.remove(postId);
+      myPostsMap.remove(postId);
+      myPostsList.removeWhere((element) => element.post_id == postId);
       notifyListeners();
     } catch (error) {
       print(error);
     }
   }
 
-  Future<void> likeThisPostFromFeed(
-      String myUid, String userUid, String postUid) async {
-    final String api =
-        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
-    List<dynamic> likes = [];
-    try {
-      likes = postToDisplay[postUid]!.likes;
-      likes.add(myUid);
-      PostModel? tempPostModel = postToDisplay[postUid];
-      PostModel p = PostModel(
-          caption: tempPostModel!.caption,
-          dateOfPost: tempPostModel.dateOfPost,
-          image: tempPostModel.image,
-          uid: tempPostModel.uid,
-          post_id: tempPostModel.post_id,
-          likes: likes);
-      postToDisplay[postUid] = p;
-      notifyListeners();
-      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
-    } catch (error) {
-      print(error);
-    }
+  // Update likes to server
+  Future<void> likePostUpdateToServer(
+      String op, String postId, List<dynamic> likes) async {
+    final String api = constants().fetchApi + 'posts/${op}/${postId}.json';
+    await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
   }
 
-  Future<void> likeThisPostFromThisUserProfile(
-      String myUid, String userUid, String postUid) async {
-    final String api =
-        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
-    List<dynamic> likes = [];
-    try {
-      likes = thisUserPosts[postUid]!.likes;
-      likes.add(myUid);
-      PostModel? tempPostModel = thisUserPosts[postUid];
-      PostModel p = PostModel(
-          caption: tempPostModel!.caption,
-          dateOfPost: tempPostModel.dateOfPost,
-          image: tempPostModel.image,
-          uid: tempPostModel.uid,
-          post_id: tempPostModel.post_id,
-          likes: likes);
-      thisUserPosts[postUid] = p;
-      notifyListeners();
-      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
-    } catch (error) {
-      print(error);
-    }
-  }
+  // Like post
+  Future<void> likePost(
+      String myUid, String opId, String postId, String source) async {
+    // Souce can be -> "feed","self","yours","saved"
 
-  Future<void> disLikeThisPostFromFeed(
-      String myUid, String userUid, String postUid) async {
-    final String api =
-        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
-    List<dynamic> likes = [];
-    try {
-      likes = postToDisplay[postUid]!.likes;
-      likes.remove(myUid);
-      PostModel? tempPostModel = postToDisplay[postUid];
-      PostModel p = PostModel(
-          caption: tempPostModel!.caption,
-          dateOfPost: tempPostModel.dateOfPost,
-          image: tempPostModel.image,
-          uid: tempPostModel.uid,
-          post_id: tempPostModel.post_id,
-          likes: likes);
-      postToDisplay[postUid] = p;
-      notifyListeners();
-      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
-    } catch (error) {
-      print(error);
+    switch (source) {
+      case 'feed':
+        {
+          PostModel oldPost = feedPostMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              feedPostList.indexWhere((element) => element.post_id == postId);
+          feedPostList.removeAt(index);
+          feedPostMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          feedPostList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      case 'self':
+        {
+          PostModel oldPost = myPostsMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              myPostsList.indexWhere((element) => element.post_id == postId);
+          myPostsList.removeAt(index);
+          myPostsMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          myPostsList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      case 'saved':
+        {
+          PostModel oldPost = savedPostsMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              savedPostsList.indexWhere((element) => element.post_id == postId);
+          savedPostsList.removeAt(index);
+          savedPostsMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          savedPostsList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      case 'yours':
+        {
+          PostModel oldPost = yourPostsMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              yourPostsList.indexWhere((element) => element.post_id == postId);
+          yourPostsList.removeAt(index);
+          yourPostsMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          yourPostsList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      default:
+        {
+          print('passed wrong choice');
+        }
     }
+    final String api = 'posts/${opId}/${postId}.json';
   }
+  // Dislike post
+  Future<void> dislikePost(
+      String myUid, String opId, String postId, String source) async {
+    // Souce can be -> "feed","self","yours","saved"
 
-  Future<void> disLikePostFromSavedPosts(
-      String myUid, String userUid, String postUid) async {
-    final String api =
-        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
-    List<dynamic> likes = [];
-    try {
-      likes = savedPosts[postUid]!.likes;
-      likes.remove(myUid);
-      PostModel? tempPostModel = savedPosts[postUid];
-      PostModel p = PostModel(
-          caption: tempPostModel!.caption,
-          dateOfPost: tempPostModel.dateOfPost,
-          image: tempPostModel.image,
-          uid: tempPostModel.uid,
-          post_id: tempPostModel.post_id,
-          likes: likes);
-      savedPosts[postUid] = p;
-      notifyListeners();
-      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
-    } catch (error) {
-      print(error);
-    }
-  }
+    switch (source) {
+      case 'feed':
+        {
+          PostModel oldPost = feedPostMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.remove(myUid);
+          int index =
+              feedPostList.indexWhere((element) => element.post_id == postId);
+          feedPostList.removeAt(index);
+          feedPostMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
 
-  Future<void> likeThisPostFromSavedPosts(
-      String myUid, String userUid, String postUid) async {
-    final String api =
-        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
-    List<dynamic> likes = [];
-    try {
-      likes = savedPosts[postUid]!.likes;
-      likes.add(myUid);
-      PostModel? tempPostModel = savedPosts[postUid];
-      PostModel p = PostModel(
-          caption: tempPostModel!.caption,
-          dateOfPost: tempPostModel.dateOfPost,
-          image: tempPostModel.image,
-          uid: tempPostModel.uid,
-          post_id: tempPostModel.post_id,
-          likes: likes);
-      savedPosts[postUid] = p;
-      notifyListeners();
-      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
-    } catch (error) {
-      print(error);
+          feedPostList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      case 'self':
+        {
+          PostModel oldPost = myPostsMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              myPostsList.indexWhere((element) => element.post_id == postId);
+          myPostsList.removeAt(index);
+          myPostsMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          myPostsList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      case 'saved':
+        {
+          PostModel oldPost = savedPostsMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              savedPostsList.indexWhere((element) => element.post_id == postId);
+          savedPostsList.removeAt(index);
+          savedPostsMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          savedPostsList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      case 'yours':
+        {
+          PostModel oldPost = yourPostsMap[postId]!;
+          List<dynamic> likes = oldPost.likes;
+          likes.add(myUid);
+          int index =
+              yourPostsList.indexWhere((element) => element.post_id == postId);
+          yourPostsList.removeAt(index);
+          yourPostsMap[postId] = PostModel(
+              caption: oldPost.caption,
+              dateOfPost: oldPost.dateOfPost,
+              image: oldPost.image,
+              uid: oldPost.uid,
+              post_id: oldPost.post_id,
+              likes: likes);
+          yourPostsList.insert(
+              index,
+              PostModel(
+                  caption: oldPost.caption,
+                  dateOfPost: oldPost.dateOfPost,
+                  image: oldPost.image,
+                  uid: oldPost.uid,
+                  post_id: oldPost.post_id,
+                  likes: likes));
+          notifyListeners();
+          await likePostUpdateToServer(opId, postId, likes);
+        }
+        break;
+      default:
+        {
+          print('passed wrong choice');
+        }
     }
-  }
-
-  Future<void> disLikePostFromThisUserProfile(
-      String myUid, String userUid, String postUid) async {
-    final String api =
-        constants().fetchApi + 'posts/${userUid}/${postUid}.json';
-    List<dynamic> likes = [];
-    try {
-      likes = thisUserPosts[postUid]!.likes;
-      likes.remove(myUid);
-      PostModel? tempPostModel = thisUserPosts[postUid];
-      PostModel p = PostModel(
-          caption: tempPostModel!.caption,
-          dateOfPost: tempPostModel.dateOfPost,
-          image: tempPostModel.image,
-          uid: tempPostModel.uid,
-          post_id: tempPostModel.post_id,
-          likes: likes);
-      thisUserPosts[postUid] = p;
-      notifyListeners();
-      await http.patch(Uri.parse(api), body: json.encode({'likes': likes}));
-    } catch (error) {
-      print(error);
-    }
-  }
-
-  Future<void> setPostsForThisProfile(String uid) async {
-    final api = constants().fetchApi + 'posts/${uid}.json';
-    Map<String, PostModel> temp = {};
-    try {
-      final response = await http.get(Uri.parse(api));
-      if (json.decode(response.body) != null) {
-        final data2 = json.decode(response.body) as Map<String, dynamic>;
-        data2.forEach((key, value) {
-          temp[key] = PostModel(
-              dateOfPost: value['dateOfPost'],
-              caption: value['caption'],
-              image: value['image'],
-              uid: uid,
-              post_id: key,
-              likes: value['likes'] ?? []);
-        });
-      }
-      thisUserPosts = temp;
-      notifyListeners();
-    } catch (error) {
-      print(error);
-    }
+    final String api = 'posts/${opId}/${postId}.json';
   }
 
   Future<void> setSavedPostsOnce(String uid) async {
@@ -624,22 +734,17 @@ class usersProvider extends ChangeNotifier {
         final savedPostIdData =
             json.decode(savedPostIdResponse.body) as Map<String, dynamic>;
         savedPostIdData.forEach((key, value) async {
-      
           tempKeys[value['postId']] = value['saveId'];
           tempPosts[value['postId'].toString()] =
               await getThisPostDetail(value['op'], value['postId'].toString());
         });
       }
-      savedPosts = tempPosts;
+      savedPostsMap = tempPosts;
       savedPostsKeys = tempKeys;
       notifyListeners();
     } catch (error) {
       print(error);
     }
-  }
-
-  Map<String, PostModel> get fetchSavedPosts {
-    return savedPosts;
   }
 
   Future<PostModel> getThisPostDetail(String op, String postId) async {
@@ -669,7 +774,7 @@ class usersProvider extends ChangeNotifier {
     String? saveId;
     final String api = constants().fetchApi + 'saved/${myUid}.json';
     try {
-      savedPosts[postModel.post_id] = postModel;
+      savedPostsMap[postModel.post_id] = postModel;
       notifyListeners();
       await http
           .post(Uri.parse(api),
@@ -688,8 +793,8 @@ class usersProvider extends ChangeNotifier {
       savedPostsKeys[postModel.post_id] = saveId!;
       notifyListeners();
     } catch (error) {
-      if (savedPosts.containsKey(postModel.post_id)) {
-        savedPosts.remove(postModel.post_id);
+      if (savedPostsMap.containsKey(postModel.post_id)) {
+        savedPostsMap.remove(postModel.post_id);
       }
     }
   }
@@ -697,12 +802,11 @@ class usersProvider extends ChangeNotifier {
   Map<String, String> savedPostsKeys = {};
 
   Future<void> unsavePost(String postId, String myUid) async {
-   
     final String api = constants().fetchApi +
         'saved/${myUid}/${savedPostsKeys[postId].toString()}.json';
     try {
       await http.delete(Uri.parse(api));
-      savedPosts.remove(postId);
+      savedPostsMap.remove(postId);
       savedPostsKeys.remove(postId);
       notifyListeners();
     } catch (error) {

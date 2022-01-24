@@ -6,7 +6,6 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
-import 'package:nexus/screen/Posts/viewPostsFromProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +21,7 @@ class _userProfileState extends State<userProfile> {
   User? currentUser;
   bool loadAfterFollowProcess = false;
   bool init = true;
+  bool? amIFollowing;
   @override
   void initState() {
     loadScreen = true;
@@ -30,10 +30,13 @@ class _userProfileState extends State<userProfile> {
   }
 
   @override
-  void didChangeDependencies()async {
-    if(init){
-      Provider.of<usersProvider>(context).setPostsForThisProfile(widget.uid.toString()).then((value){
-        loadScreen=false;
+  void didChangeDependencies() async {
+    if (init) {
+      Provider.of<usersProvider>(context)
+          .setYourPosts(widget.uid.toString())
+          .then((value) {
+            
+        loadScreen = false;
         init = false;
       });
     }
@@ -41,13 +44,13 @@ class _userProfileState extends State<userProfile> {
     super.didChangeDependencies();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-    NexusUser? thisProfile = Provider.of<usersProvider>(context).fetchAllUsers[widget.uid.toString()];
-    Map<String,PostModel>? posts = Provider.of<usersProvider>(context).fetchThisUserPosts;
+    NexusUser? thisProfile = Provider.of<usersProvider>(context)
+        .fetchAllUsers[widget.uid.toString()];
+        amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
+    List<PostModel> posts =
+        Provider.of<usersProvider>(context).fetchYourPostsList;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -76,7 +79,7 @@ class _userProfileState extends State<userProfile> {
                           children: [
                             Positioned(
                               top: 0,
-                              child: (thisProfile!.coverImage != '')
+                              child: (thisProfile.coverImage != '')
                                   ? CachedNetworkImage(
                                       imageUrl: thisProfile.coverImage,
                                       height: displayHeight(context) * 0.25,
@@ -105,14 +108,14 @@ class _userProfileState extends State<userProfile> {
                                     .8
                                   ])),
                             ),
-                            
                             Positioned(
                                 top: displayHeight(context) * 0.1655,
-                                left: displayWidth(context) * 0.052,
+                                left: displayWidth(context) * 0.035,
                                 child: Card(
                                   color: Colors.orange[300],
                                   elevation: 6.0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
                                   child: Padding(
                                     padding: const EdgeInsets.all(2.5),
                                     child: ClipRRect(
@@ -120,15 +123,17 @@ class _userProfileState extends State<userProfile> {
                                       child: (thisProfile.dp != '')
                                           ? CachedNetworkImage(
                                               imageUrl: thisProfile.dp,
-                                              height:
-                                                  displayHeight(context) * 0.0905,
-                                              width: displayWidth(context) * 0.175,
+                                              height: displayHeight(context) *
+                                                  0.0905,
+                                              width:
+                                                  displayWidth(context) * 0.175,
                                               fit: BoxFit.cover,
                                             )
                                           : Icon(
                                               Icons.person,
                                               color: Colors.orange[300],
-                                              size: displayWidth(context) * 0.045,
+                                              size:
+                                                  displayWidth(context) * 0.045,
                                             ),
                                     ),
                                   ),
@@ -179,7 +184,7 @@ class _userProfileState extends State<userProfile> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 0),
+                        padding: const EdgeInsets.only(left: 20.0, top: 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -329,39 +334,39 @@ class _userProfileState extends State<userProfile> {
                           children: [
                             InkWell(
                               onTap: () {
-                                setState(() {
-                                  loadAfterFollowProcess = true;
-                                });
-                                if (thisProfile.followers
-                                    .contains(currentUser!.uid.toString())) {
-                                  Provider.of<usersProvider>(context,
-                                          listen: false)
-                                      .unFollowUser(currentUser!.uid.toString(),
-                                          thisProfile.uid)
-                                      .then((value) {
-                                    setState(() {
-                                      loadAfterFollowProcess = false;
-                                    });
+                                if (amIFollowing!) {
+                                  setState(() {
+                                    amIFollowing=!amIFollowing!;
                                   });
+                                      Provider.of<usersProvider>(context,
+                                          listen: false)
+                                      .unFollowUser(
+                                          currentUser!.uid.toString(),
+                                          thisProfile.uid);
                                 } else {
-                                  Provider.of<usersProvider>(context,
-                                          listen: false)
-                                      .followUser(currentUser!.uid.toString(),
-                                          thisProfile.uid)
-                                      .then((value) {
-                                    setState(() {
-                                      loadAfterFollowProcess = false;
-                                    });
+                                  setState(() {
+                                    amIFollowing=!amIFollowing!;
                                   });
+                                  Provider.of<usersProvider>(context,listen: false)
+                                      .followUser(
+                                          currentUser!.uid.toString(),
+                                          thisProfile.uid);
                                 }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
+                                  border: Border.all(color: 
+                                  thisProfile.followers.contains(currentUser!.uid.toString())
+                                  ? Colors.grey[400]!
+                                  : Colors.deepOrange
+                                  ),
                                   borderRadius: BorderRadius.circular(15),
                                   gradient: LinearGradient(
                                       begin: Alignment.topRight,
                                       end: Alignment.bottomLeft,
-                                      colors: [
+                                      colors: amIFollowing!?
+                                      [Colors.white,Colors.white]
+                                      : [
                                         Colors.deepOrange,
                                         Colors.deepOrangeAccent,
                                         Colors.orange[600]!,
@@ -381,12 +386,11 @@ class _userProfileState extends State<userProfile> {
                                           ),
                                         )
                                       : Text(
-                                          (thisProfile.followers.contains(
-                                                  currentUser!.uid.toString()))
+                                          amIFollowing!
                                               ? 'Unfollow'
                                               : 'Follow',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: (amIFollowing!)?Colors.black: Colors.white,
                                               fontWeight: FontWeight.bold,
                                               fontSize: displayWidth(context) *
                                                   0.045),
@@ -446,20 +450,13 @@ class _userProfileState extends State<userProfile> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3),
-                        itemCount: posts.values.toList().length,
+                        itemCount: posts.length,
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => viewPostsFromProfile(
-                                      uid: thisProfile.uid,
-                                      viewPosts: true,
-                                    ),
-                                  ));
+                             
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),
@@ -470,7 +467,7 @@ class _userProfileState extends State<userProfile> {
                                     width: displayWidth(context) * 0.3,
                                     fit: BoxFit.cover,
                                     imageUrl:
-                                        posts.values.toList()[index].image),
+                                        posts[index].image),
                               ),
                             ),
                           );

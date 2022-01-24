@@ -34,7 +34,9 @@ class MyApp extends StatelessWidget {
             initialData: null,
           ),
           ChangeNotifierProvider(create: (context) => usernameProvider()),
-          ChangeNotifierProvider(create: (context) => screenIndexProvider(),),
+          ChangeNotifierProvider(
+            create: (context) => screenIndexProvider(),
+          ),
           ChangeNotifierProvider(
             create: (context) => usersProvider(),
           ),
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             home: Consumer<AuthNotifier>(
               builder: (context, notifier, child) {
-                return notifier.user != null ?  welcomeScreen() : wrapper();
+                return notifier.user != null ? welcomeScreen() : wrapper();
               },
             )));
   }
