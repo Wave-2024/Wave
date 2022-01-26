@@ -33,13 +33,14 @@ class _chatScreenState extends State<chatScreen> {
     Map<String, NexusUser>? allUsers =
         Provider.of<usersProvider>(context, listen: false).fetchAllUsers;
     NexusUser? myProfile = allUsers[currentUser!.uid.toString()];
+    List<dynamic> myFollowingId = myProfile!.followings;
     displayChatHead(String chatId, String username, String dp, int chatbg,
-        String lastSeen) {
+    ) {
       return ListTile(
-        isThreeLine: false,
-      tileColor: Colors.transparent,
-      onTap: () {
-        Navigator.push(
+          isThreeLine: false,
+          tileColor: Colors.transparent,
+          onTap: () {
+            Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => inboxScreen(
@@ -47,34 +48,37 @@ class _chatScreenState extends State<chatScreen> {
                     personDp: dp,
                     chatbg: chatbg,
                     personUserName: username,
-                    myDp: myProfile!.dp,
+                    myDp: myProfile.dp,
                     myId: currentUser!.uid.toString(),
                   ),
                 ));
-      },
-      title: Text(
-        username,
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: displayWidth(context)*0.04),
-      ),
-      subtitle: Text(
-          lastSeen,
-        style: TextStyle(color: Colors.black45),
-      ),
-      leading: (dp != '')
-          ? CircleAvatar(
-            backgroundColor: Colors.grey[200],
-              backgroundImage: NetworkImage(dp),
-              radius: displayWidth(context) * 0.05,
-            )
-          : CircleAvatar(
-              backgroundColor: Colors.grey[200],
-              radius: displayWidth(context) * 0.05,
-              child: Icon(
-                Icons.person,
-                size: displayWidth(context) * 0.075,
-                color: Colors.orange[400],
-              ),
-            ));
+          },
+          title: Text(
+            username,
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: displayWidth(context) * 0.04),
+          ),
+          subtitle: Text(
+            'something',
+            style: TextStyle(color: Colors.black45),
+          ),
+          leading: (dp != '')
+              ? CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: NetworkImage(dp),
+                  radius: displayWidth(context) * 0.05,
+                )
+              : CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  radius: displayWidth(context) * 0.05,
+                  child: Icon(
+                    Icons.person,
+                    size: displayWidth(context) * 0.075,
+                    color: Colors.orange[400],
+                  ),
+                ));
     }
 
     return Scaffold(
@@ -120,7 +124,9 @@ class _chatScreenState extends State<chatScreen> {
                             top: 25.0, left: 16, right: 16, bottom: 35),
                         child: StreamBuilder(
                           stream: FirebaseFirestore.instance
-                              .collection(currentUser!.uid.toString())
+                              .collection('messages')
+                              .doc(currentUser!.uid)
+                              .collection('chats')
                               .snapshots(),
                           builder: (context, AsyncSnapshot snapshot) {
                             if (snapshot.hasData) {
@@ -144,8 +150,7 @@ class _chatScreenState extends State<chatScreen> {
                                       userName,
                                       dp,
                                       chatbg,
-                                      differenceOfTime(
-                                          currentDate, lastSeenDate));
+                                  );
                                 },
                               );
                             } else {
@@ -163,5 +168,3 @@ class _chatScreenState extends State<chatScreen> {
     );
   }
 }
-
-
