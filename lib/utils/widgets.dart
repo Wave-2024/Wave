@@ -6,8 +6,6 @@ import 'package:nexus/models/CommentModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Posts/detail/postDetailForMyPost.dart';
-import 'package:nexus/screen/Posts/detail/postDetailScreen.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:provider/provider.dart';
 import 'devicesize.dart';
@@ -39,11 +37,18 @@ RichText printComment(BuildContext context, String userName, String comment) {
     TextSpan(
         text: userName,
         style:
-            const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: displayWidth(context) * 0.035,
+      ),
+    ),
+          
     TextSpan(
         text: ': ' + comment,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.black,
+          fontSize: displayWidth(context) * 0.035,
         ))
   ]));
 }
@@ -74,8 +79,8 @@ Widget displayComment(BuildContext context, String comment, String uid) {
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    height: displayHeight(context) * 0.05,
-                    width: displayWidth(context) * 0.1,
+                    height: displayHeight(context) * 0.042,
+                    width: displayWidth(context) * 0.078,
                     fit: BoxFit.cover,
                     imageUrl: user.dp,
                   ),
@@ -83,14 +88,20 @@ Widget displayComment(BuildContext context, String comment, String uid) {
               : Icon(
                   Icons.person,
                   color: Colors.orange[300],
-                  size: displayWidth(context) * 0.082,
+                  size: displayWidth(context) * 0.076,
                 ),
         ),
       ),
+      Icon(
+        Icons.verified,
+        color: Colors.orange[400],
+        size: displayWidth(context) * 0.044,
+      ),
+      
       Opacity(
           opacity: 0.0,
           child: VerticalDivider(
-            width: displayWidth(context) * 0.02,
+            width: displayWidth(context) * 0.01,
           )),
       Flexible(
         child: Card(
@@ -99,7 +110,7 @@ Widget displayComment(BuildContext context, String comment, String uid) {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           color: Colors.white,
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(10.0),
             child: printComment(context, user.username, comment),
           ),
         ),
