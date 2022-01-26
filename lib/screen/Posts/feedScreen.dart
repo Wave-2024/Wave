@@ -17,7 +17,6 @@ import 'package:badges/badges.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'CommentScreens/CommentsScreen.dart';
 
-
 class feedScreen extends StatefulWidget {
   @override
   State<feedScreen> createState() => _feedScreenState();
@@ -53,7 +52,6 @@ class _feedScreenState extends State<feedScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
-     
       await Provider.of<usersProvider>(context, listen: false)
           .setFeedPosts(currentUser!.uid.toString());
       return;
@@ -200,68 +198,70 @@ Widget displayPostsForFeed(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => userProfile(
-                                  uid: user.uid,
-                                ),
-                              ));
-                        },
-                        child: (user.dp != '')
-                            ? CircleAvatar(
-                                backgroundColor: Colors.grey[200],
-                                radius: displayWidth(context) * 0.045,
-                                backgroundImage: NetworkImage(user.dp),
-                              )
-                            : CircleAvatar(
-                                radius: displayWidth(context) * 0.045,
-                                backgroundColor: Colors.grey[200],
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.orange[300],
-                                  size: displayWidth(context) * 0.05,
-                                ),
-                              ),
-                      ),
-                      VerticalDivider(width: displayWidth(context)*0.028,),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => userProfile(
-                                  uid: user.uid,
-                                ),
-                              ));
-                        },
-                        child: Text(
-                          user.username,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: displayWidth(context) * 0.035,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      (user.followers.length>=5)?Icon(Icons.verified,color: Colors.orange[400],size: displayWidth(context)*0.04,):SizedBox(),
-                    ],
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => userProfile(
+                              uid: user.uid,
+                            ),
+                          ));
+                    },
+                    child: (user.dp != '')
+                        ? CircleAvatar(
+                            backgroundColor: Colors.grey[200],
+                            radius: displayWidth(context) * 0.045,
+                            backgroundImage: NetworkImage(user.dp),
+                          )
+                        : CircleAvatar(
+                            radius: displayWidth(context) * 0.045,
+                            backgroundColor: Colors.grey[200],
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.orange[300],
+                              size: displayWidth(context) * 0.05,
+                            ),
+                          ),
                   ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.chat))
+                  VerticalDivider(
+                    width: displayWidth(context) * 0.028,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => userProfile(
+                              uid: user.uid,
+                            ),
+                          ));
+                    },
+                    child: Text(
+                      user.username,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: displayWidth(context) * 0.035,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  VerticalDivider(width: displayWidth(context)*0.005,),
+                  (user.followers.length >= 5)
+                      ? Icon(
+                          Icons.verified,
+                          color: Colors.orange[400],
+                          size: displayWidth(context) * 0.045,
+                        )
+                      : SizedBox(),
                 ],
               ),
               Opacity(
                 opacity: 0.0,
                 child: Divider(
-                  height: displayHeight(context) * 0.01,
+                  height: displayHeight(context) * 0.02,
                 ),
               ),
               Center(
@@ -273,8 +273,9 @@ Widget displayPostsForFeed(
                       post.caption,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: displayWidth(context)*0.035,
-                          color: Colors.black87, fontWeight: FontWeight.w600),
+                          fontSize: displayWidth(context) * 0.035,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600),
                     )),
               ),
               Opacity(
@@ -302,12 +303,11 @@ Widget displayPostsForFeed(
                             elevation: 5,
                             backgroundColor: Colors.transparent,
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: CachedNetworkImage(
-                                imageUrl: post.image,
-                               fit: BoxFit.fill,
-                              )
-                            ),
+                                borderRadius: BorderRadius.circular(15),
+                                child: CachedNetworkImage(
+                                  imageUrl: post.image,
+                                  fit: BoxFit.fill,
+                                )),
                           ),
                         );
                       },
@@ -319,8 +319,7 @@ Widget displayPostsForFeed(
                           .dislikePost(myUid, post.uid, post.post_id, 'feed');
                     } else {
                       Provider.of<usersProvider>(context, listen: false)
-                          .likePost(myUid, post.uid, post.post_id, 'feed'
-                                             );
+                          .likePost(myUid, post.uid, post.post_id, 'feed');
                     }
                   },
                   child: ClipRRect(
@@ -469,4 +468,3 @@ Widget displayPostsForFeed(
     ),
   );
 }
-
