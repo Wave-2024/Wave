@@ -703,6 +703,31 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateCaption(
+      String myUid, String postId, String updatedCaption) async {
+    final String api = constants().fetchApi + 'posts/${myUid}/${postId}.json';
+    try {
+      PostModel oldPost = myPostsMap[postId]!;
+      int index =
+      myPostsList.indexWhere((element) => element.post_id == postId);
+      myPostsList.removeAt(index);
+      PostModel updatedPost = PostModel(
+          caption: updatedCaption,
+          dateOfPost: oldPost.dateOfPost,
+          image: oldPost.image,
+          uid: oldPost.uid,
+          post_id: oldPost.post_id,
+          likes: oldPost.likes);
+      myPostsList.insert(index, updatedPost);
+      myPostsMap[postId] = updatedPost;
+      notifyListeners();
+      await http.patch(Uri.parse(api),
+          body: json.encode({'caption': updatedCaption}));
+    } catch (error) {
+      print(error);
+    }
+  }
+
   Future<PostModel> getThisPostDetail(String op, String postId) async {
     PostModel? returnThisPost;
     final String api = constants().fetchApi + 'posts/${op}/${postId}.json';
