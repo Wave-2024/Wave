@@ -17,8 +17,9 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class viewYourPostsSceen extends StatefulWidget {
   final String? myUid;
   final int? index;
+  final String? yourUid;
 
-  viewYourPostsSceen({this.myUid, this.index});
+  viewYourPostsSceen({this.myUid, this.index, this.yourUid});
 
   @override
   State<viewYourPostsSceen> createState() => _viewYourPostsSceenState();
@@ -45,11 +46,11 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
       await Provider.of<usersProvider>(context, listen: false)
-          .setMyPosts(widget.myUid.toString());
+          .setYourPosts(widget.yourUid.toString());
       return;
     }
 
-    List<PostModel> myPostList =
+    List<PostModel> posts =
         Provider.of<usersProvider>(context).fetchYourPostsList;
     Map<String, PostModel> savedPostsMap =
         Provider.of<usersProvider>(context).fetchSavedPostsMap;
@@ -79,8 +80,8 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
               ),
       ),
       appBar: AppBar(
-        title: const Text(
-          'My Posts',
+        title: Text(
+          mapOfUsers[widget.yourUid]!.title.toString()+'\'s Posts',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -96,12 +97,12 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
                 top: 12.0, left: 21, right: 21, bottom: 12),
             child: ScrollablePositionedList.builder(
               // itemScrollController: itemController,
-              itemCount: myPostList.length,
+              itemCount: posts.length,
               initialScrollIndex: widget.index!,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
-                  child: displayMyPosts(context, myPostList[index], mapOfUsers,
+                  child: displayYourPosts(context, posts[index], mapOfUsers,
                       widget.myUid!, months, savedPostsMap),
                 );
               },
@@ -113,7 +114,7 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
   }
 }
 
-Widget displayMyPosts(
+Widget displayYourPosts(
     BuildContext context,
     PostModel post,
     Map<String, dynamic> mapOfUsers,
@@ -222,11 +223,11 @@ Widget displayMyPosts(
                 child: InkWell(
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
-                      print('already liked');
+                     
                       Provider.of<usersProvider>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'yours');
                     } else {
-                      print('not liked before');
+                      
                       Provider.of<usersProvider>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'yours');
                     }

@@ -1,16 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:nexus/models/CommentModel.dart';
-import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:provider/provider.dart';
 import 'devicesize.dart';
-
-
 
 
 Widget load(BuildContext context) {

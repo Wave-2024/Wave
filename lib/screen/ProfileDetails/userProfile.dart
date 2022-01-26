@@ -483,6 +483,7 @@ class _userProfileState extends State<userProfile> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => viewYourPostsSceen(
+                                      yourUid: thisProfile.uid,
                                       index: index,
                                       myUid: currentUser!.uid,
                                     ),

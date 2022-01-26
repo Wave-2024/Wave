@@ -529,7 +529,7 @@ class usersProvider extends ChangeNotifier {
           notifyListeners();
         }
         break;
-     
+
       case 'yours':
         {
           PostModel oldPost = yourPostsMap[postId]!;
@@ -571,6 +571,8 @@ class usersProvider extends ChangeNotifier {
     likes.add(myUid);
     await likePostUpdateToServer(opId, postId, likes);
     await setFeedPosts(myUid);
+    await setMyPosts(myUid);
+    await setYourPosts(opId);
   }
 
   // Dislike post
@@ -673,8 +675,9 @@ class usersProvider extends ChangeNotifier {
     likes = postData['likes'] ?? [];
     likes.remove(myUid);
     await likePostUpdateToServer(opId, postId, likes);
-    await likePostUpdateToServer(opId, postId, likes);
     await setFeedPosts(myUid);
+    await setMyPosts(myUid);
+    await setYourPosts(opId);
   }
 
   Future<void> setSavedPostsOnce(String uid) async {
