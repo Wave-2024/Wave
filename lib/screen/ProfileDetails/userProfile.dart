@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/Chat/inboxScreen.dart';
+import 'package:nexus/screen/Posts/view/viewYourPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class userProfile extends StatefulWidget {
@@ -35,7 +39,6 @@ class _userProfileState extends State<userProfile> {
       Provider.of<usersProvider>(context)
           .setYourPosts(widget.uid.toString())
           .then((value) {
-            
         loadScreen = false;
         init = false;
       });
@@ -48,7 +51,7 @@ class _userProfileState extends State<userProfile> {
   Widget build(BuildContext context) {
     NexusUser? thisProfile = Provider.of<usersProvider>(context)
         .fetchAllUsers[widget.uid.toString()];
-        amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
+    amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
     List<PostModel> posts =
         Provider.of<usersProvider>(context).fetchYourPostsList;
     return Scaffold(
@@ -129,11 +132,15 @@ class _userProfileState extends State<userProfile> {
                                                   displayWidth(context) * 0.175,
                                               fit: BoxFit.cover,
                                             )
-                                          : Icon(
-                                              Icons.person,
-                                              color: Colors.orange[300],
-                                              size:
-                                                  displayWidth(context) * 0.045,
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: Icon(
+                                                Icons.person,
+                                                color: Colors.white,
+                                                size:
+                                                    displayWidth(context) * 0.1,
+                                              ),
                                             ),
                                     ),
                                   ),
@@ -184,7 +191,7 @@ class _userProfileState extends State<userProfile> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0, top: 0),
+                        padding: const EdgeInsets.only(left: 16.0, top: 2),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -195,13 +202,23 @@ class _userProfileState extends State<userProfile> {
                                   fontSize: displayWidth(context) * 0.045,
                                   fontWeight: FontWeight.bold),
                             ),
+                            (thisProfile.followers.length >= 5)
+                                ? Padding(
+                                    padding: const EdgeInsets.only(bottom: 1.5),
+                                    child: Icon(
+                                      Icons.verified,
+                                      color: Colors.orange[400],
+                                      size: displayWidth(context) * 0.048,
+                                    ),
+                                  )
+                                : SizedBox(),
                           ],
                         ),
                       ),
-                      const Opacity(
+                      Opacity(
                         opacity: 0.0,
                         child: Divider(
-                          height: 2,
+                          height: displayHeight(context) * 0.015,
                         ),
                       ),
                       Padding(
@@ -336,41 +353,40 @@ class _userProfileState extends State<userProfile> {
                               onTap: () {
                                 if (amIFollowing!) {
                                   setState(() {
-                                    amIFollowing=!amIFollowing!;
+                                    amIFollowing = !amIFollowing!;
                                   });
-                                      Provider.of<usersProvider>(context,
+                                  Provider.of<usersProvider>(context,
                                           listen: false)
-                                      .unFollowUser(
-                                          currentUser!.uid.toString(),
+                                      .unFollowUser(currentUser!.uid.toString(),
                                           thisProfile.uid);
                                 } else {
                                   setState(() {
-                                    amIFollowing=!amIFollowing!;
+                                    amIFollowing = !amIFollowing!;
                                   });
-                                  Provider.of<usersProvider>(context,listen: false)
-                                      .followUser(
-                                          currentUser!.uid.toString(),
+                                  Provider.of<usersProvider>(context,
+                                          listen: false)
+                                      .followUser(currentUser!.uid.toString(),
                                           thisProfile.uid);
                                 }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: 
-                                  thisProfile.followers.contains(currentUser!.uid.toString())
-                                  ? Colors.grey[400]!
-                                  : Colors.deepOrange
-                                  ),
+                                  border: Border.all(
+                                      color: thisProfile.followers.contains(
+                                              currentUser!.uid.toString())
+                                          ? Colors.grey[400]!
+                                          : Colors.deepOrange),
                                   borderRadius: BorderRadius.circular(15),
                                   gradient: LinearGradient(
                                       begin: Alignment.topRight,
                                       end: Alignment.bottomLeft,
-                                      colors: amIFollowing!?
-                                      [Colors.white,Colors.white]
-                                      : [
-                                        Colors.deepOrange,
-                                        Colors.deepOrangeAccent,
-                                        Colors.orange[600]!,
-                                      ]),
+                                      colors: amIFollowing!
+                                          ? [Colors.white, Colors.white]
+                                          : [
+                                              Colors.deepOrange,
+                                              Colors.deepOrangeAccent,
+                                              Colors.orange[600]!,
+                                            ]),
                                 ),
                                 height: displayHeight(context) * 0.065,
                                 width: displayWidth(context) * 0.4,
@@ -386,11 +402,11 @@ class _userProfileState extends State<userProfile> {
                                           ),
                                         )
                                       : Text(
-                                          amIFollowing!
-                                              ? 'Unfollow'
-                                              : 'Follow',
+                                          amIFollowing! ? 'Unfollow' : 'Follow',
                                           style: TextStyle(
-                                              color: (amIFollowing!)?Colors.black: Colors.white,
+                                              color: (amIFollowing!)
+                                                  ? Colors.black
+                                                  : Colors.white,
                                               fontWeight: FontWeight.bold,
                                               fontSize: displayWidth(context) *
                                                   0.045),
@@ -398,20 +414,27 @@ class _userProfileState extends State<userProfile> {
                                 ),
                               ),
                             ),
-                            Opacity(opacity: 0.0, child: VerticalDivider()),
-                            Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                color: Colors.white70,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Icon(
-                                    Icons.mail_outline,
-                                    size: displayWidth(context) * 0.05,
-                                    color: Colors.black54,
-                                  ),
-                                ))
+                            const Opacity(
+                                opacity: 0.0, child: VerticalDivider()),
+                            (amIFollowing!)
+                                ? InkWell(
+                                    onTap: () {},
+                                    child: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        color: Colors.white70,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Icon(
+                                            Icons.mail_outline,
+                                            size: displayWidth(context) * 0.05,
+                                            color: Colors.black54,
+                                          ),
+                                        )),
+                                  )
+                                : const SizedBox(),
                           ],
                         ),
                       ),
@@ -456,7 +479,14 @@ class _userProfileState extends State<userProfile> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                             
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => viewYourPostsSceen(
+                                      index: index,
+                                      myUid: currentUser!.uid,
+                                    ),
+                                  ));
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),
@@ -466,8 +496,7 @@ class _userProfileState extends State<userProfile> {
                                     height: displayHeight(context) * 0.1,
                                     width: displayWidth(context) * 0.3,
                                     fit: BoxFit.cover,
-                                    imageUrl:
-                                        posts[index].image),
+                                    imageUrl: posts[index].image),
                               ),
                             ),
                           );
