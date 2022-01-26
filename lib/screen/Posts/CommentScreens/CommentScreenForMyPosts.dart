@@ -11,16 +11,16 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
-class postDetailForMyPosts extends StatefulWidget {
+class CommentScreenForMyPosts extends StatefulWidget {
   final String? postId;
   final NexusUser? postOwner;
-  postDetailForMyPosts({this.postId, this.postOwner});
+  CommentScreenForMyPosts({this.postId, this.postOwner});
 
   @override
-  State<postDetailForMyPosts> createState() => _postDetailForMyPostsState();
+  State<CommentScreenForMyPosts> createState() => _postDetailForMyPostsState();
 }
 
-class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
+class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
   User? currentUser;
   TextEditingController? commentController;
   final formKey = GlobalKey<FormState>();
@@ -43,7 +43,7 @@ class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
     NexusUser? myProfile = Provider.of<usersProvider>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     PostModel? postDetail =
-        Provider.of<usersProvider>(context).fetchThisUserPosts[widget.postId];
+        Provider.of<usersProvider>(context).fetchMyPostsMap[widget.postId];
 
     return Scaffold(
       appBar: AppBar(
@@ -62,21 +62,25 @@ class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
           formKey: formKey,
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () {
-            if (formKey.currentState!.validate()) {
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(widget.postId.toString())
+                .collection('comments')
+                .add({
+              'comment': commentController!.text.toString(),
+              'time': Timestamp.now(),
+              'uid': currentUser!.uid.toString()
+            }).then((value) {
               FirebaseFirestore.instance
                   .collection('posts')
                   .doc(widget.postId.toString())
                   .collection('comments')
-                  .doc()
-                  .set({
-                'comment': commentController!.text.toString(),
-                'time': Timestamp.now(),
-                'uid': currentUser!.uid.toString()
-              });
-              setState(() {
-                commentController!.clear();
-              });
-            }
+                  .doc(value.id)
+                  .update({'commentId': value.id});
+            });
+            setState(() {
+              commentController!.clear();
+            });
           },
           userImage: myProfile!.dp,
           commentController: commentController,
@@ -110,22 +114,6 @@ class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
                     ),
                   ),
                   const Opacity(opacity: 0.0, child: Divider()),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => usersWhoLikedScreen(
-                              usersWhoLiked: postDetail.likes,
-                            ),
-                          ));
-                    },
-                    child: Text(
-                      '${postDetail.likes.length} likes',
-                      style: const TextStyle(
-                          color: Colors.black87, fontWeight: FontWeight.bold),
-                    ),
-                  ),
                   Divider(
                     height: displayHeight(context) * 0.02,
                     color: Colors.grey[200],
@@ -151,6 +139,8 @@ class _postDetailForMyPostsState extends State<postDetailForMyPosts> {
                                         .data()['comment'];
                                     String uid =
                                         snapshot.data.docs[index].data()['uid'];
+                                    String commentId = snapshot.data.docs[index]
+                                        .data()['commentId'];
                                     return displayComment(
                                         context, comment, uid);
                                   },

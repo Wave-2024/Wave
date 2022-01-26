@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/Chat/inboxScreen.dart';
+import 'package:nexus/screen/Posts/view/viewYourPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
-import 'package:nexus/screen/Posts/viewPostsFromProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class userProfile extends StatefulWidget {
@@ -22,6 +25,7 @@ class _userProfileState extends State<userProfile> {
   User? currentUser;
   bool loadAfterFollowProcess = false;
   bool init = true;
+  bool? amIFollowing;
   @override
   void initState() {
     loadScreen = true;
@@ -30,10 +34,12 @@ class _userProfileState extends State<userProfile> {
   }
 
   @override
-  void didChangeDependencies()async {
-    if(init){
-      Provider.of<usersProvider>(context).setPostsForThisProfile(widget.uid.toString()).then((value){
-        loadScreen=false;
+  void didChangeDependencies() async {
+    if (init) {
+      Provider.of<usersProvider>(context)
+          .setYourPosts(widget.uid.toString())
+          .then((value) {
+        loadScreen = false;
         init = false;
       });
     }
@@ -41,13 +47,13 @@ class _userProfileState extends State<userProfile> {
     super.didChangeDependencies();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-    NexusUser? thisProfile = Provider.of<usersProvider>(context).fetchAllUsers[widget.uid.toString()];
-    Map<String,PostModel>? posts = Provider.of<usersProvider>(context).fetchThisUserPosts;
+    NexusUser? thisProfile = Provider.of<usersProvider>(context)
+        .fetchAllUsers[widget.uid.toString()];
+    amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
+    List<PostModel> posts =
+        Provider.of<usersProvider>(context).fetchYourPostsList;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -76,7 +82,7 @@ class _userProfileState extends State<userProfile> {
                           children: [
                             Positioned(
                               top: 0,
-                              child: (thisProfile!.coverImage != '')
+                              child: (thisProfile.coverImage != '')
                                   ? CachedNetworkImage(
                                       imageUrl: thisProfile.coverImage,
                                       height: displayHeight(context) * 0.25,
@@ -105,14 +111,14 @@ class _userProfileState extends State<userProfile> {
                                     .8
                                   ])),
                             ),
-                            
                             Positioned(
                                 top: displayHeight(context) * 0.1655,
-                                left: displayWidth(context) * 0.052,
+                                left: displayWidth(context) * 0.035,
                                 child: Card(
                                   color: Colors.orange[300],
                                   elevation: 6.0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
                                   child: Padding(
                                     padding: const EdgeInsets.all(2.5),
                                     child: ClipRRect(
@@ -120,15 +126,21 @@ class _userProfileState extends State<userProfile> {
                                       child: (thisProfile.dp != '')
                                           ? CachedNetworkImage(
                                               imageUrl: thisProfile.dp,
-                                              height:
-                                                  displayHeight(context) * 0.0905,
-                                              width: displayWidth(context) * 0.175,
+                                              height: displayHeight(context) *
+                                                  0.0905,
+                                              width:
+                                                  displayWidth(context) * 0.175,
                                               fit: BoxFit.cover,
                                             )
-                                          : Icon(
-                                              Icons.person,
-                                              color: Colors.orange[300],
-                                              size: displayWidth(context) * 0.045,
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: Icon(
+                                                Icons.person,
+                                                color: Colors.white,
+                                                size:
+                                                    displayWidth(context) * 0.1,
+                                              ),
                                             ),
                                     ),
                                   ),
@@ -179,7 +191,7 @@ class _userProfileState extends State<userProfile> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 0),
+                        padding: const EdgeInsets.only(left: 16.0, top: 2),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -190,13 +202,23 @@ class _userProfileState extends State<userProfile> {
                                   fontSize: displayWidth(context) * 0.045,
                                   fontWeight: FontWeight.bold),
                             ),
+                            (thisProfile.followers.length >= 5)
+                                ? Padding(
+                                    padding: const EdgeInsets.only(bottom: 1.5),
+                                    child: Icon(
+                                      Icons.verified,
+                                      color: Colors.orange[400],
+                                      size: displayWidth(context) * 0.048,
+                                    ),
+                                  )
+                                : SizedBox(),
                           ],
                         ),
                       ),
-                      const Opacity(
+                      Opacity(
                         opacity: 0.0,
                         child: Divider(
-                          height: 2,
+                          height: displayHeight(context) * 0.015,
                         ),
                       ),
                       Padding(
@@ -329,43 +351,42 @@ class _userProfileState extends State<userProfile> {
                           children: [
                             InkWell(
                               onTap: () {
-                                setState(() {
-                                  loadAfterFollowProcess = true;
-                                });
-                                if (thisProfile.followers
-                                    .contains(currentUser!.uid.toString())) {
+                                if (amIFollowing!) {
+                                  setState(() {
+                                    amIFollowing = !amIFollowing!;
+                                  });
                                   Provider.of<usersProvider>(context,
                                           listen: false)
                                       .unFollowUser(currentUser!.uid.toString(),
-                                          thisProfile.uid)
-                                      .then((value) {
-                                    setState(() {
-                                      loadAfterFollowProcess = false;
-                                    });
-                                  });
+                                          thisProfile.uid);
                                 } else {
+                                  setState(() {
+                                    amIFollowing = !amIFollowing!;
+                                  });
                                   Provider.of<usersProvider>(context,
                                           listen: false)
                                       .followUser(currentUser!.uid.toString(),
-                                          thisProfile.uid)
-                                      .then((value) {
-                                    setState(() {
-                                      loadAfterFollowProcess = false;
-                                    });
-                                  });
+                                          thisProfile.uid);
                                 }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: thisProfile.followers.contains(
+                                              currentUser!.uid.toString())
+                                          ? Colors.grey[400]!
+                                          : Colors.deepOrange),
                                   borderRadius: BorderRadius.circular(15),
                                   gradient: LinearGradient(
                                       begin: Alignment.topRight,
                                       end: Alignment.bottomLeft,
-                                      colors: [
-                                        Colors.deepOrange,
-                                        Colors.deepOrangeAccent,
-                                        Colors.orange[600]!,
-                                      ]),
+                                      colors: amIFollowing!
+                                          ? [Colors.white, Colors.white]
+                                          : [
+                                              Colors.deepOrange,
+                                              Colors.deepOrangeAccent,
+                                              Colors.orange[600]!,
+                                            ]),
                                 ),
                                 height: displayHeight(context) * 0.065,
                                 width: displayWidth(context) * 0.4,
@@ -381,12 +402,11 @@ class _userProfileState extends State<userProfile> {
                                           ),
                                         )
                                       : Text(
-                                          (thisProfile.followers.contains(
-                                                  currentUser!.uid.toString()))
-                                              ? 'Unfollow'
-                                              : 'Follow',
+                                          amIFollowing! ? 'Unfollow' : 'Follow',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: (amIFollowing!)
+                                                  ? Colors.black
+                                                  : Colors.white,
                                               fontWeight: FontWeight.bold,
                                               fontSize: displayWidth(context) *
                                                   0.045),
@@ -394,20 +414,27 @@ class _userProfileState extends State<userProfile> {
                                 ),
                               ),
                             ),
-                            Opacity(opacity: 0.0, child: VerticalDivider()),
-                            Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                color: Colors.white70,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Icon(
-                                    Icons.mail_outline,
-                                    size: displayWidth(context) * 0.05,
-                                    color: Colors.black54,
-                                  ),
-                                ))
+                            const Opacity(
+                                opacity: 0.0, child: VerticalDivider()),
+                            (amIFollowing!)
+                                ? InkWell(
+                                    onTap: () {},
+                                    child: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        color: Colors.white70,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Icon(
+                                            Icons.mail_outline,
+                                            size: displayWidth(context) * 0.05,
+                                            color: Colors.black54,
+                                          ),
+                                        )),
+                                  )
+                                : const SizedBox(),
                           ],
                         ),
                       ),
@@ -446,7 +473,7 @@ class _userProfileState extends State<userProfile> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3),
-                        itemCount: posts.values.toList().length,
+                        itemCount: posts.length,
                         padding: const EdgeInsets.all(8),
 
                         itemBuilder: (context, index) {
@@ -455,9 +482,9 @@ class _userProfileState extends State<userProfile> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => viewPostsFromProfile(
-                                      uid: thisProfile.uid,
-                                      viewPosts: true,
+                                    builder: (context) => viewYourPostsSceen(
+                                      index: index,
+                                      myUid: currentUser!.uid,
                                     ),
                                   ));
                             },
@@ -469,8 +496,7 @@ class _userProfileState extends State<userProfile> {
                                     height: displayHeight(context) * 0.1,
                                     width: displayWidth(context) * 0.3,
                                     fit: BoxFit.cover,
-                                    imageUrl:
-                                        posts.values.toList()[index].image),
+                                    imageUrl: posts[index].image),
                               ),
                             ),
                           );

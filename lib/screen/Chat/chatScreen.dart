@@ -33,86 +33,52 @@ class _chatScreenState extends State<chatScreen> {
     Map<String, NexusUser>? allUsers =
         Provider.of<usersProvider>(context, listen: false).fetchAllUsers;
     NexusUser? myProfile = allUsers[currentUser!.uid.toString()];
+    List<dynamic> myFollowingId = myProfile!.followings;
     displayChatHead(String chatId, String username, String dp, int chatbg,
-        String lastSeen) {
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => inboxScreen(
-                  chatId: chatId,
-                  personDp: dp,
-                  chatbg: chatbg,
-                  personUserName: username,
-                  myDp: myProfile!.dp,
-                  myId: currentUser!.uid.toString(),
-                ),
-              ));
-        },
-        child: Container(
-          //color: Colors.redAccent,
-          height: displayHeight(context) * 0.1,
-          width: displayWidth(context),
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Card(
-                  color: Colors.white,
-                  elevation: 12.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: (dp != '')
-                          ? CachedNetworkImage(
-                              height: displayHeight(context) * 0.06,
-                              width: displayWidth(context) * 0.12,
-                              fit: BoxFit.cover,
-                              imageUrl: dp,
-                            )
-                          : Image.asset(
-                              'images/male.jpg',
-                              height: displayHeight(context) * 0.06,
-                              width: displayWidth(context) * 0.12,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
+    ) {
+      return ListTile(
+          isThreeLine: false,
+          tileColor: Colors.transparent,
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => inboxScreen(
+                    chatId: chatId,
+                    personDp: dp,
+                    chatbg: chatbg,
+                    personUserName: username,
+                    myDp: myProfile.dp,
+                    myId: currentUser!.uid.toString(),
                   ),
-                ),
-                const Opacity(opacity: 0.0, child: VerticalDivider()),
-                Container(
-                  height: displayHeight(context) * 0.06,
-                  width: displayWidth(context) * 0.68,
-                  //color: Colors.purple,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        username,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: displayWidth(context) * 0.04),
-                      ),
-                      Text(
-                        lastSeen,
-                        style: TextStyle(
-                            color: Colors.black45,
-                            fontSize: displayWidth(context) * 0.036),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+                ));
+          },
+          title: Text(
+            username,
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: displayWidth(context) * 0.04),
           ),
-        ),
-      );
+          subtitle: Text(
+            'something',
+            style: TextStyle(color: Colors.black45),
+          ),
+          leading: (dp != '')
+              ? CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: NetworkImage(dp),
+                  radius: displayWidth(context) * 0.05,
+                )
+              : CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  radius: displayWidth(context) * 0.05,
+                  child: Icon(
+                    Icons.person,
+                    size: displayWidth(context) * 0.075,
+                    color: Colors.orange[400],
+                  ),
+                ));
     }
 
     return Scaffold(
@@ -158,7 +124,9 @@ class _chatScreenState extends State<chatScreen> {
                             top: 25.0, left: 16, right: 16, bottom: 35),
                         child: StreamBuilder(
                           stream: FirebaseFirestore.instance
-                              .collection(currentUser!.uid.toString())
+                              .collection('messages')
+                              .doc(currentUser!.uid)
+                              .collection('chats')
                               .snapshots(),
                           builder: (context, AsyncSnapshot snapshot) {
                             if (snapshot.hasData) {
@@ -182,8 +150,7 @@ class _chatScreenState extends State<chatScreen> {
                                       userName,
                                       dp,
                                       chatbg,
-                                      differenceOfTime(
-                                          currentDate, lastSeenDate));
+                                  );
                                 },
                               );
                             } else {

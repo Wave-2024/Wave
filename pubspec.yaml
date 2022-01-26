@@ -43,8 +43,8 @@ dependencies:
   comment_box: ^0.0.16
   badges: ^2.0.2
   liquid_pull_to_refresh: ^3.0.1
-
   cupertino_icons: ^1.0.2
+  scrollable_positioned_list: ^0.2.3
 
 dev_dependencies:
   flutter_test:

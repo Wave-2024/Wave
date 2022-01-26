@@ -1,32 +1,31 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/notificationScreen.dart';
+import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
+import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForYouPosts.dart';
+
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'CommentScreens/CommentsScreen.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+class viewYourPostsSceen extends StatefulWidget {
+  final String? myUid;
+  final int? index;
 
-class feedScreen extends StatefulWidget {
+  viewYourPostsSceen({this.myUid, this.index});
+
   @override
-  State<feedScreen> createState() => _feedScreenState();
+  State<viewYourPostsSceen> createState() => _viewYourPostsSceenState();
 }
 
-class _feedScreenState extends State<feedScreen> {
-  final GlobalKey<LiquidPullToRefreshState> _refreshIndicatorKey =
-      GlobalKey<LiquidPullToRefreshState>();
-  User? currentUser;
-  bool? init;
-  bool? loadScreen;
+class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
+  bool isRefreshing = false;
   final List<String> months = [
     'January',
     'February',
@@ -41,121 +40,71 @@ class _feedScreenState extends State<feedScreen> {
     'November',
     'December'
   ];
-  @override
-  void initState() {
-    currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('reached');
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
-     
       await Provider.of<usersProvider>(context, listen: false)
-          .setFeedPosts(currentUser!.uid.toString());
+          .setMyPosts(widget.myUid.toString());
       return;
     }
 
-    final Map<String, PostModel> savedPosts =
+    List<PostModel> myPostList =
+        Provider.of<usersProvider>(context).fetchYourPostsList;
+    Map<String, PostModel> savedPostsMap =
         Provider.of<usersProvider>(context).fetchSavedPostsMap;
-    final List<PostModel> feedPosts =
-        Provider.of<usersProvider>(context).fetchFeedPostList;
-    print(feedPosts.length);
-    final Map<String, NexusUser> allUsers =
+    Map<String, NexusUser> mapOfUsers =
         Provider.of<usersProvider>(context).fetchAllUsers;
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          height: displayHeight(context),
-          width: displayWidth(context),
-          color: Colors.white,
-          child: LiquidPullToRefresh(
-            color: Colors.orange[400],
-            animSpeedFactor: 5,
-            height: displayHeight(context) * 0.2,
-            key: _refreshIndicatorKey,
-            showChildOpacityTransition: false,
-            onRefresh: setPosts,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  height: displayHeight(context) * 0.07,
-                  width: displayWidth(context),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 8.0, bottom: 8.0, left: 20, right: 18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.50),
-                          child: Text(
-                            "Nexus",
-                            style: TextStyle(
-                                color: Colors.orange[600],
-                                fontSize: displayWidth(context) * 0.06,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => NotificationScreen(),
-                                ));
-                          },
-                          child: Badge(
-                              badgeColor: Colors.red[400]!,
-                              badgeContent: Text(
-                                '5',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: displayWidth(context) * 0.03),
-                              ),
-                              child: const Icon(Icons.notifications_none)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const Opacity(opacity: 0.0, child: Divider()),
-                Container(
-                  color: Colors.white,
-                  height: displayHeight(context) * 0.865,
-                  width: displayWidth(context),
-                  child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 21.0, right: 21, top: 10),
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return feedPosts.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    'Looks like you are not following anyone',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.only(bottom: 18.0),
-                                  child: displayPostsForFeed(
-                                      context,
-                                      feedPosts[index],
-                                      allUsers,
-                                      currentUser!.uid.toString(),
-                                      months,
-                                      savedPosts),
-                                );
-                        },
-                        itemCount: feedPosts.length,
-                      )),
-                )
-              ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          setState(() {
+            isRefreshing = true;
+          });
+          await setPosts();
+          setState(() {
+            isRefreshing = false;
+          });
+        },
+        backgroundColor: Colors.white,
+        elevation: 10,
+        child: (isRefreshing)
+            ? Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: load(context),
+              )
+            : const Icon(
+                Icons.refresh,
+                color: Colors.orange,
+              ),
+      ),
+      appBar: AppBar(
+        title: const Text(
+          'My Posts',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      body: Container(
+        height: displayHeight(context),
+        width: displayWidth(context),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(
+                top: 12.0, left: 21, right: 21, bottom: 12),
+            child: ScrollablePositionedList.builder(
+              // itemScrollController: itemController,
+              itemCount: myPostList.length,
+              initialScrollIndex: widget.index!,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: displayMyPosts(context, myPostList[index], mapOfUsers,
+                      widget.myUid!, months, savedPostsMap),
+                );
+              },
             ),
           ),
         ),
@@ -164,7 +113,7 @@ class _feedScreenState extends State<feedScreen> {
   }
 }
 
-Widget displayPostsForFeed(
+Widget displayMyPosts(
     BuildContext context,
     PostModel post,
     Map<String, dynamic> mapOfUsers,
@@ -233,15 +182,6 @@ Widget displayPostsForFeed(
                       ),
                       const VerticalDivider(),
                       InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => userProfile(
-                                  uid: user.uid,
-                                ),
-                              ));
-                        },
                         child: Text(
                           user.username,
                           style: TextStyle(
@@ -252,7 +192,6 @@ Widget displayPostsForFeed(
                       ),
                     ],
                   ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.chat))
                 ],
               ),
               Opacity(
@@ -283,12 +222,13 @@ Widget displayPostsForFeed(
                 child: InkWell(
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
+                      print('already liked');
                       Provider.of<usersProvider>(context, listen: false)
-                          .dislikePost(myUid, post.uid, post.post_id, 'feed');
+                          .dislikePost(myUid, post.uid, post.post_id, 'yours');
                     } else {
+                      print('not liked before');
                       Provider.of<usersProvider>(context, listen: false)
-                          .likePost(myUid, post.uid, post.post_id, 'feed'
-                                             );
+                          .likePost(myUid, post.uid, post.post_id, 'yours');
                     }
                   },
                   child: ClipRRect(
@@ -321,12 +261,12 @@ Widget displayPostsForFeed(
                                 Provider.of<usersProvider>(context,
                                         listen: false)
                                     .dislikePost(
-                                        myUid, post.uid, post.post_id, 'feed');
+                                        myUid, post.uid, post.post_id, 'yours');
                               } else {
                                 Provider.of<usersProvider>(context,
                                         listen: false)
                                     .likePost(
-                                        myUid, post.uid, post.post_id, 'feed');
+                                        myUid, post.uid, post.post_id, 'yours');
                               }
                             },
                             child: (post.likes.contains(myUid))
@@ -357,7 +297,8 @@ Widget displayPostsForFeed(
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CommentScreen(
+                                    builder: (context) =>
+                                        CommentScreenForYourPosts(
                                       postOwner: user,
                                       postId: post.post_id,
                                     ),
@@ -437,4 +378,3 @@ Widget displayPostsForFeed(
     ),
   );
 }
-
