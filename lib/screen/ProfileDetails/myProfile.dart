@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/PostModel.dart';
@@ -249,13 +250,41 @@ class _profiletScreenState extends State<profiletScreen> {
                             iconSize: displayWidth(context) * 0.08,
                             icon: const Icon(Icons.logout),
                             onPressed: () async {
-                              _auth.signOut().then((value) {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => authScreen(),
-                                    ));
-                              });
+                              showDialog(context: context, builder: (context) {
+                                return  CupertinoAlertDialog(
+                                  //content: Text('Are you sure you want to sign-out ?'),
+                                  title: const Text('Logout'),
+                                  actions: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Center(child: TextButton(child: const Text('No',style: TextStyle(
+                                          color: Colors.black87
+                                      ),),onPressed: () {
+                                        Navigator.pop(context);
+                                      },)),
+                                    ),
+                                   Padding(
+                                     padding: const EdgeInsets.all(8.0),
+                                     child: Center(child: TextButton.icon(onPressed: () async {
+                                       _auth.signOut().then((value) {
+                                         Navigator.pushReplacement(
+                                             context,
+                                             MaterialPageRoute(
+                                               builder: (context) => authScreen(),
+                                             ));
+                                       });
+                                     },
+
+                                       icon: const Icon(Icons.logout,color: Colors.red,),label: const Text('Yes',style: TextStyle(
+                                           color: Colors.black87
+                                       )),
+                                     )),
+                                   ),
+
+                                  ],
+                                );
+                              },);
+
                             },
                             color: Colors.white70,
                           )),
@@ -470,16 +499,16 @@ class _profiletScreenState extends State<profiletScreen> {
                                                       displayWidth(context) *
                                                           0.03),
                                             ),
-                                          ) 
+                                          )
                                         ],
                                       ),
                                     ),
-                                      
-                                    
+
+
                                   )
                                 : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  
+
                                   children: [
                                     Text(
                                         'Posts',
@@ -550,7 +579,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                         displayWidth(context) *
                                                             0.03),
                                               ),
-                                            ) 
+                                            )
                                           ],
                                         ),
                                       ),
