@@ -6,6 +6,7 @@ import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
+import 'package:nexus/screen/Posts/editPost.dart';
 
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -197,32 +198,39 @@ Widget displayMyPosts(
                           context: context,
                           builder: (context) {
                             return Container(
-                              height: displayHeight(context) * 0.15,
+                              height: displayHeight(context) * 0.18,
                               width: displayWidth(context),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  ListTile(
-                                    onTap: () {},
-                                    leading: Icon(Icons.edit),
-                                    title: const Text(
-                                      'Edit caption',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500),
+                                  Expanded(
+                                    child: ListTile(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => editPostScreen(post: post,),));
+                                      },
+                                      leading: Icon(Icons.edit),
+                                      title: const Text(
+                                        'Edit caption',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500),
+                                      ),
                                     ),
                                   ),
-                                  ListTile(
-                                    onTap: () {},
-                                    leading: Icon(
-                                      Icons.delete,
-                                      color: Colors.red[400],
-                                    ),
-                                    title: const Text(
-                                      'Delete post',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500),
+                                  Expanded(
+                                    child: ListTile(
+                                      onTap: () {},
+                                      leading: Icon(
+                                        Icons.delete,
+                                        color: Colors.red[400],
+                                      ),
+                                      title: const Text(
+                                        'Delete post',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500),
+                                      ),
                                     ),
                                   ),
                                 ],
