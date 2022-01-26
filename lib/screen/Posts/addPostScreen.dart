@@ -52,31 +52,34 @@ class _addPostScreenState extends State<addPostScreen> {
           ),
         ),
         actions: [
-          (imagefile != null)
-              ? IconButton(
+           IconButton(
                   onPressed: () {
-                    setState(() {
-                      uploadingPost = true;
-                    });
-                    Provider.of<usersProvider>(context, listen: false)
-                        .addNewPost(captionController!.text.toString(),
-                            currentUser!.uid.toString(), imagefile!)
-                        .then((value) {
-                      setState(() {
-                        uploadingPost = false;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Successfully posted')));
-                    });
+                   if(imagefile!=null){
+                     setState(() {
+                       imagefile = null;
+                     });
+                   }
                   },
-                  color: Colors.green,
-                  icon: const Icon(Icons.check))
-              : IconButton(
-                  onPressed: () {
-                    pickImage();
-                  },
-                  color: Colors.indigo,
-                  icon: const Icon(Icons.add_a_photo))
+                  color: (imagefile!=null)?Colors.red[300]:Colors.grey,
+                  icon: const Icon(Icons.delete)),
+          IconButton(onPressed: () {
+            if(imagefile!=null){
+              setState(() {
+                uploadingPost = true;
+              });
+              Provider.of<usersProvider>(context, listen: false)
+                  .addNewPost(captionController!.text.toString(),
+                  currentUser!.uid.toString(), imagefile!)
+                  .then((value) {
+                setState(() {
+                  uploadingPost = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Successfully posted'),duration: Duration(seconds: 2),));
+                Navigator.pop(context);
+              });
+            }
+          }, icon: Icon(Icons.check),color: (imagefile!=null)?Colors.green:Colors.grey)
         ],
       ),
       body: SafeArea(
@@ -120,7 +123,12 @@ class _addPostScreenState extends State<addPostScreen> {
                                     border: Border.all(color: Colors.black)),
                                 height: displayHeight(context) * 0.3,
                                 width: displayWidth(context) * 0.6,
-                                child: const Center(child: Icon(Icons.image)),
+                                child: Center(child: IconButton(
+                                  onPressed: () {
+                                    pickImage();
+                                  },
+                                  icon: Icon(Icons.image),
+                                    )),
                               ),
                         Opacity(
                             opacity: 0.0,
