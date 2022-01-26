@@ -227,6 +227,7 @@ class _registerScreenState extends State<registerScreen> {
                             padding: const EdgeInsets.all(8.0),
                             child: Center(
                               child: TextFormField(
+                                keyboardType: TextInputType.emailAddress,
                                 controller: email,
                                 validator: (value) {
                                   if (value!.isEmpty) return 'Cannot be empty';

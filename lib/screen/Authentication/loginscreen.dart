@@ -78,6 +78,7 @@ class _loginScreenState extends State<loginScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 30.0, right: 30),
                   child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
                     controller: email,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -86,6 +87,7 @@ class _loginScreenState extends State<loginScreen> {
                       return null;
                     },
                     decoration: const InputDecoration(
+
                       labelStyle: TextStyle(color: Colors.black),
                       labelText: "Email",
                       hintText: "alpha77@yahoo.com",
