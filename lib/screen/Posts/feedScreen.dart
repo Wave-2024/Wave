@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -218,20 +220,20 @@ Widget displayPostsForFeed(
                         child: (user.dp != '')
                             ? CircleAvatar(
                                 backgroundColor: Colors.grey[200],
-                                radius: displayWidth(context) * 0.06,
+                                radius: displayWidth(context) * 0.045,
                                 backgroundImage: NetworkImage(user.dp),
                               )
                             : CircleAvatar(
-                                radius: displayWidth(context) * 0.06,
+                                radius: displayWidth(context) * 0.045,
                                 backgroundColor: Colors.grey[200],
                                 child: Icon(
                                   Icons.person,
                                   color: Colors.orange[300],
-                                  size: displayWidth(context) * 0.065,
+                                  size: displayWidth(context) * 0.05,
                                 ),
                               ),
                       ),
-                      const VerticalDivider(),
+                      VerticalDivider(width: displayWidth(context)*0.028,),
                       InkWell(
                         onTap: () {
                           Navigator.push(
@@ -246,10 +248,11 @@ Widget displayPostsForFeed(
                           user.username,
                           style: TextStyle(
                               color: Colors.black,
-                              fontSize: displayWidth(context) * 0.042,
+                              fontSize: displayWidth(context) * 0.035,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
+                      (user.followers.length>=5)?Icon(Icons.verified,color: Colors.orange[400],size: displayWidth(context)*0.04,):SizedBox(),
                     ],
                   ),
                   IconButton(onPressed: () {}, icon: Icon(Icons.chat))
@@ -258,18 +261,19 @@ Widget displayPostsForFeed(
               Opacity(
                 opacity: 0.0,
                 child: Divider(
-                  height: displayHeight(context) * 0.02,
+                  height: displayHeight(context) * 0.01,
                 ),
               ),
               Center(
                 child: Container(
-                    height: displayHeight(context) * 0.03,
+                    height: displayHeight(context) * 0.028,
                     width: displayWidth(context) * 0.68,
                     //color: Colors.redAccent,
                     child: Text(
                       post.caption,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontSize: displayWidth(context)*0.035,
                           color: Colors.black87, fontWeight: FontWeight.w600),
                     )),
               ),
@@ -281,6 +285,34 @@ Widget displayPostsForFeed(
               ),
               Center(
                 child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 10,
+                            sigmaY: 10,
+                          ),
+                          child: Dialog(
+                            insetAnimationCurve: Curves.easeInOutQuad,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            backgroundColor: Colors.transparent,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: CachedNetworkImage(
+                                imageUrl: post.image,
+                               fit: BoxFit.fill,
+                              )
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
                       Provider.of<usersProvider>(context, listen: false)
@@ -297,7 +329,7 @@ Widget displayPostsForFeed(
                       imageUrl: post.image,
                       height: displayHeight(context) * 0.38,
                       width: displayWidth(context) * 0.68,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
