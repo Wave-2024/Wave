@@ -448,15 +448,14 @@ class usersProvider extends ChangeNotifier {
   }
 
   // Function to delete post
-  Future<void> deletePost(String postId) async {
-    final String api = constants().fetchApi + 'posts/$postId.json';
+  Future<void> deletePost(String myUid,String postId) async {
+    final String api = constants().fetchApi + 'posts/${myUid}/$postId.json';
     try {
-      await http.delete(Uri.parse(api)).then((value) {
-        FirebaseFirestore.instance.collection('posts').doc(postId).delete();
-      });
       myPostsMap.remove(postId);
       myPostsList.removeWhere((element) => element.post_id == postId);
       notifyListeners();
+      await http.delete(Uri.parse(api));
+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
     } catch (error) {
       print(error);
     }
@@ -702,6 +701,8 @@ class usersProvider extends ChangeNotifier {
       print(error);
     }
   }
+
+
 
   Future<void> updateCaption(
       String myUid, String postId, String updatedCaption) async {

@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -167,16 +170,16 @@ Widget displayMyPosts(
                         child: (user.dp != '')
                             ? CircleAvatar(
                                 backgroundColor: Colors.grey[200],
-                                radius: displayWidth(context) * 0.06,
+                                radius: displayWidth(context) * 0.045,
                                 backgroundImage: NetworkImage(user.dp),
                               )
                             : CircleAvatar(
-                                radius: displayWidth(context) * 0.06,
+                                radius: displayWidth(context) * 0.045,
                                 backgroundColor: Colors.grey[200],
                                 child: Icon(
                                   Icons.person,
                                   color: Colors.orange[300],
-                                  size: displayWidth(context) * 0.065,
+                                  size: displayWidth(context) * 0.05,
                                 ),
                               ),
                       ),
@@ -186,10 +189,20 @@ Widget displayMyPosts(
                           user.username,
                           style: TextStyle(
                               color: Colors.black,
-                              fontSize: displayWidth(context) * 0.042,
+                              fontSize: displayWidth(context) * 0.035,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
+                      VerticalDivider(
+                        width: displayWidth(context) * 0.005,
+                      ),
+                      (user.followers.length >= 5)
+                          ? Icon(
+                              Icons.verified,
+                              color: Colors.orange[400],
+                              size: displayWidth(context) * 0.0485,
+                            )
+                          : SizedBox(),
                     ],
                   ),
                   IconButton(
@@ -207,7 +220,14 @@ Widget displayMyPosts(
                                     child: ListTile(
                                       onTap: () {
                                         Navigator.pop(context);
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => editPostScreen(post: post,),));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  editPostScreen(
+                                                post: post,
+                                              ),
+                                            ));
                                       },
                                       leading: Icon(Icons.edit),
                                       title: const Text(
@@ -220,7 +240,27 @@ Widget displayMyPosts(
                                   ),
                                   Expanded(
                                     child: ListTile(
-                                      onTap: () {},
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CupertinoAlertDialog(
+                                                title: Text('Delete post',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                                  content: Text('Are you sure you want to delete this post ?'),
+                                                actions: [
+                                                  TextButton(onPressed: () {
+                                                    Navigator.pop(context);
+                                                  }, child: Text('Cancel',style: TextStyle(color: Colors.black54),)),
+                                                  TextButton(onPressed: () {
+                                                    Provider.of<usersProvider>(context,listen: false).deletePost(myUid, post.post_id);
+                                                    Navigator.pop(context);
+                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post deleted'),duration: Duration(seconds: 2),));
+                                                  }, child: Text('Delete',style: TextStyle(color: Colors.red))),
+                                                ],
+                                                  );
+                                            });
+                                      },
                                       leading: Icon(
                                         Icons.delete,
                                         color: Colors.red[400],
@@ -256,8 +296,10 @@ Widget displayMyPosts(
                     child: Text(
                       post.caption,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          color: Colors.black87, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: displayWidth(context) * 0.034,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600),
                     )),
               ),
               Opacity(
@@ -268,6 +310,34 @@ Widget displayMyPosts(
               ),
               Center(
                 child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 10,
+                            sigmaY: 10,
+                          ),
+                          child: Dialog(
+                            insetAnimationCurve: Curves.easeInOutQuad,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            backgroundColor: Colors.transparent,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: CachedNetworkImage(
+                                  imageUrl: post.image,
+                                  fit: BoxFit.contain,
+                                  height: displayHeight(context) * 0.5,
+                                )),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
                       print('already liked');

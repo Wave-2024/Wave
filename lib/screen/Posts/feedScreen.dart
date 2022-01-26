@@ -253,7 +253,7 @@ Widget displayPostsForFeed(
                       ? Icon(
                           Icons.verified,
                           color: Colors.orange[400],
-                          size: displayWidth(context) * 0.045,
+                          size: displayWidth(context) * 0.0485,
                         )
                       : SizedBox(),
                 ],
@@ -266,14 +266,14 @@ Widget displayPostsForFeed(
               ),
               Center(
                 child: Container(
-                    height: displayHeight(context) * 0.028,
+                    height: displayHeight(context) * 0.03,
                     width: displayWidth(context) * 0.68,
                     //color: Colors.redAccent,
                     child: Text(
                       post.caption,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontSize: displayWidth(context) * 0.035,
+                          fontSize: displayWidth(context) * 0.034,
                           color: Colors.black87,
                           fontWeight: FontWeight.w600),
                     )),
@@ -306,7 +306,8 @@ Widget displayPostsForFeed(
                                 borderRadius: BorderRadius.circular(15),
                                 child: CachedNetworkImage(
                                   imageUrl: post.image,
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.contain,
+                                  height: displayHeight(context) * 0.5,
                                 )),
                           ),
                         );
