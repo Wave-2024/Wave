@@ -35,7 +35,11 @@ class usersProvider extends ChangeNotifier {
 
   List<PostModel> myPostsList = [];
 
-  List<PostModel> savedPostsList = [];
+  List<PostModel> savedPostList = [];
+
+  List<PostModel> get fetchSavedPostList {
+    return [...savedPostList];
+  }
 
   List<PostModel> get fetchMyPostsList {
     myPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
@@ -49,13 +53,6 @@ class usersProvider extends ChangeNotifier {
         .parse(b.dateOfPost)
         .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
     return [...yourPostsList];
-  }
-
-  List<PostModel> get fetchSavedPostList {
-    savedPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
-        .parse(b.dateOfPost)
-        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
-    return [...savedPostsList];
   }
 
   List<PostModel> get fetchFeedPostList {
@@ -475,7 +472,7 @@ class usersProvider extends ChangeNotifier {
   // Like post
   Future<void> likePost(
       String myUid, String opId, String postId, String source) async {
-    // Souce can be -> "feed","self","yours","saved"
+    // Souce can be -> "feed","self","yours"
 
     switch (source) {
       case 'feed':
@@ -503,7 +500,6 @@ class usersProvider extends ChangeNotifier {
                   post_id: oldPost.post_id,
                   likes: likes));
           notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
         }
         break;
       case 'self':
@@ -531,37 +527,9 @@ class usersProvider extends ChangeNotifier {
                   post_id: oldPost.post_id,
                   likes: likes));
           notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
         }
         break;
-      case 'saved':
-        {
-          PostModel oldPost = savedPostsMap[postId]!;
-          List<dynamic> likes = oldPost.likes;
-          likes.add(myUid);
-          int index =
-              savedPostsList.indexWhere((element) => element.post_id == postId);
-          savedPostsList.removeAt(index);
-          savedPostsMap[postId] = PostModel(
-              caption: oldPost.caption,
-              dateOfPost: oldPost.dateOfPost,
-              image: oldPost.image,
-              uid: oldPost.uid,
-              post_id: oldPost.post_id,
-              likes: likes);
-          savedPostsList.insert(
-              index,
-              PostModel(
-                  caption: oldPost.caption,
-                  dateOfPost: oldPost.dateOfPost,
-                  image: oldPost.image,
-                  uid: oldPost.uid,
-                  post_id: oldPost.post_id,
-                  likes: likes));
-          notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
-        }
-        break;
+     
       case 'yours':
         {
           PostModel oldPost = yourPostsMap[postId]!;
@@ -587,7 +555,6 @@ class usersProvider extends ChangeNotifier {
                   post_id: oldPost.post_id,
                   likes: likes));
           notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
         }
         break;
       default:
@@ -595,8 +562,17 @@ class usersProvider extends ChangeNotifier {
           print('passed wrong choice');
         }
     }
-    final String api = 'posts/${opId}/${postId}.json';
+
+    List<dynamic> likes = [];
+    final String api = constants().fetchApi + 'posts/${opId}/${postId}.json';
+    final postResponse = await http.get(Uri.parse(api));
+    final postData = json.decode(postResponse.body) as Map<String, dynamic>;
+    likes = postData['likes'] ?? [];
+    likes.add(myUid);
+    await likePostUpdateToServer(opId, postId, likes);
+    await setFeedPosts(myUid);
   }
+
   // Dislike post
   Future<void> dislikePost(
       String myUid, String opId, String postId, String source) async {
@@ -629,14 +605,13 @@ class usersProvider extends ChangeNotifier {
                   post_id: oldPost.post_id,
                   likes: likes));
           notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
         }
         break;
       case 'self':
         {
           PostModel oldPost = myPostsMap[postId]!;
           List<dynamic> likes = oldPost.likes;
-          likes.add(myUid);
+          likes.remove(myUid);
           int index =
               myPostsList.indexWhere((element) => element.post_id == postId);
           myPostsList.removeAt(index);
@@ -657,42 +632,13 @@ class usersProvider extends ChangeNotifier {
                   post_id: oldPost.post_id,
                   likes: likes));
           notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
-        }
-        break;
-      case 'saved':
-        {
-          PostModel oldPost = savedPostsMap[postId]!;
-          List<dynamic> likes = oldPost.likes;
-          likes.add(myUid);
-          int index =
-              savedPostsList.indexWhere((element) => element.post_id == postId);
-          savedPostsList.removeAt(index);
-          savedPostsMap[postId] = PostModel(
-              caption: oldPost.caption,
-              dateOfPost: oldPost.dateOfPost,
-              image: oldPost.image,
-              uid: oldPost.uid,
-              post_id: oldPost.post_id,
-              likes: likes);
-          savedPostsList.insert(
-              index,
-              PostModel(
-                  caption: oldPost.caption,
-                  dateOfPost: oldPost.dateOfPost,
-                  image: oldPost.image,
-                  uid: oldPost.uid,
-                  post_id: oldPost.post_id,
-                  likes: likes));
-          notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
         }
         break;
       case 'yours':
         {
           PostModel oldPost = yourPostsMap[postId]!;
           List<dynamic> likes = oldPost.likes;
-          likes.add(myUid);
+          likes.remove(myUid);
           int index =
               yourPostsList.indexWhere((element) => element.post_id == postId);
           yourPostsList.removeAt(index);
@@ -713,7 +659,6 @@ class usersProvider extends ChangeNotifier {
                   post_id: oldPost.post_id,
                   likes: likes));
           notifyListeners();
-          await likePostUpdateToServer(opId, postId, likes);
         }
         break;
       default:
@@ -721,7 +666,15 @@ class usersProvider extends ChangeNotifier {
           print('passed wrong choice');
         }
     }
-    final String api = 'posts/${opId}/${postId}.json';
+    List<dynamic> likes = [];
+    final String api = constants().fetchApi + 'posts/${opId}/${postId}.json';
+    final postResponse = await http.get(Uri.parse(api));
+    final postData = json.decode(postResponse.body) as Map<String, dynamic>;
+    likes = postData['likes'] ?? [];
+    likes.remove(myUid);
+    await likePostUpdateToServer(opId, postId, likes);
+    await likePostUpdateToServer(opId, postId, likes);
+    await setFeedPosts(myUid);
   }
 
   Future<void> setSavedPostsOnce(String uid) async {
