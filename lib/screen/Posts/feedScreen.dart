@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +13,8 @@ import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'detail/postDetailScreen.dart';
+import 'CommentScreens/CommentsScreen.dart';
+
 
 class feedScreen extends StatefulWidget {
   @override
@@ -49,8 +51,8 @@ class _feedScreenState extends State<feedScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
-      print('come');
-      await Provider.of<usersProvider>(context,listen: false)
+     
+      await Provider.of<usersProvider>(context, listen: false)
           .setFeedPosts(currentUser!.uid.toString());
       return;
     }
@@ -71,8 +73,7 @@ class _feedScreenState extends State<feedScreen> {
           child: LiquidPullToRefresh(
             color: Colors.orange[400],
             animSpeedFactor: 5,
-            
-            height: displayHeight(context)*0.2,
+            height: displayHeight(context) * 0.2,
             key: _refreshIndicatorKey,
             showChildOpacityTransition: false,
             onRefresh: setPosts,
@@ -124,8 +125,8 @@ class _feedScreenState extends State<feedScreen> {
                 ),
                 const Opacity(opacity: 0.0, child: Divider()),
                 Container(
-                  //color: Colors.blue,
-                  height: displayHeight(context) * 0.81,
+                  color: Colors.white,
+                  height: displayHeight(context) * 0.865,
                   width: displayWidth(context),
                   child: Padding(
                       padding:
@@ -162,7 +163,6 @@ class _feedScreenState extends State<feedScreen> {
     );
   }
 }
-
 
 Widget displayPostsForFeed(
     BuildContext context,
@@ -284,11 +284,11 @@ Widget displayPostsForFeed(
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
                       Provider.of<usersProvider>(context, listen: false)
-                          .dislikePost(
-                              myUid, post.uid, post.post_id,'feed');
+                          .dislikePost(myUid, post.uid, post.post_id, 'feed');
                     } else {
                       Provider.of<usersProvider>(context, listen: false)
-                          .likePost(myUid, post.uid, post.post_id, 'feed');
+                          .likePost(myUid, post.uid, post.post_id, 'feed'
+                                             );
                     }
                   },
                   child: ClipRRect(
@@ -321,11 +321,7 @@ Widget displayPostsForFeed(
                                 Provider.of<usersProvider>(context,
                                         listen: false)
                                     .dislikePost(
-                                  myUid,
-                                  post.uid,
-                                  post.post_id,
-                                  'feed'
-                                );
+                                        myUid, post.uid, post.post_id, 'feed');
                               } else {
                                 Provider.of<usersProvider>(context,
                                         listen: false)
@@ -361,7 +357,7 @@ Widget displayPostsForFeed(
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => postDetailScreen(
+                                    builder: (context) => CommentScreen(
                                       postOwner: user,
                                       postId: post.post_id,
                                     ),
