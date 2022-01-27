@@ -807,15 +807,14 @@ class usersProvider extends ChangeNotifier {
         notificationData.forEach((key, value) {
           tempList.add(NotificationModel(
               notificationId: key,
+              read: value['read'],
               notifierUid: value['notifierUid'],
               postId: value['postId'],
               time: DateTime.parse(value['time']),
               type: value['type']));
+
         });
-      } else {
-        print('data is 0');
       }
-      print(tempList.length);
       notificationList = tempList;
       notifyListeners();
     } catch (error) {
