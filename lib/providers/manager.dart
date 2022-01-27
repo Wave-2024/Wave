@@ -574,6 +574,7 @@ class usersProvider extends ChangeNotifier {
     await setFeedPosts(myUid);
     await setMyPosts(myUid);
     await setYourPosts(opId);
+    await sendNotification(myUid, opId, postId, 'like');
   }
 
   // Dislike post
@@ -807,15 +808,29 @@ class usersProvider extends ChangeNotifier {
         final notificationData = json.decode(notificationResponse.body) as Map<String,dynamic>;
         notificationData.forEach((key, value) {
           tempList.add(NotificationModel(
-            myUid: myUid,
             notificationId: key,
-            opId: value['opId'],
+            notifierUid: value['notifierUid'],
             postId: value['postId'],
             time: DateTime.parse(value['time']),
             type: value['type']
           ));
         });
       }
+    }
+    catch(error){
+      debugPrint(error.toString());
+    }
+  }
+
+  Future<void> sendNotification(String myUid,String yourId,String postId,String type)async{
+    final String api = constants().fetchApi + 'notifications/${yourId}.json';
+    try{
+      await http.post(Uri.parse(api),body: json.encode({
+        'notifierUid' : myUid,
+        'type': type,
+        'time' : DateTime.now().toString(),
+        'postId' : postId,
+      }));
     }
     catch(error){
       debugPrint(error.toString());
