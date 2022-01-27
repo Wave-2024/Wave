@@ -2,17 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
-import 'package:nexus/utils/widgets.dart';
 
 class usersProvider extends ChangeNotifier {
+
+  List<NotificationModel> myNotificationList = [];
+
   Map<String, PostModel> feedPostMap = {};
 
   Map<String, PostModel> yourPostsMap = {};
@@ -795,4 +797,31 @@ class usersProvider extends ChangeNotifier {
       print(error);
     }
   }
+
+  Future<void> setNotifications(String myUid)async{
+    List<NotificationModel> tempList = [];
+    final String api = constants().fetchApi+'notifications/${myUid}.json';
+    try{
+      final notificationResponse = await http.get(Uri.parse(api));
+      if(json.decode(notificationResponse.body)!=null){
+        final notificationData = json.decode(notificationResponse.body) as Map<String,dynamic>;
+        notificationData.forEach((key, value) {
+          tempList.add(NotificationModel(
+            myUid: myUid,
+            notificationId: key,
+            opId: value['opId'],
+            postId: value['postId'],
+            time: DateTime.parse(value['time']),
+            type: value['type']
+          ));
+        });
+      }
+    }
+    catch(error){
+      debugPrint(error.toString());
+    }
+  }
+
+
+
 }
