@@ -4,7 +4,8 @@ class NotificationModel{
   final String? type;
   final DateTime? time;
   final String? notificationId;
+  final bool? read;
 
-  NotificationModel({this.time,this.notifierUid,this.postId,this.notificationId,this.type,});
+  NotificationModel({this.read,this.time,this.notifierUid,this.postId,this.notificationId,this.type,});
 
 }

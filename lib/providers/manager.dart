@@ -12,8 +12,7 @@ import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class usersProvider extends ChangeNotifier {
-
-  List<NotificationModel> myNotificationList = [];
+  List<NotificationModel> notificationList = [];
 
   Map<String, PostModel> feedPostMap = {};
 
@@ -450,7 +449,7 @@ class usersProvider extends ChangeNotifier {
   }
 
   // Function to delete post
-  Future<void> deletePost(String myUid,String postId) async {
+  Future<void> deletePost(String myUid, String postId) async {
     final String api = constants().fetchApi + 'posts/${myUid}/$postId.json';
     try {
       myPostsMap.remove(postId);
@@ -705,15 +704,13 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-
-
   Future<void> updateCaption(
       String myUid, String postId, String updatedCaption) async {
     final String api = constants().fetchApi + 'posts/${myUid}/${postId}.json';
     try {
       PostModel oldPost = myPostsMap[postId]!;
       int index =
-      myPostsList.indexWhere((element) => element.post_id == postId);
+          myPostsList.indexWhere((element) => element.post_id == postId);
       myPostsList.removeAt(index);
       PostModel updatedPost = PostModel(
           caption: updatedCaption,
@@ -799,44 +796,87 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setNotifications(String myUid)async{
+  Future<void> setNotifications(String myUid) async {
     List<NotificationModel> tempList = [];
-    final String api = constants().fetchApi+'notifications/${myUid}.json';
-    try{
+    final String api = constants().fetchApi + 'notifications/${myUid}.json';
+    try {
       final notificationResponse = await http.get(Uri.parse(api));
-      if(json.decode(notificationResponse.body)!=null){
-        final notificationData = json.decode(notificationResponse.body) as Map<String,dynamic>;
+      if (json.decode(notificationResponse.body) != null) {
+        final notificationData =
+            json.decode(notificationResponse.body) as Map<String, dynamic>;
         notificationData.forEach((key, value) {
           tempList.add(NotificationModel(
-            notificationId: key,
-            notifierUid: value['notifierUid'],
-            postId: value['postId'],
-            time: DateTime.parse(value['time']),
-            type: value['type']
-          ));
+              notificationId: key,
+              notifierUid: value['notifierUid'],
+              postId: value['postId'],
+              time: DateTime.parse(value['time']),
+              type: value['type']));
         });
+      } else {
+        print('data is 0');
       }
-    }
-    catch(error){
+      print(tempList.length);
+      notificationList = tempList;
+      notifyListeners();
+    } catch (error) {
       debugPrint(error.toString());
     }
   }
 
-  Future<void> sendNotification(String myUid,String yourId,String postId,String type)async{
+  Future<void> sendNotification(
+      String myUid, String yourId, String postId, String type) async {
     final String api = constants().fetchApi + 'notifications/${yourId}.json';
-    try{
-      await http.post(Uri.parse(api),body: json.encode({
-        'notifierUid' : myUid,
-        'type': type,
-        'time' : DateTime.now().toString(),
-        'postId' : postId,
-      }));
-    }
-    catch(error){
+    try {
+      await http.post(Uri.parse(api),
+          body: json.encode({
+            'notifierUid': myUid,
+            'type': type,
+            'time': DateTime.now().toString(),
+            'postId': postId,
+          }));
+    } catch (error) {
       debugPrint(error.toString());
     }
   }
 
+  Future<void> deleteNotification(String myUid, String notificationId) async {
+    final String api =
+        constants().fetchApi + 'notifications/${myUid}/${notificationId}.json';
+    int index = notificationList
+        .indexWhere((element) => element.notificationId == notificationId);
+    notificationList.removeAt(index);
+    notifyListeners();
+    try {
+      await http.delete(Uri.parse(api));
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+  }
 
+  Future<void> readNotification(String myUid, String notificationId) async {
+    final String api =
+        constants().fetchApi + 'notifications/${myUid}/${notificationId}.json';
+    int index = notificationList
+        .indexWhere((element) => element.notificationId == notificationId);
+    NotificationModel notification = notificationList[index];
+    notificationList.removeAt(index);
+    notificationList.insert(
+        index,
+        NotificationModel(
+          read: true,
+            type: notification.type,
+            time: notification.time,
+            postId: notification.postId,
+            notificationId: notificationId,
+            notifierUid: notification.notifierUid));
+    notifyListeners();
+    await http.patch(Uri.parse(api),body: json.encode({
+      'read' : true,
+    }));
+  }
 
+  List<NotificationModel> get fetchNotifications {
+    notificationList.sort((a, b) => b.time!.compareTo(a.time!));
+    return [...notificationList];
+  }
 }
