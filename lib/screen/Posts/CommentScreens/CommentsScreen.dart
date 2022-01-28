@@ -63,23 +63,11 @@ class _postDetailScreenState extends State<CommentScreen> {
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () {
             if (formKey.currentState!.validate()) {
-              FirebaseFirestore.instance
-                  .collection('posts')
-                  .doc(widget.postId.toString())
-                  .collection('comments')
-                  .add({
-                'comment': commentController!.text.toString(),
-                'time': Timestamp.now(),
-                'uid': currentUser!.uid.toString()
-              }).then((value) {
-                FirebaseFirestore.instance
-                    .collection('posts')
-                    .doc(widget.postId.toString())
-                    .collection('comments')
-                    .doc(value.id)
-                    .update({'commentId': value.id});
-              });
-
+              Provider.of<usersProvider>(context, listen: false).commentOnPost(
+                  currentUser!.uid,
+                  widget.postOwner!.uid,
+                  postDetail!.post_id,
+                  commentController!.text.toString());
               setState(() {
                 commentController!.clear();
               });

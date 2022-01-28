@@ -87,11 +87,11 @@ Widget displayComment(BuildContext context, String comment, String uid) {
                 ),
         ),
       ),
-      Icon(
+      (user.followers.length>=5)?Icon(
         Icons.verified,
         color: Colors.orange[400],
         size: displayWidth(context) * 0.044,
-      ),
+      ):SizedBox(width: 0,),
       
       Opacity(
           opacity: 0.0,

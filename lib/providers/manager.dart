@@ -66,20 +66,6 @@ class usersProvider extends ChangeNotifier {
     return allUsers;
   }
 
-  Future<void> addCommentToThePost(
-      String postId, String ownerId, String myId, String comment) async {
-    await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(postId)
-        .collection('comments')
-        .doc()
-        .set({
-      'comment': comment,
-      'timestamp': Timestamp.now(),
-      'uid': myId,
-    });
-  }
-
   Future<void> deleteCommentFromThisPost(
       String postId, String commentId) async {
     await FirebaseFirestore.instance
@@ -286,6 +272,7 @@ class usersProvider extends ChangeNotifier {
     allUsers[myUid] = myNewProfile;
     await updateConnectionDetailToServer(
         myUid, myFollowings, yourUid, yourFollowers);
+    await sendNotification(myUid, yourUid , '', 'follow');
     notifyListeners();
   }
 
@@ -824,6 +811,9 @@ class usersProvider extends ChangeNotifier {
 
   Future<void> sendNotification(
       String myUid, String yourId, String postId, String type) async {
+    if(myUid==yourId){
+      return;
+    }
     final String api = constants().fetchApi + 'notifications/${yourId}.json';
     try {
       await http.post(Uri.parse(api),
@@ -837,6 +827,26 @@ class usersProvider extends ChangeNotifier {
     } catch (error) {
       debugPrint(error.toString());
     }
+  }
+
+  Future<void> commentOnPost(String myId ,String yourId, String postId , String comment)async{
+    await FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('comments')
+        .add({
+      'comment': comment,
+      'time': Timestamp.now(),
+      'uid': myId
+    }).then((value) {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .doc(value.id)
+          .update({'commentId': value.id});
+    });
+      await sendNotification(myId, yourId, postId, 'comment');
   }
 
   Future<void> deleteNotification(String myUid, String notificationId) async {

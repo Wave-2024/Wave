@@ -6,7 +6,9 @@ import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
 import 'package:nexus/screen/Posts/view/viewMyPostsScreen.dart';
+import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +37,8 @@ class NotificationScreen extends StatelessWidget {
           height: displayHeight(context),
           width: displayWidth(context),
           child: Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 16,left: 8,right: 8),
+            padding:
+                const EdgeInsets.only(top: 16.0, bottom: 16, left: 8, right: 8),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -43,7 +46,8 @@ class NotificationScreen extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
-                      Provider.of<usersProvider>(context,listen: false).readAllNotificationAtOnce(currentUser.uid);
+                      Provider.of<usersProvider>(context, listen: false)
+                          .readAllNotificationAtOnce(currentUser.uid);
                     },
                     child: Card(
                       elevation: 2,
@@ -70,24 +74,29 @@ class NotificationScreen extends StatelessWidget {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       Container? tile;
+                      int? postIndex;
+                      NexusUser user = allUsers[list[index].notifierUid]!;
                       switch (list[index].type) {
                         case 'like':
                           {
-                            NexusUser user = allUsers[list[index].notifierUid]!;
-                            int postIndex = myPosts.indexWhere((element) =>
+                            postIndex = myPosts.indexWhere((element) =>
                                 element.post_id == list[index].postId);
                             PostModel post = myPosts[postIndex];
                             tile = Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
-                                color: (!list[index].read!)?Colors.orange[100]:Colors.white,
-                                border: Border.all(color: Colors.grey,width: displayWidth(context)*0.001),
+                                color: (!list[index].read!)
+                                    ? Colors.orange[100]
+                                    : Colors.white,
+                                border: Border.all(
+                                    color: Colors.grey,
+                                    width: displayWidth(context) * 0.001),
                               ),
-
-                              height: displayHeight(context)*0.08,
-                              width: displayWidth(context)*0.95,
+                              height: displayHeight(context) * 0.08,
+                              width: displayWidth(context) * 0.95,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(
                                     Icons.favorite,
@@ -97,7 +106,8 @@ class NotificationScreen extends StatelessWidget {
                                     '${user.username} liked your post',
                                     style: TextStyle(
                                         color: Colors.black,
-                                        fontSize: displayWidth(context) * 0.036),
+                                        fontSize:
+                                            displayWidth(context) * 0.036),
                                   ),
                                   CachedNetworkImage(
                                     imageUrl: post.image,
@@ -110,23 +120,129 @@ class NotificationScreen extends StatelessWidget {
                             );
                           }
                           break;
-                          case 'comment' : {
-
+                        case 'comment':
+                          {
+                            int postIndex = myPosts.indexWhere((element) =>
+                                element.post_id == list[index].postId);
+                            PostModel post = myPosts[postIndex];
+                            tile = Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: (!list[index].read!)
+                                    ? Colors.orange[100]
+                                    : Colors.white,
+                                border: Border.all(
+                                    color: Colors.grey,
+                                    width: displayWidth(context) * 0.001),
+                              ),
+                              height: displayHeight(context) * 0.08,
+                              width: displayWidth(context) * 0.95,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Icon(
+                                    Icons.comment_outlined,
+                                    color: Colors.indigo,
+                                  ),
+                                  Text(
+                                    '${user.username} commented on your post',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize:
+                                            displayWidth(context) * 0.036),
+                                  ),
+                                  CachedNetworkImage(
+                                    imageUrl: post.image,
+                                    height: displayHeight(context) * 0.05,
+                                    width: displayWidth(context) * 0.1,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ],
+                              ),
+                            );
                           }
                           break;
-                        case  'follow' : {
-
-                        }
-                        break;
-                        default : {
-
-                        }
+                        case 'follow':
+                          {
+                            tile = Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: (!list[index].read!)
+                                    ? Colors.orange[100]
+                                    : Colors.white,
+                                border: Border.all(
+                                    color: Colors.grey,
+                                    width: displayWidth(context) * 0.001),
+                              ),
+                              height: displayHeight(context) * 0.08,
+                              width: displayWidth(context) * 0.95,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Image.asset(
+                                    'images/follow.png',
+                                    height: displayHeight(context) * 0.05,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Text(
+                                    '${user.username} started following you',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize:
+                                            displayWidth(context) * 0.036),
+                                  ),
+                                  CachedNetworkImage(
+                                    imageUrl: user.dp,
+                                    height: displayHeight(context) * 0.05,
+                                    width: displayWidth(context) * 0.1,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          break;
+                        default:
+                          {}
                       }
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 6.0),
                         child: Slidable(
                           dragStartBehavior: DragStartBehavior.start,
-                          child: tile!,
+                          child: InkWell(
+                              onTap: () {
+                                if (list[index].type == 'like') {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => viewMyPostScreen(
+                                          index: postIndex!,
+                                          myUid: currentUser.uid,
+                                        ),
+                                      ));
+                                } else if (list[index].type == 'comment') {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            CommentScreenForMyPosts(
+                                          postId: list[index].postId,
+                                          postOwner: user,
+                                        ),
+                                      ));
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => userProfile(
+                                          uid: list[index].notifierUid,
+                                        ),
+                                      ));
+                                }
+                              },
+                              child: tile!),
                           endActionPane: ActionPane(
                             motion: const StretchMotion(),
                             children: [
