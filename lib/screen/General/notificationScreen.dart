@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
@@ -42,7 +43,7 @@ class NotificationScreen extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
-                      // TODO -> Update all the notification status to read
+                      Provider.of<usersProvider>(context,listen: false).readAllNotificationAtOnce(currentUser.uid);
                     },
                     child: Card(
                       elevation: 2,
@@ -68,7 +69,7 @@ class NotificationScreen extends StatelessWidget {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                      ListTile? listTile;
+                      Container? tile;
                       switch (list[index].type) {
                         case 'like':
                           {
@@ -76,49 +77,58 @@ class NotificationScreen extends StatelessWidget {
                             int postIndex = myPosts.indexWhere((element) =>
                                 element.post_id == list[index].postId);
                             PostModel post = myPosts[postIndex];
-                            listTile = ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => viewMyPostScreen(
-                                        index: postIndex,
-                                        myUid: currentUser.uid,
-                                      ),
-                                    ));
-                              },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(color: Colors.grey,width: displayWidth(context)*0.001)
+                            tile = Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: (!list[index].read!)?Colors.orange[100]:Colors.white,
+                                border: Border.all(color: Colors.grey,width: displayWidth(context)*0.001),
                               ),
-                              trailing: CachedNetworkImage(
-                                imageUrl: post.image,
-                                height: displayHeight(context) * 0.05,
-                                width: displayWidth(context) * 0.1,
-                                fit: BoxFit.cover,
-                              ),
-                              tileColor: (list[index].read!)
-                                  ? Colors.white
-                                  : Colors.orange[100],
-                              leading: Icon(
-                                Icons.favorite,
-                                color: Colors.red[600],
-                              ),
-                              title: Text(
-                                '${user.username} liked your post',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: displayWidth(context) * 0.036),
+
+                              height: displayHeight(context)*0.08,
+                              width: displayWidth(context)*0.95,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(
+                                    Icons.favorite,
+                                    color: Colors.red[600],
+                                  ),
+                                  Text(
+                                    '${user.username} liked your post',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: displayWidth(context) * 0.036),
+                                  ),
+                                  CachedNetworkImage(
+                                    imageUrl: post.image,
+                                    height: displayHeight(context) * 0.05,
+                                    width: displayWidth(context) * 0.1,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ],
                               ),
                             );
                           }
+                          break;
+                          case 'comment' : {
+
+                          }
+                          break;
+                        case  'follow' : {
+
+                        }
+                        break;
+                        default : {
+
+                        }
                       }
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 6.0),
                         child: Slidable(
-                          child: listTile!,
+                          dragStartBehavior: DragStartBehavior.start,
+                          child: tile!,
                           endActionPane: ActionPane(
-                            motion: StretchMotion(),
+                            motion: const StretchMotion(),
                             children: [
                               SlidableAction(
                                 onPressed: (context) {
