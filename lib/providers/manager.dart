@@ -853,6 +853,24 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> readAllNotificationAtOnce(String myUid)async{
+    final String preApi = constants().fetchApi + 'notifications/${myUid}/';
+    try{
+      for (var notification in notificationList) {
+        notification.updateNotificationStatus();
+      }
+      notifyListeners();
+      for(var notification in notificationList){
+        final String api = preApi + '${notification.notificationId}.json';
+        await http.patch(Uri.parse(api),body: json.encode({'read':true}));
+      }
+    }
+    catch(error){
+      debugPrint(error.toString());
+    }
+
+  }
+
   Future<void> readNotification(String myUid, String notificationId) async {
     final String api =
         constants().fetchApi + 'notifications/${myUid}/${notificationId}.json';
