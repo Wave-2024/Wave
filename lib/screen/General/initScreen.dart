@@ -1,7 +1,9 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/homescreen.dart';
+import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -37,13 +39,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
       await Provider.of<usersProvider>(context, listen: false)
           .setSavedPostsOnce(currentUser!.uid.toString());
       init = false;
-      if (mounted) {
+      
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => homescreen(),
             ));
-      }
+      
     }
     super.didChangeDependencies();
   }
@@ -52,16 +54,67 @@ class _welcomeScreenState extends State<welcomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            load(context),
-            Opacity(opacity: 0, child: Divider()),
-            Text('Please wait while we setup the screen for you !!')
-          ],
-        ),
-      ),
+          height: displayHeight(context),
+          width: displayWidth(context),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Colors.orange[400]!,
+                  Colors.orange[300]!,
+                  Colors.orange[200]!,
+                ]),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: displayHeight(context) * 0.4,
+              ),
+              Image.asset(
+                'images/wave.png',
+                width: displayWidth(context) * 0.5,
+                fit: BoxFit.cover,
+              ),
+              const CircularProgressIndicator(
+                backgroundColor: Colors.indigo,
+                color: Colors.white30,
+              ),
+              Expanded(
+                child: SizedBox(
+                  height: displayHeight(context) * 0.3,
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Made with ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: displayWidth(context) * 0.04,
+                          color: Colors.black),
+                    ),
+                    const Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                    ),
+                    Text(
+                      ' in India',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: displayWidth(context) * 0.04,
+                          color: Colors.black),
+                    )
+                  ],
+                ),
+              )
+            ],
+          )),
     );
   }
 }

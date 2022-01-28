@@ -104,13 +104,11 @@ class _feedScreenState extends State<feedScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 5.50),
-                          child: Text(
-                            "Nexus",
-                            style: TextStyle(
-                                color: Colors.orange[600],
-                                fontSize: displayWidth(context) * 0.06,
-                                fontWeight: FontWeight.bold),
-                          ),
+                            child: Image.asset(
+                              'images/wave.png',
+                              width: displayWidth(context) * 0.23,
+                              fit: BoxFit.cover,
+                            )
                         ),
                         GestureDetector(
                           onTap: () {
@@ -137,7 +135,7 @@ class _feedScreenState extends State<feedScreen> {
                 const Opacity(opacity: 0.0, child: Divider()),
                 Container(
                   color: Colors.white,
-                  height: displayHeight(context) * 0.865,
+                  height: displayHeight(context) * 0.8,
                   width: displayWidth(context),
                   child: Padding(
                       padding:
@@ -338,7 +336,7 @@ Widget displayPostsForFeed(
                     borderRadius: BorderRadius.circular(25),
                     child: CachedNetworkImage(
                       imageUrl: post.image,
-                      height: displayHeight(context) * 0.38,
+                      height: displayHeight(context) * 0.4,
                       width: displayWidth(context) * 0.68,
                       fit: BoxFit.cover,
                     ),

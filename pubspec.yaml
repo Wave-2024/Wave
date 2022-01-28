@@ -46,6 +46,8 @@ dependencies:
   cupertino_icons: ^1.0.4
   scrollable_positioned_list: ^0.2.3
   flutter_slidable: ^1.2.0
+  animated_text_kit: ^4.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
