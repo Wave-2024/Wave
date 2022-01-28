@@ -7,6 +7,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Posts/view/viewMyPostsScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -33,7 +34,7 @@ class NotificationScreen extends StatelessWidget {
           height: displayHeight(context),
           width: displayWidth(context),
           child: Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 16),
+            padding: const EdgeInsets.only(top: 16.0, bottom: 16,left: 8,right: 8),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -52,7 +53,7 @@ class NotificationScreen extends StatelessWidget {
                         ),
                         height: displayHeight(context) * 0.04,
                         width: displayWidth(context) * 0.6,
-                        child: Center(
+                        child: const Center(
                             child: Text(
                           'Mark all as read',
                           style: TextStyle(
@@ -86,6 +87,10 @@ class NotificationScreen extends StatelessWidget {
                                       ),
                                     ));
                               },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(color: Colors.grey,width: displayWidth(context)*0.001)
+                              ),
                               trailing: CachedNetworkImage(
                                 imageUrl: post.image,
                                 height: displayHeight(context) * 0.05,
@@ -108,7 +113,43 @@ class NotificationScreen extends StatelessWidget {
                             );
                           }
                       }
-                      return listTile!;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 6.0),
+                        child: Slidable(
+                          child: listTile!,
+                          endActionPane: ActionPane(
+                            motion: StretchMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) {
+                                  Provider.of<usersProvider>(context,
+                                          listen: false)
+                                      .readNotification(currentUser.uid,
+                                          list[index].notificationId!);
+                                },
+                                flex: 1,
+                                backgroundColor: Colors.green[200]!,
+                                foregroundColor: Colors.white,
+                                icon: Icons.check,
+                                label: 'Read',
+                              ),
+                              SlidableAction(
+                                onPressed: (context) {
+                                  Provider.of<usersProvider>(context,
+                                          listen: false)
+                                      .deleteNotification(currentUser.uid,
+                                          list[index].notificationId!);
+                                },
+                                flex: 1,
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     },
                     itemCount: list.length,
                   ),
