@@ -832,6 +832,7 @@ class usersProvider extends ChangeNotifier {
             'type': type,
             'time': DateTime.now().toString(),
             'postId': postId,
+            'read' : false
           }));
     } catch (error) {
       debugPrint(error.toString());
@@ -857,17 +858,7 @@ class usersProvider extends ChangeNotifier {
         constants().fetchApi + 'notifications/${myUid}/${notificationId}.json';
     int index = notificationList
         .indexWhere((element) => element.notificationId == notificationId);
-    NotificationModel notification = notificationList[index];
-    notificationList.removeAt(index);
-    notificationList.insert(
-        index,
-        NotificationModel(
-          read: true,
-            type: notification.type,
-            time: notification.time,
-            postId: notification.postId,
-            notificationId: notificationId,
-            notifierUid: notification.notifierUid));
+    notificationList[index].updateNotificationStatus();
     notifyListeners();
     await http.patch(Uri.parse(api),body: json.encode({
       'read' : true,
