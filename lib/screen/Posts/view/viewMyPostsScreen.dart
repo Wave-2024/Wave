@@ -355,7 +355,7 @@ Widget displayMyPosts(
                       imageUrl: post.image,
                       height: displayHeight(context) * 0.38,
                       width: displayWidth(context) * 0.68,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),

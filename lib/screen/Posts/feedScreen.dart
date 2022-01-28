@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
@@ -45,9 +46,19 @@ class _feedScreenState extends State<feedScreen> {
   @override
   void initState() {
     currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('reached');
+    init = true;
     super.initState();
   }
+
+  @override
+  void didChangeDependencies() async {
+    if(init!){
+      await Provider.of<usersProvider>(context,listen: false).setNotifications(currentUser!.uid);
+      init=false;
+    }
+    super.didChangeDependencies();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +67,12 @@ class _feedScreenState extends State<feedScreen> {
           .setFeedPosts(currentUser!.uid.toString());
       return;
     }
-
+    final List<NotificationModel> notificationList = Provider.of<usersProvider>(context).fetchNotifications;
+    final List<NotificationModel> unreadNotificationList = notificationList.where((element) => !element.read!).toList();
     final Map<String, PostModel> savedPosts =
         Provider.of<usersProvider>(context).fetchSavedPostsMap;
     final List<PostModel> feedPosts =
         Provider.of<usersProvider>(context).fetchFeedPostList;
-    print(feedPosts.length);
     final Map<String, NexusUser> allUsers =
         Provider.of<usersProvider>(context).fetchAllUsers;
     return Scaffold(
@@ -112,7 +123,7 @@ class _feedScreenState extends State<feedScreen> {
                           child: Badge(
                               badgeColor: Colors.red[400]!,
                               badgeContent: Text(
-                                '5',
+                                unreadNotificationList.length.toString(),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: displayWidth(context) * 0.03),

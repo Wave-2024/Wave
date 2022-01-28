@@ -48,8 +48,8 @@ class _profiletScreenState extends State<profiletScreen> {
   Widget build(BuildContext context) {
     NexusUser? myProfile = Provider.of<usersProvider>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
-    Map<String, PostModel>? posts =
-        Provider.of<usersProvider>(context).fetchMyPostsMap;
+    List<PostModel> posts =
+        Provider.of<usersProvider>(context).fetchMyPostsList;
 
     Map<String, PostModel>? savedPosts =
         Provider.of<usersProvider>(context).fetchSavedPostsMap;
@@ -652,7 +652,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                       width: displayWidth(context) * 0.3,
                                       fit: BoxFit.cover,
                                       imageUrl:
-                                          posts.values.toList()[index].image),
+                                          posts[index].image),
                                 )
                               : InkWell(
                                 onTap: () {
