@@ -46,12 +46,16 @@ class _feedScreenState extends State<feedScreen> {
   @override
   void initState() {
     currentUser = FirebaseAuth.instance.currentUser;
+    init = true;
     super.initState();
   }
 
   @override
   void didChangeDependencies() async {
-    await Provider.of<usersProvider>(context,listen: false).setNotifications(currentUser!.uid);
+    if(init!){
+      await Provider.of<usersProvider>(context,listen: false).setNotifications(currentUser!.uid);
+      init=false;
+    }
     super.didChangeDependencies();
   }
 
