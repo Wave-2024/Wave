@@ -7,12 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
+import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class usersProvider extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
+
+  List<StoryModel> feedStoryList = [];
 
   Map<String, PostModel> feedPostMap = {};
 
@@ -84,6 +87,9 @@ class usersProvider extends ChangeNotifier {
       final userData = json.decode(userResponse.body) as Map<String, dynamic>;
       userData.forEach((key, value) {
         temp[key] = NexusUser(
+            views: value['views'] ?? [],
+            story: value['story'] ?? '',
+            storyTime: DateTime.parse(value['storyTime']),
             bio: value['bio'],
             coverImage: value['coverImage'],
             dp: value['dp'],
@@ -103,13 +109,21 @@ class usersProvider extends ChangeNotifier {
 
   // Function to set posts that will be diplayed on your feed screen
   Future<void> setFeedPosts(String myUid) async {
-    List<PostModel> temp = [];
+    List<PostModel> tempPostList = [];
+    List<StoryModel> tempStoryList = [];
     List<dynamic> myFollowing = allUsers[myUid]!.followings;
     for (int i = 0; i < myFollowing.length; ++i) {
       String uid = myFollowing[i].toString();
-      temp.addAll(await getListOfPostsUsingUid(uid));
+      tempPostList.addAll(await getListOfPostsUsingUid(uid));
+      tempStoryList.add(StoryModel(
+        story: allUsers[myFollowing[i]]!.story,
+        storyTime: allUsers[myFollowing[i]]!.storyTime,
+        views: allUsers[myFollowing[i]]!.views,
+      ));
     }
-    feedPostList = temp;
+    feedStoryList = tempStoryList;
+    feedPostList = tempPostList;
+    feedStoryList.sort((a, b) => b.storyTime!.compareTo(a.storyTime!));
     feedPostList.sort((a, b) => DateFormat('d/MM/yyyy')
         .parse(b.dateOfPost)
         .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
@@ -155,7 +169,10 @@ class usersProvider extends ChangeNotifier {
             .patch(Uri.parse(api), body: jsonEncode({'coverImage': value}))
             .then((_) {
           updateUser = NexusUser(
-              bio: oldUser!.bio,
+              views: oldUser!.views,
+              story: oldUser.story,
+              storyTime: oldUser.storyTime,
+              bio: oldUser.bio,
               coverImage: value,
               dp: oldUser.dp,
               email: oldUser.email,
@@ -175,29 +192,18 @@ class usersProvider extends ChangeNotifier {
 
   Future<void> addProfilePicture(File? newImage, String uid) async {
     String imageLocation = 'users/${uid}/details/dp';
-    NexusUser? oldUser = allUsers[uid];
-    NexusUser? updateUser;
+
     final Reference storageReference =
         FirebaseStorage.instance.ref().child(imageLocation);
     final UploadTask uploadTask = storageReference.putFile(newImage!);
     final TaskSnapshot taskSnapshot = await uploadTask;
-    await taskSnapshot.ref.getDownloadURL().then((value) async {
+    await taskSnapshot.ref.getDownloadURL().then((downloadLink) async {
       final String api = constants().fetchApi + 'users/${uid}.json';
       try {
-        http
-            .patch(Uri.parse(api), body: jsonEncode({'dp': value}))
+       await http
+            .patch(Uri.parse(api), body: jsonEncode({'dp': downloadLink}))
             .then((value) {
-          updateUser = NexusUser(
-              bio: oldUser!.bio,
-              coverImage: oldUser.coverImage,
-              dp: value.toString(),
-              email: oldUser.email,
-              followers: oldUser.followers,
-              followings: oldUser.followings,
-              title: oldUser.title,
-              uid: uid,
-              username: oldUser.username);
-          allUsers[uid] = updateUser!;
+          allUsers[uid]!.changeDP(downloadLink);
           notifyListeners();
         });
       } catch (error) {
@@ -221,8 +227,11 @@ class usersProvider extends ChangeNotifier {
               }))
           .then((value) {
         updateUser = NexusUser(
+            views: oldUser!.views,
+            story: oldUser.story,
+            storyTime: oldUser.storyTime,
             bio: bio,
-            coverImage: oldUser!.coverImage,
+            coverImage: oldUser.coverImage,
             dp: oldUser.dp,
             email: oldUser.email,
             followers: oldUser.followers,
@@ -247,9 +256,12 @@ class usersProvider extends ChangeNotifier {
     NexusUser yourOldProfile = allUsers[yourUid]!;
 
     NexusUser myNewProfile = NexusUser(
+        views: myOldProfile.views,
         bio: myOldProfile.bio,
         coverImage: myOldProfile.coverImage,
         dp: myOldProfile.dp,
+        story: myOldProfile.story,
+        storyTime: myOldProfile.storyTime,
         email: myOldProfile.email,
         followers: myOldProfile.followers,
         followings: myFollowings,
@@ -258,6 +270,9 @@ class usersProvider extends ChangeNotifier {
         username: myOldProfile.username);
 
     NexusUser yourNewProfile = NexusUser(
+        views: yourOldProfile.views,
+        story: yourOldProfile.story,
+        storyTime: yourOldProfile.storyTime,
         bio: yourOldProfile.bio,
         coverImage: yourOldProfile.coverImage,
         dp: yourOldProfile.dp,
@@ -272,7 +287,7 @@ class usersProvider extends ChangeNotifier {
     allUsers[myUid] = myNewProfile;
     await updateConnectionDetailToServer(
         myUid, myFollowings, yourUid, yourFollowers);
-    await sendNotification(myUid, yourUid , '', 'follow');
+    await sendNotification(myUid, yourUid, '', 'follow');
     notifyListeners();
   }
 
@@ -286,6 +301,9 @@ class usersProvider extends ChangeNotifier {
 
     NexusUser myNewProfile = NexusUser(
         bio: myOldProfile.bio,
+        views: myOldProfile.views,
+        story: myOldProfile.story,
+        storyTime: myOldProfile.storyTime,
         coverImage: myOldProfile.coverImage,
         dp: myOldProfile.dp,
         email: myOldProfile.email,
@@ -296,6 +314,9 @@ class usersProvider extends ChangeNotifier {
         username: myOldProfile.username);
 
     NexusUser yourNewProfile = NexusUser(
+        story: yourOldProfile.story,
+        views: yourOldProfile.views,
+        storyTime: yourOldProfile.storyTime,
         bio: yourOldProfile.bio,
         coverImage: yourOldProfile.coverImage,
         dp: yourOldProfile.dp,
@@ -799,7 +820,6 @@ class usersProvider extends ChangeNotifier {
               postId: value['postId'],
               time: DateTime.parse(value['time']),
               type: value['type']));
-
         });
       }
       notificationList = tempList;
@@ -811,7 +831,7 @@ class usersProvider extends ChangeNotifier {
 
   Future<void> sendNotification(
       String myUid, String yourId, String postId, String type) async {
-    if(myUid==yourId){
+    if (myUid == yourId) {
       return;
     }
     final String api = constants().fetchApi + 'notifications/${yourId}.json';
@@ -822,23 +842,21 @@ class usersProvider extends ChangeNotifier {
             'type': type,
             'time': DateTime.now().toString(),
             'postId': postId,
-            'read' : false
+            'read': false
           }));
     } catch (error) {
       debugPrint(error.toString());
     }
   }
 
-  Future<void> commentOnPost(String myId ,String yourId, String postId , String comment)async{
+  Future<void> commentOnPost(
+      String myId, String yourId, String postId, String comment) async {
     await FirebaseFirestore.instance
         .collection('posts')
         .doc(postId)
         .collection('comments')
-        .add({
-      'comment': comment,
-      'time': Timestamp.now(),
-      'uid': myId
-    }).then((value) {
+        .add({'comment': comment, 'time': Timestamp.now(), 'uid': myId}).then(
+            (value) {
       FirebaseFirestore.instance
           .collection('posts')
           .doc(postId)
@@ -846,7 +864,7 @@ class usersProvider extends ChangeNotifier {
           .doc(value.id)
           .update({'commentId': value.id});
     });
-      await sendNotification(myId, yourId, postId, 'comment');
+    await sendNotification(myId, yourId, postId, 'comment');
   }
 
   Future<void> deleteNotification(String myUid, String notificationId) async {
@@ -863,22 +881,20 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> readAllNotificationAtOnce(String myUid)async{
+  Future<void> readAllNotificationAtOnce(String myUid) async {
     final String preApi = constants().fetchApi + 'notifications/${myUid}/';
-    try{
+    try {
       for (var notification in notificationList) {
         notification.updateNotificationStatus();
       }
       notifyListeners();
-      for(var notification in notificationList){
+      for (var notification in notificationList) {
         final String api = preApi + '${notification.notificationId}.json';
-        await http.patch(Uri.parse(api),body: json.encode({'read':true}));
+        await http.patch(Uri.parse(api), body: json.encode({'read': true}));
       }
-    }
-    catch(error){
+    } catch (error) {
       debugPrint(error.toString());
     }
-
   }
 
   Future<void> readNotification(String myUid, String notificationId) async {
@@ -888,13 +904,54 @@ class usersProvider extends ChangeNotifier {
         .indexWhere((element) => element.notificationId == notificationId);
     notificationList[index].updateNotificationStatus();
     notifyListeners();
-    await http.patch(Uri.parse(api),body: json.encode({
-      'read' : true,
-    }));
+    await http.patch(Uri.parse(api),
+        body: json.encode({
+          'read': true,
+        }));
   }
 
   List<NotificationModel> get fetchNotifications {
     notificationList.sort((a, b) => b.time!.compareTo(a.time!));
     return [...notificationList];
+  }
+
+  Future<void> addStoryToServer(String myUid, File? story) async {
+    final String imageLocation = '${myUid}/story/storyImage';
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(imageLocation);
+    final UploadTask uploadTask = storageReference.putFile(story!);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    taskSnapshot.ref.getDownloadURL().then((value) async {
+      final String api = constants().fetchApi + 'users/${myUid}.json';
+      await http.patch(Uri.parse(api),
+          body: json.encode({
+            'story': value,
+            'storyTime': DateTime.now().toString(),
+            'views': [],
+          }));
+      allUsers[myUid]!.addStory(value);
+      notifyListeners();
+    });
+  }
+
+  bool hasStory(String uid) {
+    if (allUsers[uid]!.story != '') return true;
+    return false;
+  }
+
+  Future<void> deleteStoryFromServer(String myUid) async {
+    final String api = constants().fetchApi + 'users/${myUid}.json';
+    allUsers[myUid]!.removeStroy();
+    notifyListeners();
+    try {
+      await http.patch(Uri.parse(api),
+          body: json.encode({
+            'story': '',
+            'storyTime': '',
+            'views': [],
+          }));
+    } catch (error) {
+      debugPrint(error.toString());
+    }
   }
 }

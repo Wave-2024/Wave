@@ -14,6 +14,7 @@ import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 import '../Authentication/authscreen.dart';
 
@@ -35,7 +36,7 @@ class _profiletScreenState extends State<profiletScreen> {
   void initState() {
     super.initState();
     currentUser = FirebaseAuth.instance.currentUser;
-    loadScreen = true;
+    loadScreen = false;
   }
 
   @override
@@ -93,7 +94,7 @@ class _profiletScreenState extends State<profiletScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: SingleChildScrollView(
+          child: (loadScreen!)?Center(child: load(context),): SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +134,7 @@ class _profiletScreenState extends State<profiletScreen> {
                       ),
                       Positioned(
                           top: displayHeight(context) * 0.1655,
-                          left: displayWidth(context) * 0.052,
+                          left: displayWidth(context) * 0.05,
                           child: Card(
                             color: Colors.orange[300],
                             elevation: 6.0,
@@ -143,7 +144,7 @@ class _profiletScreenState extends State<profiletScreen> {
                               padding: const EdgeInsets.all(2.5),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: (myProfile.dp != '')
+                                child: (myProfile.dp!='')
                                     ? CachedNetworkImage(
                                         imageUrl: myProfile.dp,
                                         height: displayHeight(context) * 0.0905,
@@ -152,8 +153,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                       )
                                     : Icon(
                                         Icons.person,
-                                        color: Colors.orange[300],
-                                        size: displayWidth(context) * 0.045,
+                                        color: Colors.white,
+                                        size: displayWidth(context) * 0.175,
                                       ),
                               ),
                             ),
@@ -222,13 +223,14 @@ class _profiletScreenState extends State<profiletScreen> {
                           child: IconButton(
                             iconSize: displayWidth(context) * 0.08,
                             onPressed: () {
-                              Navigator.push(
+                              print(myProfile.dp.toString());
+                              /*Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => editProfileScreen(
                                       user: myProfile,
                                     ),
-                                  ));
+                                  ));*/
                             },
                             color: Colors.white70,
                             icon: Icon(Icons.edit),
@@ -250,41 +252,54 @@ class _profiletScreenState extends State<profiletScreen> {
                             iconSize: displayWidth(context) * 0.08,
                             icon: const Icon(Icons.logout),
                             onPressed: () async {
-                              showDialog(context: context, builder: (context) {
-                                return  CupertinoAlertDialog(
-                                  //content: Text('Are you sure you want to sign-out ?'),
-                                  title: const Text('Logout'),
-                                  actions: [
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Center(child: TextButton(child: const Text('No',style: TextStyle(
-                                          color: Colors.black87
-                                      ),),onPressed: () {
-                                        Navigator.pop(context);
-                                      },)),
-                                    ),
-                                   Padding(
-                                     padding: const EdgeInsets.all(8.0),
-                                     child: Center(child: TextButton.icon(onPressed: () async {
-                                       _auth.signOut().then((value) {
-                                         Navigator.pushReplacement(
-                                             context,
-                                             MaterialPageRoute(
-                                               builder: (context) => authScreen(),
-                                             ));
-                                       });
-                                     },
-
-                                       icon: const Icon(Icons.logout,color: Colors.red,),label: const Text('Yes',style: TextStyle(
-                                           color: Colors.black87
-                                       )),
-                                     )),
-                                   ),
-
-                                  ],
-                                );
-                              },);
-
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return CupertinoAlertDialog(
+                                    //content: Text('Are you sure you want to sign-out ?'),
+                                    title: const Text('Logout'),
+                                    actions: [
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: TextButton(
+                                          child: const Text(
+                                            'No',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        )),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: TextButton.icon(
+                                          onPressed: () async {
+                                            _auth.signOut().then((value) {
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        authScreen(),
+                                                  ));
+                                            });
+                                          },
+                                          icon: const Icon(
+                                            Icons.logout,
+                                            color: Colors.red,
+                                          ),
+                                          label: const Text('Yes',
+                                              style: TextStyle(
+                                                  color: Colors.black87)),
+                                        )),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                             color: Colors.white70,
                           )),
@@ -304,13 +319,21 @@ class _profiletScreenState extends State<profiletScreen> {
                             fontSize: displayWidth(context) * 0.045,
                             fontWeight: FontWeight.bold),
                       ),
-                      Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.015,)),
-                      (myProfile.followers.length>=5)?
-                      Padding(
-                        padding: const EdgeInsets.only(bottom:1.5),
-                        child: Icon(Icons.verified,color: Colors.orange[400],size: displayWidth(context)*0.048,),
-                      )
-                      : SizedBox(),
+                      Opacity(
+                          opacity: 0.0,
+                          child: VerticalDivider(
+                            width: displayWidth(context) * 0.015,
+                          )),
+                      (myProfile.followers.length >= 5)
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 1.5),
+                              child: Icon(
+                                Icons.verified,
+                                color: Colors.orange[400],
+                                size: displayWidth(context) * 0.048,
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -472,25 +495,28 @@ class _profiletScreenState extends State<profiletScreen> {
                                           top: 8,
                                           bottom: 8),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                                'Posts',
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize:
-                                                        displayWidth(context) * 0.042,
-                                                    fontWeight: FontWeight.bold),
-                                              ),
-                                             Opacity(
+                                            'Posts',
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.042,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Opacity(
                                               opacity: 0.0,
                                               child: VerticalDivider(
-                                                width:
-                                                    displayWidth(context) * 0.01,
+                                                width: displayWidth(context) *
+                                                    0.01,
                                               )),
                                           CircleAvatar(
                                             backgroundColor: Colors.white54,
-                                            radius: displayWidth(context) * 0.03,
+                                            radius:
+                                                displayWidth(context) * 0.03,
                                             child: Text(
                                               posts.length.toString(),
                                               style: TextStyle(
@@ -503,28 +529,36 @@ class _profiletScreenState extends State<profiletScreen> {
                                         ],
                                       ),
                                     ),
-
-
                                   )
                                 : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-
-                                  children: [
-                                    Text(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
                                         'Posts',
                                         style: TextStyle(
                                             color: Colors.black45,
-                                            fontSize: displayWidth(context) * 0.042,
+                                            fontSize:
+                                                displayWidth(context) * 0.042,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.01,)),
+                                      Opacity(
+                                          opacity: 0.0,
+                                          child: VerticalDivider(
+                                            width: displayWidth(context) * 0.01,
+                                          )),
                                       CircleAvatar(
                                         backgroundColor: Colors.white38,
-                                        radius: displayWidth(context)*0.03,
-                                        child: Text(posts.length.toString(),style: TextStyle(color: Colors.black45,fontSize: displayWidth(context)*0.03),),
+                                        radius: displayWidth(context) * 0.03,
+                                        child: Text(
+                                          posts.length.toString(),
+                                          style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize:
+                                                  displayWidth(context) * 0.03),
+                                        ),
                                       )
-                                  ],
-                                ),
+                                    ],
+                                  ),
                           ),
                         ),
                         Padding(
@@ -551,17 +585,19 @@ class _profiletScreenState extends State<profiletScreen> {
                                             top: 8,
                                             bottom: 8),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Text(
                                               'Saved',
                                               style: TextStyle(
                                                   color: Colors.black87,
                                                   fontSize:
-                                                      displayWidth(context) * 0.042,
+                                                      displayWidth(context) *
+                                                          0.042,
                                                   fontWeight: FontWeight.bold),
                                             ),
-                                             Opacity(
+                                            Opacity(
                                                 opacity: 0.0,
                                                 child: VerticalDivider(
                                                   width: displayWidth(context) *
@@ -586,13 +622,14 @@ class _profiletScreenState extends State<profiletScreen> {
                                     ),
                                   )
                                 : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
                                         'Saved',
                                         style: TextStyle(
                                             color: Colors.black45,
-                                            fontSize: displayWidth(context) * 0.042,
+                                            fontSize:
+                                                displayWidth(context) * 0.042,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       Opacity(
@@ -611,15 +648,19 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   displayWidth(context) * 0.03),
                                         ),
                                       )
-                                  ],
-                                ),
+                                    ],
+                                  ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                Opacity(
+                    opacity: 0.0,
+                    child: Divider(
+                      height: displayHeight(context) * 0.01,
+                    )),
                 GridView.builder(
                   controller: controller,
                   shrinkWrap: true,
@@ -644,36 +685,38 @@ class _profiletScreenState extends State<profiletScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              viewMyPostScreen(myUid: myProfile.uid,index: index,),
+                                              viewMyPostScreen(
+                                            myUid: myProfile.uid,
+                                            index: index,
+                                          ),
                                         ));
                                   },
                                   child: CachedNetworkImage(
                                       height: displayHeight(context) * 0.1,
                                       width: displayWidth(context) * 0.3,
                                       fit: BoxFit.cover,
-                                      imageUrl:
-                                          posts[index].image),
+                                      imageUrl: posts[index].image),
                                 )
                               : InkWell(
-                                onTap: () {
-                                  Navigator.push(
+                                  onTap: () {
+                                    Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               viewMySavedPostScreen(
                                             myUid: myProfile.uid,
                                             index: index,
-
                                           ),
                                         ));
-                                },
-                                child: CachedNetworkImage(
-                                    height: displayHeight(context) * 0.1,
-                                    width: displayWidth(context) * 0.3,
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                        savedPosts.values.toList()[index].image),
-                              ),
+                                  },
+                                  child: CachedNetworkImage(
+                                      height: displayHeight(context) * 0.1,
+                                      width: displayWidth(context) * 0.3,
+                                      fit: BoxFit.cover,
+                                      imageUrl: savedPosts.values
+                                          .toList()[index]
+                                          .image),
+                                ),
                         ),
                       ),
                     );
