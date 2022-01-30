@@ -116,7 +116,7 @@ class _feedScreenState extends State<feedScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  height: displayHeight(context) * 0.07,
+                  height: displayHeight(context) * 0.08,
                   width: displayWidth(context),
                   color: Colors.white,
                   child: Padding(
@@ -126,15 +126,18 @@ class _feedScreenState extends State<feedScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Padding(
-                            padding: const EdgeInsets.only(top: 5.50),
-                            child: Text(
-                              'Wave',
-                              style: TextStyle(
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: displayWidth(context) * 0.06),
-                            )),
+                        Expanded(
+                          child: Padding(
+                              padding: const EdgeInsets.only(top: 0),
+                              child: Text(
+                                'Wave',
+                                style: TextStyle(
+                                    fontFamily: 'Pacifico',
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: displayWidth(context) * 0.07),
+                              )),
+                        ),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -169,7 +172,7 @@ class _feedScreenState extends State<feedScreen> {
                           height: displayHeight(context) * 0.15,
                           width: displayWidth(context),
                           //color: Colors.blue,
-                          padding: EdgeInsets.only(left: 16, right: 16),
+                          padding: const EdgeInsets.only(left: 16, right: 16),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
