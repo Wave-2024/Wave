@@ -117,7 +117,7 @@ class usersProvider extends ChangeNotifier {
       String uid = myFollowing[i].toString();
       tempPostList.addAll(await getListOfPostsUsingUid(uid));
       //print('difference in hours = ${timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now())}');
-      if(timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now()) < 24 ){
+      if(hasStory(myFollowing[i]) && timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now()) < 24 ){
         tempStoryList.add(StoryModel(
           story: allUsers[myFollowing[i]]!.story,
           storyTime: allUsers[myFollowing[i]]!.storyTime,
@@ -956,7 +956,6 @@ class usersProvider extends ChangeNotifier {
       await http.patch(Uri.parse(api),
           body: json.encode({
             'story': '',
-            'storyTime': '',
             'views': [],
           }));
     } catch (error) {
