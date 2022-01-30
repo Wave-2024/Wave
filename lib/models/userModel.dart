@@ -19,6 +19,9 @@ class NexusUser {
     required this.title,
     required this.uid,
     required this.username,
+    required this.story,
+    required this.storyTime,
+    required this.views,
   });
 
   String bio;
@@ -30,28 +33,50 @@ class NexusUser {
   String title;
   String uid;
   String username;
+  String story;
+  DateTime storyTime;
+  List<dynamic> views;
 
   factory NexusUser.fromJson(Map<String, dynamic> json) => NexusUser(
-    bio: json["bio"],
-    coverImage: json["coverImage"],
-    dp: json["dp"],
-    email: json["email"],
-    followers: List<String>.from(json["followers"].map((x) => x)),
-    followings: List<String>.from(json["followings"].map((x) => x)),
-    title: json["title"],
-    uid: json["uid"],
-    username: json["username"],
-  );
+        bio: json["bio"],
+        coverImage: json["coverImage"],
+        dp: json["dp"],
+        views: json['views'] ?? [],
+        email: json["email"],
+        followers: List<String>.from(json["followers"].map((x) => x)),
+        followings: List<String>.from(json["followings"].map((x) => x)),
+        title: json["title"],
+        uid: json["uid"],
+        username: json["username"],
+        story: json['story'],
+        storyTime: DateTime.parse(json['storyTime']),
+      );
 
   Map<String, dynamic> toJson() => {
-    "bio": bio,
-    "coverImage": coverImage,
-    "dp": dp,
-    "email": email,
-    "followers": List<dynamic>.from(followers.map((x) => x)),
-    "followings": List<dynamic>.from(followings.map((x) => x)),
-    "title": title,
-    "uid": uid,
-    "username": username,
-  };
+        "bio": bio,
+        "coverImage": coverImage,
+        "dp": dp,
+        "email": email,
+        "followers": List<dynamic>.from(followers.map((x) => x)),
+        "followings": List<dynamic>.from(followings.map((x) => x)),
+        "title": title,
+        "uid": uid,
+        "username": username,
+        'views': [],
+      };
+
+  addStory(String storyImage) {
+    story = storyImage;
+    storyTime = DateTime.now();
+    views = [];
+  }
+
+  changeDP(String newDp){
+    dp = newDp;
+  }
+
+  removeStroy() {
+    story = '';
+    views = [];
+  }
 }

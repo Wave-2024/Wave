@@ -1,16 +1,21 @@
+import 'dart:io';
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
+import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/notificationScreen.dart';
+import 'package:nexus/screen/Story/uploadStory.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
+import 'package:nexus/screen/Story/viewStory.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +34,8 @@ class _feedScreenState extends State<feedScreen> {
   User? currentUser;
   bool? init;
   bool? loadScreen;
+  File? story;
+
   final List<String> months = [
     'January',
     'February',
@@ -43,6 +50,7 @@ class _feedScreenState extends State<feedScreen> {
     'November',
     'December'
   ];
+  final picker = ImagePicker();
   @override
   void initState() {
     currentUser = FirebaseAuth.instance.currentUser;
@@ -52,23 +60,39 @@ class _feedScreenState extends State<feedScreen> {
 
   @override
   void didChangeDependencies() async {
-    if(init!){
-      await Provider.of<usersProvider>(context,listen: false).setNotifications(currentUser!.uid);
-      init=false;
+    if (init!) {
+      await Provider.of<usersProvider>(context, listen: false)
+          .setNotifications(currentUser!.uid);
+      init = false;
     }
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    Future pickImage() async {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (mounted) {
+        setState(() {
+          story = File(pickedFile!.path);
+        });
+      }
+    }
+
     Future<void> setPosts() async {
       await Provider.of<usersProvider>(context, listen: false)
           .setFeedPosts(currentUser!.uid.toString());
       return;
     }
-    final List<NotificationModel> notificationList = Provider.of<usersProvider>(context).fetchNotifications;
-    final List<NotificationModel> unreadNotificationList = notificationList.where((element) => !element.read!).toList();
+
+    final bool myStory =
+        Provider.of<usersProvider>(context).hasStory(currentUser!.uid);
+    final List<StoryModel> stories =
+        Provider.of<usersProvider>(context).fetchStoryList;
+    final List<NotificationModel> notificationList =
+        Provider.of<usersProvider>(context).fetchNotifications;
+    final List<NotificationModel> unreadNotificationList =
+        notificationList.where((element) => !element.read!).toList();
     final Map<String, PostModel> savedPosts =
         Provider.of<usersProvider>(context).fetchSavedPostsMap;
     final List<PostModel> feedPosts =
@@ -92,7 +116,7 @@ class _feedScreenState extends State<feedScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  height: displayHeight(context) * 0.07,
+                  height: displayHeight(context) * 0.08,
                   width: displayWidth(context),
                   color: Colors.white,
                   child: Padding(
@@ -102,13 +126,17 @@ class _feedScreenState extends State<feedScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.50),
-                            child: Image.asset(
-                              'images/wave.png',
-                              width: displayWidth(context) * 0.23,
-                              fit: BoxFit.cover,
-                            )
+                        Expanded(
+                          child: Padding(
+                              padding: const EdgeInsets.only(top: 0),
+                              child: Text(
+                                'Wave',
+                                style: TextStyle(
+                                    fontFamily: 'Pacifico',
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: displayWidth(context) * 0.07),
+                              )),
                         ),
                         GestureDetector(
                           onTap: () {
@@ -132,38 +160,242 @@ class _feedScreenState extends State<feedScreen> {
                     ),
                   ),
                 ),
-                const Opacity(opacity: 0.0, child: Divider()),
                 Container(
-                  color: Colors.white,
-                  height: displayHeight(context) * 0.8,
+                  height: displayHeight(context) * 0.88,
                   width: displayWidth(context),
-                  child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 21.0, right: 21, top: 10),
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return feedPosts.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    'Looks like you are not following anyone',
-                                    style: TextStyle(color: Colors.black),
+                  //color: Colors.yellow,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: displayHeight(context) * 0.15,
+                          width: displayWidth(context),
+                          //color: Colors.blue,
+                          padding: const EdgeInsets.only(left: 16, right: 16),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                (myStory)
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        viewStory(
+                                                      myUid: currentUser!.uid,
+                                                      story: StoryModel(
+                                                          uid: currentUser!.uid,
+                                                          story: allUsers[
+                                                                  currentUser!
+                                                                      .uid]!
+                                                              .story,
+                                                          storyTime: allUsers[
+                                                                  currentUser!
+                                                                      .uid]!
+                                                              .storyTime,
+                                                          views: allUsers[
+                                                                  currentUser!
+                                                                      .uid]!
+                                                              .views),
+                                                    ),
+                                                  ));
+                                            },
+                                            child: CircleAvatar(
+                                              radius:
+                                                  displayWidth(context) * 0.095,
+                                              backgroundColor: Colors.orange,
+                                              child: CircleAvatar(
+                                                radius: displayWidth(context) *
+                                                    0.09,
+                                                backgroundColor: Colors.white,
+                                                child: CircleAvatar(
+                                                  radius:
+                                                      displayWidth(context) *
+                                                          0.08,
+                                                  backgroundColor:
+                                                      Colors.orange,
+                                                  backgroundImage:
+                                                      CachedNetworkImageProvider(
+                                                          allUsers[currentUser!
+                                                                  .uid]!
+                                                              .story),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Divider(
+                                            height:
+                                                displayHeight(context) * 0.006,
+                                          ),
+                                          Text(
+                                            'My Story',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.032),
+                                          ),
+                                        ],
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            onTap: () async {
+                                              await pickImage();
+                                              if (story != null) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          uploadStoryScreen(
+                                                        imageFile: story,
+                                                      ),
+                                                    ));
+                                              }
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.grey[200],
+                                              radius:
+                                                  displayWidth(context) * 0.07,
+                                              child: const Icon(
+                                                Icons.add,
+                                                color: Colors.orange,
+                                              ),
+                                            ),
+                                          ),
+                                          Divider(
+                                            height:
+                                                displayHeight(context) * 0.006,
+                                          ),
+                                          Text(
+                                            'Add Story',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.032),
+                                          ),
+                                        ],
+                                      ),
+                                Container(
+                                  width: displayWidth(context) * 0.8,
+                                  height: displayHeight(context) * 0.15,
+                                  child: ListView.builder(
+                                    padding:
+                                        EdgeInsets.only(left: 10, right: 10),
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: stories.length,
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        viewStory(
+                                                      myUid: currentUser!.uid,
+                                                      story: stories[index],
+                                                    ),
+                                                  ));
+                                            },
+                                            child: CircleAvatar(
+                                              radius:
+                                                  displayWidth(context) * 0.095,
+                                              backgroundColor: Colors.orange,
+                                              child: CircleAvatar(
+                                                radius: displayWidth(context) *
+                                                    0.09,
+                                                backgroundColor: Colors.white,
+                                                child: CircleAvatar(
+                                                  radius:
+                                                      displayWidth(context) *
+                                                          0.08,
+                                                  backgroundColor:
+                                                      Colors.orange,
+                                                  backgroundImage:
+                                                      CachedNetworkImageProvider(
+                                                          stories[index]
+                                                              .story!),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Divider(
+                                            height:
+                                                displayHeight(context) * 0.006,
+                                          ),
+                                          Text(
+                                            allUsers[stories[index].uid]!
+                                                .username,
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.032),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 )
-                              : Padding(
-                                  padding: const EdgeInsets.only(bottom: 18.0),
-                                  child: displayPostsForFeed(
-                                      context,
-                                      feedPosts[index],
-                                      allUsers,
-                                      currentUser!.uid.toString(),
-                                      months,
-                                      savedPosts),
-                                );
-                        },
-                        itemCount: feedPosts.length,
-                      )),
-                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Opacity(
+                            opacity: 0.0,
+                            child: Divider(
+                              height: displayHeight(context) * 0.01,
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 21.0, right: 21, top: 10),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 18.0),
+                                child: displayPostsForFeed(
+                                    context,
+                                    feedPosts[index],
+                                    allUsers,
+                                    currentUser!.uid.toString(),
+                                    months,
+                                    savedPosts),
+                              );
+                            },
+                            itemCount: feedPosts.length,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -257,7 +489,9 @@ Widget displayPostsForFeed(
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  VerticalDivider(width: displayWidth(context)*0.005,),
+                  VerticalDivider(
+                    width: displayWidth(context) * 0.005,
+                  ),
                   (user.followers.length >= 5)
                       ? Icon(
                           Icons.verified,

@@ -1,10 +1,8 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/homescreen.dart';
 import 'package:nexus/utils/devicesize.dart';
-import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class welcomeScreen extends StatefulWidget {
@@ -56,15 +54,8 @@ class _welcomeScreenState extends State<welcomeScreen> {
       body: Container(
           height: displayHeight(context),
           width: displayWidth(context),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Colors.orange[400]!,
-                  Colors.orange[300]!,
-                  Colors.orange[200]!,
-                ]),
+          decoration: const BoxDecoration(
+            image: DecorationImage(image: AssetImage('images/welcome.jpg'),fit: BoxFit.cover),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
