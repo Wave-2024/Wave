@@ -57,34 +57,38 @@ class _profiletScreenState extends State<profiletScreen> {
     Future pickImageForCoverPicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
-        setState(() {
-          loadScreen = true;
-        });
-        Provider.of<usersProvider>(context, listen: false)
-            .addCoverPicture(
-                File(pickedFile!.path), currentUser!.uid.toString())
-            .then((value) {
+        if(pickedFile!=null){
           setState(() {
-            loadScreen = false;
+            loadScreen = true;
           });
-        });
+          Provider.of<usersProvider>(context, listen: false)
+              .addCoverPicture(
+              File(pickedFile.path), currentUser!.uid.toString())
+              .then((value) {
+            setState(() {
+              loadScreen = false;
+            });
+          });
+        }
       }
     }
 
     Future pickImageForProfilePicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
-        setState(() {
-          loadScreen = true;
-        });
-        Provider.of<usersProvider>(context, listen: false)
-            .addProfilePicture(
-                File(pickedFile!.path), currentUser!.uid.toString())
-            .then((value) {
+        if(pickedFile!=null){
           setState(() {
-            loadScreen = false;
+            loadScreen = true;
           });
-        });
+          await Provider.of<usersProvider>(context, listen: false)
+              .addProfilePicture(
+              File(pickedFile.path), currentUser!.uid.toString())
+              .then((value) {
+            setState(() {
+              loadScreen = false;
+            });
+          });
+        }
       }
     }
 
@@ -175,35 +179,39 @@ class _profiletScreenState extends State<profiletScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        TextButton(
-                                            onPressed: () async {
+                                        ListTile(
+                                          onTap: () async {
+
                                               pickImageForCoverPicture().then(
-                                                  (value) =>
+                                                      (value) =>
                                                       Navigator.pop(context));
-                                            },
-                                            child: Text(
-                                              'Change Cover Picture',
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      displayWidth(context) *
-                                                          0.05,
-                                                  color: Colors.black45,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                        const Opacity(
-                                            opacity: 0.0, child: Divider()),
-                                        TextButton(
-                                          onPressed: () async {
-                                            pickImageForProfilePicture().then(
-                                                (value) =>
-                                                    Navigator.pop(context));
+
                                           },
-                                          child: Text(
+                                          tileColor: Colors.white,
+                                          title:  Text(
+                                            'Change Cover Picture',
+                                            style: TextStyle(
+                                                fontSize:
+                                                displayWidth(context) *
+                                                    0.05,
+                                                color: Colors.black45,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        ListTile(
+                                          tileColor: Colors.white,
+                                          onTap: () async {
+                                              pickImageForProfilePicture().then(
+                                                      (value) =>
+                                                      Navigator.pop(context));
+
+                                          },
+                                          title: Text(
                                             'Change Profile Picture',
                                             style: TextStyle(
                                                 fontSize:
-                                                    displayWidth(context) *
-                                                        0.05,
+                                                displayWidth(context) *
+                                                    0.05,
                                                 color: Colors.black45,
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -223,14 +231,14 @@ class _profiletScreenState extends State<profiletScreen> {
                           child: IconButton(
                             iconSize: displayWidth(context) * 0.08,
                             onPressed: () {
-                              print(myProfile.dp.toString());
-                              /*Navigator.push(
+
+                              Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => editProfileScreen(
                                       user: myProfile,
                                     ),
-                                  ));*/
+                                  ));
                             },
                             color: Colors.white70,
                             icon: Icon(Icons.edit),
