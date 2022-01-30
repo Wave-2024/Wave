@@ -6,8 +6,11 @@ Future<void> createNewNexusUser(
     String email, String title, String username, String uid) async {
   final String api = constants().fetchApi + 'users/$uid.json';
   try {
-    await http.post(Uri.parse(api),
+    await http.put(Uri.parse(api),
         body: json.encode({
+          'story': '',
+          'storyTime': DateTime.now().toString(),
+          'views': [],
           'title': title,
           'username': username,
           'email': email,
