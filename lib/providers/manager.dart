@@ -11,6 +11,7 @@ import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:nexus/utils/widgets.dart';
 
 class usersProvider extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
@@ -107,7 +108,7 @@ class usersProvider extends ChangeNotifier {
     }
   }
 
-  // Function to set posts that will be diplayed on your feed screen
+  // Function to set posts and stories that will be diplayed on your feed screen
   Future<void> setFeedPosts(String myUid) async {
     List<PostModel> tempPostList = [];
     List<StoryModel> tempStoryList = [];
@@ -115,11 +116,15 @@ class usersProvider extends ChangeNotifier {
     for (int i = 0; i < myFollowing.length; ++i) {
       String uid = myFollowing[i].toString();
       tempPostList.addAll(await getListOfPostsUsingUid(uid));
-      tempStoryList.add(StoryModel(
-        story: allUsers[myFollowing[i]]!.story,
-        storyTime: allUsers[myFollowing[i]]!.storyTime,
-        views: allUsers[myFollowing[i]]!.views,
-      ));
+      //print('difference in hours = ${timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now())}');
+      if(timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now()) < 24 ){
+        tempStoryList.add(StoryModel(
+          story: allUsers[myFollowing[i]]!.story,
+          storyTime: allUsers[myFollowing[i]]!.storyTime,
+          views: allUsers[myFollowing[i]]!.views,
+          uid: myFollowing[i],
+        ));
+      }
     }
     feedStoryList = tempStoryList;
     feedPostList = tempPostList;
@@ -210,6 +215,10 @@ class usersProvider extends ChangeNotifier {
         print(error);
       }
     });
+  }
+
+  List<StoryModel> get fetchStoryList{
+    return [...feedStoryList];
   }
 
   Future<void> editMyProfile(
