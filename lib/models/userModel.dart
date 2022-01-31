@@ -79,4 +79,19 @@ class NexusUser {
     story = '';
     views = [];
   }
+
+  addFollowing(String newUid){
+    followings.add(newUid);
+  }
+
+  addFolllower(String newUid){
+    followers.add(newUid);
+  }
+
+  editProfile(String newUsername,String newTitle,String newBio){
+    username = newUsername;
+    title = newTitle;
+    bio = newBio;
+  }
+
 }
