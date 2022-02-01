@@ -171,7 +171,7 @@ class _feedScreenState extends State<feedScreen> {
                         Container(
                           height: displayHeight(context) * 0.15,
                           width: displayWidth(context),
-                          //color: Colors.blue,
+                          //  color: Colors.blue,
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -187,53 +187,65 @@ class _feedScreenState extends State<feedScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        viewStory(
-                                                      myUid: currentUser!.uid,
-                                                      story: StoryModel(
-                                                          uid: currentUser!.uid,
-                                                          story: allUsers[
-                                                                  currentUser!
-                                                                      .uid]!
-                                                              .story,
-                                                          storyTime: allUsers[
-                                                                  currentUser!
-                                                                      .uid]!
-                                                              .storyTime,
-                                                          views: allUsers[
-                                                                  currentUser!
-                                                                      .uid]!
-                                                              .views),
-                                                    ),
-                                                  ));
-                                            },
-                                            child: CircleAvatar(
-                                              radius:
-                                                  displayWidth(context) * 0.095,
-                                              backgroundColor: Colors.orange,
-                                              child: CircleAvatar(
-                                                radius: displayWidth(context) *
-                                                    0.09,
-                                                backgroundColor: Colors.white,
-                                                child: CircleAvatar(
-                                                  radius:
-                                                      displayWidth(context) *
-                                                          0.08,
-                                                  backgroundColor:
-                                                      Colors.orange,
-                                                  backgroundImage:
-                                                      CachedNetworkImageProvider(
-                                                          allUsers[currentUser!
-                                                                  .uid]!
-                                                              .story),
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          viewStory(
+                                                        myUid: currentUser!.uid,
+                                                        story: StoryModel(
+                                                            uid: currentUser!
+                                                                .uid,
+                                                            story: allUsers[
+                                                                    currentUser!
+                                                                        .uid]!
+                                                                .story,
+                                                            storyTime: allUsers[
+                                                                    currentUser!
+                                                                        .uid]!
+                                                                .storyTime,
+                                                            views: allUsers[
+                                                                    currentUser!
+                                                                        .uid]!
+                                                                .views),
+                                                      ),
+                                                    ));
+                                              },
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    15,
+                                                  ),
+                                                  side: BorderSide(
+                                                      color:
+                                                          Colors.orange[600]!),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.5),
+                                                  child: Container(
+                                                    height:
+                                                        displayHeight(context) *
+                                                            0.08,
+                                                    width:
+                                                        displayWidth(context) *
+                                                            0.15,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                        image: DecorationImage(
+                                                            image: CachedNetworkImageProvider(
+                                                                allUsers[currentUser!
+                                                                        .uid]!
+                                                                    .story),
+                                                            fit: BoxFit.cover)),
+                                                  ),
+                                                ),
+                                              )),
                                           Divider(
                                             height:
                                                 displayHeight(context) * 0.006,
@@ -311,39 +323,50 @@ class _feedScreenState extends State<feedScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        viewStory(
-                                                      myUid: currentUser!.uid,
-                                                      story: stories[index],
-                                                    ),
-                                                  ));
-                                            },
-                                            child: CircleAvatar(
-                                              radius:
-                                                  displayWidth(context) * 0.095,
-                                              backgroundColor: Colors.orange,
-                                              child: CircleAvatar(
-                                                radius: displayWidth(context) *
-                                                    0.09,
-                                                backgroundColor: Colors.white,
-                                                child: CircleAvatar(
-                                                  radius:
-                                                      displayWidth(context) *
-                                                          0.08,
-                                                  backgroundColor:
-                                                      Colors.orange,
-                                                  backgroundImage:
-                                                      CachedNetworkImageProvider(
-                                                          stories[index]
-                                                              .story!),
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          viewStory(
+                                                        myUid: currentUser!.uid,
+                                                        story: stories[index],
+                                                      ),
+                                                    ));
+                                              },
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    15,
+                                                  ),
+                                                  side: BorderSide(
+                                                      color:
+                                                          Colors.orange[600]!),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.5),
+                                                  child: Container(
+                                                    height:
+                                                        displayHeight(context) *
+                                                            0.08,
+                                                    width:
+                                                        displayWidth(context) *
+                                                            0.15,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                        image: DecorationImage(
+                                                            image: CachedNetworkImageProvider(
+                                                                stories[index]
+                                                                    .story!),
+                                                            fit: BoxFit.cover)),
+                                                  ),
+                                                ),
+                                              )),
                                           Divider(
                                             height:
                                                 displayHeight(context) * 0.006,
