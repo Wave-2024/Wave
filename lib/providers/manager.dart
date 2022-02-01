@@ -257,107 +257,51 @@ class usersProvider extends ChangeNotifier {
   }
 
   Future<void> followUser(String myUid, String yourUid) async {
-    List<dynamic> myFollowings = allUsers[myUid]!.followings;
+    allUsers[myUid]!.addFollowing(yourUid);
+    allUsers[yourUid]!.addFolllower(myUid);
+    notifyListeners();
+    List myFollowings = await getMyFollowings(myUid);
     myFollowings.add(yourUid);
-    List<dynamic> yourFollowers = allUsers[yourUid]!.followers;
+    List yourFollowers = await getYourFollowers(yourUid);
     yourFollowers.add(myUid);
-    NexusUser myOldProfile = allUsers[myUid]!;
-    NexusUser yourOldProfile = allUsers[yourUid]!;
-
-    NexusUser myNewProfile = NexusUser(
-        views: myOldProfile.views,
-        bio: myOldProfile.bio,
-        coverImage: myOldProfile.coverImage,
-        dp: myOldProfile.dp,
-        story: myOldProfile.story,
-        storyTime: myOldProfile.storyTime,
-        email: myOldProfile.email,
-        followers: myOldProfile.followers,
-        followings: myFollowings,
-        title: myOldProfile.title,
-        uid: myOldProfile.uid,
-        username: myOldProfile.username);
-
-    NexusUser yourNewProfile = NexusUser(
-        views: yourOldProfile.views,
-        story: yourOldProfile.story,
-        storyTime: yourOldProfile.storyTime,
-        bio: yourOldProfile.bio,
-        coverImage: yourOldProfile.coverImage,
-        dp: yourOldProfile.dp,
-        email: yourOldProfile.email,
-        followers: yourFollowers,
-        followings: yourOldProfile.followings,
-        title: yourOldProfile.title,
-        uid: yourOldProfile.uid,
-        username: yourOldProfile.username);
-
-    allUsers[yourUid] = yourNewProfile;
-    allUsers[myUid] = myNewProfile;
-    await updateConnectionDetailToServer(
-        myUid, myFollowings, yourUid, yourFollowers);
+    final String myApi = constants().fetchApi + 'users/${myUid}.json';
+    final String yourApi = constants().fetchApi + 'users/${yourUid}.json';
+    await http.patch(Uri.parse(myApi),body: json.encode({'followings':myFollowings}));
+    await http.patch(Uri.parse(yourApi),body: json.encode({'followers': yourFollowers}));
     await sendNotification(myUid, yourUid, '', 'follow');
     notifyListeners();
   }
 
-  Future<void> unFollowUser(String myUid, String yourUid) async {
-    List<dynamic> myFollowings = allUsers[myUid]!.followings;
-    myFollowings.remove(yourUid);
-    List<dynamic> yourFollowers = allUsers[yourUid]!.followers;
-    yourFollowers.remove(myUid);
-    NexusUser myOldProfile = allUsers[myUid]!;
-    NexusUser yourOldProfile = allUsers[yourUid]!;
-
-    NexusUser myNewProfile = NexusUser(
-        bio: myOldProfile.bio,
-        views: myOldProfile.views,
-        story: myOldProfile.story,
-        storyTime: myOldProfile.storyTime,
-        coverImage: myOldProfile.coverImage,
-        dp: myOldProfile.dp,
-        email: myOldProfile.email,
-        followers: myOldProfile.followers,
-        followings: myFollowings,
-        title: myOldProfile.title,
-        uid: myOldProfile.uid,
-        username: myOldProfile.username);
-
-    NexusUser yourNewProfile = NexusUser(
-        story: yourOldProfile.story,
-        views: yourOldProfile.views,
-        storyTime: yourOldProfile.storyTime,
-        bio: yourOldProfile.bio,
-        coverImage: yourOldProfile.coverImage,
-        dp: yourOldProfile.dp,
-        email: yourOldProfile.email,
-        followers: yourFollowers,
-        followings: yourOldProfile.followings,
-        title: yourOldProfile.title,
-        uid: yourOldProfile.uid,
-        username: yourOldProfile.username);
-
-    allUsers[yourUid] = yourNewProfile;
-    allUsers[myUid] = myNewProfile;
-    await updateConnectionDetailToServer(
-        myUid, myFollowings, yourUid, yourFollowers);
-    notifyListeners();
+  Future<List<dynamic>> getYourFollowers(String uid) async{
+    final String api = constants().fetchApi+'users/${uid}.json';
+    List<dynamic>? followers;
+    final response = await http.get(Uri.parse(api));
+    final data = json.decode(response.body) as Map<String,dynamic>;
+    followers = data['followers']??[];
+    return followers!;
   }
 
-  Future<void> updateConnectionDetailToServer(
-      String myUid,
-      List<dynamic> myFollowings,
-      String yourUid,
-      List<dynamic> yourFollowers) async {
-    final String api1 = constants().fetchApi + 'users/${myUid}.json';
-    final String api2 = constants().fetchApi + 'users/${yourUid}.json';
-    try {
-      await http.patch(Uri.parse(api1),
-          body: json.encode({'followings': myFollowings}));
-      await http.patch(Uri.parse(api2),
-          body: json.encode({'followers': yourFollowers}));
-    } catch (error) {
-      print(error);
-    }
+  Future<List<dynamic>> getMyFollowings(String uid) async{
+    final String api = constants().fetchApi+'users/${uid}.json';
+    List<dynamic>? followings;
+    final response = await http.get(Uri.parse(api));
+    final data = json.decode(response.body) as Map<String,dynamic>;
+    followings = data['followings']??[];
+    return followings!;
+  }
+
+  Future<void> unFollowUser(String myUid, String yourUid) async {
+    allUsers[myUid]!.removeFollowing(yourUid);
+    allUsers[yourUid]!.removeFollower(myUid);
+    notifyListeners();
+    List myFollowings = await getMyFollowings(myUid);
+    myFollowings.remove(yourUid);
+    List yourFollowers = await getYourFollowers(yourUid);
+    yourFollowers.remove(myUid);
+    final String myApi = constants().fetchApi + 'users/${myUid}.json';
+    final String yourApi = constants().fetchApi + 'users/${yourUid}.json';
+    await http.patch(Uri.parse(myApi),body: json.encode({'followings':myFollowings}));
+    await http.patch(Uri.parse(yourApi),body: json.encode({'followers': yourFollowers}));
   }
 
   // Function to set my posts

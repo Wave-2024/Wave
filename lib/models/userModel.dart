@@ -88,6 +88,14 @@ class NexusUser {
     followers.add(newUid);
   }
 
+  removeFollowing(String existingUser){
+    followings.remove(existingUser);
+  }
+
+  removeFollower(String existingUser){
+    followers.remove(existingUser);
+  }
+
   editProfile(String newUsername,String newTitle,String newBio){
     username = newUsername;
     title = newTitle;
