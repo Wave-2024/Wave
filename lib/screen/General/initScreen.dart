@@ -29,12 +29,12 @@ class _welcomeScreenState extends State<welcomeScreen> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      await Provider.of<usersProvider>(context).setAllUsers();
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context).setAllUsers();
+      await Provider.of<manager>(context, listen: false)
           .setFeedPosts(currentUser!.uid);
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setMyPosts(currentUser!.uid.toString());
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setSavedPostsOnce(currentUser!.uid.toString());
       init = false;
       

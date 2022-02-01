@@ -61,7 +61,7 @@ class _feedScreenState extends State<feedScreen> {
   @override
   void didChangeDependencies() async {
     if (init!) {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setNotifications(currentUser!.uid);
       init = false;
     }
@@ -80,25 +80,25 @@ class _feedScreenState extends State<feedScreen> {
     }
 
     Future<void> setPosts() async {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setFeedPosts(currentUser!.uid.toString());
       return;
     }
 
     final bool myStory =
-        Provider.of<usersProvider>(context).hasStory(currentUser!.uid);
+        Provider.of<manager>(context).hasStory(currentUser!.uid);
     final List<StoryModel> stories =
-        Provider.of<usersProvider>(context).fetchStoryList;
+        Provider.of<manager>(context).fetchStoryList;
     final List<NotificationModel> notificationList =
-        Provider.of<usersProvider>(context).fetchNotifications;
+        Provider.of<manager>(context).fetchNotifications;
     final List<NotificationModel> unreadNotificationList =
         notificationList.where((element) => !element.read!).toList();
     final Map<String, PostModel> savedPosts =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     final List<PostModel> feedPosts =
-        Provider.of<usersProvider>(context).fetchFeedPostList;
+        Provider.of<manager>(context).fetchFeedPostList;
     final Map<String, NexusUser> allUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -582,10 +582,10 @@ Widget displayPostsForFeed(
                   },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'feed');
                     } else {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'feed');
                     }
                   },
@@ -616,12 +616,12 @@ Widget displayPostsForFeed(
                           GestureDetector(
                             onTap: () {
                               if (post.likes.contains(myUid)) {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .dislikePost(
                                         myUid, post.uid, post.post_id, 'feed');
                               } else {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .likePost(
                                         myUid, post.uid, post.post_id, 'feed');
@@ -680,10 +680,10 @@ Widget displayPostsForFeed(
                         child: InkWell(
                           onTap: () {
                             if (savedPosts.containsKey(post.post_id)) {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .unsavePost(post.post_id, myUid);
                             } else {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .savePost(post, myUid);
                             }
                           },

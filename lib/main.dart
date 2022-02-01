@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             create: (context) => screenIndexProvider(),
           ),
           ChangeNotifierProvider(
-            create: (context) => usersProvider(),
+            create: (context) => manager(),
           ),
         ],
         child: MaterialApp(

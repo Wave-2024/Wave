@@ -134,7 +134,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
                                 setState(() {
                                   isEditing = true;
                                 });
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .editMyProfile(
                                         FirebaseAuth.instance.currentUser!.uid

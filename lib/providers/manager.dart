@@ -13,7 +13,7 @@ import 'package:nexus/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:nexus/utils/widgets.dart';
 
-class usersProvider extends ChangeNotifier {
+class manager extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
 
   List<StoryModel> feedStoryList = [];
@@ -269,7 +269,17 @@ class usersProvider extends ChangeNotifier {
     await http.patch(Uri.parse(myApi),body: json.encode({'followings':myFollowings}));
     await http.patch(Uri.parse(yourApi),body: json.encode({'followers': yourFollowers}));
     await sendNotification(myUid, yourUid, '', 'follow');
-    notifyListeners();
+    String? chatId = generateChatRoomUsingUid(myUid,yourUid);
+    await FirebaseFirestore.instance.collection('chats').doc(myUid).collection('mychats').doc(chatId).set({
+      'chatId' : chatId,
+      'last seen' : Timestamp.now(),
+      'uid' : yourUid,
+    });
+    await FirebaseFirestore.instance.collection('chats').doc(yourUid).collection('mychats').doc(chatId).set({
+      'chatId' : chatId,
+      'last seen' : Timestamp.now(),
+      'uid' : myUid,
+    });
   }
 
   Future<List<dynamic>> getYourFollowers(String uid) async{

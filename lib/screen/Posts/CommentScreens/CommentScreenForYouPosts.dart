@@ -41,10 +41,10 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
 
   @override
   Widget build(BuildContext context) {
-    NexusUser? myProfile = Provider.of<usersProvider>(context)
+    NexusUser? myProfile = Provider.of<manager>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     PostModel? postDetail =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap[widget.postId];
+        Provider.of<manager>(context).fetchSavedPostsMap[widget.postId];
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +63,7 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
           formKey: formKey,
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () {
-            Provider.of<usersProvider>(context,listen: false).commentOnPost(currentUser!.uid, widget.postOwner!.uid, postDetail!.post_id, commentController!.text.toString());
+            Provider.of<manager>(context,listen: false).commentOnPost(currentUser!.uid, widget.postOwner!.uid, postDetail!.post_id, commentController!.text.toString());
             setState(() {
               commentController!.clear();
             });

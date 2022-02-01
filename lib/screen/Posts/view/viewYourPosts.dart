@@ -45,17 +45,17 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
   @override
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setYourPosts(widget.yourUid.toString());
       return;
     }
 
     List<PostModel> posts =
-        Provider.of<usersProvider>(context).fetchYourPostsList;
+        Provider.of<manager>(context).fetchYourPostsList;
     Map<String, PostModel> savedPostsMap =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, NexusUser> mapOfUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -224,11 +224,11 @@ Widget displayYourPosts(
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
                      
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'yours');
                     } else {
                       
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'yours');
                     }
                   },
@@ -259,12 +259,12 @@ Widget displayYourPosts(
                           GestureDetector(
                             onTap: () {
                               if (post.likes.contains(myUid)) {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .dislikePost(
                                         myUid, post.uid, post.post_id, 'yours');
                               } else {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .likePost(
                                         myUid, post.uid, post.post_id, 'yours');
@@ -324,10 +324,10 @@ Widget displayYourPosts(
                         child: InkWell(
                           onTap: () {
                             if (savedPosts.containsKey(post.post_id)) {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .unsavePost(post.post_id, myUid);
                             } else {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .savePost(post, myUid);
                             }
                           },

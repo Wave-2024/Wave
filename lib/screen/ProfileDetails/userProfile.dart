@@ -36,7 +36,7 @@ class _userProfileState extends State<userProfile> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      Provider.of<usersProvider>(context)
+      Provider.of<manager>(context)
           .setYourPosts(widget.uid.toString())
           .then((value) {
         loadScreen = false;
@@ -49,11 +49,11 @@ class _userProfileState extends State<userProfile> {
 
   @override
   Widget build(BuildContext context) {
-    NexusUser? thisProfile = Provider.of<usersProvider>(context)
+    NexusUser? thisProfile = Provider.of<manager>(context)
         .fetchAllUsers[widget.uid.toString()];
     amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
     List<PostModel> posts =
-        Provider.of<usersProvider>(context).fetchYourPostsList;
+        Provider.of<manager>(context).fetchYourPostsList;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -355,7 +355,7 @@ class _userProfileState extends State<userProfile> {
                                   setState(() {
                                     amIFollowing = !amIFollowing!;
                                   });
-                                  Provider.of<usersProvider>(context,
+                                  Provider.of<manager>(context,
                                           listen: false)
                                       .unFollowUser(currentUser!.uid.toString(),
                                           thisProfile.uid);
@@ -363,7 +363,7 @@ class _userProfileState extends State<userProfile> {
                                   setState(() {
                                     amIFollowing = !amIFollowing!;
                                   });
-                                  Provider.of<usersProvider>(context,
+                                  Provider.of<manager>(context,
                                           listen: false)
                                       .followUser(currentUser!.uid.toString(),
                                           thisProfile.uid);

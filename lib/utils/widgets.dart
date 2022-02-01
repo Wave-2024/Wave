@@ -60,7 +60,7 @@ String? generateChatRoomUsingUid(String uid1, String uid2) {
 
 Widget displayComment(BuildContext context, String comment, String uid) {
   NexusUser? user =
-      Provider.of<usersProvider>(context, listen: false).fetchAllUsers[uid];
+      Provider.of<manager>(context, listen: false).fetchAllUsers[uid];
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -137,7 +137,7 @@ String differenceOfTime(DateTime current, DateTime lastSeen) {
           if (findDifferenc(current.minute, lastSeen.minute) == 0) {
             // Same minute
             if (findDifferenc(current.second, lastSeen.second) == 0) {
-              return 'last talked just now';
+              return 'seen just now';
             } else {
               diff = findDifferenc(current.second, lastSeen.second).toString() +
                   ' seconds';
@@ -160,20 +160,33 @@ String differenceOfTime(DateTime current, DateTime lastSeen) {
   } else {
     diff = findDifferenc(current.year, lastSeen.year).toString() + ' year';
   }
-  return 'last talked ${diff} ago';
+  return 'seen ${diff} ago';
 }
 
-void sendMessage(String chatId, String message, String uid) async {
+void sendMessage(String chatId, String message, String myUid,String yourUid) async {
   Timestamp time = Timestamp.now();
-  await FirebaseFirestore.instance.collection(chatId).doc().set({
+  await FirebaseFirestore.instance.collection('chat-room').doc(chatId).collection('chat-room').add({
     'message': message,
     'time': time,
-    'uid': uid,
+    'uid': myUid,
+  }).then((value) async {
+    FirebaseFirestore.instance.collection('chat-room').doc(chatId).collection('chat-room').doc(value.id).update({
+      'message-id' : value.id
+    });
   });
   await FirebaseFirestore.instance
-      .collection(uid)
-      .doc(chatId)
-      .update({'lastSent': time});
+      .collection('chats')
+      .doc(myUid)
+      .collection('mychats').doc(chatId).update({
+    'last seen' : time
+  });
+
+  await FirebaseFirestore.instance
+      .collection('chats')
+      .doc(yourUid)
+      .collection('mychats').doc(chatId).update({
+    'last seen' : time
+  });
 }
 
 Widget messageContainer(

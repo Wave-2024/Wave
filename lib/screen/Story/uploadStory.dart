@@ -71,7 +71,7 @@ class _uploadStoryScreenState extends State<uploadStoryScreen> {
                             setState(() {
                               isUploading = true;
                             });
-                            await Provider.of<usersProvider>(context,
+                            await Provider.of<manager>(context,
                                     listen: false)
                                 .addStoryToServer(
                                     currentUser!.uid, widget.imageFile!);
