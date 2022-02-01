@@ -40,13 +40,12 @@ dependencies:
   url_launcher: ^6.0.18
   intl: ^0.17.0
   cached_network_image: ^3.2.0
-  comment_box: ^0.0.16
+  comment_box: ^0.0.17
   badges: ^2.0.2
   liquid_pull_to_refresh: ^3.0.1
   cupertino_icons: ^1.0.4
   scrollable_positioned_list: ^0.2.3
   flutter_slidable: ^1.2.0
-  animated_text_kit: ^4.2.1
 
 dev_dependencies:
   flutter_test:
