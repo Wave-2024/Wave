@@ -160,9 +160,6 @@ class manager extends ChangeNotifier {
 
   Future<void> addCoverPicture(File? newImage, String uid) async {
     String imageLocation = 'users/${uid}/details/cp';
-    NexusUser? oldUser = allUsers[uid];
-    NexusUser? updateUser;
-
     final Reference storageReference =
         FirebaseStorage.instance.ref().child(imageLocation);
     final UploadTask uploadTask = storageReference.putFile(newImage!);
@@ -173,20 +170,7 @@ class manager extends ChangeNotifier {
         await http
             .patch(Uri.parse(api), body: jsonEncode({'coverImage': value}))
             .then((_) {
-          updateUser = NexusUser(
-              views: oldUser!.views,
-              story: oldUser.story,
-              storyTime: oldUser.storyTime,
-              bio: oldUser.bio,
-              coverImage: value,
-              dp: oldUser.dp,
-              email: oldUser.email,
-              followers: oldUser.followers,
-              followings: oldUser.followings,
-              title: oldUser.title,
-              uid: uid,
-              username: oldUser.username);
-          allUsers[uid] = updateUser!;
+              allUsers[uid]!.changeCoverPicture(value);
           notifyListeners();
         });
       } catch (error) {
@@ -197,7 +181,6 @@ class manager extends ChangeNotifier {
 
   Future<void> addProfilePicture(File? newImage, String uid) async {
     String imageLocation = 'users/${uid}/details/dp';
-
     final Reference storageReference =
         FirebaseStorage.instance.ref().child(imageLocation);
     final UploadTask uploadTask = storageReference.putFile(newImage!);
