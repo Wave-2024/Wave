@@ -41,11 +41,12 @@ class authScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Nexus",
+                            "Wave",
                             style: TextStyle(
                               fontSize: displayWidth(context) * 0.12,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w400,
                               color: Colors.indigo,
+                              fontFamily: 'Pacifico'
                             ),
                           ),
                           Text(
