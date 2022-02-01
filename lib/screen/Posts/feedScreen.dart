@@ -61,7 +61,7 @@ class _feedScreenState extends State<feedScreen> {
   @override
   void didChangeDependencies() async {
     if (init!) {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setNotifications(currentUser!.uid);
       init = false;
     }
@@ -80,25 +80,25 @@ class _feedScreenState extends State<feedScreen> {
     }
 
     Future<void> setPosts() async {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setFeedPosts(currentUser!.uid.toString());
       return;
     }
 
     final bool myStory =
-        Provider.of<usersProvider>(context).hasStory(currentUser!.uid);
+        Provider.of<manager>(context).hasStory(currentUser!.uid);
     final List<StoryModel> stories =
-        Provider.of<usersProvider>(context).fetchStoryList;
+        Provider.of<manager>(context).fetchStoryList;
     final List<NotificationModel> notificationList =
-        Provider.of<usersProvider>(context).fetchNotifications;
+        Provider.of<manager>(context).fetchNotifications;
     final List<NotificationModel> unreadNotificationList =
         notificationList.where((element) => !element.read!).toList();
     final Map<String, PostModel> savedPosts =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     final List<PostModel> feedPosts =
-        Provider.of<usersProvider>(context).fetchFeedPostList;
+        Provider.of<manager>(context).fetchFeedPostList;
     final Map<String, NexusUser> allUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -171,7 +171,7 @@ class _feedScreenState extends State<feedScreen> {
                         Container(
                           height: displayHeight(context) * 0.15,
                           width: displayWidth(context),
-                          //color: Colors.blue,
+                          //  color: Colors.blue,
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -187,53 +187,65 @@ class _feedScreenState extends State<feedScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        viewStory(
-                                                      myUid: currentUser!.uid,
-                                                      story: StoryModel(
-                                                          uid: currentUser!.uid,
-                                                          story: allUsers[
-                                                                  currentUser!
-                                                                      .uid]!
-                                                              .story,
-                                                          storyTime: allUsers[
-                                                                  currentUser!
-                                                                      .uid]!
-                                                              .storyTime,
-                                                          views: allUsers[
-                                                                  currentUser!
-                                                                      .uid]!
-                                                              .views),
-                                                    ),
-                                                  ));
-                                            },
-                                            child: CircleAvatar(
-                                              radius:
-                                                  displayWidth(context) * 0.095,
-                                              backgroundColor: Colors.orange,
-                                              child: CircleAvatar(
-                                                radius: displayWidth(context) *
-                                                    0.09,
-                                                backgroundColor: Colors.white,
-                                                child: CircleAvatar(
-                                                  radius:
-                                                      displayWidth(context) *
-                                                          0.08,
-                                                  backgroundColor:
-                                                      Colors.orange,
-                                                  backgroundImage:
-                                                      CachedNetworkImageProvider(
-                                                          allUsers[currentUser!
-                                                                  .uid]!
-                                                              .story),
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          viewStory(
+                                                        myUid: currentUser!.uid,
+                                                        story: StoryModel(
+                                                            uid: currentUser!
+                                                                .uid,
+                                                            story: allUsers[
+                                                                    currentUser!
+                                                                        .uid]!
+                                                                .story,
+                                                            storyTime: allUsers[
+                                                                    currentUser!
+                                                                        .uid]!
+                                                                .storyTime,
+                                                            views: allUsers[
+                                                                    currentUser!
+                                                                        .uid]!
+                                                                .views),
+                                                      ),
+                                                    ));
+                                              },
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    15,
+                                                  ),
+                                                  side: BorderSide(
+                                                      color:
+                                                          Colors.orange[600]!),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.5),
+                                                  child: Container(
+                                                    height:
+                                                        displayHeight(context) *
+                                                            0.08,
+                                                    width:
+                                                        displayWidth(context) *
+                                                            0.15,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                        image: DecorationImage(
+                                                            image: CachedNetworkImageProvider(
+                                                                allUsers[currentUser!
+                                                                        .uid]!
+                                                                    .story),
+                                                            fit: BoxFit.cover)),
+                                                  ),
+                                                ),
+                                              )),
                                           Divider(
                                             height:
                                                 displayHeight(context) * 0.006,
@@ -311,39 +323,50 @@ class _feedScreenState extends State<feedScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        viewStory(
-                                                      myUid: currentUser!.uid,
-                                                      story: stories[index],
-                                                    ),
-                                                  ));
-                                            },
-                                            child: CircleAvatar(
-                                              radius:
-                                                  displayWidth(context) * 0.095,
-                                              backgroundColor: Colors.orange,
-                                              child: CircleAvatar(
-                                                radius: displayWidth(context) *
-                                                    0.09,
-                                                backgroundColor: Colors.white,
-                                                child: CircleAvatar(
-                                                  radius:
-                                                      displayWidth(context) *
-                                                          0.08,
-                                                  backgroundColor:
-                                                      Colors.orange,
-                                                  backgroundImage:
-                                                      CachedNetworkImageProvider(
-                                                          stories[index]
-                                                              .story!),
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          viewStory(
+                                                        myUid: currentUser!.uid,
+                                                        story: stories[index],
+                                                      ),
+                                                    ));
+                                              },
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    15,
+                                                  ),
+                                                  side: BorderSide(
+                                                      color:
+                                                          Colors.orange[600]!),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.5),
+                                                  child: Container(
+                                                    height:
+                                                        displayHeight(context) *
+                                                            0.08,
+                                                    width:
+                                                        displayWidth(context) *
+                                                            0.15,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                        image: DecorationImage(
+                                                            image: CachedNetworkImageProvider(
+                                                                stories[index]
+                                                                    .story!),
+                                                            fit: BoxFit.cover)),
+                                                  ),
+                                                ),
+                                              )),
                                           Divider(
                                             height:
                                                 displayHeight(context) * 0.006,
@@ -559,10 +582,10 @@ Widget displayPostsForFeed(
                   },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'feed');
                     } else {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'feed');
                     }
                   },
@@ -593,12 +616,12 @@ Widget displayPostsForFeed(
                           GestureDetector(
                             onTap: () {
                               if (post.likes.contains(myUid)) {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .dislikePost(
                                         myUid, post.uid, post.post_id, 'feed');
                               } else {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .likePost(
                                         myUid, post.uid, post.post_id, 'feed');
@@ -657,10 +680,10 @@ Widget displayPostsForFeed(
                         child: InkWell(
                           onTap: () {
                             if (savedPosts.containsKey(post.post_id)) {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .unsavePost(post.post_id, myUid);
                             } else {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .savePost(post, myUid);
                             }
                           },

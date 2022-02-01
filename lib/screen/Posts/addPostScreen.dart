@@ -67,7 +67,7 @@ class _addPostScreenState extends State<addPostScreen> {
               setState(() {
                 uploadingPost = true;
               });
-              Provider.of<usersProvider>(context, listen: false)
+              Provider.of<manager>(context, listen: false)
                   .addNewPost(captionController!.text.toString(),
                   currentUser!.uid.toString(), imagefile!)
                   .then((value) {

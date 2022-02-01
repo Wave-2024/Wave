@@ -26,7 +26,7 @@ class _searchScreenState extends State<searchScreen> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      Provider.of<usersProvider>(context).setAllUsers().then((value) {
+      Provider.of<manager>(context).setAllUsers().then((value) {
         init = false;
         screenLoading = false;
       });
@@ -39,7 +39,7 @@ class _searchScreenState extends State<searchScreen> {
   Widget build(BuildContext context) {
 
     final List<NexusUser> list =
-        Provider.of<usersProvider>(context).fetchAllUsers.values.toList();
+        Provider.of<manager>(context).fetchAllUsers.values.toList();
     Widget displayUserHeads(NexusUser user) {
       return InkWell(
         onTap: () {

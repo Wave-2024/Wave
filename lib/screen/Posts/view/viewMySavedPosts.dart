@@ -41,17 +41,17 @@ class _viewMySavedPostScreenState extends State<viewMySavedPostScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setSavedPostsOnce(widget.myUid.toString());
       return;
     }
 
     Map<String, PostModel> mySavedPostList =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, PostModel> savedPostsMap =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, NexusUser> mapOfUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -230,10 +230,10 @@ Widget displayMySavedPosts(
                 child: InkWell(
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'saved');
                     } else {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'saved');
                     }
                   },
@@ -287,10 +287,10 @@ Widget displayMySavedPosts(
                         child: InkWell(
                           onTap: () {
                             if (savedPosts.containsKey(post.post_id)) {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .unsavePost(post.post_id, myUid);
                             } else {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .savePost(post, myUid);
                             }
                           },

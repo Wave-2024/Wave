@@ -18,11 +18,11 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     User currentUser = FirebaseAuth.instance.currentUser!;
     List<NotificationModel> list =
-        Provider.of<usersProvider>(context).fetchNotifications;
+        Provider.of<manager>(context).fetchNotifications;
     Map<String, NexusUser> allUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     List<PostModel> myPosts =
-        Provider.of<usersProvider>(context).fetchMyPostsList;
+        Provider.of<manager>(context).fetchMyPostsList;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -46,7 +46,7 @@ class NotificationScreen extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .readAllNotificationAtOnce(currentUser.uid);
                     },
                     child: Card(
@@ -248,7 +248,7 @@ class NotificationScreen extends StatelessWidget {
                             children: [
                               SlidableAction(
                                 onPressed: (context) {
-                                  Provider.of<usersProvider>(context,
+                                  Provider.of<manager>(context,
                                           listen: false)
                                       .readNotification(currentUser.uid,
                                           list[index].notificationId!);
@@ -261,7 +261,7 @@ class NotificationScreen extends StatelessWidget {
                               ),
                               SlidableAction(
                                 onPressed: (context) {
-                                  Provider.of<usersProvider>(context,
+                                  Provider.of<manager>(context,
                                           listen: false)
                                       .deleteNotification(currentUser.uid,
                                           list[index].notificationId!);

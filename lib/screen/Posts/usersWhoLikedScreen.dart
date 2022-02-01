@@ -11,7 +11,7 @@ class usersWhoLikedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Map<String, NexusUser> allUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,

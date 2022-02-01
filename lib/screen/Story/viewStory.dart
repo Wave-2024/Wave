@@ -43,7 +43,7 @@ class _viewStoryState extends State<viewStory> {
   @override
   Widget build(BuildContext context) {
     Map<String, NexusUser> allUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return SafeArea(
         child: Scaffold(
             body: Container(
@@ -146,7 +146,7 @@ class _viewStoryState extends State<viewStory> {
                                             color: Colors.black87),
                                       ),
                                       onPressed: () {
-                                        Provider.of<usersProvider>(context,listen: false).deleteStoryFromServer(widget.myUid!);
+                                        Provider.of<manager>(context,listen: false).deleteStoryFromServer(widget.myUid!);
                                         Navigator.pop(context);
                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully removed your story')));
                                       },

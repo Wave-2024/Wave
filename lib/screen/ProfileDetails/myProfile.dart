@@ -47,13 +47,13 @@ class _profiletScreenState extends State<profiletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    NexusUser? myProfile = Provider.of<usersProvider>(context)
+    NexusUser? myProfile = Provider.of<manager>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     List<PostModel> posts =
-        Provider.of<usersProvider>(context).fetchMyPostsList;
+        Provider.of<manager>(context).fetchMyPostsList;
 
     Map<String, PostModel>? savedPosts =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     Future pickImageForCoverPicture() async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (mounted) {
@@ -61,7 +61,7 @@ class _profiletScreenState extends State<profiletScreen> {
           setState(() {
             loadScreen = true;
           });
-          Provider.of<usersProvider>(context, listen: false)
+          Provider.of<manager>(context, listen: false)
               .addCoverPicture(
               File(pickedFile.path), currentUser!.uid.toString())
               .then((value) {
@@ -80,7 +80,7 @@ class _profiletScreenState extends State<profiletScreen> {
           setState(() {
             loadScreen = true;
           });
-          await Provider.of<usersProvider>(context, listen: false)
+          await Provider.of<manager>(context, listen: false)
               .addProfilePicture(
               File(pickedFile.path), currentUser!.uid.toString())
               .then((value) {

@@ -35,7 +35,7 @@ class _editPostScreenState extends State<editPostScreen> {
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(onPressed: () {
-            Provider.of<usersProvider>(context,listen: false).updateCaption(currentUser!.uid, widget.post!.post_id, captionController!.text.toString());
+            Provider.of<manager>(context,listen: false).updateCaption(currentUser!.uid, widget.post!.post_id, captionController!.text.toString());
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Post updated successfully")));
             Navigator.pop(context);
           }, icon: Icon(Icons.check),

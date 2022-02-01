@@ -47,17 +47,17 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> setPosts() async {
-      await Provider.of<usersProvider>(context, listen: false)
+      await Provider.of<manager>(context, listen: false)
           .setMyPosts(widget.myUid.toString());
       return;
     }
 
     List<PostModel> myPostList =
-        Provider.of<usersProvider>(context).fetchMyPostsList;
+        Provider.of<manager>(context).fetchMyPostsList;
     Map<String, PostModel> savedPostsMap =
-        Provider.of<usersProvider>(context).fetchSavedPostsMap;
+        Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, NexusUser> mapOfUsers =
-        Provider.of<usersProvider>(context).fetchAllUsers;
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -253,7 +253,7 @@ Widget displayMyPosts(
                                                     Navigator.pop(context);
                                                   }, child: Text('Cancel',style: TextStyle(color: Colors.black54),)),
                                                   TextButton(onPressed: () {
-                                                    Provider.of<usersProvider>(context,listen: false).deletePost(myUid, post.post_id);
+                                                    Provider.of<manager>(context,listen: false).deletePost(myUid, post.post_id);
                                                     Navigator.pop(context);
                                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post deleted'),duration: Duration(seconds: 2),));
                                                   }, child: Text('Delete',style: TextStyle(color: Colors.red))),
@@ -341,11 +341,11 @@ Widget displayMyPosts(
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
                       print('already liked');
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'self');
                     } else {
                       print('not liked before');
-                      Provider.of<usersProvider>(context, listen: false)
+                      Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'self');
                     }
                   },
@@ -376,12 +376,12 @@ Widget displayMyPosts(
                           GestureDetector(
                             onTap: () {
                               if (post.likes.contains(myUid)) {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .dislikePost(
                                         myUid, post.uid, post.post_id, 'self');
                               } else {
-                                Provider.of<usersProvider>(context,
+                                Provider.of<manager>(context,
                                         listen: false)
                                     .likePost(
                                         myUid, post.uid, post.post_id, 'self');
@@ -441,10 +441,10 @@ Widget displayMyPosts(
                         child: InkWell(
                           onTap: () {
                             if (savedPosts.containsKey(post.post_id)) {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .unsavePost(post.post_id, myUid);
                             } else {
-                              Provider.of<usersProvider>(context, listen: false)
+                              Provider.of<manager>(context, listen: false)
                                   .savePost(post, myUid);
                             }
                           },

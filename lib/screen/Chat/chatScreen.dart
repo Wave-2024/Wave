@@ -31,11 +31,10 @@ class _chatScreenState extends State<chatScreen> {
   @override
   Widget build(BuildContext context) {
     Map<String, NexusUser>? allUsers =
-        Provider.of<usersProvider>(context, listen: false).fetchAllUsers;
+        Provider.of<manager>(context, listen: false).fetchAllUsers;
     NexusUser? myProfile = allUsers[currentUser!.uid.toString()];
     List<dynamic> myFollowingId = myProfile!.followings;
-    displayChatHead(String chatId, String username, String dp, int chatbg,
-    ) {
+    displayChatHead(String chatId,String lastSeen,String yourUid) {
       return ListTile(
           isThreeLine: false,
           tileColor: Colors.transparent,
@@ -45,29 +44,26 @@ class _chatScreenState extends State<chatScreen> {
                 MaterialPageRoute(
                   builder: (context) => inboxScreen(
                     chatId: chatId,
-                    personDp: dp,
-                    chatbg: chatbg,
-                    personUserName: username,
-                    myDp: myProfile.dp,
+                    yourUid: yourUid,
                     myId: currentUser!.uid.toString(),
                   ),
                 ));
           },
           title: Text(
-            username,
+            allUsers[yourUid]!.username,
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: displayWidth(context) * 0.04),
           ),
           subtitle: Text(
-            'something',
+            lastSeen,
             style: TextStyle(color: Colors.black45),
           ),
-          leading: (dp != '')
+          leading: (allUsers[yourUid]!.dp != '')
               ? CircleAvatar(
                   backgroundColor: Colors.grey[200],
-                  backgroundImage: NetworkImage(dp),
+                  backgroundImage: NetworkImage(allUsers[yourUid]!.dp),
                   radius: displayWidth(context) * 0.05,
                 )
               : CircleAvatar(
@@ -124,38 +120,42 @@ class _chatScreenState extends State<chatScreen> {
                             top: 25.0, left: 16, right: 16, bottom: 35),
                         child: StreamBuilder(
                           stream: FirebaseFirestore.instance
-                              .collection('messages')
-                              .doc(currentUser!.uid)
                               .collection('chats')
+                              .doc(currentUser!.uid)
+                              .collection('mychats')
                               .snapshots(),
                           builder: (context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              return ListView.builder(
-                                itemCount: snapshot.data.docs.length,
-                                itemBuilder: (context, index) {
-                                  String uid =
-                                      snapshot.data.docs[index].data()['uid'];
-                                  String chatId = snapshot.data.docs[index]
-                                      .data()['chatId'];
-                                  String userName = allUsers[uid]!.username;
-                                  String dp = allUsers[uid]!.dp;
-                                  Timestamp lastSeen = snapshot.data.docs[index]
-                                      .data()['lastSent'];
-                                  DateTime currentDate = DateTime.now();
-                                  DateTime lastSeenDate = lastSeen.toDate();
-                                  int chatbg = snapshot.data.docs[index]
-                                      .data()['chatbg'];
-                                  return displayChatHead(
-                                      chatId,
-                                      userName,
-                                      dp,
-                                      chatbg,
-                                  );
-                                },
-                              );
-                            } else {
-                              return Center(child: Text('No Chats Found'));
+                            if(snapshot.connectionState.index == ConnectionState.waiting){
+                              return Center(child: load(context),);
                             }
+                            else{
+                              if (snapshot.hasData) {
+                                return ListView.builder(
+                                  itemCount: snapshot.data.docs.length,
+                                  itemBuilder: (context, index) {
+                                    String uid =
+                                    snapshot.data.docs[index].data()['uid'];
+                                    String chatId = snapshot.data.docs[index]
+                                        .data()['chatId'];
+                                    String userName = allUsers[uid]!.username;
+                                    String dp = allUsers[uid]!.dp;
+                                    Timestamp lastSeen = snapshot.data.docs[index]
+                                        .data()['last seen'];
+                                    DateTime lastSeenDate = lastSeen.toDate();
+                                    DateTime currentdate = DateTime.now();
+                                    String time=differenceOfTime(currentdate, lastSeenDate);
+                                    return displayChatHead(
+                                      chatId,
+                                      time,
+                                      uid,
+                                    );
+                                  },
+                                );
+                              } else {
+                                return Center(child: Text('No Chats Found'));
+                              }
+                            }
+
                           },
                         ),
                       ))
