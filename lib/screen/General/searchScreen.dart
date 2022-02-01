@@ -118,8 +118,8 @@ class _searchScreenState extends State<searchScreen> {
                               } else {
                                 List<NexusUser> tempList = list
                                     .where((element) =>
-                                        (element.title.contains(value) ||
-                                            element.username.contains(value)))
+                                        (element.title.toLowerCase().contains(value.toLowerCase()) ||
+                                            element.username.toLowerCase().contains(value.toLowerCase())))
                                     .toList();
                                 setState(() {
                                   displayList = tempList;
