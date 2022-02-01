@@ -75,6 +75,10 @@ class NexusUser {
     dp = newDp;
   }
 
+  changeCoverPicture(String newCp){
+    coverImage = newCp;
+  }
+
   removeStroy() {
     story = '';
     views = [];
