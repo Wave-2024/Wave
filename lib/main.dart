@@ -5,7 +5,7 @@ import 'package:nexus/providers/screenIndexProvider.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
-import 'package:nexus/screen/General/initScreen.dart';
+import 'package:nexus/screen/General/WelcomeScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/services/auth_notifier.dart';
 import 'package:provider/provider.dart';
