@@ -58,73 +58,19 @@ String? generateChatRoomUsingUid(String uid1, String uid2) {
   return chatRoom;
 }
 
-Widget displayComment(BuildContext context, String comment, String uid) {
-  NexusUser? user =
-      Provider.of<manager>(context, listen: false).fetchAllUsers[uid];
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      Card(
-        color: Colors.white,
-        elevation: 12.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(2.5),
-          child: (user!.dp != '')
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    height: displayHeight(context) * 0.042,
-                    width: displayWidth(context) * 0.078,
-                    fit: BoxFit.cover,
-                    imageUrl: user.dp,
-                  ),
-                )
-              : Icon(
-                  Icons.person,
-                  color: Colors.orange[300],
-                  size: displayWidth(context) * 0.076,
-                ),
-        ),
-      ),
-      (user.followers.length>=5)?Icon(
-        Icons.verified,
-        color: Colors.orange[400],
-        size: displayWidth(context) * 0.044,
-      ):SizedBox(width: 0,),
-      
-      Opacity(
-          opacity: 0.0,
-          child: VerticalDivider(
-            width: displayWidth(context) * 0.01,
-          )),
-      Flexible(
-        child: Card(
-          elevation: 4.0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: printComment(context, user.username, comment),
-          ),
-        ),
-      )
-    ],
-  );
-}
-
 int timeBetween(DateTime from, DateTime to) {
   from = DateTime(from.year, from.month, from.day , from.hour , from.minute);
   to = DateTime(to.year, to.month, to.day , to.hour , to.minute);
   return to.difference(from).inHours;
 }
 
+
+
 int findDifferenc(int a, int b) {
   return (a - b).abs();
 }
 
-String differenceOfTime(DateTime current, DateTime lastSeen) {
+String differenceOfTimeForChat(DateTime current, DateTime lastSeen) {
   String diff = '';
   if (findDifferenc(current.year, lastSeen.year) == 0) {
     // same year
@@ -161,6 +107,45 @@ String differenceOfTime(DateTime current, DateTime lastSeen) {
     diff = findDifferenc(current.year, lastSeen.year).toString() + ' year';
   }
   return 'seen ${diff} ago';
+}
+
+String differenceOfTimeForComment(DateTime current, DateTime lastSeen) {
+  String diff = '';
+  if (findDifferenc(current.year, lastSeen.year) == 0) {
+    // same year
+    if (findDifferenc(current.month, lastSeen.month) == 0) {
+      // same month
+      if (findDifferenc(current.day, lastSeen.day) == 0) {
+        // Same day
+        if (findDifferenc(current.hour, lastSeen.hour) == 0) {
+          // Same hour
+          if (findDifferenc(current.minute, lastSeen.minute) == 0) {
+            // Same minute
+            if (findDifferenc(current.second, lastSeen.second) == 0) {
+              return ' now';
+            } else {
+              diff = findDifferenc(current.second, lastSeen.second).toString() +
+                  ' s';
+            }
+          } else {
+            diff = findDifferenc(current.minute, lastSeen.minute).toString() +
+                ' m';
+          }
+        } else {
+          diff =
+              findDifferenc(current.hour, lastSeen.hour).toString() + ' h';
+        }
+      } else {
+        diff = findDifferenc(current.day, lastSeen.day).toString() + ' d';
+      }
+    } else {
+      diff =
+          findDifferenc(current.month, lastSeen.month).toString() + ' months';
+    }
+  } else {
+    diff = findDifferenc(current.year, lastSeen.year).toString() + ' y';
+  }
+  return '${diff}';
 }
 
 void sendMessage(String chatId, String message, String myUid,String yourUid) async {
@@ -283,24 +268,37 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
       },
       title: Text(
         user.title,
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: displayWidth(context)*0.038),
       ),
-      subtitle: Text(
-        user.username,
-        style: TextStyle(color: Colors.black45),
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            user.username,
+            style: TextStyle(color: Colors.black45,fontSize: displayWidth(context)*0.035),
+          ),
+          Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.003,)),
+          (user.followers.length>=5)?Icon(
+            Icons.verified,
+            color: Colors.orange[400],
+            size: displayWidth(context) * 0.048,
+          ):const SizedBox(),
+        ],
       ),
-      leading: (user.dp != '')
-          ? CircleAvatar(
-              backgroundImage: NetworkImage(user.dp),
-              radius: displayWidth(context) * 0.05,
-            )
-          : CircleAvatar(
-              backgroundColor: Colors.grey[200],
-              radius: displayWidth(context) * 0.05,
-              child: Icon(
-                Icons.person,
-                size: displayWidth(context) * 0.075,
-                color: Colors.orange[400],
-              ),
-            ));
+
+      leading:
+          (user.dp != '')
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(user.dp),
+                  radius: displayWidth(context) * 0.05,
+                )
+              : CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  radius: displayWidth(context) * 0.05,
+                  child: Icon(
+                    Icons.person,
+                    size: displayWidth(context) * 0.075,
+                    color: Colors.orange[400],
+                  ),
+      ));
 }
