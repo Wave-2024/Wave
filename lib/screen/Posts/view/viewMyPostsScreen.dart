@@ -82,9 +82,9 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
               ),
       ),
       appBar: AppBar(
-        title: const Text(
+        title:  Text(
           'My Posts',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black,fontSize: displayWidth(context)*0.045),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
