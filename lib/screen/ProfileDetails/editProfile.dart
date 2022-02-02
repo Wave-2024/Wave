@@ -59,7 +59,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
     final Map<String, bool>? listOfUserNames =
         Provider.of<usernameProvider>(context).fetchUserNames;
 
-    final theme = Theme.of(context);
+    final Map<String,NexusUser> allUsers = Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -105,7 +105,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Cannot be empty';
-                              } else if (listOfUserNames!.containsKey(value)) {
+                              } else if (listOfUserNames!.containsKey(value) && allUsers[widget.user]!.username!=value) {
                                 return 'User name already taken';
                               } else {
                                 return null;
