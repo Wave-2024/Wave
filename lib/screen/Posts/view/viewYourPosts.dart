@@ -207,6 +207,7 @@ Widget displayYourPosts(
                     //color: Colors.redAccent,
                     child: Text(
                       post.caption,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                           color: Colors.black87, fontWeight: FontWeight.w600),

@@ -537,6 +537,7 @@ Widget displayPostsForFeed(
                     //color: Colors.redAccent,
                     child: Text(
                       post.caption,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: displayWidth(context) * 0.034,

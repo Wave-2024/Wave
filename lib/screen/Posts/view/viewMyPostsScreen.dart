@@ -88,7 +88,7 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Container(
         height: displayHeight(context),
@@ -295,10 +295,12 @@ Widget displayMyPosts(
                     //color: Colors.redAccent,
                     child: Text(
                       post.caption,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: displayWidth(context) * 0.034,
                           color: Colors.black87,
+
                           fontWeight: FontWeight.w600),
                     )),
               ),
