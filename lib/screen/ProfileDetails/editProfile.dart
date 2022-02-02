@@ -105,7 +105,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Cannot be empty';
-                              } else if (listOfUserNames!.containsKey(value) && allUsers[widget.user]!.username!=value) {
+                              } else if (listOfUserNames!.containsKey(value) && allUsers[widget.user!.uid]!.username!=value) {
                                 return 'User name already taken';
                               } else {
                                 return null;
