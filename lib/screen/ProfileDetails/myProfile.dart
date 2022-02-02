@@ -268,7 +268,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                         ));
                                   },
                                   color: Colors.white70,
-                                  icon: Icon(Icons.edit),
+                                  icon: const Icon(Icons.edit),
                                 )),
                             Positioned(
                                 top: displayHeight(context) * 0.02,

@@ -184,7 +184,6 @@ Widget messageContainer(
               child: Container(
                 constraints: BoxConstraints(maxWidth: displayWidth(context)*0.7),
                 decoration: BoxDecoration(
-                
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -211,7 +210,7 @@ Widget messageContainer(
                   borderRadius: BorderRadius.circular(8)),
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
+                child: (dp!='')?ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: CachedNetworkImage(
                     height: displayHeight(context) * 0.0365,
@@ -219,7 +218,8 @@ Widget messageContainer(
                     fit: BoxFit.cover,
                     imageUrl: dp,
                   ),
-                ),
+                ):
+                     Icon(Icons.person,color: Colors.orange[600],size: displayWidth(context)*0.075,),
               ),
             ),
             const VerticalDivider(
