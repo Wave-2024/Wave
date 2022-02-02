@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
-import 'package:nexus/screen/General/initScreen.dart';
+import 'package:nexus/screen/General/WelcomeScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
@@ -98,30 +98,11 @@ class _registerScreenState extends State<registerScreen> {
                           child: Divider(
                             height: displayHeight(context) * 0.022,
                           )),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0),
-                        child: Text(
-                          'Full Name',
-                          style: TextStyle(
-                              color: Colors.black,
-                              //fontWeight: FontWeight.w400,
-                              fontSize: displayWidth(context) * 0.04),
-                        ),
-                      ),
+
                       Padding(
                         padding: const EdgeInsets.only(
                             top: 10, left: 18.0, right: 18),
-                        child: Container(
-                          height: displayHeight(context) * 0.06,
-                          width: displayWidth(context),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: Colors.black, width: 0.8)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: TextFormField(
+                        child:  TextFormField(
                                 controller: fullName,
                                 validator: (value) {
                                   if (value!.isEmpty) {
@@ -133,173 +114,74 @@ class _registerScreenState extends State<registerScreen> {
                                   hintStyle: TextStyle(
                                       fontSize: displayWidth(context) * 0.04),
                                   hintText: 'Alpha',
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
+                                  labelText: "Full Name",
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                      Opacity(
-                          opacity: 0.0,
-                          child: Divider(
-                            height: displayHeight(context) * 0.025,
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0),
-                        child: Text(
-                          'Username',
-                          style: TextStyle(
-                              color: Colors.black,
-                              //fontWeight: FontWeight.w400,
-                              fontSize: displayWidth(context) * 0.042),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10, left: 18.0, right: 18),
-                        child: Container(
-                          height: displayHeight(context) * 0.06,
-                          width: displayWidth(context),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: Colors.black, width: 0.8)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: TextFormField(
-                                controller: username,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Cannot be empty';
-                                  }
-                                  if (listOfUserNames!.containsKey(value)) {
-                                    return 'username already taken';
-                                  }
-                                  return null;
-                                },
-                                decoration: InputDecoration(
-                                  hintStyle: TextStyle(
-                                      fontSize: displayWidth(context) * 0.04),
-                                  hintText: 'alpha17-2',
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
+
+                       Padding(
+                         padding: const EdgeInsets.only(
+                             top: 10, left: 18.0, right: 18),
+                         child: TextFormField(
+                                  controller: username,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Cannot be empty';
+                                    }
+                                    if (listOfUserNames!.containsKey(value)) {
+                                      return 'username already taken';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintStyle: TextStyle(
+                                        fontSize: displayWidth(context) * 0.04),
+                                    hintText: 'alpha17-2',
+                                    labelText: "Username",
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Opacity(
-                          opacity: 0.0,
-                          child: Divider(
-                            height: displayHeight(context) * 0.025,
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0),
-                        child: Text(
-                          'Email address',
-                          style: TextStyle(
-                              color: Colors.black,
-                              //fontWeight: FontWeight.w400,
-                              fontSize: displayWidth(context) * 0.042),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10, left: 18.0, right: 18),
-                        child: Container(
-                          height: displayHeight(context) * 0.06,
-                          width: displayWidth(context),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: Colors.black, width: 0.8)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: TextFormField(
-                                keyboardType: TextInputType.emailAddress,
-                                controller: email,
-                                validator: (value) {
-                                  if (value!.isEmpty) return 'Cannot be empty';
-                                  return null;
-                                },
-                                decoration: InputDecoration(
-                                  hintStyle: TextStyle(
-                                      fontSize: displayWidth(context) * 0.04),
-                                  hintText: 'alpha77@yahoo.com',
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
+                       ),
+
+                       Padding(
+                         padding: const EdgeInsets.only(
+                             top: 10, left: 18.0, right: 18),
+                         child: TextFormField(
+                                  keyboardType: TextInputType.emailAddress,
+                                  controller: email,
+                                  validator: (value) {
+                                    if (value!.isEmpty) return 'Cannot be empty';
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintStyle: TextStyle(
+                                        fontSize: displayWidth(context) * 0.04),
+                                    hintText: 'alpha77@yahoo.com',
+                                    labelText: "Email"
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Opacity(
-                          opacity: 0.0,
-                          child: Divider(
-                            height: displayHeight(context) * 0.025,
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0),
-                        child: Text(
-                          'Password',
-                          style: TextStyle(
-                              color: Colors.black,
-                              //fontWeight: FontWeight.w400,
-                              fontSize: displayWidth(context) * 0.042),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10, left: 18.0, right: 18),
-                        child: Container(
-                          height: displayHeight(context) * 0.06,
-                          width: displayWidth(context),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: Colors.black, width: 0.8)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: TextFormField(
-                                obscureText: true,
-                                controller: password,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Cannot be empty';
-                                  }
-                                  return null;
-                                },
-                                decoration: InputDecoration(
-                                  hintStyle: TextStyle(
-                                      fontSize: displayWidth(context) * 0.04),
-                                  hintText: '*******',
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
+                       ),
+
+
+                       Padding(
+                         padding: const EdgeInsets.only(
+                             top: 10, left: 18.0, right: 18),
+                         child: TextFormField(
+                                  obscureText: true,
+                                  controller: password,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Cannot be empty';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintStyle: TextStyle(
+                                        fontSize: displayWidth(context) * 0.04),
+                                    hintText: '*******',
+                                    labelText: "Password"
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                       ),
                       Opacity(
                           opacity: 0.0,
                           child: Divider(
