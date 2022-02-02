@@ -82,11 +82,11 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
                       imageUrl: postDetail!.image,
                       height: displayHeight(context) * 0.15,
-                      width: displayWidth(context) * 0.3,
+                      width: displayWidth(context) * 0.28,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -96,7 +96,7 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
                       postDetail.caption,
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: displayWidth(context) * 0.036,
+                          fontSize: displayWidth(context) * 0.03,
                           color: Colors.black87),
                     ),
                   ),
