@@ -1,13 +1,12 @@
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForYouPosts.dart';
-
+import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -50,8 +49,7 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
       return;
     }
 
-    List<PostModel> posts =
-        Provider.of<manager>(context).fetchYourPostsList;
+    List<PostModel> posts = Provider.of<manager>(context).fetchYourPostsList;
     Map<String, PostModel> savedPostsMap =
         Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, NexusUser> mapOfUsers =
@@ -81,8 +79,9 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
       ),
       appBar: AppBar(
         title: Text(
-          mapOfUsers[widget.yourUid]!.title.toString()+'\'s Posts',
-          style: TextStyle(color: Colors.black),
+          'Posts',
+          style: TextStyle(
+              color: Colors.black, fontSize: displayWidth(context) * 0.048),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -221,13 +220,39 @@ Widget displayYourPosts(
               ),
               Center(
                 child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 10,
+                            sigmaY: 10,
+                          ),
+                          child: Dialog(
+                            insetAnimationCurve: Curves.easeInCirc,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            backgroundColor: Colors.transparent,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: CachedNetworkImage(
+                                  imageUrl: post.image,
+                                  fit: BoxFit.contain,
+                                  height: displayHeight(context) * 0.5,
+                                )),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
-                     
                       Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'yours');
                     } else {
-                      
                       Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'yours');
                     }
@@ -238,7 +263,7 @@ Widget displayYourPosts(
                       imageUrl: post.image,
                       height: displayHeight(context) * 0.38,
                       width: displayWidth(context) * 0.68,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -259,13 +284,11 @@ Widget displayYourPosts(
                           GestureDetector(
                             onTap: () {
                               if (post.likes.contains(myUid)) {
-                                Provider.of<manager>(context,
-                                        listen: false)
+                                Provider.of<manager>(context, listen: false)
                                     .dislikePost(
                                         myUid, post.uid, post.post_id, 'yours');
                               } else {
-                                Provider.of<manager>(context,
-                                        listen: false)
+                                Provider.of<manager>(context, listen: false)
                                     .likePost(
                                         myUid, post.uid, post.post_id, 'yours');
                               }
@@ -354,12 +377,17 @@ Widget displayYourPosts(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      post.likes.length.toString() + ' likes',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: displayWidth(context) * 0.035,
-                          fontWeight: FontWeight.bold),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => usersWhoLikedScreen(usersWhoLiked: post.likes,),));
+                      },
+                      child: Text(
+                        post.likes.length.toString() + ' likes',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: displayWidth(context) * 0.035,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Text(
                       '${day} ${month} ${year}',
