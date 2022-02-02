@@ -16,6 +16,13 @@ import 'package:nexus/utils/widgets.dart';
 class manager extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
 
+  List<NexusUser>? fetchSuggestedUser(String myUid){
+    List<NexusUser>? list = [];
+    list = allUsers.values.toList().where((element) => !(element.followers.contains(myUid))).toList();
+    list.sort((a,b)=> (a.followers.length>b.followers.length)?1:0);
+    return list;
+  }
+
   List<StoryModel> feedStoryList = [];
 
   Map<String, PostModel> feedPostMap = {};
@@ -116,8 +123,7 @@ class manager extends ChangeNotifier {
     for (int i = 0; i < myFollowing.length; ++i) {
       String uid = myFollowing[i].toString();
       tempPostList.addAll(await getListOfPostsUsingUid(uid));
-      //print('difference in hours = ${timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now())}');
-      if(hasStory(myFollowing[i]) && timeBetween(allUsers[myFollowing[i]]!.storyTime, DateTime.now()) < 24 ){
+      if(hasStory(myFollowing[i])){
         tempStoryList.add(StoryModel(
           story: allUsers[myFollowing[i]]!.story,
           storyTime: allUsers[myFollowing[i]]!.storyTime,
@@ -263,6 +269,7 @@ class manager extends ChangeNotifier {
       'last seen' : Timestamp.now(),
       'uid' : myUid,
     });
+    await setFeedPosts(myUid);
   }
 
   Future<List<dynamic>> getYourFollowers(String uid) async{
@@ -295,6 +302,7 @@ class manager extends ChangeNotifier {
     final String yourApi = constants().fetchApi + 'users/${yourUid}.json';
     await http.patch(Uri.parse(myApi),body: json.encode({'followings':myFollowings}));
     await http.patch(Uri.parse(yourApi),body: json.encode({'followers': yourFollowers}));
+    await setFeedPosts(myUid);
   }
 
   // Function to set my posts
@@ -801,7 +809,7 @@ class manager extends ChangeNotifier {
         .collection('posts')
         .doc(postId)
         .collection('comments')
-        .add({'comment': comment, 'time': Timestamp.now(), 'uid': myId}).then(
+        .add({'comment': comment, 'time': Timestamp.now(), 'uid': myId,'replies' : [],'likes' : []}).then(
             (value) {
       FirebaseFirestore.instance
           .collection('posts')
@@ -811,6 +819,10 @@ class manager extends ChangeNotifier {
           .update({'commentId': value.id});
     });
     await sendNotification(myId, yourId, postId, 'comment');
+  }
+
+  bool isMyPost(String postId){
+    return myPostsMap.containsKey(postId);
   }
 
   Future<void> deleteNotification(String myUid, String notificationId) async {
@@ -881,7 +893,7 @@ class manager extends ChangeNotifier {
   }
 
   bool hasStory(String uid) {
-    if (allUsers[uid]!.story != '') return true;
+    if (allUsers[uid]!.story != ''  && timeBetween(allUsers[uid]!.storyTime, DateTime.now())<24) return true;
     return false;
   }
 
