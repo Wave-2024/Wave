@@ -160,10 +160,13 @@ class _inboxScreenState extends State<inboxScreen> {
                          Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.05,)),
                          Expanded(
                            child: TextFormField(
+                             keyboardType: TextInputType.multiline,
+                             //maxLength: 500,
+                             maxLines: 5,
+                             minLines: 1,
                              controller: messageController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: "Message",
-
                               ),
                             ),
                          ),
