@@ -22,7 +22,6 @@ class _welcomeScreenState extends State<welcomeScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -37,13 +36,12 @@ class _welcomeScreenState extends State<welcomeScreen> {
       await Provider.of<manager>(context, listen: false)
           .setSavedPostsOnce(currentUser!.uid.toString());
       init = false;
-      
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => homescreen(),
-            ));
-      
+
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => homescreen(),
+          ));
     }
     super.didChangeDependencies();
   }
@@ -55,7 +53,8 @@ class _welcomeScreenState extends State<welcomeScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           decoration: const BoxDecoration(
-            image: DecorationImage(image: AssetImage('images/welcome.jpg'),fit: BoxFit.cover),
+            image: DecorationImage(
+                image: AssetImage('images/welcome.jpg'), fit: BoxFit.cover),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
