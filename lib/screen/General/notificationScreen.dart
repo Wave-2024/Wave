@@ -13,10 +13,38 @@ import 'package:nexus/utils/devicesize.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+
+  bool? init ;
+  User currentUser = FirebaseAuth.instance.currentUser!;
+  @override
+  void initState() {
+    super.initState();
+    init=true;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    if(init!){
+      await Provider.of<manager>(context).setMyPosts(currentUser.uid);
+      init = false;
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-    User currentUser = FirebaseAuth.instance.currentUser!;
+
     List<NotificationModel> list =
         Provider.of<manager>(context).fetchNotifications;
     Map<String, NexusUser> allUsers =
@@ -193,11 +221,16 @@ class NotificationScreen extends StatelessWidget {
                                         fontSize:
                                             displayWidth(context) * 0.036),
                                   ),
-                                  CachedNetworkImage(
+                                  (user.dp!='')?CachedNetworkImage(
                                     imageUrl: user.dp,
                                     height: displayHeight(context) * 0.05,
                                     width: displayWidth(context) * 0.1,
                                     fit: BoxFit.cover,
+                                  ):Container(
+                                    height: displayHeight(context) * 0.05,
+                                    width: displayWidth(context) * 0.1,
+                                    color: Colors.grey[200],
+                                    child: Center(child: Icon(Icons.person,color: Colors.orange[400],),),
                                   ),
                                 ],
                               ),
