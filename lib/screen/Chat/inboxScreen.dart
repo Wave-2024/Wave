@@ -15,8 +15,7 @@ class inboxScreen extends StatefulWidget {
   String? myId;
   String? yourUid;
 
-  inboxScreen(
-      {this.yourUid,this.chatId, this.myId});
+  inboxScreen({this.yourUid, this.chatId, this.myId});
 
   @override
   State<inboxScreen> createState() => _inboxScreenState();
@@ -52,16 +51,21 @@ class _inboxScreenState extends State<inboxScreen> {
           ),
           title: Row(
             children: [
-              (allUsers[widget.yourUid]!.dp.isNotEmpty)?CircleAvatar(
-                radius: displayWidth(context) * 0.042,
-                backgroundImage: NetworkImage(
-                  allUsers[widget.yourUid]!.dp,
-                ),
-              ):CircleAvatar(
-                radius: displayWidth(context) * 0.042,
-                child: Icon(Icons.person,color: Colors.orange,),
-                backgroundColor: Colors.grey[200],
-              ),
+              (allUsers[widget.yourUid]!.dp.isNotEmpty)
+                  ? CircleAvatar(
+                      radius: displayWidth(context) * 0.042,
+                      backgroundImage: NetworkImage(
+                        allUsers[widget.yourUid]!.dp,
+                      ),
+                    )
+                  : CircleAvatar(
+                      radius: displayWidth(context) * 0.042,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.orange,
+                      ),
+                      backgroundColor: Colors.grey[200],
+                    ),
               const Opacity(
                   opacity: 0,
                   child: VerticalDivider(
@@ -92,7 +96,10 @@ class _inboxScreenState extends State<inboxScreen> {
                     padding: const EdgeInsets.only(
                         top: 8.0, bottom: 8, left: 2, right: 10),
                     child: StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection('chat-room').doc(widget.chatId).collection('chat-room')
+                      stream: FirebaseFirestore.instance
+                          .collection('chat-room')
+                          .doc(widget.chatId)
+                          .collection('chat-room')
                           .orderBy('time', descending: true)
                           .snapshots(),
                       builder: (context, AsyncSnapshot snapshot) {
@@ -114,7 +121,8 @@ class _inboxScreenState extends State<inboxScreen> {
                                   itemBuilder: (context, index) {
                                     String encryptedMessage =
                                         snapshot.data.docs[index]['message'];
-                                    String uid = snapshot.data.docs[index]['uid'];
+                                    String uid =
+                                        snapshot.data.docs[index]['uid'];
                                     String message = encryptMessage()
                                         .decryptThisMessage(encryptedMessage);
                                     return Padding(
@@ -131,7 +139,7 @@ class _inboxScreenState extends State<inboxScreen> {
                                   },
                                 );
                         } else {
-                          return  Center(
+                          return Center(
                             child: load(context),
                           );
                         }
@@ -140,51 +148,70 @@ class _inboxScreenState extends State<inboxScreen> {
                   ),
                 ),
                 Container(
-                  height: displayHeight(context)*0.1,
+                  height: displayHeight(context) * 0.1,
                   width: displayWidth(context),
                   color: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsets.only(left:10.0,right: 4),
+                    padding: const EdgeInsets.only(left: 10.0, right: 4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        (allUsers[widget.myId]!.dp!='')?CircleAvatar(
-                          backgroundImage: CachedNetworkImageProvider(allUsers[widget.myId]!.dp),
-                          radius: displayWidth(context)*0.06,
-                        ): CircleAvatar(
-                          radius: displayWidth(context)*0.06,
-                          backgroundColor: Colors.green[200],
-                          child: Icon(Icons.person,color: Colors.orange,),
-                        ),
-                         Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.05,)),
-                         Expanded(
-                           child: TextFormField(
-                             keyboardType: TextInputType.multiline,
-                             //maxLength: 500,
-                             maxLines: 5,
-                             minLines: 1,
-                             controller: messageController,
-                              decoration: const InputDecoration(
-                                hintText: "Message",
+                        (allUsers[widget.myId]!.dp != '')
+                            ? CircleAvatar(
+                                backgroundImage: CachedNetworkImageProvider(
+                                    allUsers[widget.myId]!.dp),
+                                radius: displayWidth(context) * 0.06,
+                              )
+                            : CircleAvatar(
+                                radius: displayWidth(context) * 0.06,
+                                backgroundColor: Colors.green[200],
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.orange,
+                                ),
                               ),
+                        Opacity(
+                            opacity: 0.0,
+                            child: VerticalDivider(
+                              width: displayWidth(context) * 0.05,
+                            )),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.multiline,
+                            textCapitalization: TextCapitalization.sentences,
+                            maxLines: 5,
+                            minLines: 1,
+                            controller: messageController,
+                            decoration: const InputDecoration(
+                              hintText: "Message",
                             ),
-                         ),
-                        Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.01,)),
-                        IconButton(onPressed: () {
-                          String normalMessage = messageController!.text.toString();
-                          if(normalMessage.trim().isNotEmpty){
-                            String encryptedMessage =
-                            encryptMessage().encryptThisMessage(normalMessage);
-                            sendMessage(widget.chatId.toString(), encryptedMessage,
-                                widget.myId!,widget.yourUid!);
-                            setState(() {
-                              messageController!.clear();
-                            });
-                          }
-                          }, icon: Icon(Icons.send)),
-
-                        
+                          ),
+                        ),
+                        Opacity(
+                            opacity: 0.0,
+                            child: VerticalDivider(
+                              width: displayWidth(context) * 0.01,
+                            )),
+                        IconButton(
+                            onPressed: () {
+                              String normalMessage =
+                                  messageController!.text.toString();
+                              if (normalMessage.trim().isNotEmpty) {
+                                String encryptedMessage = encryptMessage()
+                                    .encryptThisMessage(normalMessage);
+                                sendMessage(
+                                    widget.chatId.toString(),
+                                    encryptedMessage,
+                                    widget.myId!,
+                                    widget.yourUid!);
+                                setState(() {
+                                  messageController!.clear();
+                                });
+                              }
+                            },
+                            color: Colors.orange[600],
+                            icon: Icon(Icons.send)),
                       ],
                     ),
                   ),
