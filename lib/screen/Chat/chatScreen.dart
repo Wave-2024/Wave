@@ -122,7 +122,7 @@ class _chatScreenState extends State<chatScreen> {
                           stream: FirebaseFirestore.instance
                               .collection('chats')
                               .doc(currentUser!.uid)
-                              .collection('mychats')
+                              .collection('mychats').orderBy('last seen',descending: true)
                               .snapshots(),
                           builder: (context, AsyncSnapshot snapshot) {
                             if(snapshot.connectionState.index == ConnectionState.waiting){
@@ -130,7 +130,7 @@ class _chatScreenState extends State<chatScreen> {
                             }
                             else{
                               if (snapshot.hasData) {
-                                return ListView.builder(
+                                return (snapshot.data.docs.length==0)?Center(child: Text('No chats found')):ListView.builder(
                                   itemCount: snapshot.data.docs.length,
                                   itemBuilder: (context, index) {
                                     String uid =
@@ -143,7 +143,7 @@ class _chatScreenState extends State<chatScreen> {
                                         .data()['last seen'];
                                     DateTime lastSeenDate = lastSeen.toDate();
                                     DateTime currentdate = DateTime.now();
-                                    String time=differenceOfTime(currentdate, lastSeenDate);
+                                    String time=differenceOfTimeForChat(currentdate, lastSeenDate);
                                     return displayChatHead(
                                       chatId,
                                       time,
@@ -152,7 +152,7 @@ class _chatScreenState extends State<chatScreen> {
                                   },
                                 );
                               } else {
-                                return Center(child: Text('No Chats Found'));
+                                return Center(child: load(context),);
                               }
                             }
 
