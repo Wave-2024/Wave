@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
+import 'package:nexus/utils/DisplayComment.dart';
+import 'package:nexus/utils/constants.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
-import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class CommentScreenForSavedPosts extends StatefulWidget {
@@ -63,15 +63,16 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
           formKey: formKey,
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () async {
+            FocusManager.instance.primaryFocus?.unfocus();
             Provider.of<manager>(context,listen: false).commentOnPost(currentUser!.uid, widget.postOwner!.uid, postDetail!.post_id, commentController!.text.toString());
             setState(() {
               commentController!.clear();
             });
           },
-          userImage: myProfile!.dp,
+          userImage:(myProfile!.dp!='')?myProfile.dp:constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send),
+          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -127,8 +128,26 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
                                         snapshot.data.docs[index].data()['uid'];
                                     String commentId = snapshot.data.docs[index]
                                         .data()['commentId'];
-                                    return displayComment(
-                                        context, comment, uid);
+                                    List<dynamic> replies = snapshot
+                                            .data.docs[index]
+                                            .data()['replies'] ??
+                                        [];
+                                    List<dynamic> likes = snapshot
+                                            .data.docs[index]
+                                            .data()['likes'] ??
+                                        [];
+                                    Timestamp timeStamp = snapshot
+                                        .data.docs[index]
+                                        .data()['time'];
+                                    DateTime commentTime = timeStamp.toDate();
+                                    return DisplayCommentBox(
+                                        postId: widget.postId!,
+                                        uid: uid,
+                                        commentTime: commentTime,
+                                        replies: replies,
+                                        likes: likes,
+                                        comment: comment,
+                                        commentId: commentId);
                                   },
                                   itemCount: snapshot.data.docs.length,
                                 );

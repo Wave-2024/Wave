@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
+import 'package:nexus/utils/DisplayComment.dart';
+import 'package:nexus/utils/constants.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
-import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class CommentScreenForYourPosts extends StatefulWidget {
@@ -44,13 +44,13 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
     NexusUser? myProfile = Provider.of<manager>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     PostModel? postDetail =
-        Provider.of<manager>(context).fetchSavedPostsMap[widget.postId];
+        Provider.of<manager>(context).fetchYourPostsMap[widget.postId];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Comments',
-          style: const TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -62,16 +62,22 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
           backgroundColor: Colors.white,
           formKey: formKey,
           errorText: 'Comment cannot be blank',
-          sendButtonMethod: () {
-            Provider.of<manager>(context,listen: false).commentOnPost(currentUser!.uid, widget.postOwner!.uid, postDetail!.post_id, commentController!.text.toString());
+          sendButtonMethod: ()async {
+            FocusManager.instance.primaryFocus?.unfocus();
+            await Provider.of<manager>(context, listen: false).commentOnPost(
+                currentUser!.uid,
+                widget.postOwner!.uid,
+                postDetail!.post_id,
+                commentController!.text.toString());
+
             setState(() {
               commentController!.clear();
             });
           },
-          userImage: myProfile!.dp,
+          userImage: (myProfile!.dp!='')?myProfile.dp:constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send),
+          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -123,12 +129,34 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
                                   itemBuilder: (context, index) {
                                     String comment = snapshot.data.docs[index]
                                         .data()['comment'];
+                                    Timestamp timeStamp = snapshot
+                                        .data.docs[index]
+                                        .data()['time'];
+                                    DateTime commentTime = timeStamp.toDate();
                                     String uid =
                                         snapshot.data.docs[index].data()['uid'];
                                     String commentId = snapshot.data.docs[index]
                                         .data()['commentId'];
-                                    return displayComment(
-                                        context, comment, uid);
+                                    List<dynamic> replies = snapshot
+                                            .data.docs[index]
+                                            .data()['replies'] ??
+                                        [];
+                                    List<dynamic> likes = snapshot
+                                            .data.docs[index]
+                                            .data()['likes'] ??
+                                        [];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      child: DisplayCommentBox(
+                                        uid: uid,
+                                        commentTime: commentTime,
+                                        replies: replies,
+                                        likes: likes,
+                                        comment: comment,
+                                        commentId: commentId,
+                                        postId: widget.postId!,
+                                      ),
+                                    );
                                   },
                                   itemCount: snapshot.data.docs.length,
                                 );

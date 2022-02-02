@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
+import 'package:nexus/utils/DisplayComment.dart';
+import 'package:nexus/utils/constants.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
-import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
+
+import '../usersWhoLikedScreen.dart';
 
 class CommentScreenForMyPosts extends StatefulWidget {
   final String? postId;
@@ -62,15 +64,20 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
           formKey: formKey,
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () async {
-            Provider.of<manager>(context,listen: false).commentOnPost(currentUser!.uid, currentUser!.uid, postDetail!.post_id, commentController!.text.toString());
+            FocusManager.instance.primaryFocus?.unfocus();
+            await Provider.of<manager>(context, listen: false).commentOnPost(
+                currentUser!.uid,
+                currentUser!.uid,
+                postDetail!.post_id,
+                commentController!.text.toString());
             setState(() {
               commentController!.clear();
             });
           },
-          userImage: myProfile!.dp,
+          userImage: (myProfile!.dp!='')?myProfile.dp:constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send),
+          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -99,6 +106,22 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                     ),
                   ),
                   const Opacity(opacity: 0.0, child: Divider()),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => usersWhoLikedScreen(
+                              usersWhoLiked: postDetail.likes,
+                            ),
+                          ));
+                    },
+                    child: Text(
+                      '${postDetail.likes.length} likes',
+                      style: const TextStyle(
+                          color: Colors.black87, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   Divider(
                     height: displayHeight(context) * 0.02,
                     color: Colors.grey[200],
@@ -120,14 +143,32 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
+                                    Timestamp timeStamp = snapshot
+                                        .data.docs[index]
+                                        .data()['time'];
+                                    DateTime commentTime = timeStamp.toDate();
                                     String comment = snapshot.data.docs[index]
                                         .data()['comment'];
+                                    List<dynamic> replies = snapshot
+                                            .data.docs[index]
+                                            .data()['replies'] ??
+                                        [];
+                                    List<dynamic> likes = snapshot
+                                            .data.docs[index]
+                                            .data()['likes'] ??
+                                        [];
                                     String uid =
                                         snapshot.data.docs[index].data()['uid'];
                                     String commentId = snapshot.data.docs[index]
                                         .data()['commentId'];
-                                    return displayComment(
-                                        context, comment, uid);
+                                    return DisplayCommentBox(
+                                        uid: uid,
+                                        commentTime: commentTime,
+                                        replies: replies,
+                                        likes: likes,
+                                        postId: widget.postId!,
+                                        comment: comment,
+                                        commentId: commentId);
                                   },
                                   itemCount: snapshot.data.docs.length,
                                 );
