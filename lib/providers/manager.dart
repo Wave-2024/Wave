@@ -16,10 +16,16 @@ import 'package:nexus/utils/widgets.dart';
 class manager extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
 
-  List<NexusUser>? fetchSuggestedUser(String myUid){
+  List<NexusUser>? fetchSuggestedUser(String myUid) {
     List<NexusUser>? list = [];
-    list = allUsers.values.toList().where((element) => !(element.followers.contains(myUid))).toList();
-    list.sort((a,b)=> (a.followers.length>b.followers.length)?1:0);
+    list = allUsers.values
+        .toList()
+        .where((element) =>
+            !(element.followers.contains(myUid) && (element.uid != myUid)))
+        .toList();
+    int index = list.indexWhere((element) => element.uid == myUid);
+    list.removeAt(index);
+    list.sort((a, b) => (a.followers.length > b.followers.length) ? 1 : 0);
     return list;
   }
 
@@ -54,14 +60,12 @@ class manager extends ChangeNotifier {
   }
 
   List<PostModel> get fetchMyPostsList {
-    myPostsList.sort((a, b) =>b.dateOfPost
-        .compareTo(a.dateOfPost) );
+    myPostsList.sort((a, b) => b.dateOfPost.compareTo(a.dateOfPost));
     return [...myPostsList];
   }
 
   List<PostModel> get fetchYourPostsList {
-    yourPostsList.sort((a, b) =>b.dateOfPost
-        .compareTo(a.dateOfPost) );
+    yourPostsList.sort((a, b) => b.dateOfPost.compareTo(a.dateOfPost));
     return [...yourPostsList];
   }
 
@@ -121,7 +125,7 @@ class manager extends ChangeNotifier {
     for (int i = 0; i < myFollowing.length; ++i) {
       String uid = myFollowing[i].toString();
       tempPostList.addAll(await getListOfPostsUsingUid(uid));
-      if(hasStory(myFollowing[i])){
+      if (hasStory(myFollowing[i])) {
         tempStoryList.add(StoryModel(
           story: allUsers[myFollowing[i]]!.story,
           storyTime: allUsers[myFollowing[i]]!.storyTime,
@@ -133,8 +137,7 @@ class manager extends ChangeNotifier {
     feedStoryList = tempStoryList;
     feedPostList = tempPostList;
     feedStoryList.sort((a, b) => b.storyTime!.compareTo(a.storyTime!));
-    feedPostList.sort((a, b) => b.dateOfPost
-        .compareTo(a.dateOfPost));
+    feedPostList.sort((a, b) => b.dateOfPost.compareTo(a.dateOfPost));
     notifyListeners();
   }
 
@@ -173,7 +176,7 @@ class manager extends ChangeNotifier {
         await http
             .patch(Uri.parse(api), body: jsonEncode({'coverImage': value}))
             .then((_) {
-              allUsers[uid]!.changeCoverPicture(value);
+          allUsers[uid]!.changeCoverPicture(value);
           notifyListeners();
         });
       } catch (error) {
@@ -191,7 +194,7 @@ class manager extends ChangeNotifier {
     await taskSnapshot.ref.getDownloadURL().then((downloadLink) async {
       final String api = constants().fetchApi + 'users/${uid}.json';
       try {
-       await http
+        await http
             .patch(Uri.parse(api), body: jsonEncode({'dp': downloadLink}))
             .then((value) {
           allUsers[uid]!.changeDP(downloadLink);
@@ -203,7 +206,7 @@ class manager extends ChangeNotifier {
     });
   }
 
-  List<StoryModel> get fetchStoryList{
+  List<StoryModel> get fetchStoryList {
     return [...feedStoryList];
   }
 
@@ -252,38 +255,50 @@ class manager extends ChangeNotifier {
     yourFollowers.add(myUid);
     final String myApi = constants().fetchApi + 'users/${myUid}.json';
     final String yourApi = constants().fetchApi + 'users/${yourUid}.json';
-    await http.patch(Uri.parse(myApi),body: json.encode({'followings':myFollowings}));
-    await http.patch(Uri.parse(yourApi),body: json.encode({'followers': yourFollowers}));
+    await http.patch(Uri.parse(myApi),
+        body: json.encode({'followings': myFollowings}));
+    await http.patch(Uri.parse(yourApi),
+        body: json.encode({'followers': yourFollowers}));
     await sendNotification(myUid, yourUid, '', 'follow');
-    String? chatId = generateChatRoomUsingUid(myUid,yourUid);
-    await FirebaseFirestore.instance.collection('chats').doc(myUid).collection('mychats').doc(chatId).set({
-      'chatId' : chatId,
-      'last seen' : Timestamp.now(),
-      'uid' : yourUid,
+    String? chatId = generateChatRoomUsingUid(myUid, yourUid);
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(myUid)
+        .collection('mychats')
+        .doc(chatId)
+        .set({
+      'chatId': chatId,
+      'last seen': Timestamp.now(),
+      'uid': yourUid,
     });
-    await FirebaseFirestore.instance.collection('chats').doc(yourUid).collection('mychats').doc(chatId).set({
-      'chatId' : chatId,
-      'last seen' : Timestamp.now(),
-      'uid' : myUid,
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(yourUid)
+        .collection('mychats')
+        .doc(chatId)
+        .set({
+      'chatId': chatId,
+      'last seen': Timestamp.now(),
+      'uid': myUid,
     });
     await setFeedPosts(myUid);
   }
 
-  Future<List<dynamic>> getYourFollowers(String uid) async{
-    final String api = constants().fetchApi+'users/${uid}.json';
+  Future<List<dynamic>> getYourFollowers(String uid) async {
+    final String api = constants().fetchApi + 'users/${uid}.json';
     List<dynamic>? followers;
     final response = await http.get(Uri.parse(api));
-    final data = json.decode(response.body) as Map<String,dynamic>;
-    followers = data['followers']??[];
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    followers = data['followers'] ?? [];
     return followers!;
   }
 
-  Future<List<dynamic>> getMyFollowings(String uid) async{
-    final String api = constants().fetchApi+'users/${uid}.json';
+  Future<List<dynamic>> getMyFollowings(String uid) async {
+    final String api = constants().fetchApi + 'users/${uid}.json';
     List<dynamic>? followings;
     final response = await http.get(Uri.parse(api));
-    final data = json.decode(response.body) as Map<String,dynamic>;
-    followings = data['followings']??[];
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    followings = data['followings'] ?? [];
     return followings!;
   }
 
@@ -297,8 +312,10 @@ class manager extends ChangeNotifier {
     yourFollowers.remove(myUid);
     final String myApi = constants().fetchApi + 'users/${myUid}.json';
     final String yourApi = constants().fetchApi + 'users/${yourUid}.json';
-    await http.patch(Uri.parse(myApi),body: json.encode({'followings':myFollowings}));
-    await http.patch(Uri.parse(yourApi),body: json.encode({'followers': yourFollowers}));
+    await http.patch(Uri.parse(myApi),
+        body: json.encode({'followings': myFollowings}));
+    await http.patch(Uri.parse(yourApi),
+        body: json.encode({'followers': yourFollowers}));
     await setFeedPosts(myUid);
   }
 
@@ -338,7 +355,7 @@ class manager extends ChangeNotifier {
       postData.forEach((key, value) {
         PostModel p = PostModel(
             caption: value['caption'],
-            dateOfPost: value['dateOfPost'],
+            dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
             uid: value['uid'],
             post_id: key,
@@ -803,8 +820,13 @@ class manager extends ChangeNotifier {
         .collection('posts')
         .doc(postId)
         .collection('comments')
-        .add({'comment': comment, 'time': Timestamp.now(), 'uid': myId,'replies' : [],'likes' : []}).then(
-            (value) {
+        .add({
+      'comment': comment,
+      'time': Timestamp.now(),
+      'uid': myId,
+      'replies': [],
+      'likes': []
+    }).then((value) {
       FirebaseFirestore.instance
           .collection('posts')
           .doc(postId)
@@ -815,7 +837,7 @@ class manager extends ChangeNotifier {
     await sendNotification(myId, yourId, postId, 'comment');
   }
 
-  bool isMyPost(String postId){
+  bool isMyPost(String postId) {
     return myPostsMap.containsKey(postId);
   }
 
@@ -887,7 +909,8 @@ class manager extends ChangeNotifier {
   }
 
   bool hasStory(String uid) {
-    if (allUsers[uid]!.story != ''  && timeBetween(allUsers[uid]!.storyTime, DateTime.now())<24) return true;
+    if (allUsers[uid]!.story != '' &&
+        timeBetween(allUsers[uid]!.storyTime, DateTime.now()) < 24) return true;
     return false;
   }
 
