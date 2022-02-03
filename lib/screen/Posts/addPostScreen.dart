@@ -75,7 +75,7 @@ class _addPostScreenState extends State<addPostScreen> {
                   uploadingPost = false;
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Successfully posted'),duration: Duration(seconds: 2),));
+                   const SnackBar(content: Text('Successfully posted'),duration: Duration(seconds: 2),));
                 Navigator.pop(context);
               });
             }
@@ -116,7 +116,7 @@ class _addPostScreenState extends State<addPostScreen> {
                                 imagefile!,
                                 height: displayHeight(context) * 0.3,
                                 width: displayWidth(context) * 0.6,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -138,6 +138,7 @@ class _addPostScreenState extends State<addPostScreen> {
                         Padding(
                           padding: const EdgeInsets.all(25.0),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.sentences,
                             keyboardType: TextInputType.multiline,
                             maxLength: 500,
                             maxLines: 5,
