@@ -46,7 +46,7 @@ class homescreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
-                      color: Colors.orangeAccent,
+                      color: Colors.white,
                     ),
                     height: displayHeight(context) * 0.068,
                     width: displayWidth(context) * 0.63,
@@ -57,7 +57,7 @@ class homescreen extends StatelessWidget {
                             child: (screenIndex == 0)
                                 ? CircleAvatar(
                                     radius: displayWidth(context) * 0.05,
-                                    backgroundColor: Colors.white54,
+                                    backgroundColor: Colors.orangeAccent,
                                     child: const Icon(
                                       Icons.home,
                                       color: Colors.white,
@@ -77,7 +77,7 @@ class homescreen extends StatelessWidget {
                             child: (screenIndex == 1)
                                 ? CircleAvatar(
                                     radius: displayWidth(context) * 0.05,
-                                    backgroundColor: Colors.white54,
+                                    backgroundColor: Colors.orangeAccent,
                                     child: const Icon(
                                       Icons.search,
                                       color: Colors.white,
@@ -110,7 +110,7 @@ class homescreen extends StatelessWidget {
                             child: (screenIndex == 2)
                                 ? CircleAvatar(
                                     radius: displayWidth(context) * 0.05,
-                                    backgroundColor: Colors.white54,
+                                    backgroundColor: Colors.orangeAccent,
                                     child: const Icon(
                                       Icons.mail,
                                       color: Colors.white,
@@ -130,7 +130,7 @@ class homescreen extends StatelessWidget {
                             child: (screenIndex == 3)
                                 ? CircleAvatar(
                                     radius: displayWidth(context) * 0.05,
-                                    backgroundColor: Colors.white54,
+                                    backgroundColor: Colors.orangeAccent,
                                     child: const Icon(
                                       Icons.person,
                                       color: Colors.white,
