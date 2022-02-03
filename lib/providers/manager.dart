@@ -313,7 +313,7 @@ class manager extends ChangeNotifier {
       postData.forEach((key, value) {
         PostModel p = PostModel(
             caption: value['caption'],
-            dateOfPost: value['dateOfPost'],
+            dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
             uid: value['uid'],
             post_id: key,
