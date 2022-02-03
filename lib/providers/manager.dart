@@ -54,16 +54,14 @@ class manager extends ChangeNotifier {
   }
 
   List<PostModel> get fetchMyPostsList {
-    myPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
-        .parse(b.dateOfPost)
-        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
+    myPostsList.sort((a, b) =>b.dateOfPost
+        .compareTo(a.dateOfPost) );
     return [...myPostsList];
   }
 
   List<PostModel> get fetchYourPostsList {
-    yourPostsList.sort((a, b) => DateFormat('d/MM/yyyy')
-        .parse(b.dateOfPost)
-        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
+    yourPostsList.sort((a, b) =>b.dateOfPost
+        .compareTo(a.dateOfPost) );
     return [...yourPostsList];
   }
 
@@ -135,9 +133,8 @@ class manager extends ChangeNotifier {
     feedStoryList = tempStoryList;
     feedPostList = tempPostList;
     feedStoryList.sort((a, b) => b.storyTime!.compareTo(a.storyTime!));
-    feedPostList.sort((a, b) => DateFormat('d/MM/yyyy')
-        .parse(b.dateOfPost)
-        .compareTo(DateFormat('d/MM/yyyy').parse(a.dateOfPost)));
+    feedPostList.sort((a, b) => b.dateOfPost
+        .compareTo(a.dateOfPost));
     notifyListeners();
   }
 
@@ -152,7 +149,7 @@ class manager extends ChangeNotifier {
       postData.forEach((key, value) {
         PostModel p = PostModel(
             caption: value['caption'],
-            dateOfPost: value['dateOfPost'],
+            dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
             uid: value['uid'],
             post_id: key,
@@ -361,10 +358,7 @@ class manager extends ChangeNotifier {
     try {
       var random = Random();
       DateTime datetime = DateTime.now();
-      String day = datetime.day.toString();
-      String year = datetime.year.toString();
-      String month = datetime.month.toString();
-      final String dateOfPost = '${day}/${month}/${year}';
+      final String dateOfPost = datetime.toString();
       int random1 = random.nextInt(999999);
       int random2 = random.nextInt(555555);
       int random3 = random.nextInt(101);
@@ -389,14 +383,14 @@ class manager extends ChangeNotifier {
           final postData = json.decode(v.body) as Map<String, dynamic>;
           myPostsMap[postData['name']] = PostModel(
               caption: caption,
-              dateOfPost: dateOfPost,
+              dateOfPost: datetime,
               image: value,
               uid: uid,
               post_id: postData['name'],
               likes: []);
           myPostsList.add(PostModel(
               caption: caption,
-              dateOfPost: dateOfPost,
+              dateOfPost: datetime,
               image: value,
               uid: uid,
               post_id: postData['name'],

@@ -37,7 +37,7 @@ class homescreen extends StatelessWidget {
               child: screens[screenIndex],
             ),
             Positioned(
-                bottom: displayHeight(context) * 0.015,
+                bottom: displayHeight(context) * 0.005,
                 child: Card(
                   elevation: 6.0,
                   shape: RoundedRectangleBorder(
@@ -46,18 +46,18 @@ class homescreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
-                      color: Colors.white,
+                      color: Colors.orange[500],
                     ),
-                    height: displayHeight(context) * 0.075,
-                    width: displayWidth(context) * 0.7,
+                    height: displayHeight(context) * 0.068,
+                    width: displayWidth(context) * 0.63,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Expanded(
                             child: (screenIndex == 0)
                                 ? CircleAvatar(
-                                    radius: displayWidth(context) * 0.052,
-                                    backgroundColor: Colors.orange[600],
+                                    radius: displayWidth(context) * 0.05,
+                                    backgroundColor: Colors.white54,
                                     child: const Icon(
                                       Icons.home,
                                       color: Colors.white,
@@ -76,8 +76,8 @@ class homescreen extends StatelessWidget {
                         Expanded(
                             child: (screenIndex == 1)
                                 ? CircleAvatar(
-                                    radius: displayWidth(context) * 0.052,
-                                    backgroundColor: Colors.orange[600],
+                                    radius: displayWidth(context) * 0.05,
+                                    backgroundColor: Colors.white54,
                                     child: const Icon(
                                       Icons.search,
                                       color: Colors.white,
@@ -109,8 +109,8 @@ class homescreen extends StatelessWidget {
                         Expanded(
                             child: (screenIndex == 2)
                                 ? CircleAvatar(
-                                    radius: displayWidth(context) * 0.052,
-                                    backgroundColor: Colors.orange[600],
+                                    radius: displayWidth(context) * 0.05,
+                                    backgroundColor: Colors.white54,
                                     child: const Icon(
                                       Icons.mail,
                                       color: Colors.white,
@@ -129,8 +129,8 @@ class homescreen extends StatelessWidget {
                         Expanded(
                             child: (screenIndex == 3)
                                 ? CircleAvatar(
-                                    radius: displayWidth(context) * 0.052,
-                                    backgroundColor: Colors.orange[600],
+                                    radius: displayWidth(context) * 0.05,
+                                    backgroundColor: Colors.white54,
                                     child: const Icon(
                                       Icons.person,
                                       color: Colors.white,

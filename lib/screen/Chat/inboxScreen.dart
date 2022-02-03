@@ -166,7 +166,7 @@ class _inboxScreenState extends State<inboxScreen> {
                             : CircleAvatar(
                                 radius: displayWidth(context) * 0.06,
                                 backgroundColor: Colors.green[200],
-                                child: Icon(
+                                child: const Icon(
                                   Icons.person,
                                   color: Colors.orange,
                                 ),
