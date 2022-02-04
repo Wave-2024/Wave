@@ -7,6 +7,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Posts/CommentScreens/ReplyCommentScreen.dart';
 import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
+import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -69,28 +70,41 @@ class DisplayCommentBox extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Card(
-              color: Colors.white,
-              elevation: 12.0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Padding(
-                padding: const EdgeInsets.all(2.5),
-                child: (user!.dp != '')
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          height: displayHeight(context) * 0.042,
-                          width: displayWidth(context) * 0.078,
-                          fit: BoxFit.cover,
-                          imageUrl: user.dp,
+            InkWell(
+              onTap: () {
+                if (user!.uid != currentUser!.uid) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => userProfile(
+                          uid: user.uid,
                         ),
-                      )
-                    : Icon(
-                        Icons.person,
-                        color: Colors.orange[300],
-                        size: displayWidth(context) * 0.076,
-                      ),
+                      ));
+                }
+              },
+              child: Card(
+                color: Colors.white,
+                elevation: 12.0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.all(2.5),
+                  child: (user!.dp != '')
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: CachedNetworkImage(
+                            height: displayHeight(context) * 0.042,
+                            width: displayWidth(context) * 0.078,
+                            fit: BoxFit.cover,
+                            imageUrl: user.dp,
+                          ),
+                        )
+                      : Icon(
+                          Icons.person,
+                          color: Colors.orange[300],
+                          size: displayWidth(context) * 0.076,
+                        ),
+                ),
               ),
             ),
             (user.followers.length >= 5)
@@ -108,14 +122,27 @@ class DisplayCommentBox extends StatelessWidget {
                   width: displayWidth(context) * 0.01,
                 )),
             Expanded(
-              child: Card(
-                elevation: 0.0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                //color: Colors.red,
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: printComment(context, user.username, comment),
+              child: InkWell(
+                onTap: () {
+                  if (user.uid != currentUser!.uid) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => userProfile(
+                            uid: user.uid,
+                          ),
+                        ));
+                  }
+                },
+                child: Card(
+                  elevation: 0.0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  //color: Colors.red,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: printComment(context, user.username, comment),
+                  ),
                 ),
               ),
             ),
@@ -264,11 +291,11 @@ class DisplayCommentBox extends StatelessWidget {
                           },
                         );
                       },
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       iconSize: displayWidth(context) * 0.04,
                       color: Colors.black45,
                     )
-                  : SizedBox(),
+                  : const SizedBox(),
             ],
           ),
         ),
