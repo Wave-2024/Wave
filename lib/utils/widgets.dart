@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
@@ -342,4 +345,13 @@ bool ifPostedToday(DateTime postDate) {
       postDate.month == currentDate.month &&
       postDate.day == currentDate.day) return true;
   return false;
+}
+
+Future<File> compressAndGetFile(File file, String targetPath) async {
+  var result = await FlutterImageCompress.compressAndGetFile(
+    file.absolute.path,
+    targetPath,
+    quality: 15,
+  );
+  return result!;
 }

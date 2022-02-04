@@ -17,6 +17,7 @@ import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 import '../Authentication/authscreen.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class profiletScreen extends StatefulWidget {
   @override
@@ -54,6 +55,18 @@ class _profiletScreenState extends State<profiletScreen> {
     super.dispose();
   }
 
+  Future<File> checkAnCompress()async{
+    File? compressedFile = imagefile!;
+    int minimumSize = 200 * 1024;
+    if(await compressedFile.length()>minimumSize){
+      final dir = await path_provider.getTemporaryDirectory();
+      final tp = dir.absolute.path + "/temp.jpg";
+      compressedFile = await compressAndGetFile(compressedFile, tp);
+    }
+    print(await compressedFile.length());
+    return compressedFile;
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<void> refresh() async {
@@ -73,10 +86,15 @@ class _profiletScreenState extends State<profiletScreen> {
         if (pickedFile != null) {
           setState(() {
             loadScreen = true;
+            imagefile=File(pickedFile.path);
           });
-          Provider.of<manager>(context, listen: false)
+          File? compressedFile = await checkAnCompress();
+          setState(() {
+            imagefile = compressedFile;
+          });
+          await Provider.of<manager>(context, listen: false)
               .addCoverPicture(
-                  File(pickedFile.path), currentUser!.uid.toString())
+                  imagefile, currentUser!.uid.toString())
               .then((value) {
             setState(() {
               loadScreen = false;
@@ -92,10 +110,15 @@ class _profiletScreenState extends State<profiletScreen> {
         if (pickedFile != null) {
           setState(() {
             loadScreen = true;
+            imagefile=File(pickedFile.path);
+          });
+          File? compressedFile = await checkAnCompress();
+          setState(() {
+            imagefile = compressedFile;
           });
           await Provider.of<manager>(context, listen: false)
               .addProfilePicture(
-                  File(pickedFile.path), currentUser!.uid.toString())
+                  imagefile, currentUser!.uid.toString())
               .then((value) {
             setState(() {
               loadScreen = false;

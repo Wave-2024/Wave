@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 class addPostScreen extends StatefulWidget {
@@ -27,16 +27,6 @@ class _addPostScreenState extends State<addPostScreen> {
     uploadingPost = false;
     currentUser = FirebaseAuth.instance.currentUser;
     captionController = TextEditingController();
-  }
-
-
-  Future<File> compressAndGetFile(File file, String targetPath) async {
-    var result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: 15,
-    );
-    return result!;
   }
 
   Future<File> checkAnCompress()async{
