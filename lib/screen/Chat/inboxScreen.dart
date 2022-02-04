@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Chat/change_chat_bg.dart';
+import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/Encrypt_Message.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -51,29 +52,39 @@ class _inboxScreenState extends State<inboxScreen> {
           ),
           title: Row(
             children: [
-              (allUsers[widget.yourUid]!.dp.isNotEmpty)
-                  ? CircleAvatar(
-                      radius: displayWidth(context) * 0.042,
-                      backgroundImage: NetworkImage(
-                        allUsers[widget.yourUid]!.dp,
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: widget.yourUid,),));
+                },
+                child: (allUsers[widget.yourUid]!.dp.isNotEmpty)
+                    ? CircleAvatar(
+                        radius: displayWidth(context) * 0.042,
+                        backgroundImage: NetworkImage(
+                          allUsers[widget.yourUid]!.dp,
+                        ),
+                      )
+                    : CircleAvatar(
+                        radius: displayWidth(context) * 0.042,
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.orange,
+                        ),
+                        backgroundColor: Colors.grey[200],
                       ),
-                    )
-                  : CircleAvatar(
-                      radius: displayWidth(context) * 0.042,
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.orange,
-                      ),
-                      backgroundColor: Colors.grey[200],
-                    ),
+              ),
               const Opacity(
                   opacity: 0,
                   child: VerticalDivider(
                     width: 12,
                   )),
-              Text(
-                allUsers[widget.yourUid]!.username,
-                style: const TextStyle(color: Colors.black),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: widget.yourUid,),));
+                },
+                child: Text(
+                  allUsers[widget.yourUid]!.username,
+                  style: const TextStyle(color: Colors.black),
+                ),
               ),
             ],
           ),
