@@ -161,7 +161,7 @@ class _profiletScreenState extends State<profiletScreen> {
                             ),
                             Positioned(
                                 top: displayHeight(context) * 0.1655,
-                                left: displayWidth(context) * 0.05,
+                                left: displayWidth(context) * 0.02,
                                 child: Card(
                                   color: Colors.orange[300],
                                   elevation: 6.0,
@@ -343,7 +343,7 @@ class _profiletScreenState extends State<profiletScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 2),
+                        padding: const EdgeInsets.only(left: 15.0, top: 2),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -369,18 +369,18 @@ class _profiletScreenState extends State<profiletScreen> {
                                       size: displayWidth(context) * 0.048,
                                     ),
                                   )
-                                : SizedBox(),
+                                : const SizedBox(),
                           ],
                         ),
                       ),
                       Opacity(
                         opacity: 0.0,
                         child: Divider(
-                          height: displayHeight(context) * 0.015,
+                          height: displayHeight(context) * 0.01,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
+                        padding: const EdgeInsets.only(left: 15.0),
                         child: (myProfile.bio != '')
                             ? Container(
                                 child: Text(
