@@ -46,6 +46,9 @@ dependencies:
   cupertino_icons: ^1.0.4
   scrollable_positioned_list: ^0.2.3
   flutter_slidable: ^1.2.0
+  flutter_image_compress: ^1.1.0
+  path_provider: ^2.0.8
+
 
 dev_dependencies:
   flutter_test:

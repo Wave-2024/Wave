@@ -118,7 +118,7 @@ Widget displayMySavedPosts(
     String myUid,
     List<String> months,
     Map<String, PostModel> savedPosts) {
-  DateTime dateTime = DateFormat('d/MM/yyyy').parse(post.dateOfPost);
+  DateTime dateTime = post.dateOfPost;
   String day = dateTime.day.toString();
   String year = dateTime.year.toString();
   String month = months[dateTime.month - 1];

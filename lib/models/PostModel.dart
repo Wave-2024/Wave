@@ -1,6 +1,6 @@
 class PostModel {
   final String caption;
-  final String dateOfPost;
+  final DateTime dateOfPost;
   final String image;
   final String uid;
   final String post_id;

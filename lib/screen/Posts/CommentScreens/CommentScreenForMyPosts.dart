@@ -101,7 +101,7 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                       postDetail.caption,
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: displayWidth(context) * 0.03,
+                          fontSize: displayWidth(context) * 0.035,
                           color: Colors.black87),
                     ),
                   ),

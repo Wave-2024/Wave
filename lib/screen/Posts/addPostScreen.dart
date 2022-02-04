@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class addPostScreen extends StatefulWidget {
   @override
@@ -25,6 +27,28 @@ class _addPostScreenState extends State<addPostScreen> {
     uploadingPost = false;
     currentUser = FirebaseAuth.instance.currentUser;
     captionController = TextEditingController();
+  }
+
+
+  Future<File> compressAndGetFile(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+      quality: 15,
+    );
+    return result!;
+  }
+
+  Future<File> checkAnCompress()async{
+    File? compressedFile = imagefile!;
+    int minimumSize = 200 * 1024;
+    if(await compressedFile.length()>minimumSize){
+      final dir = await path_provider.getTemporaryDirectory();
+      final tp = dir.absolute.path + "/temp.jpg";
+      compressedFile = await compressAndGetFile(compressedFile, tp);
+    }
+    print(await compressedFile.length());
+    return compressedFile;
   }
 
   @override
@@ -62,12 +86,16 @@ class _addPostScreenState extends State<addPostScreen> {
                   },
                   color: (imagefile!=null)?Colors.red[300]:Colors.grey,
                   icon: const Icon(Icons.delete)),
-          IconButton(onPressed: () {
+          IconButton(onPressed: () async {
             if(imagefile!=null){
               setState(() {
                 uploadingPost = true;
               });
-              Provider.of<manager>(context, listen: false)
+              File? compressedFile = await checkAnCompress();
+              setState(() {
+                imagefile = compressedFile;
+              });
+             await Provider.of<manager>(context, listen: false)
                   .addNewPost(captionController!.text.toString(),
                   currentUser!.uid.toString(), imagefile!)
                   .then((value) {
@@ -75,7 +103,7 @@ class _addPostScreenState extends State<addPostScreen> {
                   uploadingPost = false;
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Successfully posted'),duration: Duration(seconds: 2),));
+                   const SnackBar(content: Text('Successfully posted'),duration: Duration(seconds: 2),));
                 Navigator.pop(context);
               });
             }
@@ -116,7 +144,7 @@ class _addPostScreenState extends State<addPostScreen> {
                                 imagefile!,
                                 height: displayHeight(context) * 0.3,
                                 width: displayWidth(context) * 0.6,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -138,6 +166,7 @@ class _addPostScreenState extends State<addPostScreen> {
                         Padding(
                           padding: const EdgeInsets.all(25.0),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.sentences,
                             keyboardType: TextInputType.multiline,
                             maxLength: 500,
                             maxLines: 5,
