@@ -160,13 +160,16 @@ Widget displayMyPosts(
                     children: [
                       InkWell(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => userProfile(
-                                  uid: user.uid,
-                                ),
-                              ));
+                          if (myUid != user.uid) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => userProfile(
+                                    uid: user.uid,
+                                  ),
+                                ));
+                          }
+                          
                         },
                         child: (user.dp != '')
                             ? CircleAvatar(

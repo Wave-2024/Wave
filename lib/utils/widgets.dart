@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:provider/provider.dart';
 import 'devicesize.dart';
-
 
 Widget load(BuildContext context) {
   return const Center(
@@ -30,15 +30,13 @@ RichText printComment(BuildContext context, String userName, String comment) {
   return RichText(
       text: TextSpan(style: TextStyle(color: Colors.black), children: [
     TextSpan(
-        text: userName,
-        style:
-            TextStyle(
+      text: userName,
+      style: TextStyle(
         color: Colors.black,
         fontWeight: FontWeight.bold,
         fontSize: displayWidth(context) * 0.035,
       ),
     ),
-          
     TextSpan(
         text: ': ' + comment,
         style: TextStyle(
@@ -59,12 +57,10 @@ String? generateChatRoomUsingUid(String uid1, String uid2) {
 }
 
 int timeBetween(DateTime from, DateTime to) {
-  from = DateTime(from.year, from.month, from.day , from.hour , from.minute);
-  to = DateTime(to.year, to.month, to.day , to.hour , to.minute);
+  from = DateTime(from.year, from.month, from.day, from.hour, from.minute);
+  to = DateTime(to.year, to.month, to.day, to.hour, to.minute);
   return to.difference(from).inHours;
 }
-
-
 
 int findDifferenc(int a, int b) {
   return (a - b).abs();
@@ -132,8 +128,7 @@ String differenceOfTimeForComment(DateTime current, DateTime lastSeen) {
                 ' m';
           }
         } else {
-          diff =
-              findDifferenc(current.hour, lastSeen.hour).toString() + ' h';
+          diff = findDifferenc(current.hour, lastSeen.hour).toString() + ' h';
         }
       } else {
         diff = findDifferenc(current.day, lastSeen.day).toString() + ' d';
@@ -148,30 +143,38 @@ String differenceOfTimeForComment(DateTime current, DateTime lastSeen) {
   return '${diff}';
 }
 
-void sendMessage(String chatId, String message, String myUid,String yourUid) async {
+void sendMessage(
+    String chatId, String message, String myUid, String yourUid) async {
   Timestamp time = Timestamp.now();
-  await FirebaseFirestore.instance.collection('chat-room').doc(chatId).collection('chat-room').add({
+  await FirebaseFirestore.instance
+      .collection('chat-room')
+      .doc(chatId)
+      .collection('chat-room')
+      .add({
     'message': message,
     'time': time,
     'uid': myUid,
   }).then((value) async {
-    FirebaseFirestore.instance.collection('chat-room').doc(chatId).collection('chat-room').doc(value.id).update({
-      'message-id' : value.id
-    });
+    FirebaseFirestore.instance
+        .collection('chat-room')
+        .doc(chatId)
+        .collection('chat-room')
+        .doc(value.id)
+        .update({'message-id': value.id});
   });
   await FirebaseFirestore.instance
       .collection('chats')
       .doc(myUid)
-      .collection('mychats').doc(chatId).update({
-    'last seen' : time
-  });
+      .collection('mychats')
+      .doc(chatId)
+      .update({'last seen': time});
 
   await FirebaseFirestore.instance
       .collection('chats')
       .doc(yourUid)
-      .collection('mychats').doc(chatId).update({
-    'last seen' : time
-  });
+      .collection('mychats')
+      .doc(chatId)
+      .update({'last seen': time});
 }
 
 Widget messageContainer(
@@ -182,7 +185,8 @@ Widget messageContainer(
           children: [
             Flexible(
               child: Container(
-                constraints: BoxConstraints(maxWidth: displayWidth(context)*0.7),
+                constraints:
+                    BoxConstraints(maxWidth: displayWidth(context) * 0.7),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(20),
@@ -210,16 +214,21 @@ Widget messageContainer(
                   borderRadius: BorderRadius.circular(8)),
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
-                child: (dp!='')?ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    height: displayHeight(context) * 0.0365,
-                    width: displayWidth(context) * 0.075,
-                    fit: BoxFit.cover,
-                    imageUrl: dp,
-                  ),
-                ):
-                     Icon(Icons.person,color: Colors.orange[600],size: displayWidth(context)*0.075,),
+                child: (dp != '')
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          height: displayHeight(context) * 0.0365,
+                          width: displayWidth(context) * 0.075,
+                          fit: BoxFit.cover,
+                          imageUrl: dp,
+                        ),
+                      )
+                    : Icon(
+                        Icons.person,
+                        color: Colors.orange[600],
+                        size: displayWidth(context) * 0.075,
+                      ),
               ),
             ),
             const VerticalDivider(
@@ -255,71 +264,82 @@ Widget messageContainer(
 }
 
 Widget displayProfileHeads(BuildContext context, NexusUser user) {
+  User? currentUser = FirebaseAuth.instance.currentUser;
   return ListTile(
       tileColor: Colors.transparent,
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => userProfile(
-                uid: user.uid,
-              ),
-            ));
+        if(currentUser!.uid!=user.uid){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => userProfile(
+                  uid: user.uid,
+                ),
+              ));
+        }
+        
       },
       title: Text(
         user.title,
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: displayWidth(context)*0.038),
+        style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: displayWidth(context) * 0.038),
       ),
       subtitle: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             user.username,
-            style: TextStyle(color: Colors.black45,fontSize: displayWidth(context)*0.035),
+            style: TextStyle(
+                color: Colors.black45, fontSize: displayWidth(context) * 0.035),
           ),
-          Opacity(opacity: 0.0,child: VerticalDivider(width: displayWidth(context)*0.003,)),
-          (user.followers.length>=5)?Icon(
-            Icons.verified,
-            color: Colors.orange[400],
-            size: displayWidth(context) * 0.048,
-          ):const SizedBox(),
+          Opacity(
+              opacity: 0.0,
+              child: VerticalDivider(
+                width: displayWidth(context) * 0.003,
+              )),
+          (user.followers.length >= 5)
+              ? Icon(
+                  Icons.verified,
+                  color: Colors.orange[400],
+                  size: displayWidth(context) * 0.048,
+                )
+              : const SizedBox(),
         ],
       ),
-
-      leading:
-          (user.dp != '')
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(user.dp),
-                  radius: displayWidth(context) * 0.05,
-                )
-              : CircleAvatar(
-                  backgroundColor: Colors.grey[200],
-                  radius: displayWidth(context) * 0.05,
-                  child: Icon(
-                    Icons.person,
-                    size: displayWidth(context) * 0.075,
-                    color: Colors.orange[400],
-                  ),
-      ));
+      leading: (user.dp != '')
+          ? CircleAvatar(
+              backgroundImage: NetworkImage(user.dp),
+              radius: displayWidth(context) * 0.05,
+            )
+          : CircleAvatar(
+              backgroundColor: Colors.grey[200],
+              radius: displayWidth(context) * 0.05,
+              child: Icon(
+                Icons.person,
+                size: displayWidth(context) * 0.075,
+                color: Colors.orange[400],
+              ),
+            ));
 }
-String displayTime(DateTime time){
-  if(time.hour == 0){
+
+String displayTime(DateTime time) {
+  if (time.hour == 0) {
     return '12:${time.minute} AM';
-  }
-  else if(time.hour==12) {
+  } else if (time.hour == 12) {
     return '12:${time.minute} PM';
-  }
-  else if(time.hour<12){
+  } else if (time.hour < 12) {
     return '${time.hour}:${time.minute} AM';
-  }
-  else{
-    return '${time.hour-12}:${time.minute} PM';
+  } else {
+    return '${time.hour - 12}:${time.minute} PM';
   }
 }
 
-bool ifPostedToday(DateTime postDate){
+bool ifPostedToday(DateTime postDate) {
   DateTime currentDate = DateTime.now();
-  if(postDate.year == currentDate.year && postDate.month==currentDate.month && postDate.day == currentDate.day) return true;
+  if (postDate.year == currentDate.year &&
+      postDate.month == currentDate.month &&
+      postDate.day == currentDate.day) return true;
   return false;
-
 }

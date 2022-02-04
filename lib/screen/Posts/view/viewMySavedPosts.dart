@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -76,9 +78,10 @@ class _viewMySavedPostScreenState extends State<viewMySavedPostScreen> {
               ),
       ),
       appBar: AppBar(
-        title: const Text(
-          'My Posts',
-          style: TextStyle(color: Colors.black),
+        title: Text(
+          'Saved',
+          style: TextStyle(
+              color: Colors.black, fontSize: displayWidth(context) * 0.05),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -124,7 +127,7 @@ Widget displayMySavedPosts(
   String month = months[dateTime.month - 1];
   NexusUser user = mapOfUsers[post.uid];
   return Container(
-    height: displayHeight(context) * 0.7,
+    height: displayHeight(context) * 0.68,
     width: displayWidth(context),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(25),
@@ -136,7 +139,7 @@ Widget displayMySavedPosts(
           borderRadius: BorderRadius.circular(25),
           color: Colors.white,
         ),
-        height: displayHeight(context) * 0.66,
+        height: displayHeight(context) * 0.64,
         width: displayWidth(context) * 0.8,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -145,61 +148,69 @@ Widget displayMySavedPosts(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => userProfile(
-                                  uid: user.uid,
-                                ),
-                              ));
-                        },
-                        child: (user.dp != '')
-                            ? CircleAvatar(
-                                backgroundColor: Colors.grey[200],
-                                radius: displayWidth(context) * 0.06,
-                                backgroundImage: NetworkImage(user.dp),
-                              )
-                            : CircleAvatar(
-                                radius: displayWidth(context) * 0.06,
-                                backgroundColor: Colors.grey[200],
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.orange[300],
-                                  size: displayWidth(context) * 0.065,
-                                ),
-                              ),
-                      ),
-                      const VerticalDivider(),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => userProfile(
-                                  uid: user.uid,
-                                ),
-                              ));
-                        },
-                        child: Text(
-                          user.username,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: displayWidth(context) * 0.042,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => userProfile(
+                              uid: user.uid,
+                            ),
+                          ));
+                    },
+                    child: (user.dp != '')
+                        ? CircleAvatar(
+                            backgroundColor: Colors.grey[200],
+                            radius: displayWidth(context) * 0.045,
+                            backgroundImage: NetworkImage(user.dp),
+                          )
+                        : CircleAvatar(
+                            radius: displayWidth(context) * 0.045,
+                            backgroundColor: Colors.grey[200],
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.orange[300],
+                              size: displayWidth(context) * 0.05,
+                            ),
+                          ),
                   ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.chat))
+                  VerticalDivider(
+                    width: displayWidth(context) * 0.028,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      if (myUid != user.uid) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => userProfile(
+                                uid: user.uid,
+                              ),
+                            ));
+                      }
+                    },
+                    child: Text(
+                      user.username,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: displayWidth(context) * 0.035,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  VerticalDivider(
+                    width: displayWidth(context) * 0.005,
+                  ),
+                  (user.followers.length >= 5)
+                      ? Icon(
+                          Icons.verified,
+                          color: Colors.orange[400],
+                          size: displayWidth(context) * 0.0485,
+                        )
+                      : const SizedBox(),
+
                 ],
               ),
               Opacity(
@@ -217,7 +228,8 @@ Widget displayMySavedPosts(
                       post.caption,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
+                          fontSize: displayWidth(context) * 0.034,
                           color: Colors.black87, fontWeight: FontWeight.w600),
                     )),
               ),
@@ -229,6 +241,33 @@ Widget displayMySavedPosts(
               ),
               Center(
                 child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 10,
+                            sigmaY: 10,
+                          ),
+                          child: Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            backgroundColor: Colors.transparent,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: CachedNetworkImage(
+                                  imageUrl: post.image,
+                                  fit: BoxFit.contain,
+                                  height: displayHeight(context) * 0.5,
+                                )),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
                       Provider.of<manager>(context, listen: false)
