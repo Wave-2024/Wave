@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
@@ -14,6 +15,7 @@ class searchScreen extends StatefulWidget {
 class _searchScreenState extends State<searchScreen> {
   bool? screenLoading;
   bool init = true;
+  User? currentUser = FirebaseAuth.instance.currentUser;
   TextEditingController? searchController;
   List<NexusUser> displayList = [];
   @override
@@ -117,7 +119,7 @@ class _searchScreenState extends State<searchScreen> {
                                 });
                               } else {
                                 List<NexusUser> tempList = list
-                                    .where((element) =>
+                                    .where((element) => (element.uid!=currentUser!.uid) &&
                                         (element.title.toLowerCase().contains(value.toLowerCase()) ||
                                             element.username.toLowerCase().contains(value.toLowerCase())))
                                     .toList();
