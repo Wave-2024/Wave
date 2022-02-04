@@ -61,9 +61,10 @@ class _postDetailScreenState extends State<CommentScreen> {
           backgroundColor: Colors.white,
           formKey: formKey,
           errorText: 'Comment cannot be blank',
-          sendButtonMethod: () {
+          sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
-              Provider.of<manager>(context, listen: false).commentOnPost(
+              FocusManager.instance.primaryFocus?.unfocus();
+             await Provider.of<manager>(context, listen: false).commentOnPost(
                   currentUser!.uid,
                   widget.postOwner!.uid,
                   postDetail!.post_id,
@@ -160,7 +161,7 @@ class _postDetailScreenState extends State<CommentScreen> {
                                             .data()['likes'] ??
                                         [];
                                     String commentId = snapshot.data.docs[index]
-                                        .data()['commentId'];
+                                        .data()['commentId']??'';
                                     return DisplayCommentBox(
                                       uid: uid,
                                       commentTime: commentTime,

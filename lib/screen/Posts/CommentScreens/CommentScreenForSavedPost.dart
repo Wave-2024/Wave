@@ -127,7 +127,7 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
                                     String uid =
                                         snapshot.data.docs[index].data()['uid'];
                                     String commentId = snapshot.data.docs[index]
-                                        .data()['commentId'];
+                                        .data()['commentId']??[];
                                     List<dynamic> replies = snapshot
                                             .data.docs[index]
                                             .data()['replies'] ??
