@@ -49,11 +49,10 @@ class _userProfileState extends State<userProfile> {
 
   @override
   Widget build(BuildContext context) {
-    NexusUser? thisProfile = Provider.of<manager>(context)
-        .fetchAllUsers[widget.uid.toString()];
+    NexusUser? thisProfile =
+        Provider.of<manager>(context).fetchAllUsers[widget.uid.toString()];
     amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
-    List<PostModel> posts =
-        Provider.of<manager>(context).fetchYourPostsList;
+    List<PostModel> posts = Provider.of<manager>(context).fetchYourPostsList;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -113,7 +112,7 @@ class _userProfileState extends State<userProfile> {
                             ),
                             Positioned(
                                 top: displayHeight(context) * 0.1655,
-                                left: displayWidth(context) * 0.035,
+                                left: displayWidth(context) * 0.02,
                                 child: Card(
                                   color: Colors.orange[300],
                                   elevation: 6.0,
@@ -191,7 +190,7 @@ class _userProfileState extends State<userProfile> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 2),
+                        padding: const EdgeInsets.only(left: 15.0, top: 2),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -211,18 +210,18 @@ class _userProfileState extends State<userProfile> {
                                       size: displayWidth(context) * 0.048,
                                     ),
                                   )
-                                : SizedBox(),
+                                : const SizedBox(),
                           ],
                         ),
                       ),
                       Opacity(
                         opacity: 0.0,
                         child: Divider(
-                          height: displayHeight(context) * 0.015,
+                          height: displayHeight(context) * 0.01,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
+                        padding: const EdgeInsets.only(left: 15.0),
                         child: (thisProfile.bio != '')
                             ? Container(
                                 child: Text(
@@ -355,16 +354,14 @@ class _userProfileState extends State<userProfile> {
                                   setState(() {
                                     amIFollowing = !amIFollowing!;
                                   });
-                                  Provider.of<manager>(context,
-                                          listen: false)
+                                  Provider.of<manager>(context, listen: false)
                                       .unFollowUser(currentUser!.uid.toString(),
                                           thisProfile.uid);
                                 } else {
                                   setState(() {
                                     amIFollowing = !amIFollowing!;
                                   });
-                                  Provider.of<manager>(context,
-                                          listen: false)
+                                  Provider.of<manager>(context, listen: false)
                                       .followUser(currentUser!.uid.toString(),
                                           thisProfile.uid);
                                 }
@@ -418,7 +415,19 @@ class _userProfileState extends State<userProfile> {
                                 opacity: 0.0, child: VerticalDivider()),
                             (amIFollowing!)
                                 ? InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => inboxScreen(
+                                              yourUid: thisProfile.uid,
+                                              chatId: generateChatRoomUsingUid(
+                                                  thisProfile.uid,
+                                                  currentUser!.uid),
+                                              myId: currentUser!.uid,
+                                            ),
+                                          ));
+                                    },
                                     child: Card(
                                         elevation: 5,
                                         shape: RoundedRectangleBorder(
