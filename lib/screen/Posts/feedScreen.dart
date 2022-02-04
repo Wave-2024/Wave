@@ -469,7 +469,8 @@ class _feedScreenState extends State<feedScreen> {
                                                     displayHeight(context) * 0.01,
                                               )),
                                           Container(
-                                            height: displayHeight(context) * 0.5,
+                                            height:
+                                                displayHeight(context) * 0.54,
                                             width: displayWidth(context),
                                             child: ListView.builder(
                                               padding: EdgeInsets.all(20),
@@ -493,7 +494,7 @@ class _feedScreenState extends State<feedScreen> {
                                                       child: Container(
                                                         height: displayHeight(
                                                                 context) *
-                                                            0.4,
+                                                            0.43,
                                                         width: displayWidth(
                                                                 context) *
                                                             0.5,
@@ -767,7 +768,7 @@ class _feedScreenState extends State<feedScreen> {
                                                                 child: Divider(
                                                                   height: displayHeight(
                                                                           context) *
-                                                                      0.015,
+                                                                      0.025,
                                                                 ),
                                                               ),
                                                               InkWell(
@@ -939,14 +940,19 @@ Widget displayPostsForFeed(
                     width: displayWidth(context) * 0.028,
                   ),
                   InkWell(
+                    borderRadius: BorderRadius.circular(5),
+                    focusColor: Colors.grey[100],
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => userProfile(
-                              uid: user.uid,
-                            ),
-                          ));
+                      if (user.uid != myUid) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => userProfile(
+                                uid: user.uid,
+                              ),
+                            ));
+                      }
+                      
                     },
                     child: Text(
                       user.username,
@@ -965,7 +971,7 @@ Widget displayPostsForFeed(
                           color: Colors.orange[400],
                           size: displayWidth(context) * 0.0485,
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                 ],
               ),
               Opacity(
@@ -1007,7 +1013,7 @@ Widget displayPostsForFeed(
                             sigmaY: 10,
                           ),
                           child: Dialog(
-                            insetAnimationCurve: Curves.easeInOutQuad,
+                            //insetAnimationCurve: Curves.easeInOutQuad,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
