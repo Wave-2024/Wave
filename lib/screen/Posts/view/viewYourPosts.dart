@@ -390,7 +390,13 @@ Widget displayYourPosts(
                             fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Text(
+                    (ifPostedToday(post.dateOfPost))?
+                    Text(displayTime(post.dateOfPost),style: TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w600,
+                      fontSize: displayWidth(context) * 0.033,
+                    ))
+                        :Text(
                       '${day} ${month} ${year}',
                       style: TextStyle(
                         color: Colors.black54,

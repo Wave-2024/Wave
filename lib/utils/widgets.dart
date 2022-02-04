@@ -302,3 +302,24 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
                   ),
       ));
 }
+String displayTime(DateTime time){
+  if(time.hour == 0){
+    return '12:${time.minute} AM';
+  }
+  else if(time.hour==12) {
+    return '12:${time.minute} PM';
+  }
+  else if(time.hour<12){
+    return '${time.hour}:${time.minute} AM';
+  }
+  else{
+    return '${time.hour-12}:${time.minute} PM';
+  }
+}
+
+bool ifPostedToday(DateTime postDate){
+  DateTime currentDate = DateTime.now();
+  if(postDate.year == currentDate.year && postDate.month==currentDate.month && postDate.day == currentDate.day) return true;
+  return false;
+
+}

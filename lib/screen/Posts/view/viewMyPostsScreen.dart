@@ -10,6 +10,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
 import 'package:nexus/screen/Posts/editPost.dart';
+import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -52,8 +53,7 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
       return;
     }
 
-    List<PostModel> myPostList =
-        Provider.of<manager>(context).fetchMyPostsList;
+    List<PostModel> myPostList = Provider.of<manager>(context).fetchMyPostsList;
     Map<String, PostModel> savedPostsMap =
         Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, NexusUser> mapOfUsers =
@@ -82,9 +82,10 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
               ),
       ),
       appBar: AppBar(
-        title:  Text(
+        title: Text(
           'My Posts',
-          style: TextStyle(color: Colors.black,fontSize: displayWidth(context)*0.045),
+          style: TextStyle(
+              color: Colors.black, fontSize: displayWidth(context) * 0.045),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -202,7 +203,7 @@ Widget displayMyPosts(
                               color: Colors.orange[400],
                               size: displayWidth(context) * 0.0485,
                             )
-                          : SizedBox(),
+                          : const SizedBox(),
                     ],
                   ),
                   IconButton(
@@ -229,7 +230,7 @@ Widget displayMyPosts(
                                               ),
                                             ));
                                       },
-                                      leading: Icon(Icons.edit),
+                                      leading: const Icon(Icons.edit),
                                       title: const Text(
                                         'Edit caption',
                                         style: TextStyle(
@@ -246,19 +247,51 @@ Widget displayMyPosts(
                                             context: context,
                                             builder: (context) {
                                               return CupertinoAlertDialog(
-                                                title: Text('Delete post',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                                                  content: Text('Are you sure you want to delete this post ?'),
+                                                title: const Text(
+                                                  'Delete post',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                content: const Text(
+                                                    'Are you sure you want to delete this post ?'),
                                                 actions: [
-                                                  TextButton(onPressed: () {
-                                                    Navigator.pop(context);
-                                                  }, child: Text('Cancel',style: TextStyle(color: Colors.black54),)),
-                                                  TextButton(onPressed: () {
-                                                    Provider.of<manager>(context,listen: false).deletePost(myUid, post.post_id);
-                                                    Navigator.pop(context);
-                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post deleted'),duration: Duration(seconds: 2),));
-                                                  }, child: Text('Delete',style: TextStyle(color: Colors.red))),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: const Text(
+                                                        'Cancel',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black54),
+                                                      )),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Provider.of<manager>(
+                                                                context,
+                                                                listen: false)
+                                                            .deletePost(myUid,
+                                                                post.post_id);
+                                                        Navigator.pop(context);
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                const SnackBar(
+                                                          content: Text(
+                                                              'Post deleted'),
+                                                          duration: Duration(
+                                                              seconds: 2),
+                                                        ));
+                                                      },
+                                                      child: const Text(
+                                                          'Delete',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.red))),
                                                 ],
-                                                  );
+                                              );
                                             });
                                       },
                                       leading: Icon(
@@ -279,7 +312,7 @@ Widget displayMyPosts(
                           },
                         );
                       },
-                      icon: Icon(Icons.more_vert))
+                      icon: const Icon(Icons.more_vert))
                 ],
               ),
               Opacity(
@@ -300,7 +333,6 @@ Widget displayMyPosts(
                       style: TextStyle(
                           fontSize: displayWidth(context) * 0.034,
                           color: Colors.black87,
-
                           fontWeight: FontWeight.w600),
                     )),
               ),
@@ -378,13 +410,11 @@ Widget displayMyPosts(
                           GestureDetector(
                             onTap: () {
                               if (post.likes.contains(myUid)) {
-                                Provider.of<manager>(context,
-                                        listen: false)
+                                Provider.of<manager>(context, listen: false)
                                     .dislikePost(
                                         myUid, post.uid, post.post_id, 'self');
                               } else {
-                                Provider.of<manager>(context,
-                                        listen: false)
+                                Provider.of<manager>(context, listen: false)
                                     .likePost(
                                         myUid, post.uid, post.post_id, 'self');
                               }
@@ -473,14 +503,30 @@ Widget displayMyPosts(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      post.likes.length.toString() + ' likes',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: displayWidth(context) * 0.035,
-                          fontWeight: FontWeight.bold),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => usersWhoLikedScreen(
+                                  usersWhoLiked: post.likes),
+                            ));
+                      },
+                      child: Text(
+                        post.likes.length.toString() + ' likes',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: displayWidth(context) * 0.035,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    Text(
+                    (ifPostedToday(post.dateOfPost))?
+                        Text(displayTime(post.dateOfPost),style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w600,
+                          fontSize: displayWidth(context) * 0.033,
+                        ))
+                    :Text(
                       '${day} ${month} ${year}',
                       style: TextStyle(
                         color: Colors.black54,
