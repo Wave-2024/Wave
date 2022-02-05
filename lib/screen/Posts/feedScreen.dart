@@ -59,10 +59,8 @@ class _feedScreenState extends State<feedScreen> {
 
   @override
   void didChangeDependencies() async {
-    if(init!){
-      Provider.of<manager>(context).setSuggesterUsers(currentUser!.uid);
-      init = false;
-    }
+
+      //Provider.of<manager>(context).setSuggesterUsers(currentUser!.uid);
     await Provider.of<manager>(context, listen: false)
         .setNotifications(currentUser!.uid);
     super.didChangeDependencies();
@@ -100,8 +98,10 @@ class _feedScreenState extends State<feedScreen> {
     final Map<String, NexusUser> allUsers =
         Provider.of<manager>(context).fetchAllUsers;
     NexusUser myProfile = allUsers[currentUser!.uid]!;
-    final List<NexusUser>? suggestedUser =
-        Provider.of<manager>(context).fetchSuggestedUser;
+    final List<NexusUser>? suggestedUser = allUsers.values.toList().where((element) => element.uid!=currentUser!.uid).toList();
+    if(suggestedUser!.contains(currentUser!.uid)){
+      suggestedUser.remove(currentUser!.uid);
+    }
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -481,7 +481,7 @@ class _feedScreenState extends State<feedScreen> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           12),
-                                                              child: (suggestedUser![
+                                                              child: (suggestedUser[
                                                                               index]
                                                                           .dp !=
                                                                       '')
@@ -752,7 +752,7 @@ class _feedScreenState extends State<feedScreen> {
                                             ),
                                           );
                                         },
-                                        itemCount: suggestedUser!.length,
+                                        itemCount: suggestedUser.length,
                                         scrollDirection: Axis.horizontal,
                                       ),
                                     )

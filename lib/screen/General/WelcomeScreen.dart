@@ -36,12 +36,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
       await Provider.of<manager>(context, listen: false)
           .setSavedPostsOnce(currentUser!.uid.toString());
       init = false;
-
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => homescreen(),
-          ));
+      if(mounted){
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => homescreen(),
+            ));
+      }
     }
     super.didChangeDependencies();
   }

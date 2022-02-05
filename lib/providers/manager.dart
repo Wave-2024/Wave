@@ -16,27 +16,6 @@ import 'package:nexus/utils/widgets.dart';
 class manager extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
 
-  List<NexusUser> suggestedUsers = [];
-
-  setSuggesterUsers(String myUid){
-    List<NexusUser>? list = [];
-    list = allUsers.values
-        .toList()
-        .where((element) =>
-    !(element.followers.contains(myUid) && (element.uid != myUid)))
-        .toList();
-    int index = list.indexWhere((element) => element.uid == myUid);
-    if(index!=-1){
-      list.removeAt(index);
-    }
-    list.sort((a, b) => (a.followers.length > b.followers.length) ? 1 : 0);
-    suggestedUsers = list;
-    notifyListeners();
-  }
-
-  List<NexusUser> get fetchSuggestedUser{
-    return [...suggestedUsers];
-  }
 
   List<StoryModel> feedStoryList = [];
 
