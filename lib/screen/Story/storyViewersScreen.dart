@@ -25,7 +25,7 @@ class _storyViewerScreenState extends State<storyViewerScreen> {
 
   @override
   void didChangeDependencies()async {
-    if(init!){
+    if(init! && mounted){
       await Provider.of<manager>(context).setMyProfile(currentUser!.uid);
       loading = false;
     }

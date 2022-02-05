@@ -59,8 +59,6 @@ class _feedScreenState extends State<feedScreen> {
 
   @override
   void didChangeDependencies() async {
-
-      //Provider.of<manager>(context).setSuggesterUsers(currentUser!.uid);
     await Provider.of<manager>(context, listen: false)
         .setNotifications(currentUser!.uid);
     super.didChangeDependencies();
@@ -99,9 +97,7 @@ class _feedScreenState extends State<feedScreen> {
         Provider.of<manager>(context).fetchAllUsers;
     NexusUser myProfile = allUsers[currentUser!.uid]!;
     final List<NexusUser>? suggestedUser = allUsers.values.toList().where((element) => element.uid!=currentUser!.uid).toList();
-    if(suggestedUser!.contains(currentUser!.uid)){
-      suggestedUser.remove(currentUser!.uid);
-    }
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -312,8 +308,8 @@ class _feedScreenState extends State<feedScreen> {
                                     height: displayHeight(context) * 0.15,
                                     // color: Colors.red,
                                     child: ListView.builder(
-                                      padding: const EdgeInsets.only(
-                                          left: 1, right: 2),
+                                      padding:  EdgeInsets.only(
+                                          left: (myStory)?1:5, right: 2),
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       physics:
@@ -425,7 +421,7 @@ class _feedScreenState extends State<feedScreen> {
                                           height: displayHeight(context) * 0.01,
                                         )),
                                     Container(
-                                      height: displayHeight(context) * 0.5,
+                                      height: displayHeight(context) * 0.55,
                                       width: displayWidth(context),
                                       child: ListView.builder(
                                         padding: EdgeInsets.all(20),
@@ -435,8 +431,8 @@ class _feedScreenState extends State<feedScreen> {
                                                 left: 8.0, right: 8),
                                             child: Container(
                                               height:
-                                                  displayHeight(context) * 0.4,
-                                              width: displayWidth(context) * 0.6,
+                                                  displayHeight(context) * 0.45,
+                                              width: displayWidth(context) * 0.65,
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(25),
@@ -445,9 +441,9 @@ class _feedScreenState extends State<feedScreen> {
                                               child: Center(
                                                 child: Container(
                                                   height: displayHeight(context) *
-                                                      0.4,
+                                                      0.45,
                                                   width:
-                                                      displayWidth(context) * 0.5,
+                                                      displayWidth(context) * 0.55,
                                                   decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(25),
@@ -455,7 +451,7 @@ class _feedScreenState extends State<feedScreen> {
                                                   ),
                                                   child: Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(10.0),
                                                     child: Column(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment.start,
@@ -481,7 +477,7 @@ class _feedScreenState extends State<feedScreen> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           12),
-                                                              child: (suggestedUser[
+                                                              child: (suggestedUser![
                                                                               index]
                                                                           .dp !=
                                                                       '')
@@ -716,34 +712,36 @@ class _feedScreenState extends State<feedScreen> {
                                                                 0.015,
                                                           ),
                                                         ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
+
+                                                          Expanded(
+                                                            child: TextButton(
+                                                              onPressed: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
                                                                           userProfile(
-                                                                    uid: suggestedUser[
+                                                                            uid: suggestedUser[
                                                                             index]
-                                                                        .uid,
-                                                                  ),
-                                                                ));
-                                                          },
-                                                          child: Text(
-                                                            'View Profile',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black54,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                fontSize:
-                                                                    displayWidth(
-                                                                            context) *
-                                                                        0.032),
+                                                                                .uid,
+                                                                          ),
+                                                                    ));
+                                                              },
+                                                              child: Text('View Profile',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black54,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize:
+                                                                      displayWidth(
+                                                                              context) *
+                                                                          0.032),
+                                                            ),
+                                                            ),
                                                           ),
-                                                        )
                                                       ],
                                                     ),
                                                   ),
@@ -752,7 +750,7 @@ class _feedScreenState extends State<feedScreen> {
                                             ),
                                           );
                                         },
-                                        itemCount: suggestedUser.length,
+                                        itemCount: suggestedUser!.length,
                                         scrollDirection: Axis.horizontal,
                                       ),
                                     )

@@ -949,7 +949,7 @@ class manager extends ChangeNotifier {
       final res = await http.get(Uri.parse(api));
       final data = json.decode(res.body) as Map<String, dynamic>;
       tempViews = data['views'] ?? [];
-      if (!tempViews.contains(myUid)) {
+      if (myUid!=uid && !tempViews.contains(myUid)) {
         tempViews.add(myUid);
         await http.patch(Uri.parse(api),
             body: json.encode({'views': tempViews}));

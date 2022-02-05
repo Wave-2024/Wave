@@ -6,6 +6,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Story/storyViewersScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 
 class viewStory extends StatefulWidget {
@@ -18,18 +19,12 @@ class viewStory extends StatefulWidget {
 }
 
 class _viewStoryState extends State<viewStory> {
+
+  bool? init;
   @override
   void initState() {
-    startTimer();
+    init=true;
     super.initState();
-  }
-
-  startTimer() async {
-    await Future.delayed(Duration(seconds: 10));
-    if(mounted){
-      Navigator.pop(context);
-    }
-
   }
 
   @override
@@ -40,6 +35,10 @@ class _viewStoryState extends State<viewStory> {
 
   @override
   void didChangeDependencies() async {
+    if(init!){
+      Provider.of<manager>(context).increaseViewsOnStory(widget.story!.uid!, widget.myUid!);
+    }
+    init = false;
     super.didChangeDependencies();
   }
 
@@ -63,12 +62,6 @@ class _viewStoryState extends State<viewStory> {
             height: displayHeight(context) * 0.7,
             width: displayWidth(context),
           ),
-          Positioned(
-              top: displayHeight(context) * 0.005,
-              child: Container(
-                  height: displayHeight(context) * 0.02,
-                  width: displayWidth(context),
-                  child: storyAnimatedBar())),
           Positioned(
               top: displayHeight(context) * 0.03,
               left: displayWidth(context) * 0.04,
@@ -104,7 +97,7 @@ class _viewStoryState extends State<viewStory> {
               top: displayHeight(context) * 0.025,
               right: displayWidth(context) * 0.02,
               child: IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 color: Colors.white,
                 onPressed: () {
                   Navigator.pop(context);
@@ -115,7 +108,7 @@ class _viewStoryState extends State<viewStory> {
             right: displayWidth(context) * 0.02,
             child: (widget.story!.uid == widget.myUid)
                 ? IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     color: Colors.white,
                     onPressed: () {
                       showDialog(
@@ -126,7 +119,7 @@ class _viewStoryState extends State<viewStory> {
                             title: const Text('Remove Story'),
                             actions: [
                               Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Center(
                                     child: TextButton(
                                   child: const Text(
@@ -151,7 +144,7 @@ class _viewStoryState extends State<viewStory> {
                                         .deleteStoryFromServer(widget.myUid!);
                                     Navigator.pop(context);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content: Text(
                                                 'Successfully removed your story')));
                                   },
@@ -163,92 +156,50 @@ class _viewStoryState extends State<viewStory> {
                       );
                     },
                   )
-                : SizedBox(),
+                : const SizedBox(),
           ),
           Positioned(
-              bottom: displayHeight(context) * 0.01,
-              left: displayWidth(context) * 0.04,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  (widget.story!.uid == widget.myUid)
-                      ? InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => storyViewerScreen(),
-                                ));
-                          },
-                          child: const Icon(
-                            Icons.visibility,
-                            color: Colors.white,
-                          ))
-                      : const SizedBox(),
-                  (widget.story!.uid == widget.myUid)
-                      ? InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => storyViewerScreen(),
-                                ));
-                          },
-                          child: Text(
-                            widget.story!.views!.length.toString(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: displayWidth(context) * 0.035,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      : SizedBox()
-                ],
-              )),
+            bottom: displayHeight(context) * 0.01,
+            left: displayWidth(context) * 0.04,
+            child: (widget.story!.uid == widget.myUid)
+                ? IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                topRight: Radius.circular(15))),
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: displayHeight(context) * 0.4,
+                            width: displayWidth(context),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15),
+                                  topRight: Radius.circular(15)),
+                            ),
+                            child: ListView.builder(
+                              padding: EdgeInsets.all(16.0),
+                              itemBuilder: (context, index) {
+                                return displayProfileHeads(
+                                    context,
+                                    allUsers[
+                                        allUsers[widget.myUid]!.views[index]]!);
+                              },
+                              itemCount: allUsers[widget.myUid]!.views.length,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    color: Colors.white,
+                    icon: Icon(Icons.visibility))
+                : const SizedBox(),
+          ),
         ],
       ),
     )));
-  }
-}
-
-class storyAnimatedBar extends StatefulWidget {
-  @override
-  _storyAnimatedBarState createState() => new _storyAnimatedBarState();
-}
-
-class _storyAnimatedBarState extends State<storyAnimatedBar>
-    with SingleTickerProviderStateMixin {
-  AnimationController? controller;
-  Animation<double>? animation;
-
-  @override
-  void initState() {
-    super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 10), vsync: this);
-    animation = Tween(begin: 0.0, end: 1.0).animate(controller!)
-      ..addListener(() {
-        setState(() {});
-      });
-    controller!.repeat();
-  }
-
-  @override
-  void dispose() {
-    controller!.stop();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-        child: Container(
-      child: LinearProgressIndicator(
-        backgroundColor: Colors.white70,
-        color: Colors.black54,
-        value: animation!.value,
-      ),
-    ));
   }
 }
