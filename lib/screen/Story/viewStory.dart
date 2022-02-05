@@ -20,13 +20,16 @@ class viewStory extends StatefulWidget {
 class _viewStoryState extends State<viewStory> {
   @override
   void initState() {
-     startTimer();
+    startTimer();
     super.initState();
   }
 
   startTimer() async {
     await Future.delayed(Duration(seconds: 10));
-    Navigator.pop(context);
+    if(mounted){
+      Navigator.pop(context);
+    }
+
   }
 
   @override
@@ -126,31 +129,33 @@ class _viewStoryState extends State<viewStory> {
                                 padding: EdgeInsets.all(8.0),
                                 child: Center(
                                     child: TextButton(
-                                      child: const Text(
-                                        'No',
-                                        style: TextStyle(
-                                            color: Colors.black87),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    )),
+                                  child: const Text(
+                                    'No',
+                                    style: TextStyle(color: Colors.black87),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                )),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Center(
                                     child: TextButton(
-                                      child: const Text(
-                                        'Yes',
-                                        style: TextStyle(
-                                            color: Colors.black87),
-                                      ),
-                                      onPressed: () {
-                                        Provider.of<manager>(context,listen: false).deleteStoryFromServer(widget.myUid!);
-                                        Navigator.pop(context);
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully removed your story')));
-                                      },
-                                    )),
+                                  child: const Text(
+                                    'Yes',
+                                    style: TextStyle(color: Colors.black87),
+                                  ),
+                                  onPressed: () {
+                                    Provider.of<manager>(context, listen: false)
+                                        .deleteStoryFromServer(widget.myUid!);
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Successfully removed your story')));
+                                  },
+                                )),
                               ),
                             ],
                           );
@@ -173,12 +178,10 @@ class _viewStoryState extends State<viewStory> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => storyViewerScreen(
-                                    views: widget.story!.views,
-                                  ),
+                                  builder: (context) => storyViewerScreen(),
                                 ));
                           },
-                          child: Icon(
+                          child: const Icon(
                             Icons.visibility,
                             color: Colors.white,
                           ))
@@ -189,9 +192,7 @@ class _viewStoryState extends State<viewStory> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => storyViewerScreen(
-                                    views: widget.story!.views,
-                                  ),
+                                  builder: (context) => storyViewerScreen(),
                                 ));
                           },
                           child: Text(

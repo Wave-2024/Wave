@@ -12,7 +12,6 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/GlobalVariable.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/notificationScreen.dart';
-import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/screen/Story/uploadStory.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/screen/Story/viewStory.dart';
@@ -60,12 +59,9 @@ class _feedScreenState extends State<feedScreen> {
 
   @override
   void didChangeDependencies() async {
-    if (!Provider.of<GlobalVariable>(context).fetchValue) {
-      loadScreen = true;
-      await Provider.of<manager>(context).setFeedPosts(currentUser!.uid.toString());
-      loadScreen = false;
-      Provider.of<GlobalVariable>(context, listen: false)
-          .updateGlobalVariable();
+    if(init!){
+      Provider.of<manager>(context).setSuggesterUsers(currentUser!.uid);
+      init = false;
     }
     await Provider.of<manager>(context, listen: false)
         .setNotifications(currentUser!.uid);
@@ -105,748 +101,695 @@ class _feedScreenState extends State<feedScreen> {
         Provider.of<manager>(context).fetchAllUsers;
     NexusUser myProfile = allUsers[currentUser!.uid]!;
     final List<NexusUser>? suggestedUser =
-        Provider.of<manager>(context).fetchSuggestedUser(currentUser!.uid);
+        Provider.of<manager>(context).fetchSuggestedUser;
     return Scaffold(
       body: SafeArea(
         child: Container(
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (loadScreen!)
-              ? Center(
-                  child: load(context),
-                )
-              : LiquidPullToRefresh(
-                  color: Colors.orange[400],
-                  animSpeedFactor: 5,
-                  height: displayHeight(context) * 0.2,
-                  key: _refreshIndicatorKey,
-                  showChildOpacityTransition: false,
-                  onRefresh: setPosts,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: displayHeight(context) * 0.08,
-                        width: displayWidth(context),
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8.0, bottom: 8.0, left: 20, right: 18),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.only(top: 0),
-                                    child: Text(
-                                      'Wave',
-                                      style: TextStyle(
-                                          fontFamily: 'Pacifico',
-                                          color: Colors.orange,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize:
-                                              displayWidth(context) * 0.07),
-                                    )),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            NotificationScreen(),
-                                      ));
-                                },
-                                child: Badge(
-                                    badgeColor: Colors.red[400]!,
-                                    badgeContent: Text(
-                                      unreadNotificationList.length.toString(),
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize:
-                                              displayWidth(context) * 0.03),
-                                    ),
-                                    child:
-                                        const Icon(Icons.notifications_none)),
-                              ),
-                            ],
+          child: LiquidPullToRefresh(
+            color: Colors.orange[400],
+            animSpeedFactor: 5,
+            height: displayHeight(context) * 0.2,
+            key: _refreshIndicatorKey,
+            showChildOpacityTransition: false,
+            onRefresh: setPosts,
+            child:  Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    height: displayHeight(context) * 0.08,
+                    width: displayWidth(context),
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 8.0, bottom: 8.0, left: 20, right: 18),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.only(top: 0),
+                                child: Text(
+                                  'Wave',
+                                  style: TextStyle(
+                                      fontFamily: 'Pacifico',
+                                      color: Colors.orange,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: displayWidth(context) * 0.07),
+                                )),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: displayHeight(context) * 0.88,
-                          width: displayWidth(context),
-                          //color: Colors.yellow,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: displayHeight(context) * 0.15,
-                                  width: displayWidth(context),
-                                  //  color: Colors.blue,
-                                  padding:
-                                      const EdgeInsets.only(left: 16, right: 16),
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        (myStory)
-                                            ? Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  InkWell(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      viewStory(
-                                                                myUid:
-                                                                    currentUser!
-                                                                        .uid,
-                                                                story: StoryModel(
-                                                                    uid:
-                                                                        currentUser!
-                                                                            .uid,
-                                                                    story: allUsers[
-                                                                            currentUser!
-                                                                                .uid]!
-                                                                        .story,
-                                                                    storyTime: allUsers[
-                                                                            currentUser!
-                                                                                .uid]!
-                                                                        .storyTime,
-                                                                    views: allUsers[
-                                                                            currentUser!
-                                                                                .uid]!
-                                                                        .views),
-                                                              ),
-                                                            ));
-                                                      },
-                                                      child: Card(
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            15,
-                                                          ),
-                                                          side: BorderSide(
-                                                              color: Colors
-                                                                  .orange[600]!),
-                                                        ),
-                                                        color: Colors.white,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4.5),
-                                                          child: Container(
-                                                            height: displayHeight(
-                                                                    context) *
-                                                                0.08,
-                                                            width: displayWidth(
-                                                                    context) *
-                                                                0.15,
-                                                            decoration: BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15),
-                                                                image: DecorationImage(
-                                                                    image: CachedNetworkImageProvider(
-                                                                        allUsers[currentUser!
-                                                                                .uid]!
-                                                                            .story),
-                                                                    fit: BoxFit
-                                                                        .cover)),
-                                                          ),
-                                                        ),
-                                                      )),
-                                                  Divider(
-                                                    height:
-                                                        displayHeight(context) *
-                                                            0.006,
-                                                  ),
-                                                  Text(
-                                                    'My Story',
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: displayWidth(
-                                                                context) *
-                                                            0.032),
-                                                  ),
-                                                ],
-                                              )
-                                            : Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () async {
-                                                      await pickImage();
-                                                      if (story != null) {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  uploadStoryScreen(
-                                                                imageFile: story,
-                                                              ),
-                                                            ));
-                                                      }
-                                                    },
-                                                    child: CircleAvatar(
-                                                      backgroundColor:
-                                                          Colors.grey[200],
-                                                      radius:
-                                                          displayWidth(context) *
-                                                              0.07,
-                                                      child: const Icon(
-                                                        Icons.add,
-                                                        color: Colors.orange,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Divider(
-                                                    height:
-                                                        displayHeight(context) *
-                                                            0.006,
-                                                  ),
-                                                  Text(
-                                                    'Add Story',
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: displayWidth(
-                                                                context) *
-                                                            0.032),
-                                                  ),
-                                                ],
-                                              ),
-                                        Container(
-                                          width: displayWidth(context) * 0.8,
-                                          height: displayHeight(context) * 0.15,
-                                          // color: Colors.red,
-                                          child: ListView.builder(
-                                            padding: const EdgeInsets.only(
-                                                left: 1, right: 2),
-                                            scrollDirection: Axis.horizontal,
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            itemCount: stories.length,
-                                            itemBuilder: (context, index) {
-                                              return Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  InkWell(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      viewStory(
-                                                                myUid:
-                                                                    currentUser!
-                                                                        .uid,
-                                                                story: stories[
-                                                                    index],
-                                                              ),
-                                                            ));
-                                                      },
-                                                      child: Card(
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            15,
-                                                          ),
-                                                          side: BorderSide(
-                                                              color: Colors
-                                                                  .orange[600]!),
-                                                        ),
-                                                        color: Colors.white,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4.5),
-                                                          child: Container(
-                                                            height: displayHeight(
-                                                                    context) *
-                                                                0.08,
-                                                            width: displayWidth(
-                                                                    context) *
-                                                                0.15,
-                                                            decoration: BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15),
-                                                                image: DecorationImage(
-                                                                    image: CachedNetworkImageProvider(
-                                                                        stories[index]
-                                                                            .story!),
-                                                                    fit: BoxFit
-                                                                        .cover)),
-                                                          ),
-                                                        ),
-                                                      )),
-                                                  Divider(
-                                                    height:
-                                                        displayHeight(context) *
-                                                            0.006,
-                                                  ),
-                                                  Text(
-                                                    allUsers[stories[index].uid]!
-                                                        .username,
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: displayWidth(
-                                                                context) *
-                                                            0.032),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NotificationScreen(),
+                                  ));
+                            },
+                            child: Badge(
+                                badgeColor: Colors.red[400]!,
+                                badgeContent: Text(
+                                  unreadNotificationList.length.toString(),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: displayWidth(context) * 0.03),
                                 ),
-                                Opacity(
-                                    opacity: 0.0,
-                                    child: Divider(
-                                      height: displayHeight(context) * 0.01,
-                                    )),
-                                (myProfile.followings.isEmpty)
-                                    ? Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Welcome to Wave',
-                                            style: TextStyle(
-                                                color: Colors.orange,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    displayWidth(context) * 0.06),
-                                          ),
-                                          Opacity(
-                                              opacity: 0.0,
-                                              child: Divider(
-                                                height:
-                                                    displayHeight(context) * 0.01,
-                                              )),
-                                          const Text(
-                                            'Follow people to start seeing posts.',
-                                            style:
-                                                TextStyle(color: Colors.black45),
-                                          ),
-                                          Opacity(
-                                              opacity: 0.0,
-                                              child: Divider(
-                                                height:
-                                                    displayHeight(context) * 0.01,
-                                              )),
-                                          Container(
-                                            height:
-                                                displayHeight(context) * 0.54,
-                                            width: displayWidth(context),
-                                            child: ListView.builder(
-                                              padding: EdgeInsets.all(20),
-                                              itemBuilder: (context, index) {
-                                                return Padding(
-                                                  padding: const EdgeInsets.only(
-                                                      left: 8.0, right: 8),
-                                                  child: Container(
-                                                    height:
-                                                        displayHeight(context) *
-                                                            0.4,
-                                                    width: displayWidth(context) *
-                                                        0.6,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25),
-                                                      color: Colors.grey[200],
+                                child: const Icon(Icons.notifications_none)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: displayHeight(context) * 0.88,
+                    width: displayWidth(context),
+                    //color: Colors.yellow,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: displayHeight(context) * 0.15,
+                            width: displayWidth(context),
+                            //  color: Colors.blue,
+                            padding: const EdgeInsets.only(left: 16, right: 16),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  (myStory)
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            viewStory(
+                                                          myUid: currentUser!.uid,
+                                                          story: StoryModel(
+                                                              uid: currentUser!
+                                                                  .uid,
+                                                              story: allUsers[
+                                                                      currentUser!
+                                                                          .uid]!
+                                                                  .story,
+                                                              storyTime: allUsers[
+                                                                      currentUser!
+                                                                          .uid]!
+                                                                  .storyTime,
+                                                              views: allUsers[
+                                                                      currentUser!
+                                                                          .uid]!
+                                                                  .views),
+                                                        ),
+                                                      ));
+                                                },
+                                                child: Card(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      15,
                                                     ),
-                                                    child: Center(
-                                                      child: Container(
-                                                        height: displayHeight(
-                                                                context) *
-                                                            0.43,
-                                                        width: displayWidth(
-                                                                context) *
-                                                            0.5,
-                                                        decoration: BoxDecoration(
+                                                    side: BorderSide(
+                                                        color:
+                                                            Colors.orange[600]!),
+                                                  ),
+                                                  color: Colors.white,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(4.5),
+                                                    child: Container(
+                                                      height:
+                                                          displayHeight(context) *
+                                                              0.08,
+                                                      width:
+                                                          displayWidth(context) *
+                                                              0.15,
+                                                      decoration: BoxDecoration(
                                                           borderRadius:
                                                               BorderRadius
-                                                                  .circular(25),
-                                                          color: Colors.white,
+                                                                  .circular(15),
+                                                          image: DecorationImage(
+                                                              image: CachedNetworkImageProvider(
+                                                                  allUsers[currentUser!
+                                                                          .uid]!
+                                                                      .story),
+                                                              fit: BoxFit.cover)),
+                                                    ),
+                                                  ),
+                                                )),
+                                            Divider(
+                                              height:
+                                                  displayHeight(context) * 0.006,
+                                            ),
+                                            Text(
+                                              'My Story',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.032),
+                                            ),
+                                          ],
+                                        )
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                              onTap: () async {
+                                                await pickImage();
+                                                if (story != null) {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            uploadStoryScreen(
+                                                          imageFile: story,
                                                         ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Card(
-                                                                color: Colors
-                                                                    .orange[300],
-                                                                elevation: 6.0,
-                                                                shape: RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                                12)),
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .all(
-                                                                          2.5),
-                                                                  child:
-                                                                      ClipRRect(
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                                12),
-                                                                    child: (suggestedUser![index]
-                                                                                .dp !=
-                                                                            '')
-                                                                        ? CachedNetworkImage(
-                                                                            imageUrl:
-                                                                                suggestedUser[index].dp,
-                                                                            height:
-                                                                                displayHeight(context) * 0.07,
-                                                                            width:
-                                                                                displayWidth(context) * 0.13,
-                                                                            fit: BoxFit
-                                                                                .cover,
-                                                                          )
-                                                                        : Icon(
-                                                                            Icons
-                                                                                .person,
-                                                                            color:
-                                                                                Colors.white,
-                                                                            size: displayWidth(context) *
-                                                                                0.15,
-                                                                          ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Opacity(
-                                                                opacity: 0.0,
-                                                                child: Divider(
-                                                                  height: displayHeight(
-                                                                          context) *
-                                                                      0.01,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                suggestedUser[
-                                                                        index]
-                                                                    .username,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontSize:
-                                                                        displayWidth(
-                                                                                context) *
-                                                                            0.035,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400),
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Text(
-                                                                    suggestedUser[
-                                                                            index]
-                                                                        .title,
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black45,
-                                                                        fontSize:
-                                                                            displayWidth(context) *
-                                                                                0.035,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w800),
-                                                                  ),
-                                                                  Opacity(
-                                                                      opacity:
-                                                                          0.0,
-                                                                      child:
-                                                                          VerticalDivider(
-                                                                        width: displayWidth(
-                                                                                context) *
-                                                                            0.01,
-                                                                      )),
-                                                                  (suggestedUser[index]
-                                                                              .followers
-                                                                              .length >
-                                                                          5)
-                                                                      ? Icon(
-                                                                          Icons
-                                                                              .verified,
-                                                                          color: Colors
-                                                                              .orange[400],
-                                                                          size: displayWidth(context) *
-                                                                              0.04,
-                                                                        )
-                                                                      : const SizedBox(),
-                                                                ],
-                                                              ),
-                                                              Opacity(
-                                                                opacity: 0.0,
-                                                                child: Divider(
-                                                                  height: displayHeight(
-                                                                          context) *
-                                                                      0.015,
-                                                                ),
-                                                              ),
-                                                              Container(
-                                                                height: displayHeight(
-                                                                        context) *
-                                                                    0.06,
-                                                                width: displayWidth(
-                                                                        context) *
-                                                                    0.44,
-                                                                //color: Colors.red,
-                                                                child: Text(
-                                                                  suggestedUser[
-                                                                          index]
-                                                                      .bio,
-                                                                  maxLines: 2,
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontSize:
-                                                                        displayWidth(
-                                                                                context) *
-                                                                            0.03,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Container(
-                                                                height: displayHeight(
-                                                                        context) *
-                                                                    0.05,
-                                                                // color: Colors.red,
-                                                                width: displayWidth(
-                                                                        context) *
-                                                                    0.43,
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceAround,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    detailBox(
-                                                                        'Followers',
-                                                                        suggestedUser[
-                                                                                index]
-                                                                            .followers
-                                                                            .length,
-                                                                        context),
-                                                                    detailBox(
-                                                                        'Following',
-                                                                        suggestedUser[
-                                                                                index]
-                                                                            .followings
-                                                                            .length,
-                                                                        context),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              Opacity(
-                                                                opacity: 0.0,
-                                                                child: Divider(
-                                                                  height: displayHeight(
-                                                                          context) *
-                                                                      0.012,
-                                                                ),
-                                                              ),
-                                                              InkWell(
-                                                                onTap: () {
-                                                                  Provider.of<manager>(
-                                                                          context,
-                                                                          listen:
-                                                                              false)
-                                                                      .followUser(
-                                                                          currentUser!
-                                                                              .uid,
+                                                      ));
+                                                }
+                                              },
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.grey[200],
+                                                radius:
+                                                    displayWidth(context) * 0.07,
+                                                child: const Icon(
+                                                  Icons.add,
+                                                  color: Colors.orange,
+                                                ),
+                                              ),
+                                            ),
+                                            Divider(
+                                              height:
+                                                  displayHeight(context) * 0.006,
+                                            ),
+                                            Text(
+                                              'Add Story',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.032),
+                                            ),
+                                          ],
+                                        ),
+                                  Container(
+                                    width: displayWidth(context) * 0.8,
+                                    height: displayHeight(context) * 0.15,
+                                    // color: Colors.red,
+                                    child: ListView.builder(
+                                      padding: const EdgeInsets.only(
+                                          left: 1, right: 2),
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: stories.length,
+                                      itemBuilder: (context, index) {
+                                        return Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            viewStory(
+                                                          myUid: currentUser!.uid,
+                                                          story: stories[index],
+                                                        ),
+                                                      ));
+                                                },
+                                                child: Card(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      15,
+                                                    ),
+                                                    side: BorderSide(
+                                                        color:
+                                                            Colors.orange[600]!),
+                                                  ),
+                                                  color: Colors.white,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(4.5),
+                                                    child: Container(
+                                                      height:
+                                                          displayHeight(context) *
+                                                              0.08,
+                                                      width:
+                                                          displayWidth(context) *
+                                                              0.15,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          image: DecorationImage(
+                                                              image: CachedNetworkImageProvider(
+                                                                  stories[index]
+                                                                      .story!),
+                                                              fit: BoxFit.cover)),
+                                                    ),
+                                                  ),
+                                                )),
+                                            Divider(
+                                              height:
+                                                  displayHeight(context) * 0.006,
+                                            ),
+                                            Text(
+                                              allUsers[stories[index].uid]!
+                                                  .username,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.032),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Opacity(
+                              opacity: 0.0,
+                              child: Divider(
+                                height: displayHeight(context) * 0.01,
+                              )),
+                          (myProfile.followings.isEmpty)
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Welcome to Wave',
+                                      style: TextStyle(
+                                          color: Colors.orange,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: displayWidth(context) * 0.06),
+                                    ),
+                                    Opacity(
+                                        opacity: 0.0,
+                                        child: Divider(
+                                          height: displayHeight(context) * 0.01,
+                                        )),
+                                    const Text(
+                                      'Follow people to start seeing posts.',
+                                      style: TextStyle(color: Colors.black45),
+                                    ),
+                                    Opacity(
+                                        opacity: 0.0,
+                                        child: Divider(
+                                          height: displayHeight(context) * 0.01,
+                                        )),
+                                    Container(
+                                      height: displayHeight(context) * 0.5,
+                                      width: displayWidth(context),
+                                      child: ListView.builder(
+                                        padding: EdgeInsets.all(20),
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8.0, right: 8),
+                                            child: Container(
+                                              height:
+                                                  displayHeight(context) * 0.4,
+                                              width: displayWidth(context) * 0.6,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                                color: Colors.grey[200],
+                                              ),
+                                              child: Center(
+                                                child: Container(
+                                                  height: displayHeight(context) *
+                                                      0.4,
+                                                  width:
+                                                      displayWidth(context) * 0.5,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(25),
+                                                    color: Colors.white,
+                                                  ),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8.0),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Card(
+                                                          color:
+                                                              Colors.orange[300],
+                                                          elevation: 6.0,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12)),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(2.5),
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12),
+                                                              child: (suggestedUser![
+                                                                              index]
+                                                                          .dp !=
+                                                                      '')
+                                                                  ? CachedNetworkImage(
+                                                                      imageUrl:
                                                                           suggestedUser[index]
-                                                                              .uid);
-                                                                },
-                                                                child: Container(
-                                                                  height: displayHeight(
+                                                                              .dp,
+                                                                      height: displayHeight(
+                                                                              context) *
+                                                                          0.07,
+                                                                      width: displayWidth(
+                                                                              context) *
+                                                                          0.13,
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    )
+                                                                  : Icon(
+                                                                      Icons
+                                                                          .person,
+                                                                      color: Colors
+                                                                          .white,
+                                                                      size: displayWidth(
+                                                                              context) *
+                                                                          0.15,
+                                                                    ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Opacity(
+                                                          opacity: 0.0,
+                                                          child: Divider(
+                                                            height: displayHeight(
+                                                                    context) *
+                                                                0.01,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          suggestedUser[index]
+                                                              .username,
+                                                          style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize:
+                                                                  displayWidth(
                                                                           context) *
-                                                                      0.045,
+                                                                      0.035,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              suggestedUser[index]
+                                                                  .title,
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black45,
+                                                                  fontSize:
+                                                                      displayWidth(
+                                                                              context) *
+                                                                          0.035,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w800),
+                                                            ),
+                                                            Opacity(
+                                                                opacity: 0.0,
+                                                                child:
+                                                                    VerticalDivider(
                                                                   width: displayWidth(
                                                                           context) *
-                                                                      0.28,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    gradient: LinearGradient(
-                                                                        begin: Alignment
-                                                                            .topRight,
-                                                                        end: Alignment
-                                                                            .bottomLeft,
-                                                                        colors: [
-                                                                          Colors
-                                                                              .deepOrange,
-                                                                          Colors
-                                                                              .deepOrangeAccent,
-                                                                          Colors.orange[
-                                                                              600]!,
-                                                                        ]),
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                                15),
-                                                                  ),
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      'Follow',
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .white,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .bold,
-                                                                          fontSize:
-                                                                              displayWidth(context) *
-                                                                                  0.038),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Opacity(
-                                                                opacity: 0.0,
-                                                                child: Divider(
-                                                                  height: displayHeight(
+                                                                      0.01,
+                                                                )),
+                                                            (suggestedUser[index]
+                                                                        .followers
+                                                                        .length >
+                                                                    5)
+                                                                ? Icon(
+                                                                    Icons
+                                                                        .verified,
+                                                                    color: Colors
+                                                                            .orange[
+                                                                        400],
+                                                                    size: displayWidth(
+                                                                            context) *
+                                                                        0.04,
+                                                                  )
+                                                                : const SizedBox(),
+                                                          ],
+                                                        ),
+                                                        Opacity(
+                                                          opacity: 0.0,
+                                                          child: Divider(
+                                                            height: displayHeight(
+                                                                    context) *
+                                                                0.015,
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          height: displayHeight(
+                                                                  context) *
+                                                              0.06,
+                                                          width: displayWidth(
+                                                                  context) *
+                                                              0.44,
+                                                          //color: Colors.red,
+                                                          child: Text(
+                                                            suggestedUser[index]
+                                                                .bio,
+                                                            maxLines: 2,
+                                                            textAlign:
+                                                                TextAlign.center,
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                            style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize:
+                                                                  displayWidth(
                                                                           context) *
-                                                                      0.025,
-                                                                ),
-                                                              ),
-                                                              InkWell(
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                userProfile(
-                                                                          uid: suggestedUser[index]
-                                                                              .uid,
-                                                                        ),
-                                                                      ));
-                                                                },
-                                                                child: Text(
-                                                                  'View Profile',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .black54,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      fontSize: displayWidth(
-                                                                              context) *
-                                                                          0.032),
-                                                                ),
-                                                              )
+                                                                      0.03,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          height: displayHeight(
+                                                                  context) *
+                                                              0.05,
+                                                          // color: Colors.red,
+                                                          width: displayWidth(
+                                                                  context) *
+                                                              0.43,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              detailBox(
+                                                                  'Followers',
+                                                                  suggestedUser[
+                                                                          index]
+                                                                      .followers
+                                                                      .length,
+                                                                  context),
+                                                              detailBox(
+                                                                  'Following',
+                                                                  suggestedUser[
+                                                                          index]
+                                                                      .followings
+                                                                      .length,
+                                                                  context),
                                                             ],
                                                           ),
                                                         ),
-                                                      ),
+                                                        Opacity(
+                                                          opacity: 0.0,
+                                                          child: Divider(
+                                                            height: displayHeight(
+                                                                    context) *
+                                                                0.012,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            Provider.of<manager>(
+                                                                    context,
+                                                                    listen: false)
+                                                                .followUser(
+                                                                    currentUser!
+                                                                        .uid,
+                                                                    suggestedUser[
+                                                                            index]
+                                                                        .uid);
+                                                          },
+                                                          child: Container(
+                                                            height: displayHeight(
+                                                                    context) *
+                                                                0.045,
+                                                            width: displayWidth(
+                                                                    context) *
+                                                                0.28,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              gradient: LinearGradient(
+                                                                  begin: Alignment
+                                                                      .topRight,
+                                                                  end: Alignment
+                                                                      .bottomLeft,
+                                                                  colors: [
+                                                                    Colors
+                                                                        .deepOrange,
+                                                                    Colors
+                                                                        .deepOrangeAccent,
+                                                                    Colors.orange[
+                                                                        600]!,
+                                                                  ]),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15),
+                                                            ),
+                                                            child: Center(
+                                                              child: Text(
+                                                                'Follow',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        displayWidth(
+                                                                                context) *
+                                                                            0.038),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Opacity(
+                                                          opacity: 0.0,
+                                                          child: Divider(
+                                                            height: displayHeight(
+                                                                    context) *
+                                                                0.015,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          userProfile(
+                                                                    uid: suggestedUser[
+                                                                            index]
+                                                                        .uid,
+                                                                  ),
+                                                                ));
+                                                          },
+                                                          child: Text(
+                                                            'View Profile',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black54,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize:
+                                                                    displayWidth(
+                                                                            context) *
+                                                                        0.032),
+                                                          ),
+                                                        )
+                                                      ],
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              itemCount: suggestedUser!.length,
-                                              scrollDirection: Axis.horizontal,
+                                                ),
+                                              ),
                                             ),
-                                          )
-                                        ],
-                                      )
-                                    : Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 21.0,
-                                            right: 21,
-                                            top: 10,
-                                            bottom: 40),
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 18.0),
-                                              child: displayPostsForFeed(
-                                                  context,
-                                                  feedPosts[index],
-                                                  allUsers,
-                                                  currentUser!.uid.toString(),
-                                                  months,
-                                                  savedPosts),
-                                            );
-                                          },
-                                          itemCount: feedPosts.length,
-                                        ),
-                                      )
-                              ],
-                            ),
-                          ),
-                        ),
+                                          );
+                                        },
+                                        itemCount: suggestedUser!.length,
+                                        scrollDirection: Axis.horizontal,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 21.0, right: 21, top: 10, bottom: 40),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 18.0),
+                                        child: displayPostsForFeed(
+                                            context,
+                                            feedPosts[index],
+                                            allUsers,
+                                            currentUser!.uid.toString(),
+                                            months,
+                                            savedPosts),
+                                      );
+                                    },
+                                    itemCount: feedPosts.length,
+                                  ),
+                                )
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+
     );
   }
 }
@@ -912,13 +855,15 @@ Widget displayPostsForFeed(
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => userProfile(
-                              uid: user.uid,
-                            ),
-                          ));
+                      if (myUid != user.uid) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => userProfile(
+                                uid: user.uid,
+                              ),
+                            ));
+                      }
                     },
                     child: (user.dp != '')
                         ? CircleAvatar(
@@ -940,10 +885,8 @@ Widget displayPostsForFeed(
                     width: displayWidth(context) * 0.028,
                   ),
                   InkWell(
-                    borderRadius: BorderRadius.circular(5),
-                    focusColor: Colors.grey[100],
                     onTap: () {
-                      if (user.uid != myUid) {
+                      if(myUid!=user.uid){
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -952,7 +895,7 @@ Widget displayPostsForFeed(
                               ),
                             ));
                       }
-                      
+
                     },
                     child: Text(
                       user.username,
@@ -971,7 +914,7 @@ Widget displayPostsForFeed(
                           color: Colors.orange[400],
                           size: displayWidth(context) * 0.0485,
                         )
-                      : const SizedBox(),
+                      : SizedBox(),
                 ],
               ),
               Opacity(
@@ -1013,7 +956,7 @@ Widget displayPostsForFeed(
                             sigmaY: 10,
                           ),
                           child: Dialog(
-                            //insetAnimationCurve: Curves.easeInOutQuad,
+                            insetAnimationCurve: Curves.easeInOutQuad,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -1159,25 +1102,14 @@ Widget displayPostsForFeed(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => usersWhoLikedScreen(usersWhoLiked: post.likes,),));
-                      },
-                      child: Text(
-                        post.likes.length.toString() + ' likes',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: displayWidth(context) * 0.035,
-                            fontWeight: FontWeight.bold),
-                      ),
+                    Text(
+                      post.likes.length.toString() + ' likes',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: displayWidth(context) * 0.035,
+                          fontWeight: FontWeight.bold),
                     ),
-                    (ifPostedToday(post.dateOfPost))?
-                    Text(displayTime(post.dateOfPost),style: TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w600,
-                      fontSize: displayWidth(context) * 0.033,
-                    ))
-                        :Text(
+                    Text(
                       '${day} ${month} ${year}',
                       style: TextStyle(
                         color: Colors.black54,

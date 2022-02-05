@@ -16,17 +16,26 @@ import 'package:nexus/utils/widgets.dart';
 class manager extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
 
-  List<NexusUser>? fetchSuggestedUser(String myUid) {
+  List<NexusUser> suggestedUsers = [];
+
+  setSuggesterUsers(String myUid){
     List<NexusUser>? list = [];
     list = allUsers.values
         .toList()
         .where((element) =>
-            !(element.followers.contains(myUid) && (element.uid != myUid)))
+    !(element.followers.contains(myUid) && (element.uid != myUid)))
         .toList();
     int index = list.indexWhere((element) => element.uid == myUid);
-    list.removeAt(index);
+    if(index!=-1){
+      list.removeAt(index);
+    }
     list.sort((a, b) => (a.followers.length > b.followers.length) ? 1 : 0);
-    return list;
+    suggestedUsers = list;
+    notifyListeners();
+  }
+
+  List<NexusUser> get fetchSuggestedUser{
+    return [...suggestedUsers];
   }
 
   List<StoryModel> feedStoryList = [];
@@ -77,6 +86,31 @@ class manager extends ChangeNotifier {
 
   Map<String, NexusUser> get fetchAllUsers {
     return allUsers;
+  }
+
+  Future<void> setMyProfile(String myUid) async {
+    final String api = constants().fetchApi + 'users/${myUid}.json';
+    try {
+      final response = await http.get(Uri.parse(api));
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      NexusUser updatedUser = NexusUser(
+          bio: data['bio'],
+          coverImage: data['coverImage'],
+          dp: data['dp'],
+          email: data['email'],
+          followers: data['followers'] ?? [],
+          followings: data['followings']??[],
+          title: data['title'],
+          uid: data['uid'],
+          username: data['username'],
+          story: data['story'] ?? '',
+          storyTime: DateTime.parse(data['storyTime']),
+          views: data['views'] ?? []);
+      allUsers[myUid]=updatedUser;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
   }
 
   Future<void> deleteCommentFromThisPost(
@@ -926,6 +960,23 @@ class manager extends ChangeNotifier {
           }));
     } catch (error) {
       debugPrint(error.toString());
+    }
+  }
+
+  Future<void> increaseViewsOnStory(String uid, String myUid) async {
+    final String api = constants().fetchApi + 'users/${uid}.json';
+    List<dynamic> tempViews;
+    try {
+      final res = await http.get(Uri.parse(api));
+      final data = json.decode(res.body) as Map<String, dynamic>;
+      tempViews = data['views'] ?? [];
+      if (!tempViews.contains(myUid)) {
+        tempViews.add(myUid);
+        await http.patch(Uri.parse(api),
+            body: json.encode({'views': tempViews}));
+      }
+    } catch (error) {
+      print(error);
     }
   }
 }

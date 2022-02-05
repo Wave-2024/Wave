@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => GlobalVariable(),),
           ChangeNotifierProvider(
             create: (context) => AuthNotifier(),
           ),
@@ -41,6 +40,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => manager(),
           ),
+          //ChangeNotifierProvider(create: (context) => GlobalVariable(),),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
