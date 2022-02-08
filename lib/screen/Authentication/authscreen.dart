@@ -73,71 +73,63 @@ class authScreen extends StatelessWidget {
                     height: displayHeight(context) * 0.03,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => loginScreen(),
-                        ));
-                  },
-                  child: Container(
-                    height: displayHeight(context) * 0.07,
-                    width: displayWidth(context) * 0.8,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Log in',
+                TextButton(
+                  style: ButtonStyle(
+                      splashFactory: InkSplash.splashFactory,
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          side: BorderSide(color: Colors.black45),
+                          borderRadius: BorderRadius.circular(18))),
+                      backgroundColor: MaterialStateProperty.all(Colors.white)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 50, right: 50, top: 6, bottom: 6),
+                    child: Text('Log In',
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: displayWidth(context) * 0.04),
-                      ),
-                    ),
+                            fontSize: displayWidth(context) * 0.04)),
                   ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const loginScreen(),
+                        ));
+                  },
                 ),
+
                 Opacity(
                   opacity: 0.0,
                   child: Divider(
                     height: displayHeight(context) * 0.03,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => registerScreen(),
-                        ));
-                  },
-                  child: Container(
-                    height: displayHeight(context) * 0.07,
-                    width: displayWidth(context) * 0.8,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [
-                            Colors.deepOrange,
-                            Colors.deepOrangeAccent,
-                            Colors.orange[600]!,
-                          ]),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Sign Up',
+                TextButton(
+                  style: ButtonStyle(
+                      splashFactory: InkSplash.splashFactory,
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18))),
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.orangeAccent)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 50, right: 50, top: 6, bottom: 6),
+                    child: Text('Sign Up',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: displayWidth(context) * 0.04),
-                      ),
-                    ),
+                            fontSize: displayWidth(context) * 0.04)),
                   ),
-                )
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const registerScreen(),
+                        ));
+                  },
+                  ),
+
+              
               ],
             ),
           ),

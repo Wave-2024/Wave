@@ -18,6 +18,7 @@ class _loginScreenState extends State<loginScreen> {
   TextEditingController? password;
   bool? isLoading;
   final _formKey = GlobalKey<FormState>();
+  final _formKeyForForgetPass = GlobalKey<FormState>();
   final authservice _auth = authservice(FirebaseAuth.instance);
   @override
   void initState() {
@@ -86,7 +87,6 @@ class _loginScreenState extends State<loginScreen> {
                       return null;
                     },
                     decoration: const InputDecoration(
-
                       labelStyle: TextStyle(color: Colors.black),
                       labelText: "Email",
                       hintText: "alpha77@yahoo.com",
@@ -215,8 +215,90 @@ class _loginScreenState extends State<loginScreen> {
                             ),
                           )),
                       TextButton(
-                          onPressed: () {
-                            // todo -> Forgot password algorithm
+                          onPressed: () async {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Form(
+                                            key: _formKeyForForgetPass,
+                                            child: TextFormField(
+                                              decoration: const InputDecoration(
+                                                labelText: "Email",
+                                                hintText:
+                                                    "officialwave@gmail.com",
+                                              ),
+                                              controller: email,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return "Cannot be empty";
+                                                } else {
+                                                  bool emailValid = RegExp(
+                                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                                      .hasMatch(value);
+                                                  if (!emailValid) {
+                                                    return "Please provide a valid email address";
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          const Opacity(
+                                              opacity: 0.0, child: Divider()),
+                                          TextButton(
+                                            onPressed: () async {
+                                              if (_formKeyForForgetPass
+                                                  .currentState!
+                                                  .validate()) {
+                                                final response =
+                                                    await _auth.resetPassword(
+                                                        email!.text.toString());
+                                                if (response == 'ok') {
+                                                  Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(const SnackBar(
+                                                          content: Text(
+                                                              "Password reset link has been sent to your email.")));
+                                                } else {
+                                                  Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content:
+                                                              Text(response!)));
+                                                }
+                                              }
+                                            },
+                                            child: const Text(
+                                              'Reset',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.orangeAccent),
+                                              shape: MaterialStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6))),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
                           },
                           child: Text(
                             'Forgot Password',

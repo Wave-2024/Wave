@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/screen/General/WelcomeScreen.dart';
+import 'package:nexus/screen/General/decideScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,6 @@ class _registerScreenState extends State<registerScreen> {
 
   @override
   void didChangeDependencies() async {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     if (init) {
       Provider.of<usernameProvider>(context).setUserNames().then((value) {
@@ -222,7 +222,7 @@ class _registerScreenState extends State<registerScreen> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => welcomeScreen(),
+                                        builder: (context) => decideScreen(),
                                       ));
                                 }
                               });
