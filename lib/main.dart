@@ -7,6 +7,7 @@ import 'package:nexus/providers/manager.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/screen/General/WelcomeScreen.dart';
+import 'package:nexus/screen/General/decideScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/services/auth_notifier.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             home: Consumer<AuthNotifier>(
               builder: (context, notifier, child) {
-                return notifier.user != null ? welcomeScreen() : wrapper();
+                return notifier.user != null ? decideScreen() : wrapper();
               },
             )));
   }
@@ -58,8 +59,10 @@ class wrapper extends StatelessWidget {
     final firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
-      return welcomeScreen();
-    } else
+      return decideScreen();
+    } else {
       return const authScreen();
+    }
+      
   }
 }

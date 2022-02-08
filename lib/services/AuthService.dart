@@ -51,6 +51,7 @@ class authservice {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
+            await value.user!.sendEmailVerification();
         await createNewNexusUser(email, title, username,value.user!.uid);
       });
       return "valid";
