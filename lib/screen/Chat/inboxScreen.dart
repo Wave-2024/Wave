@@ -1,10 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Chat/change_chat_bg.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/Encrypt_Message.dart';
 import 'package:nexus/utils/devicesize.dart';

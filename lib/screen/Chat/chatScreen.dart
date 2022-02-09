@@ -34,7 +34,7 @@ class _chatScreenState extends State<chatScreen> {
         Provider.of<manager>(context, listen: false).fetchAllUsers;
     NexusUser? myProfile = allUsers[currentUser!.uid.toString()];
     List<dynamic> myFollowingId = myProfile!.followings;
-    displayChatHead(String chatId,String lastSeen,String yourUid) {
+    displayChatHead(String chatId, String lastSeen, String yourUid) {
       return ListTile(
           isThreeLine: false,
           tileColor: Colors.transparent,
@@ -58,7 +58,7 @@ class _chatScreenState extends State<chatScreen> {
           ),
           subtitle: Text(
             lastSeen,
-            style: TextStyle(color: Colors.black45),
+            style: const TextStyle(color: Colors.black45),
           ),
           leading: (allUsers[yourUid]!.dp != '')
               ? CircleAvatar(
@@ -122,40 +122,52 @@ class _chatScreenState extends State<chatScreen> {
                           stream: FirebaseFirestore.instance
                               .collection('chats')
                               .doc(currentUser!.uid)
-                              .collection('mychats').orderBy('last seen',descending: true)
+                              .collection('mychats')
+                              .orderBy('last seen', descending: true)
                               .snapshots(),
                           builder: (context, AsyncSnapshot snapshot) {
-                            if(snapshot.connectionState.index == ConnectionState.waiting){
-                              return Center(child: load(context),);
-                            }
-                            else{
+                            if (snapshot.connectionState.index ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: load(context),
+                              );
+                            } else {
                               if (snapshot.hasData) {
-                                return (snapshot.data.docs.length==0)?Center(child: Text('No chats found')):ListView.builder(
-                                  itemCount: snapshot.data.docs.length,
-                                  itemBuilder: (context, index) {
-                                    String uid =
-                                    snapshot.data.docs[index].data()['uid'];
-                                    String chatId = snapshot.data.docs[index]
-                                        .data()['chatId'];
-                                    String userName = allUsers[uid]!.username;
-                                    String dp = allUsers[uid]!.dp;
-                                    Timestamp lastSeen = snapshot.data.docs[index]
-                                        .data()['last seen'];
-                                    DateTime lastSeenDate = lastSeen.toDate();
-                                    DateTime currentdate = DateTime.now();
-                                    String time=differenceOfTimeForChat(currentdate, lastSeenDate);
-                                    return displayChatHead(
-                                      chatId,
-                                      time,
-                                      uid,
-                                    );
-                                  },
-                                );
+                                return (snapshot.data.docs.length == 0)
+                                    ? const Center(
+                                        child: Text('No chats found'))
+                                    : ListView.builder(
+                                        itemCount: snapshot.data.docs.length,
+                                        itemBuilder: (context, index) {
+                                          String uid = snapshot.data.docs[index]
+                                              .data()['uid'];
+                                          String chatId = snapshot
+                                              .data.docs[index]
+                                              .data()['chatId'];
+                                          String userName =
+                                              allUsers[uid]!.username;
+                                          String dp = allUsers[uid]!.dp;
+                                          Timestamp lastSeen = snapshot
+                                              .data.docs[index]
+                                              .data()['last seen'];
+                                          DateTime lastSeenDate =
+                                              lastSeen.toDate();
+                                          DateTime currentdate = DateTime.now();
+                                          String time = differenceOfTimeForChat(
+                                              currentdate, lastSeenDate);
+                                          return displayChatHead(
+                                            chatId,
+                                            time,
+                                            uid,
+                                          );
+                                        },
+                                      );
                               } else {
-                                return Center(child: load(context),);
+                                return Center(
+                                  child: Image.asset('images/chatLoad.gif'),
+                                );
                               }
                             }
-
                           },
                         ),
                       ))
