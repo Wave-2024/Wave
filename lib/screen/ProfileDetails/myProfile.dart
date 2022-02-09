@@ -16,6 +16,7 @@ import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Authentication/authscreen.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -29,21 +30,35 @@ class _profiletScreenState extends State<profiletScreen> {
   bool viewPosts = true;
   File? imagefile;
   final picker = ImagePicker();
-  bool? loadScreen;
+  bool? loadScreenForProfile;
+  bool? loadScreenForEdititng;
   User? currentUser;
   bool init = true;
   ScrollController? controller = ScrollController();
+  final Future<SharedPreferences> localStoreInstance =
+      SharedPreferences.getInstance();
   @override
   void initState() {
     super.initState();
     currentUser = FirebaseAuth.instance.currentUser;
-    loadScreen = false;
+    loadScreenForEdititng = false;
+    loadScreenForProfile = false;
   }
 
   @override
   void didChangeDependencies() async {
     if (init) {
       await Provider.of<manager>(context).setAllUsers();
+      final SharedPreferences localStore = await localStoreInstance;
+      if (!localStore.getBool('myPosts')!) {
+        loadScreenForProfile = true;
+        await Provider.of<manager>(context, listen: false)
+            .setMyPosts(currentUser!.uid);
+        await Provider.of<manager>(context, listen: false)
+            .setSavedPostsOnce(currentUser!.uid);
+        localStore.setBool('myPosts', true);
+        loadScreenForProfile=false;
+      }
       init = false;
     }
     super.didChangeDependencies();
@@ -55,25 +70,19 @@ class _profiletScreenState extends State<profiletScreen> {
     super.dispose();
   }
 
-  Future<File> checkAnCompress()async{
+  Future<File> checkAnCompress() async {
     File? compressedFile = imagefile!;
     int minimumSize = 200 * 1024;
-    if(await compressedFile.length()>minimumSize){
+    if (await compressedFile.length() > minimumSize) {
       final dir = await path_provider.getTemporaryDirectory();
       final tp = dir.absolute.path + "/temp.jpg";
       compressedFile = await compressAndGetFile(compressedFile, tp);
     }
-    print(await compressedFile.length());
     return compressedFile;
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> refresh() async {
-      await Provider.of<manager>(context, listen: false).setAllUsers();
-      return;
-    }
-
     NexusUser? myProfile = Provider.of<manager>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     List<PostModel> posts = Provider.of<manager>(context).fetchMyPostsList;
@@ -85,19 +94,18 @@ class _profiletScreenState extends State<profiletScreen> {
       if (mounted) {
         if (pickedFile != null) {
           setState(() {
-            loadScreen = true;
-            imagefile=File(pickedFile.path);
+            loadScreenForEdititng = true;
+            imagefile = File(pickedFile.path);
           });
           File? compressedFile = await checkAnCompress();
           setState(() {
             imagefile = compressedFile;
           });
           await Provider.of<manager>(context, listen: false)
-              .addCoverPicture(
-                  imagefile, currentUser!.uid.toString())
+              .addCoverPicture(imagefile, currentUser!.uid.toString())
               .then((value) {
             setState(() {
-              loadScreen = false;
+              loadScreenForEdititng = false;
             });
           });
         }
@@ -109,19 +117,18 @@ class _profiletScreenState extends State<profiletScreen> {
       if (mounted) {
         if (pickedFile != null) {
           setState(() {
-            loadScreen = true;
-            imagefile=File(pickedFile.path);
+            loadScreenForEdititng = true;
+            imagefile = File(pickedFile.path);
           });
           File? compressedFile = await checkAnCompress();
           setState(() {
             imagefile = compressedFile;
           });
           await Provider.of<manager>(context, listen: false)
-              .addProfilePicture(
-                  imagefile, currentUser!.uid.toString())
+              .addProfilePicture(imagefile, currentUser!.uid.toString())
               .then((value) {
             setState(() {
-              loadScreen = false;
+              loadScreenForEdititng = false;
             });
           });
         }
@@ -134,10 +141,46 @@ class _profiletScreenState extends State<profiletScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (loadScreen!)
-              ? Center(
-                  child: load(context),
-                )
+          child: (loadScreenForProfile! || loadScreenForEdititng!)
+              ? (loadScreenForProfile!)
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: displayHeight(context) * 0.2,
+                        ),
+                        Expanded(
+                            child: Image.asset('images/updateProfile.gif')),
+                        Expanded(
+                            child: Text(
+                          'Fetching your details',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54,
+                              fontSize: displayWidth(context) * 0.05),
+                        )),
+                      ],
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: displayHeight(context) * 0.2,
+                        ),
+                        Expanded(child: Image.asset('images/uploadPost.gif')),
+                        Expanded(
+                          child: Text(
+                            'Uploading image',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold,
+                                fontSize: displayWidth(context) * 0.05),
+                          ),
+                        ),
+                      ],
+                    )
               : SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -191,7 +234,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Padding(
-                                    padding: const EdgeInsets.all(2.5),
+                                    padding: const EdgeInsets.all(2),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: (myProfile.dp != '')
