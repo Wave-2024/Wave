@@ -226,7 +226,7 @@ class _ReplyCommentScreenState extends State<ReplyCommentScreen> {
                                     ),
                             ),
                           ),
-                          (originalCommenter.followers.length >= 5)
+                          (user.followers.length >= 5)
                               ? Icon(
                                   Icons.verified,
                                   color: Colors.orange[400],
