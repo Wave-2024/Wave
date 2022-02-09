@@ -4,6 +4,7 @@ import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/homescreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class welcomeScreen extends StatefulWidget {
   @override
@@ -13,6 +14,8 @@ class welcomeScreen extends StatefulWidget {
 class _welcomeScreenState extends State<welcomeScreen> {
   bool init = true;
   User? currentUser;
+  final Future<SharedPreferences> localStoreInstance =
+      SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -28,15 +31,12 @@ class _welcomeScreenState extends State<welcomeScreen> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      await Provider.of<manager>(context).setAllUsers();
-      await Provider.of<manager>(context, listen: false)
-          .setFeedPosts(currentUser!.uid);
-      await Provider.of<manager>(context, listen: false)
-          .setMyPosts(currentUser!.uid.toString());
-      await Provider.of<manager>(context, listen: false)
-          .setSavedPostsOnce(currentUser!.uid.toString());
+      final SharedPreferences localStore = await localStoreInstance;
+      localStore.setBool('feedPosts', false);
+      localStore.setBool('myPosts', false);
+      await Provider.of<manager>(context, listen: false).setAllUsers();
       init = false;
-      if(mounted){
+      if (mounted) {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -53,10 +53,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
       body: Container(
           height: displayHeight(context),
           width: displayWidth(context),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('images/welcome.jpg'), fit: BoxFit.cover),
-          ),
+          color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,13 +66,18 @@ class _welcomeScreenState extends State<welcomeScreen> {
                 width: displayWidth(context) * 0.5,
                 fit: BoxFit.cover,
               ),
-              const CircularProgressIndicator(
-                backgroundColor: Colors.indigo,
-                color: Colors.white30,
+
+              Expanded(
+                child: Image.asset(
+                  'images/openLoad.gif',
+                  height: displayHeight(context) * 0.2,
+                  width: displayWidth(context) * 0.5,
+                  fit: BoxFit.cover,
+                ),
               ),
               Expanded(
                 child: SizedBox(
-                  height: displayHeight(context) * 0.3,
+                  height: displayHeight(context)*0.2,
                 ),
               ),
               Expanded(
