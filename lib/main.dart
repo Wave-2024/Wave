@@ -6,7 +6,6 @@ import 'package:nexus/providers/screenIndexProvider.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
-import 'package:nexus/screen/General/WelcomeScreen.dart';
 import 'package:nexus/screen/General/decideScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/services/auth_notifier.dart';
@@ -28,8 +27,6 @@ class MyApp extends StatelessWidget {
           ),
           Provider<authservice>(
               create: (_) => authservice(FirebaseAuth.instance)),
-
-          // ignore: missing_required_param
           StreamProvider(
             create: (context) => context.read<authservice>().austhStateChanges,
             initialData: null,
@@ -41,7 +38,6 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => manager(),
           ),
-          //ChangeNotifierProvider(create: (context) => GlobalVariable(),),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -63,6 +59,5 @@ class wrapper extends StatelessWidget {
     } else {
       return const authScreen();
     }
-      
   }
 }
