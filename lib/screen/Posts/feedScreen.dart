@@ -64,6 +64,7 @@ class _feedScreenState extends State<feedScreen> {
     return;
   }
 
+ 
   @override
   void didChangeDependencies() async {
     final SharedPreferences localStore = await localStoreInstance;
@@ -111,67 +112,77 @@ class _feedScreenState extends State<feedScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (loadScreen!)?Center(child: Image.asset('images/postLoad.gif',fit: BoxFit.contain,)) :LiquidPullToRefresh(
-            color: Colors.orange[400],
-            animSpeedFactor: 5,
-            height: displayHeight(context) * 0.2,
-            key: _refreshIndicatorKey,
-            showChildOpacityTransition: false,
-            onRefresh: setPosts,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  height: displayHeight(context) * 0.08,
-                  width: displayWidth(context),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 8.0, bottom: 8.0, left: 20, right: 18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                              padding: const EdgeInsets.only(top: 0),
-                              child: Text(
-                                'Wave',
-                                style: TextStyle(
-                                    fontFamily: 'Pacifico',
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: displayWidth(context) * 0.07),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => NotificationScreen(),
-                                ));
-                          },
-                          child: Badge(
-                              badgeColor: Colors.red[400]!,
-                              badgeContent: Text(
-                                unreadNotificationList.length.toString(),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: displayWidth(context) * 0.03),
+          child: (loadScreen!)
+              ? Center(
+                  child: Image.asset(
+                  'images/postLoad.gif',
+                  fit: BoxFit.contain,
+                ))
+              : LiquidPullToRefresh(
+                  color: Colors.orange[400],
+                  animSpeedFactor: 5,
+                  height: displayHeight(context) * 0.2,
+                  key: _refreshIndicatorKey,
+                  showChildOpacityTransition: false,
+                  onRefresh: setPosts,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: displayHeight(context) * 0.08,
+                        width: displayWidth(context),
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8.0, bottom: 8.0, left: 20, right: 18),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                    padding: const EdgeInsets.only(top: 0),
+                                    child: Text(
+                                      'Wave',
+                                      style: TextStyle(
+                                          fontFamily: 'Pacifico',
+                                          color: Colors.orange,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize:
+                                              displayWidth(context) * 0.07),
+                                    )),
                               ),
-                              child: const Icon(Icons.notifications_none)),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            NotificationScreen(),
+                                      ));
+                                },
+                                child: Badge(
+                                    badgeColor: Colors.red[400]!,
+                                    badgeContent: Text(
+                                      unreadNotificationList.length.toString(),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize:
+                                              displayWidth(context) * 0.03),
+                                    ),
+                                    child:
+                                        const Icon(Icons.notifications_none)),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  height: displayHeight(context) * 0.83,
-                  width: displayWidth(context),
-                  // color: Colors.yellow,
-                  child: SingleChildScrollView(
-                    child: Column(
+                      ),
+                      Container(
+                        height: displayHeight(context) * 0.83,
+                        width: displayWidth(context),
+                        // color: Colors.yellow,
+                        child: SingleChildScrollView(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               // 1st item is Story container
@@ -264,18 +275,25 @@ class _feedScreenState extends State<feedScreen> {
                                                         ),
                                                       ),
                                                     )),
-                                                Divider(
+                                                Container(
                                                   height:
                                                       displayHeight(context) *
-                                                          0.006,
-                                                ),
-                                                Text(
-                                                  'My Story',
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: displayWidth(
-                                                              context) *
-                                                          0.032),
+                                                          0.025,
+                                                  width: displayWidth(context) *
+                                                      0.15,
+                                                  child: Center(
+                                                    child: Text(
+                                                      'My Story',
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize:
+                                                              displayWidth(
+                                                                      context) *
+                                                                  0.032),
+                                                    ),
+                                                  ),
                                                 ),
                                               ],
                                             )
@@ -311,18 +329,25 @@ class _feedScreenState extends State<feedScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                Divider(
+                                                Container(
                                                   height:
                                                       displayHeight(context) *
-                                                          0.006,
-                                                ),
-                                                Text(
-                                                  'Add Story',
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: displayWidth(
-                                                              context) *
-                                                          0.032),
+                                                          0.025,
+                                                  width: displayWidth(context) *
+                                                      0.18,
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Add Story',
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize:
+                                                              displayWidth(
+                                                                      context) *
+                                                                  0.032),
+                                                    ),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -332,7 +357,7 @@ class _feedScreenState extends State<feedScreen> {
                                         // color: Colors.red,
                                         child: ListView.builder(
                                           padding: EdgeInsets.only(
-                                              left: (myStory) ? 1 : 5,
+                                              left: (myStory) ? 3 : 6,
                                               right: 2),
                                           scrollDirection: Axis.horizontal,
                                           shrinkWrap: true,
@@ -400,19 +425,27 @@ class _feedScreenState extends State<feedScreen> {
                                                         ),
                                                       ),
                                                     )),
-                                                Divider(
+                                                Container(
+                                                  child: Center(
+                                                    child: Text(
+                                                      allUsers[stories[index]
+                                                              .uid]!
+                                                          .username,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize:
+                                                              displayWidth(
+                                                                      context) *
+                                                                  0.032),
+                                                    ),
+                                                  ),
                                                   height:
                                                       displayHeight(context) *
-                                                          0.006,
-                                                ),
-                                                Text(
-                                                  allUsers[stories[index].uid]!
-                                                      .username,
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: displayWidth(
-                                                              context) *
-                                                          0.032),
+                                                          0.025,
+                                                  width: displayWidth(context) *
+                                                      0.15,
                                                 ),
                                               ],
                                             );
@@ -428,12 +461,7 @@ class _feedScreenState extends State<feedScreen> {
                                   child: Divider(
                                     height: displayHeight(context) * 0.01,
                                   )),
-                              (myProfile.followings.isEmpty)
-                                  ? suggestionCards(
-                                      currentUser: currentUser!,
-                                    )
-                                  : (feedPosts.isNotEmpty)
-                                      ? Padding(
+                              (Padding(
                                           padding: const EdgeInsets.only(
                                               left: 21.0,
                                               right: 21,
@@ -458,20 +486,17 @@ class _feedScreenState extends State<feedScreen> {
                                             },
                                             itemCount: feedPosts.length,
                                           ),
-                                        )
-                                      : const SizedBox(),
-                              (myProfile.followings.isNotEmpty)
-                                  ? suggestionCards(
-                                      currentUser: currentUser!,
-                                    )
-                                  : const SizedBox()
+                              )),
+                              suggestionCards(
+                                currentUser: currentUser!,
+                              )
                             ],
                           ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -488,8 +513,12 @@ class suggestionCards extends StatelessWidget {
         Provider.of<manager>(context).fetchAllUsers;
     final List<NexusUser>? suggestedUser = allUsers.values
         .toList()
-        .where((element) => element.uid != currentUser!.uid)
+        .where((element) =>
+            element.uid != currentUser!.uid &&
+            !(element.followers.contains(currentUser!.uid)))
         .toList();
+    suggestedUser!
+        .sort(((a, b) => b.followers.length > a.followers.length ? 1 : 0));
 
     return Container(
       height: displayHeight(context) * 0.7,
@@ -558,7 +587,7 @@ class suggestionCards extends StatelessWidget {
                                   padding: const EdgeInsets.all(2.5),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: (suggestedUser![index].dp != '')
+                                    child: (suggestedUser[index].dp != '')
                                         ? CachedNetworkImage(
                                             imageUrl: suggestedUser[index].dp,
                                             height:
@@ -603,7 +632,7 @@ class suggestionCards extends StatelessWidget {
                                       child: VerticalDivider(
                                         width: displayWidth(context) * 0.01,
                                       )),
-                                  (suggestedUser[index].followers.length > 5)
+                                  (suggestedUser[index].followers.length >= 25)
                                       ? Icon(
                                           Icons.verified,
                                           color: Colors.orange[400],
@@ -726,7 +755,7 @@ class suggestionCards extends StatelessWidget {
                   ),
                 );
               },
-              itemCount: suggestedUser!.length,
+              itemCount: suggestedUser.length,
               scrollDirection: Axis.horizontal,
             ),
           )
