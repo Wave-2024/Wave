@@ -60,11 +60,28 @@ class _userProfileState extends State<userProfile> {
           width: displayWidth(context),
           color: Colors.white,
           child: (loadScreen!)
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.orange,
-                    backgroundColor: Colors.blue,
-                  ),
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: displayHeight(context) * 0.2,
+                    ),
+                    Expanded(
+                        child: Image.asset(
+                      'images/userProfileLoad.gif',
+                      fit: BoxFit.cover,
+                    )),
+                    Expanded(
+                      child: Text(
+                        'Loading profile',
+                        style: TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.bold,
+                            fontSize: displayWidth(context) * 0.05),
+                      ),
+                    ),
+                  ],
                 )
               : SingleChildScrollView(
                   child: Column(
@@ -177,15 +194,7 @@ class _userProfileState extends State<userProfile> {
                                     ),
                                   ),
                                 )),
-                            Positioned(
-                                right: displayWidth(context) * 0.02,
-                                top: displayHeight(context) * 0.005,
-                                child: IconButton(
-                                  iconSize: displayWidth(context) * 0.08,
-                                  icon: const Icon(Icons.more_vert),
-                                  onPressed: () async {},
-                                  color: Colors.white70,
-                                )),
+                            
                           ],
                         ),
                       ),
