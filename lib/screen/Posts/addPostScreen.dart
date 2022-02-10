@@ -66,17 +66,24 @@ class _addPostScreenState extends State<addPostScreen> {
           ),
         ),
         actions: [
-           IconButton(
+          (uploadingPost!)
+              ? const SizedBox()
+              : IconButton(
                   onPressed: () {
-                   if(imagefile!=null){
-                     setState(() {
-                       imagefile = null;
-                     });
-                   }
+                    if (!uploadingPost!) {
+                      if (imagefile != null) {
+                        setState(() {
+                          imagefile = null;
+                        });
+                      }
+                    }
                   },
                   color: (imagefile!=null)?Colors.red[300]:Colors.grey,
                   icon: const Icon(Icons.delete)),
-          IconButton(onPressed: () async {
+          (uploadingPost!)
+              ? const SizedBox()
+              : IconButton(
+                  onPressed: () async {
             if(imagefile!=null){
               setState(() {
                 uploadingPost = true;
