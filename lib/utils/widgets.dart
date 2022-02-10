@@ -271,7 +271,7 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
   return ListTile(
       tileColor: Colors.transparent,
       onTap: () {
-        if(currentUser!.uid!=user.uid){
+        if (currentUser!.uid != user.uid) {
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -280,7 +280,6 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
                 ),
               ));
         }
-        
       },
       title: Text(
         user.title,
