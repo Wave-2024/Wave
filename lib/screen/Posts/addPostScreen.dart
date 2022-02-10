@@ -111,17 +111,14 @@ class _addPostScreenState extends State<addPostScreen> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.orange,
-                          backgroundColor: Colors.blue,
+                    children: [
+                      SizedBox(height: displayHeight(context)*0.2),
+                     Expanded(child: Image.asset('images/postLoad.gif')),
+                      Expanded(
+                        child: Text(
+                          'Uploading Post ...',
+                          style: TextStyle(color: Colors.black54,fontSize: displayWidth(context)*0.05,fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      Opacity(opacity: 0.0, child: Divider()),
-                      Text(
-                        'Uploading Post ...',
-                        style: TextStyle(color: Colors.black54),
                       ),
                     ],
                   )
@@ -132,15 +129,15 @@ class _addPostScreenState extends State<addPostScreen> {
                         (imagefile != null)
                             ? Image.file(
                                 imagefile!,
-                                height: displayHeight(context) * 0.3,
-                                width: displayWidth(context) * 0.6,
+                                height: displayHeight(context) * 0.5,
+                                width: displayWidth(context) * 0.8,
                                 fit: BoxFit.contain,
                               )
                             : Container(
                                 decoration: BoxDecoration(
                                     border: Border.all(color: Colors.black)),
-                                height: displayHeight(context) * 0.3,
-                                width: displayWidth(context) * 0.6,
+                                height: displayHeight(context) * 0.5,
+                                width: displayWidth(context) * 0.8,
                                 child: Center(child: IconButton(
                                   onPressed: () {
                                     pickImage();
