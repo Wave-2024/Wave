@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus/screen/Authentication/authscreen.dart';
 
 import '../../services/AuthService.dart';
 import '../../utils/devicesize.dart';
@@ -152,7 +153,7 @@ class verifyEmailScreen extends StatelessWidget {
               ),
               const Opacity(opacity: 0.0, child: Divider()),
               GestureDetector(
-                onTap: () => _auth.signOut(),
+                onTap: () => _auth.signOut().then((value) => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => authScreen(),))),
                 child: Container(
                   decoration: BoxDecoration(
                       borderRadius:

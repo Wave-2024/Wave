@@ -19,13 +19,12 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-
-  bool? init ;
+  bool? init;
   User currentUser = FirebaseAuth.instance.currentUser!;
   @override
   void initState() {
     super.initState();
-    init=true;
+    init = true;
   }
 
   @override
@@ -35,7 +34,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   void didChangeDependencies() async {
-    if(init!){
+    if (init!) {
       await Provider.of<manager>(context).setMyPosts(currentUser.uid);
       init = false;
     }
@@ -44,13 +43,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     List<NotificationModel> list =
         Provider.of<manager>(context).fetchNotifications;
     Map<String, NexusUser> allUsers =
         Provider.of<manager>(context).fetchAllUsers;
-    List<PostModel> myPosts =
-        Provider.of<manager>(context).fetchMyPostsList;
+    List<PostModel> myPosts = Provider.of<manager>(context).fetchMyPostsList;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -137,12 +134,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         fontSize:
                                             displayWidth(context) * 0.036),
                                   ),
-                                  CachedNetworkImage(
-                                    imageUrl: post.image,
-                                    height: displayHeight(context) * 0.05,
-                                    width: displayWidth(context) * 0.1,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  (postIndex != -1)
+                                      ? CachedNetworkImage(
+                                          imageUrl: post.image,
+                                          height: displayHeight(context) * 0.05,
+                                          width: displayWidth(context) * 0.1,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const SizedBox(),
                                 ],
                               ),
                             );
@@ -180,12 +179,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         fontSize:
                                             displayWidth(context) * 0.036),
                                   ),
-                                  CachedNetworkImage(
-                                    imageUrl: post.image,
-                                    height: displayHeight(context) * 0.05,
-                                    width: displayWidth(context) * 0.1,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  (postIndex != -1)
+                                      ? CachedNetworkImage(
+                                          imageUrl: post.image,
+                                          height: displayHeight(context) * 0.05,
+                                          width: displayWidth(context) * 0.1,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const SizedBox(),
                                 ],
                               ),
                             );
@@ -221,17 +222,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         fontSize:
                                             displayWidth(context) * 0.036),
                                   ),
-                                  (user.dp!='')?CachedNetworkImage(
-                                    imageUrl: user.dp,
-                                    height: displayHeight(context) * 0.05,
-                                    width: displayWidth(context) * 0.1,
-                                    fit: BoxFit.cover,
-                                  ):Container(
-                                    height: displayHeight(context) * 0.05,
-                                    width: displayWidth(context) * 0.1,
-                                    color: Colors.grey[200],
-                                    child: Center(child: Icon(Icons.person,color: Colors.orange[400],),),
-                                  ),
+                                  (user.dp != '')
+                                      ? CachedNetworkImage(
+                                          imageUrl: user.dp,
+                                          height: displayHeight(context) * 0.05,
+                                          width: displayWidth(context) * 0.1,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Container(
+                                          height: displayHeight(context) * 0.05,
+                                          width: displayWidth(context) * 0.1,
+                                          color: Colors.grey[200],
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.person,
+                                              color: Colors.orange[400],
+                                            ),
+                                          ),
+                                        ),
                                 ],
                               ),
                             );
@@ -247,24 +255,39 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           child: InkWell(
                               onTap: () {
                                 if (list[index].type == 'like') {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => viewMyPostScreen(
-                                          index: postIndex!,
-                                          myUid: currentUser.uid,
-                                        ),
-                                      ));
+                                  if (index == -1) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('Post does not exist')));
+                                  } else {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              viewMyPostScreen(
+                                            index: postIndex!,
+                                            myUid: currentUser.uid,
+                                          ),
+                                        ));
+                                  }
                                 } else if (list[index].type == 'comment') {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            CommentScreenForMyPosts(
-                                          postId: list[index].postId,
-                                          postOwner: user,
-                                        ),
-                                      ));
+                                  if (index == -1) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('Post does not exist')));
+                                  } else {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CommentScreenForMyPosts(
+                                            postId: list[index].postId,
+                                            postOwner: user,
+                                          ),
+                                        ));
+                                  }
                                 } else {
                                   Navigator.push(
                                       context,
@@ -281,8 +304,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             children: [
                               SlidableAction(
                                 onPressed: (context) {
-                                  Provider.of<manager>(context,
-                                          listen: false)
+                                  Provider.of<manager>(context, listen: false)
                                       .readNotification(currentUser.uid,
                                           list[index].notificationId!);
                                 },
@@ -294,8 +316,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               ),
                               SlidableAction(
                                 onPressed: (context) {
-                                  Provider.of<manager>(context,
-                                          listen: false)
+                                  Provider.of<manager>(context, listen: false)
                                       .deleteNotification(currentUser.uid,
                                           list[index].notificationId!);
                                 },

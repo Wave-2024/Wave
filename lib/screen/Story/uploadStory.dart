@@ -25,6 +25,19 @@ class _uploadStoryScreenState extends State<uploadStoryScreen> {
     isUploading = false;
   }
 
+  loadingBoxDecoration(){
+    return const BoxDecoration(
+      color: Colors.white
+    );
+  }
+
+  normalBoxDecoration(){
+    return BoxDecoration(
+      image: DecorationImage(
+          image: FileImage(widget.imageFile!), fit: BoxFit.contain),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,16 +45,24 @@ class _uploadStoryScreenState extends State<uploadStoryScreen> {
       body: Container(
         height: displayHeight(context),
         width: displayWidth(context),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: FileImage(widget.imageFile!), fit: BoxFit.contain),
-        ),
+        decoration: (isUploading!)?loadingBoxDecoration():normalBoxDecoration(),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: (isUploading!)
-              ? Center(
-                  child: load(context),
-                )
+              ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: displayHeight(context)*0.2),
+              Expanded(child: Image.asset('images/uploadStory.gif')),
+              Expanded(
+                child: Text(
+                  'Updating your story',
+                  style: TextStyle(color: Colors.black54,fontSize: displayWidth(context)*0.05,fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          )
               : Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

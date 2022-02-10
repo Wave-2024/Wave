@@ -160,7 +160,8 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                                     String uid =
                                         snapshot.data.docs[index].data()['uid'];
                                     String commentId = snapshot.data.docs[index]
-                                        .data()['commentId']??[];
+                                            .data()['commentId'] ??
+                                        '';
                                     return DisplayCommentBox(
                                         uid: uid,
                                         commentTime: commentTime,

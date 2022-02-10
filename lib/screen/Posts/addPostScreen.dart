@@ -66,17 +66,24 @@ class _addPostScreenState extends State<addPostScreen> {
           ),
         ),
         actions: [
-           IconButton(
+          (uploadingPost!)
+              ? const SizedBox()
+              : IconButton(
                   onPressed: () {
-                   if(imagefile!=null){
-                     setState(() {
-                       imagefile = null;
-                     });
-                   }
+                    if (!uploadingPost!) {
+                      if (imagefile != null) {
+                        setState(() {
+                          imagefile = null;
+                        });
+                      }
+                    }
                   },
                   color: (imagefile!=null)?Colors.red[300]:Colors.grey,
                   icon: const Icon(Icons.delete)),
-          IconButton(onPressed: () async {
+          (uploadingPost!)
+              ? const SizedBox()
+              : IconButton(
+                  onPressed: () async {
             if(imagefile!=null){
               setState(() {
                 uploadingPost = true;
@@ -111,17 +118,14 @@ class _addPostScreenState extends State<addPostScreen> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.orange,
-                          backgroundColor: Colors.blue,
+                    children: [
+                      SizedBox(height: displayHeight(context)*0.2),
+                     Expanded(child: Image.asset('images/postLoad.gif')),
+                      Expanded(
+                        child: Text(
+                          'Uploading Post ...',
+                          style: TextStyle(color: Colors.black54,fontSize: displayWidth(context)*0.05,fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      Opacity(opacity: 0.0, child: Divider()),
-                      Text(
-                        'Uploading Post ...',
-                        style: TextStyle(color: Colors.black54),
                       ),
                     ],
                   )
@@ -132,15 +136,15 @@ class _addPostScreenState extends State<addPostScreen> {
                         (imagefile != null)
                             ? Image.file(
                                 imagefile!,
-                                height: displayHeight(context) * 0.3,
-                                width: displayWidth(context) * 0.6,
+                                height: displayHeight(context) * 0.5,
+                                width: displayWidth(context) * 0.8,
                                 fit: BoxFit.contain,
                               )
                             : Container(
                                 decoration: BoxDecoration(
                                     border: Border.all(color: Colors.black)),
-                                height: displayHeight(context) * 0.3,
-                                width: displayWidth(context) * 0.6,
+                                height: displayHeight(context) * 0.5,
+                                width: displayWidth(context) * 0.8,
                                 child: Center(child: IconButton(
                                   onPressed: () {
                                     pickImage();

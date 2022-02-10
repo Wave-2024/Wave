@@ -98,7 +98,20 @@ class _searchScreenState extends State<searchScreen> {
         width: displayWidth(context),
         color: Colors.white,
         child: (screenLoading!)
-            ? load(context)
+            ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: displayHeight(context)*0.2,),
+            Expanded(child: Image.asset('images/searchLoad.gif')),
+            Expanded(
+              child: Text('Fetching Profiles',style: TextStyle(
+                color: Colors.black54,fontSize: displayWidth(context)*0.05,
+                fontWeight: FontWeight.bold
+              ),),
+            )
+          ],
+        )
             : SingleChildScrollView(
                 child: (Column(
                   mainAxisAlignment: MainAxisAlignment.start,
