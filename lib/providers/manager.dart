@@ -78,14 +78,14 @@ class manager extends ChangeNotifier {
           dp: data['dp'],
           email: data['email'],
           followers: data['followers'] ?? [],
-          followings: data['followings']??[],
+          followings: data['followings'] ?? [],
           title: data['title'],
           uid: data['uid'],
           username: data['username'],
           story: data['story'] ?? '',
           storyTime: DateTime.parse(data['storyTime']),
           views: data['views'] ?? []);
-      allUsers[myUid]=updatedUser;
+      allUsers[myUid] = updatedUser;
       notifyListeners();
     } catch (error) {
       print(error);
@@ -723,7 +723,7 @@ class manager extends ChangeNotifier {
       final data = json.decode(response.body) as Map<String, dynamic>;
       returnThisPost = PostModel(
           caption: data['caption'],
-          dateOfPost: data['dateOfPost'],
+          dateOfPost: DateTime.parse(data['dateOfPost']),
           image: data['image'],
           uid: data['uid'],
           post_id: postId,
@@ -743,6 +743,7 @@ class manager extends ChangeNotifier {
     final String api = constants().fetchApi + 'saved/${myUid}.json';
     try {
       savedPostsMap[postModel.post_id] = postModel;
+      print('saving');
       notifyListeners();
       await http
           .post(Uri.parse(api),
@@ -791,13 +792,15 @@ class manager extends ChangeNotifier {
         final notificationData =
             json.decode(notificationResponse.body) as Map<String, dynamic>;
         notificationData.forEach((key, value) {
-          tempList.add(NotificationModel(
-              notificationId: key,
-              read: value['read'],
-              notifierUid: value['notifierUid'],
-              postId: value['postId'],
-              time: DateTime.parse(value['time']),
-              type: value['type']));
+          if (myPostsMap.containsKey(value['postId'])) {
+            tempList.add(NotificationModel(
+                notificationId: key,
+                read: value['read'],
+                notifierUid: value['notifierUid'],
+                postId: value['postId'],
+                time: DateTime.parse(value['time']),
+                type: value['type']));
+          }
         });
       }
       notificationList = tempList;
@@ -949,7 +952,7 @@ class manager extends ChangeNotifier {
       final res = await http.get(Uri.parse(api));
       final data = json.decode(res.body) as Map<String, dynamic>;
       tempViews = data['views'] ?? [];
-      if (myUid!=uid && !tempViews.contains(myUid)) {
+      if (myUid != uid && !tempViews.contains(myUid)) {
         tempViews.add(myUid);
         await http.patch(Uri.parse(api),
             body: json.encode({'views': tempViews}));
