@@ -54,8 +54,6 @@ class _profiletScreenState extends State<profiletScreen> {
         loadScreenForProfile = true;
         await Provider.of<manager>(context, listen: false)
             .setMyPosts(currentUser!.uid);
-        await Provider.of<manager>(context, listen: false)
-            .setSavedPostsOnce(currentUser!.uid);
         localStore.setBool('myPosts', true);
         loadScreenForProfile=false;
       }
