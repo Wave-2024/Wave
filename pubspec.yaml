@@ -37,7 +37,6 @@ dependencies:
   image_picker: ^0.8.4+5
   firebase_storage: ^10.2.6
   permission_handler: ^8.3.0
-  url_launcher: ^6.0.18
   intl: ^0.17.0
   cached_network_image: ^3.2.0
   comment_box: ^0.0.17
