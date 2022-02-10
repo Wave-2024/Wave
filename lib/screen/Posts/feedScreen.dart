@@ -10,6 +10,7 @@ import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/notificationScreen.dart';
+import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/screen/Story/uploadStory.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/screen/Story/viewStory.dart';
@@ -1072,12 +1073,23 @@ Widget displayPostsForFeed(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      post.likes.length.toString() + ' likes',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: displayWidth(context) * 0.035,
-                          fontWeight: FontWeight.bold),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => usersWhoLikedScreen(
+                                usersWhoLiked: post.likes,
+                              ),
+                            ));
+                      },
+                      child: Text(
+                        post.likes.length.toString() + ' likes',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: displayWidth(context) * 0.035,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                     (ifPostedToday(post.dateOfPost))
                         ? Text(displayTime(post.dateOfPost),
