@@ -35,6 +35,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
       localStore.setBool('feedPosts', false);
       localStore.setBool('myPosts', false);
       await Provider.of<manager>(context, listen: false).setAllUsers();
+      await Provider.of<manager>(context,listen: false).setSavedPostsOnce(currentUser!.uid);
       init = false;
       if (mounted) {
         Navigator.pushReplacement(
