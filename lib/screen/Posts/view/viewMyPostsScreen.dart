@@ -200,7 +200,7 @@ Widget displayMyPosts(
                       VerticalDivider(
                         width: displayWidth(context) * 0.005,
                       ),
-                      (user.followers.length >= 5)
+                      (user.followers.length >= 25)
                           ? Icon(
                               Icons.verified,
                               color: Colors.orange[400],

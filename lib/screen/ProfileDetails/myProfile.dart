@@ -433,7 +433,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                   child: VerticalDivider(
                                     width: displayWidth(context) * 0.015,
                                   )),
-                              (myProfile.followers.length >= 5)
+                              (myProfile.followers.length >= 25)
                                   ? Padding(
                                       padding:
                                           const EdgeInsets.only(bottom: 1.5),

@@ -184,7 +184,7 @@ class _viewStoryState extends State<viewStory> {
                                     width: 5,
                                   )),
                               (allUsers[widget.story!.uid]!.followers.length >=
-                                      5)
+                                      25)
                                   ? Icon(
                                       Icons.verified,
                                       color: Colors.orange,

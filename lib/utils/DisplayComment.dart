@@ -107,7 +107,7 @@ class DisplayCommentBox extends StatelessWidget {
                 ),
               ),
             ),
-            (user.followers.length >= 5)
+            (user.followers.length >= 25)
                 ? Icon(
                     Icons.verified,
                     color: Colors.orange[400],

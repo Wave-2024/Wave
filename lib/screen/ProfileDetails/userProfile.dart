@@ -211,7 +211,7 @@ class _userProfileState extends State<userProfile> {
                                   fontSize: displayWidth(context) * 0.045,
                                   fontWeight: FontWeight.bold),
                             ),
-                            (thisProfile.followers.length >= 5)
+                            (thisProfile.followers.length >= 25)
                                 ? Padding(
                                     padding: const EdgeInsets.only(bottom: 1.5),
                                     child: Icon(

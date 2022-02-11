@@ -150,7 +150,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                             child: VerticalDivider(
                               width: displayWidth(context) * 0.003,
                             )),
-                        (displayList[index].followers.length >= 5)
+                        (displayList[index].followers.length >= 25)
                             ? Icon(
                           Icons.verified,
                           color: Colors.orange[400],

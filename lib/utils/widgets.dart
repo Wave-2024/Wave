@@ -301,7 +301,7 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
               child: VerticalDivider(
                 width: displayWidth(context) * 0.003,
               )),
-          (user.followers.length >= 5)
+          (user.followers.length >= 25)
               ? Icon(
                   Icons.verified,
                   color: Colors.orange[400],
