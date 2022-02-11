@@ -312,7 +312,7 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
       ),
       leading: (user.dp != '')
           ? CircleAvatar(
-              backgroundImage: NetworkImage(user.dp),
+              backgroundImage: CachedNetworkImageProvider(user.dp),
               radius: displayWidth(context) * 0.05,
             )
           : CircleAvatar(
