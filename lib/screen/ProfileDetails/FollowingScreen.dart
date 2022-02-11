@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
@@ -120,6 +121,9 @@ class _FollowingScreenState extends State<FollowingScreen> {
                 itemCount: displayList.length,
                 itemBuilder: (context, index) {
                   return ListTile(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: displayList[index].uid),));
+                    },
                     visualDensity: const VisualDensity(horizontal: 0,vertical: -4),
                     leading: (displayList[index].dp!='')?CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(displayList[index].dp),

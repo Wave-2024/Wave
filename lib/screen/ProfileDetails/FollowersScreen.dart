@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
+import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 
 class FollowersScreen extends StatefulWidget {
@@ -115,6 +116,9 @@ class _FollowersScreenState extends State<FollowersScreen> {
                 itemCount: displayList.length,
                 itemBuilder: (context, index) {
                   return ListTile(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: displayList[index].uid),));
+                    },
                     visualDensity: const VisualDensity(horizontal: 0,vertical: -4),
                     leading: (displayList[index].dp!='')?CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(displayList[index].dp),
