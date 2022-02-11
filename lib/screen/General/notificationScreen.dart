@@ -13,6 +13,8 @@ import 'package:nexus/utils/devicesize.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/widgets.dart';
+
 class NotificationScreen extends StatefulWidget {
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -41,6 +43,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.didChangeDependencies();
   }
 
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+
+
   @override
   Widget build(BuildContext context) {
     List<NotificationModel> list =
@@ -52,7 +70,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           'Notifications',
           style: TextStyle(color: Colors.black),
@@ -93,14 +111,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     ),
                   ),
-                  Opacity(opacity: 0.0, child: Divider()),
+                  const Opacity(opacity: 0.0, child: Divider()),
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       Container? tile;
                       int? postIndex;
                       NexusUser user = allUsers[list[index].notifierUid]!;
+                      DateTime dateTime = list[index].time!;
+                      String day = dateTime.day.toString();
+                      String year = dateTime.year.toString();
+                      String month = months[dateTime.month - 1];
                       switch (list[index].type) {
                         case 'like':
                           {
@@ -117,31 +139,59 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                     color: Colors.grey,
                                     width: displayWidth(context) * 0.001),
                               ),
-                              height: displayHeight(context) * 0.08,
+                              height: displayHeight(context) * 0.105,
                               width: displayWidth(context) * 0.95,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.favorite,
-                                    color: Colors.red[600],
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.favorite,
+                                        color: Colors.red[600],
+                                      ),
+                                      Text(
+                                        '${user.username} liked your post',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize:
+                                                displayWidth(context) * 0.036),
+                                      ),
+                                      (postIndex != -1)
+                                          ? CachedNetworkImage(
+                                              imageUrl: post.image,
+                                              height: displayHeight(context) * 0.05,
+                                              width: displayWidth(context) * 0.1,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : const SizedBox(),
+                                    ],
                                   ),
-                                  Text(
-                                    '${user.username} liked your post',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            displayWidth(context) * 0.036),
-                                  ),
-                                  (postIndex != -1)
-                                      ? CachedNetworkImage(
-                                          imageUrl: post.image,
-                                          height: displayHeight(context) * 0.05,
-                                          width: displayWidth(context) * 0.1,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : const SizedBox(),
+                                  Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 25.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        (ifPostedToday(list[index].time!))?
+                                        Text(displayTime(list[index].time!),style: TextStyle(
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: displayWidth(context) * 0.0285,
+                                        ))
+                                            :Text(
+                                          '${day} ${month} ${year}',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: displayWidth(context) * 0.0285,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
                             );
@@ -162,31 +212,61 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                     color: Colors.grey,
                                     width: displayWidth(context) * 0.001),
                               ),
-                              height: displayHeight(context) * 0.08,
+                              height: displayHeight(context) * 0.105,
                               width: displayWidth(context) * 0.95,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.comment_outlined,
-                                    color: Colors.indigo,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      const Icon(
+                                        Icons.comment_outlined,
+                                        color: Colors.indigo,
+                                      ),
+                                      Text(
+                                        '${user.username} commented on your post',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize:
+                                                displayWidth(context) * 0.036),
+                                      ),
+                                      (postIndex != -1)
+                                          ? CachedNetworkImage(
+                                              imageUrl: post.image,
+                                              height: displayHeight(context) * 0.05,
+                                              width: displayWidth(context) * 0.1,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : const SizedBox(),
+                                    ],
                                   ),
-                                  Text(
-                                    '${user.username} commented on your post',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            displayWidth(context) * 0.036),
-                                  ),
-                                  (postIndex != -1)
-                                      ? CachedNetworkImage(
-                                          imageUrl: post.image,
-                                          height: displayHeight(context) * 0.05,
-                                          width: displayWidth(context) * 0.1,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : const SizedBox(),
+
+                                  Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 25.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        (ifPostedToday(list[index].time!))?
+                                        Text(displayTime(list[index].time!),style: TextStyle(
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: displayWidth(context) * 0.0285,
+                                        ))
+                                            :Text(
+                                          '${day} ${month} ${year}',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: displayWidth(context) * 0.0285,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+
                                 ],
                               ),
                             );
@@ -204,42 +284,73 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                     color: Colors.grey,
                                     width: displayWidth(context) * 0.001),
                               ),
-                              height: displayHeight(context) * 0.08,
+                              height: displayHeight(context) * 0.105,
                               width: displayWidth(context) * 0.95,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset(
-                                    'images/follow.png',
-                                    height: displayHeight(context) * 0.05,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Text(
-                                    '${user.username} started following you',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            displayWidth(context) * 0.036),
-                                  ),
-                                  (user.dp != '')
-                                      ? CachedNetworkImage(
-                                          imageUrl: user.dp,
-                                          height: displayHeight(context) * 0.05,
-                                          width: displayWidth(context) * 0.1,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Container(
-                                          height: displayHeight(context) * 0.05,
-                                          width: displayWidth(context) * 0.1,
-                                          color: Colors.grey[200],
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.person,
-                                              color: Colors.orange[400],
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Image.asset(
+                                        'images/follow.png',
+                                        height: displayHeight(context) * 0.05,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Text(
+                                        '${user.username} started following you',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize:
+                                                displayWidth(context) * 0.036),
+                                      ),
+                                      (user.dp != '')
+                                          ? CachedNetworkImage(
+                                              imageUrl: user.dp,
+                                              height: displayHeight(context) * 0.05,
+                                              width: displayWidth(context) * 0.1,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Container(
+                                              height: displayHeight(context) * 0.05,
+                                              width: displayWidth(context) * 0.1,
+                                              color: Colors.grey[200],
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons.person,
+                                                  color: Colors.orange[400],
+                                                ),
+                                              ),
                                             ),
+                                    ],
+                                  ),
+                                  Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 25.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        (ifPostedToday(list[index].time!))?
+                                        Text(displayTime(list[index].time!),style: TextStyle(
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: displayWidth(context) * 0.0285,
+                                        ))
+                                            :Text(
+                                          '${day} ${month} ${year}',
+                                          style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: displayWidth(context) * 0.0285,
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                  )
+
+
+
                                 ],
                               ),
                             );
