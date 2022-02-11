@@ -133,8 +133,7 @@ class _userProfileState extends State<userProfile> {
                                   elevation: 6.0,
                                   shape: RoundedRectangleBorder(
                                       side: BorderSide(
-                                          color: Colors
-                                              .orange[600]!),
+                                          color: Colors.orange[600]!),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Padding(
                                     padding: const EdgeInsets.all(1.5),
@@ -195,7 +194,6 @@ class _userProfileState extends State<userProfile> {
                                     ),
                                   ),
                                 )),
-                            
                           ],
                         ),
                       ),
@@ -263,7 +261,9 @@ class _userProfileState extends State<userProfile> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => FollowersScreen(
-                                          allUsers: Provider.of<manager>(context).fetchAllUsers,
+                                          allUsers:
+                                              Provider.of<manager>(context)
+                                                  .fetchAllUsers,
                                           followers: thisProfile.followers),
                                     ));
                               },
@@ -296,7 +296,9 @@ class _userProfileState extends State<userProfile> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => FollowingScreen(
-                                        allUsers: Provider.of<manager>(context).fetchAllUsers,
+                                          allUsers:
+                                              Provider.of<manager>(context)
+                                                  .fetchAllUsers,
                                           following: thisProfile.followings),
                                     ));
                               },

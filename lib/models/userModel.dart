@@ -67,11 +67,11 @@ class NexusUser {
     views = [];
   }
 
-  changeDP(String newDp){
+  changeDP(String newDp) {
     dp = newDp;
   }
 
-  changeCoverPicture(String newCp){
+  changeCoverPicture(String newCp) {
     coverImage = newCp;
   }
 
@@ -80,26 +80,25 @@ class NexusUser {
     views = [];
   }
 
-  addFollowing(String newUid){
+  addFollowing(String newUid) {
     followings.add(newUid);
   }
 
-  addFolllower(String newUid){
+  addFolllower(String newUid) {
     followers.add(newUid);
   }
 
-  removeFollowing(String existingUser){
+  removeFollowing(String existingUser) {
     followings.remove(existingUser);
   }
 
-  removeFollower(String existingUser){
+  removeFollower(String existingUser) {
     followers.remove(existingUser);
   }
 
-  editProfile(String newUsername,String newTitle,String newBio){
+  editProfile(String newUsername, String newTitle, String newBio) {
     username = newUsername;
     title = newTitle;
     bio = newBio;
   }
-
 }

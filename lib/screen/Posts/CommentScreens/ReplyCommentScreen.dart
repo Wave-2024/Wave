@@ -49,24 +49,22 @@ class _ReplyCommentScreenState extends State<ReplyCommentScreen> {
         replyController!.text.toString().trim().isNotEmpty) {
       List<dynamic> temp = widget.replies;
       temp.add({
-        'reply' : replyController!.text.toString(),
-        'uid' : widget.myUid,
+        'reply': replyController!.text.toString(),
+        'uid': widget.myUid,
       });
       await FirebaseFirestore.instance
           .collection('posts')
           .doc(widget.postId)
           .collection('comments')
           .doc(widget.commentId)
-          .update({
-        'replies' : temp
-      });
+          .update({'replies': temp});
       return true;
     }
     return false;
   }
 
   Future<bool> deleteReply(int index) async {
-    try{
+    try {
       List<dynamic> temp = widget.replies;
       temp.removeAt(index);
       await FirebaseFirestore.instance
@@ -74,14 +72,11 @@ class _ReplyCommentScreenState extends State<ReplyCommentScreen> {
           .doc(widget.postId)
           .collection('comments')
           .doc(widget.commentId)
-          .update({
-        'replies' : temp
-      });
-    }
-    catch(error){
+          .update({'replies': temp});
+    } catch (error) {
       return false;
     }
-     return true;
+    return true;
   }
 
   @override
@@ -104,17 +99,18 @@ class _ReplyCommentScreenState extends State<ReplyCommentScreen> {
           backgroundColor: Colors.white,
           formKey: formKey,
           errorText: 'Comment cannot be blank',
-          sendButtonMethod: ()async{
+          sendButtonMethod: () async {
             FocusManager.instance.primaryFocus?.unfocus();
             bool status = await replyToThisComment();
-            if(status){
+            if (status) {
               setState(() {
                 replyController!.clear();
               });
             }
-
           },
-          userImage: allUsers[widget.myUid]!.dp!=''?allUsers[widget.myUid]!.dp:constants().fetchDpUrl,
+          userImage: allUsers[widget.myUid]!.dp != ''
+              ? allUsers[widget.myUid]!.dp
+              : constants().fetchDpUrl,
           commentController: replyController,
           labelText: "Your Reply",
           sendWidget: Icon(
@@ -197,8 +193,8 @@ class _ReplyCommentScreenState extends State<ReplyCommentScreen> {
                     NexusUser user = allUsers[widget.replies[index]['uid']];
                     String reply = widget.replies[index]['reply'];
                     return Padding(
-                      padding: const EdgeInsets.only(
-                          top: 5.0, left: 10, right: 10),
+                      padding:
+                          const EdgeInsets.only(top: 5.0, left: 10, right: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -258,58 +254,73 @@ class _ReplyCommentScreenState extends State<ReplyCommentScreen> {
                               child: VerticalDivider(
                                 width: displayWidth(context) * 0.01,
                               )),
-                          IconButton(onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return CupertinoAlertDialog(
-                                  title: const Text('Delete Comment'),
-                                  actions: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Center(
-                                          child: TextButton(
-                                            child: const Text(
-                                              'No',
-                                              style: TextStyle(color: Colors.black87),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                          )),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Center(
-                                          child: TextButton.icon(
-                                            onPressed: () async {
-                                              bool status = await deleteReply(index);
-                                              if(status){
-                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Deleted your reply'),duration: Duration(seconds: 3),));
-                                              }else{
-                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not delete reply'),duration: Duration(seconds: 3),));
-                                              }
-                                              setState(() {
-
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ),
-                                            label: const Text('Yes',
-                                                style:
-                                                TextStyle(color: Colors.black87)),
-                                          )),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }, icon: const Icon(Icons.delete,),
-                          iconSize: displayWidth(context)*0.045,
-                          color: Colors.black45,)
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text('Delete Comment'),
+                                    actions: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: TextButton(
+                                          child: const Text(
+                                            'No',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        )),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: TextButton.icon(
+                                          onPressed: () async {
+                                            bool status =
+                                                await deleteReply(index);
+                                            if (status) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                content:
+                                                    Text('Deleted your reply'),
+                                                duration: Duration(seconds: 3),
+                                              ));
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    'Could not delete reply'),
+                                                duration: Duration(seconds: 3),
+                                              ));
+                                            }
+                                            setState(() {});
+                                            Navigator.pop(context);
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                          label: const Text('Yes',
+                                              style: TextStyle(
+                                                  color: Colors.black87)),
+                                        )),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                            ),
+                            iconSize: displayWidth(context) * 0.045,
+                            color: Colors.black45,
+                          )
                         ],
                       ),
                     );

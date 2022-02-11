@@ -63,15 +63,25 @@ class _viewStoryState extends State<viewStory> {
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15)),
                   ),
-                  child: (allUsers[widget.myUid]!.views.isNotEmpty)?
-                      ListView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    itemBuilder: (context, index) {
-                      return displayProfileHeads(context,
-                          allUsers[allUsers[widget.myUid]!.views[index]]!);
-                    },
-                    itemCount: allUsers[widget.myUid]!.views.length,
-                  ):const Center(child: Text('No views',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500),),),
+                  child: (allUsers[widget.myUid]!.views.isNotEmpty)
+                      ? ListView.builder(
+                          padding: const EdgeInsets.all(16.0),
+                          itemBuilder: (context, index) {
+                            return displayProfileHeads(
+                                context,
+                                allUsers[
+                                    allUsers[widget.myUid]!.views[index]]!);
+                          },
+                          itemCount: allUsers[widget.myUid]!.views.length,
+                        )
+                      : const Center(
+                          child: Text(
+                            'No views',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
                 );
               },
             );
@@ -87,7 +97,6 @@ class _viewStoryState extends State<viewStory> {
               context: context,
               builder: (context) {
                 return CupertinoAlertDialog(
-                  //content: Text('Are you sure you want to sign-out ?'),
                   title: const Text('Remove Story'),
                   actions: [
                     Padding(
@@ -202,17 +211,28 @@ class _viewStoryState extends State<viewStory> {
                           ),
                         ],
                       ),
-                      Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.03,)),
+                      Opacity(
+                          opacity: 0.0,
+                          child: Divider(
+                            height: displayHeight(context) * 0.03,
+                          )),
                       CachedNetworkImage(
                         imageUrl: widget.story!.story!,
                         fit: BoxFit.contain,
-                        height: (widget.story!.uid != widget.myUid!)?displayHeight(context)*0.75 : displayHeight(context) * 0.7,
+                        height: (widget.story!.uid != widget.myUid!)
+                            ? displayHeight(context) * 0.75
+                            : displayHeight(context) * 0.7,
                         width: displayWidth(context),
                       ),
-                      Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.03,)),
-                      Expanded(child:widget.story!.uid != widget.myUid!
-                          ? const SizedBox()
-                          : bottomOptions(allUsers)),
+                      Opacity(
+                          opacity: 0.0,
+                          child: Divider(
+                            height: displayHeight(context) * 0.03,
+                          )),
+                      Expanded(
+                          child: widget.story!.uid != widget.myUid!
+                              ? const SizedBox()
+                              : bottomOptions(allUsers)),
                     ],
                   ),
                 ))));

@@ -52,7 +52,13 @@ class _inboxScreenState extends State<inboxScreen> {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: widget.yourUid,),));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => userProfile(
+                          uid: widget.yourUid,
+                        ),
+                      ));
                 },
                 child: (allUsers[widget.yourUid]!.dp.isNotEmpty)
                     ? CircleAvatar(
@@ -77,7 +83,13 @@ class _inboxScreenState extends State<inboxScreen> {
                   )),
               InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: widget.yourUid,),));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => userProfile(
+                          uid: widget.yourUid,
+                        ),
+                      ));
                 },
                 child: Text(
                   allUsers[widget.yourUid]!.username,
@@ -90,21 +102,15 @@ class _inboxScreenState extends State<inboxScreen> {
         body: Container(
           //color: Colors.white,
           color: Colors.white,
-          child:
-
-          CommentBox(
+          child: CommentBox(
             textColor: Colors.black,
-            sendButtonMethod: (){
-              String normalMessage =
-              messageController!.text.toString();
+            sendButtonMethod: () {
+              String normalMessage = messageController!.text.toString();
               if (normalMessage.trim().isNotEmpty) {
-                String encryptedMessage = encryptMessage()
-                    .encryptThisMessage(normalMessage);
-                sendMessage(
-                    widget.chatId.toString(),
-                    encryptedMessage,
-                    widget.myId!,
-                    widget.yourUid!);
+                String encryptedMessage =
+                    encryptMessage().encryptThisMessage(normalMessage);
+                sendMessage(widget.chatId.toString(), encryptedMessage,
+                    widget.myId!, widget.yourUid!);
                 setState(() {
                   messageController!.clear();
                 });
@@ -114,65 +120,62 @@ class _inboxScreenState extends State<inboxScreen> {
             commentController: messageController,
             formKey: formKey,
             userImage: allUsers[widget.myId]!.dp,
-            sendWidget: Icon(Icons.send,color: Colors.orangeAccent,),
-            child:  Padding(
-                      padding: const EdgeInsets.only(
-                          top: 8.0, bottom: 8, left: 2, right: 10),
-                      child: StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection('chat-room')
-                            .doc(widget.chatId)
-                            .collection('chat-room')
-                            .orderBy('time', descending: true)
-                            .snapshots(),
-                        builder: (context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return (snapshot.data.docs.length == 0)
-                                ? const Center(
-                                    child: Text(
-                                      'Say Hello to your new friend',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    reverse: true,
-                                    shrinkWrap: true,
-                                    physics: AlwaysScrollableScrollPhysics(),
-                                    itemCount: snapshot.data.docs.length,
-                                    itemBuilder: (context, index) {
-                                      String encryptedMessage =
-                                          snapshot.data.docs[index]['message'];
-                                      String uid =
-                                          snapshot.data.docs[index]['uid'];
-                                      String message = encryptMessage()
-                                          .decryptThisMessage(encryptedMessage);
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 12.0,
-                                        ),
-                                        child: messageContainer(
-                                            message,
-                                            uid,
-                                            allUsers[uid]!.dp,
-                                            widget.myId!,
-                                            context),
-                                      );
-                                    },
-                                  );
-                          } else {
-                            return Center(
-                              child: load(context),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-
+            sendWidget: Icon(
+              Icons.send,
+              color: Colors.orangeAccent,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: 8.0, bottom: 8, left: 2, right: 10),
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('chat-room')
+                    .doc(widget.chatId)
+                    .collection('chat-room')
+                    .orderBy('time', descending: true)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    return (snapshot.data.docs.length == 0)
+                        ? const Center(
+                            child: Text(
+                              'Say Hello to your new friend',
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            reverse: true,
+                            shrinkWrap: true,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              String encryptedMessage =
+                                  snapshot.data.docs[index]['message'];
+                              String uid = snapshot.data.docs[index]['uid'];
+                              String message = encryptMessage()
+                                  .decryptThisMessage(encryptedMessage);
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 12.0,
+                                ),
+                                child: messageContainer(message, uid,
+                                    allUsers[uid]!.dp, widget.myId!, context),
+                              );
+                            },
+                          );
+                  } else {
+                    return Center(
+                      child: load(context),
+                    );
+                  }
+                },
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 }

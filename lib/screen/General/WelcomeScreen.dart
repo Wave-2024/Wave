@@ -38,13 +38,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
       await Provider.of<manager>(context, listen: false)
           .setSavedPostsOnce(currentUser!.uid);
       init = false;
-      /*if (mounted) {
+      if (mounted) {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => homescreen(),
             ));
-      }*/
+      }
     }
     super.didChangeDependencies();
   }
@@ -110,7 +110,11 @@ class _welcomeScreenState extends State<welcomeScreen> {
                         )
                       ],
                     ),
-                    Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.05,)),
+                    Opacity(
+                        opacity: 0.0,
+                        child: Divider(
+                          height: displayHeight(context) * 0.05,
+                        )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,8 +140,6 @@ class _welcomeScreenState extends State<welcomeScreen> {
                         ),
                       ],
                     ),
-
-
                   ],
                 ),
               ),

@@ -64,15 +64,23 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
           errorText: 'Comment cannot be blank',
           sendButtonMethod: () async {
             FocusManager.instance.primaryFocus?.unfocus();
-            Provider.of<manager>(context,listen: false).commentOnPost(currentUser!.uid, widget.postOwner!.uid, postDetail!.post_id, commentController!.text.toString());
+            Provider.of<manager>(context, listen: false).commentOnPost(
+                currentUser!.uid,
+                widget.postOwner!.uid,
+                postDetail!.post_id,
+                commentController!.text.toString());
             setState(() {
               commentController!.clear();
             });
           },
-          userImage:(myProfile!.dp!='')?myProfile.dp:constants().fetchDpUrl,
+          userImage:
+              (myProfile!.dp != '') ? myProfile.dp : constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
+          sendWidget: Icon(
+            Icons.send,
+            color: Colors.orange[600],
+          ),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),

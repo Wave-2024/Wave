@@ -13,9 +13,7 @@ class usernameProvider extends ChangeNotifier {
     Map<String, bool> temp = {};
     final String api = constants().fetchApi + 'users.json';
     try {
-      print('reached');
       final response = await http.get(Uri.parse(api));
-      print(response.statusCode);
       if (json.decode(response.body) == null) {
         usernames = temp;
         notifyListeners();
@@ -29,8 +27,6 @@ class usernameProvider extends ChangeNotifier {
 
       usernames = temp;
       notifyListeners();
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 }

@@ -21,7 +21,5 @@ Future<void> createNewNexusUser(
           'followers': [],
           'followings': [],
         }));
-  } catch (error) {
-    print(error);
-  }
+  } catch (error) {}
 }

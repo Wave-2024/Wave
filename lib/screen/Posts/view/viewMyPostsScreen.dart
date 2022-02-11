@@ -169,7 +169,6 @@ Widget displayMyPosts(
                                   ),
                                 ));
                           }
-                          
                         },
                         child: (user.dp != '')
                             ? CircleAvatar(
@@ -377,11 +376,9 @@ Widget displayMyPosts(
                   },
                   onDoubleTap: () {
                     if (post.likes.contains(myUid)) {
-                      print('already liked');
                       Provider.of<manager>(context, listen: false)
                           .dislikePost(myUid, post.uid, post.post_id, 'self');
                     } else {
-                      print('not liked before');
                       Provider.of<manager>(context, listen: false)
                           .likePost(myUid, post.uid, post.post_id, 'self');
                     }
@@ -523,20 +520,21 @@ Widget displayMyPosts(
                             fontWeight: FontWeight.bold),
                       ),
                     ),
-                    (ifPostedToday(post.dateOfPost))?
-                        Text(displayTime(post.dateOfPost),style: TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w600,
-                          fontSize: displayWidth(context) * 0.033,
-                        ))
-                    :Text(
-                      '${day} ${month} ${year}',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w600,
-                        fontSize: displayWidth(context) * 0.033,
-                      ),
-                    ),
+                    (ifPostedToday(post.dateOfPost))
+                        ? Text(displayTime(post.dateOfPost),
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayWidth(context) * 0.033,
+                            ))
+                        : Text(
+                            '${day} ${month} ${year}',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayWidth(context) * 0.033,
+                            ),
+                          ),
                   ],
                 ),
               )

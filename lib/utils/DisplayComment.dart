@@ -34,7 +34,7 @@ class DisplayCommentBox extends StatelessWidget {
   likeThisComment(String postId, String commentId, String myUid,
       List<dynamic> likes) async {
     if (!(likes.contains(myUid))) {
-      print('reached this fun');
+
       likes.add(myUid);
       await FirebaseFirestore.instance
           .collection('posts')

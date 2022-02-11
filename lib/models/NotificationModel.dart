@@ -6,10 +6,16 @@ class NotificationModel {
   final String? notificationId;
   bool? read;
 
-  NotificationModel({this.read,this.time,this.notifierUid,this.postId,this.notificationId,this.type,});
+  NotificationModel({
+    this.read,
+    this.time,
+    this.notifierUid,
+    this.postId,
+    this.notificationId,
+    this.type,
+  });
 
-  updateNotificationStatus(){
+  updateNotificationStatus() {
     read = true;
   }
-
 }

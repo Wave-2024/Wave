@@ -29,10 +29,10 @@ class _addPostScreenState extends State<addPostScreen> {
     captionController = TextEditingController();
   }
 
-  Future<File> checkAnCompress()async{
+  Future<File> checkAnCompress() async {
     File? compressedFile = imagefile!;
     int minimumSize = 200 * 1024;
-    if(await compressedFile.length()>minimumSize){
+    if (await compressedFile.length() > minimumSize) {
       final dir = await path_provider.getTemporaryDirectory();
       final tp = dir.absolute.path + "/temp.jpg";
       compressedFile = await compressAndGetFile(compressedFile, tp);
@@ -78,33 +78,38 @@ class _addPostScreenState extends State<addPostScreen> {
                       }
                     }
                   },
-                  color: (imagefile!=null)?Colors.red[300]:Colors.grey,
+                  color: (imagefile != null) ? Colors.red[300] : Colors.grey,
                   icon: const Icon(Icons.delete)),
           (uploadingPost!)
               ? const SizedBox()
               : IconButton(
                   onPressed: () async {
-            if(imagefile!=null){
-              setState(() {
-                uploadingPost = true;
-              });
-              File? compressedFile = await checkAnCompress();
-              setState(() {
-                imagefile = compressedFile;
-              });
-             await Provider.of<manager>(context, listen: false)
-                  .addNewPost(captionController!.text.toString(),
-                  currentUser!.uid.toString(), imagefile!)
-                  .then((value) {
-                setState(() {
-                  uploadingPost = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                   const SnackBar(content: Text('Successfully posted'),duration: Duration(seconds: 2),));
-                Navigator.pop(context);
-              });
-            }
-          }, icon: Icon(Icons.check),color: (imagefile!=null)?Colors.green:Colors.grey)
+                    if (imagefile != null) {
+                      setState(() {
+                        uploadingPost = true;
+                      });
+                      File? compressedFile = await checkAnCompress();
+                      setState(() {
+                        imagefile = compressedFile;
+                      });
+                      await Provider.of<manager>(context, listen: false)
+                          .addNewPost(captionController!.text.toString(),
+                              currentUser!.uid.toString(), imagefile!)
+                          .then((value) {
+                        setState(() {
+                          uploadingPost = false;
+                        });
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('Successfully posted'),
+                          duration: Duration(seconds: 2),
+                        ));
+                        Navigator.pop(context);
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.check),
+                  color: (imagefile != null) ? Colors.green : Colors.grey)
         ],
       ),
       body: SafeArea(
@@ -119,12 +124,15 @@ class _addPostScreenState extends State<addPostScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: displayHeight(context)*0.2),
-                     Expanded(child: Image.asset('images/postLoad.gif')),
+                      SizedBox(height: displayHeight(context) * 0.2),
+                      Expanded(child: Image.asset('images/postLoad.gif')),
                       Expanded(
                         child: Text(
                           'Uploading Post ...',
-                          style: TextStyle(color: Colors.black54,fontSize: displayWidth(context)*0.05,fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: displayWidth(context) * 0.05,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -145,12 +153,13 @@ class _addPostScreenState extends State<addPostScreen> {
                                     border: Border.all(color: Colors.black)),
                                 height: displayHeight(context) * 0.5,
                                 width: displayWidth(context) * 0.8,
-                                child: Center(child: IconButton(
+                                child: Center(
+                                    child: IconButton(
                                   onPressed: () {
                                     pickImage();
                                   },
                                   icon: Icon(Icons.image),
-                                    )),
+                                )),
                               ),
                         Opacity(
                             opacity: 0.0,

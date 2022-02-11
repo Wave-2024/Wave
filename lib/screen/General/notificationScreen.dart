@@ -58,7 +58,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
     'December'
   ];
 
-
   @override
   Widget build(BuildContext context) {
     List<NotificationModel> list =
@@ -162,33 +161,45 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       (postIndex != -1)
                                           ? CachedNetworkImage(
                                               imageUrl: post.image,
-                                              height: displayHeight(context) * 0.05,
-                                              width: displayWidth(context) * 0.1,
+                                              height:
+                                                  displayHeight(context) * 0.05,
+                                              width:
+                                                  displayWidth(context) * 0.1,
                                               fit: BoxFit.cover,
                                             )
                                           : const SizedBox(),
                                     ],
                                   ),
-                                  Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                                  Opacity(
+                                      opacity: 0.0,
+                                      child: Divider(
+                                        height: displayHeight(context) * 0.01,
+                                      )),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 25.0),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        (ifPostedToday(list[index].time!))?
-                                        Text(displayTime(list[index].time!),style: TextStyle(
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: displayWidth(context) * 0.0285,
-                                        ))
-                                            :Text(
-                                          '${day} ${month} ${year}',
-                                          style: TextStyle(
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: displayWidth(context) * 0.0285,
-                                          ),
-                                        ),
+                                        (ifPostedToday(list[index].time!))
+                                            ? Text(
+                                                displayTime(list[index].time!),
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.0285,
+                                                ))
+                                            : Text(
+                                                '${day} ${month} ${year}',
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.0285,
+                                                ),
+                                              ),
                                       ],
                                     ),
                                   )
@@ -235,38 +246,48 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       (postIndex != -1)
                                           ? CachedNetworkImage(
                                               imageUrl: post.image,
-                                              height: displayHeight(context) * 0.05,
-                                              width: displayWidth(context) * 0.1,
+                                              height:
+                                                  displayHeight(context) * 0.05,
+                                              width:
+                                                  displayWidth(context) * 0.1,
                                               fit: BoxFit.cover,
                                             )
                                           : const SizedBox(),
                                     ],
                                   ),
-
-                                  Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                                  Opacity(
+                                      opacity: 0.0,
+                                      child: Divider(
+                                        height: displayHeight(context) * 0.01,
+                                      )),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 25.0),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        (ifPostedToday(list[index].time!))?
-                                        Text(displayTime(list[index].time!),style: TextStyle(
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: displayWidth(context) * 0.0285,
-                                        ))
-                                            :Text(
-                                          '${day} ${month} ${year}',
-                                          style: TextStyle(
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: displayWidth(context) * 0.0285,
-                                          ),
-                                        ),
+                                        (ifPostedToday(list[index].time!))
+                                            ? Text(
+                                                displayTime(list[index].time!),
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.0285,
+                                                ))
+                                            : Text(
+                                                '${day} ${month} ${year}',
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.0285,
+                                                ),
+                                              ),
                                       ],
                                     ),
                                   )
-
                                 ],
                               ),
                             );
@@ -308,13 +329,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       (user.dp != '')
                                           ? CachedNetworkImage(
                                               imageUrl: user.dp,
-                                              height: displayHeight(context) * 0.05,
-                                              width: displayWidth(context) * 0.1,
+                                              height:
+                                                  displayHeight(context) * 0.05,
+                                              width:
+                                                  displayWidth(context) * 0.1,
                                               fit: BoxFit.cover,
                                             )
                                           : Container(
-                                              height: displayHeight(context) * 0.05,
-                                              width: displayWidth(context) * 0.1,
+                                              height:
+                                                  displayHeight(context) * 0.05,
+                                              width:
+                                                  displayWidth(context) * 0.1,
                                               color: Colors.grey[200],
                                               child: Center(
                                                 child: Icon(
@@ -325,32 +350,39 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             ),
                                     ],
                                   ),
-                                  Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.01,)),
+                                  Opacity(
+                                      opacity: 0.0,
+                                      child: Divider(
+                                        height: displayHeight(context) * 0.01,
+                                      )),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 25.0),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        (ifPostedToday(list[index].time!))?
-                                        Text(displayTime(list[index].time!),style: TextStyle(
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: displayWidth(context) * 0.0285,
-                                        ))
-                                            :Text(
-                                          '${day} ${month} ${year}',
-                                          style: TextStyle(
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: displayWidth(context) * 0.0285,
-                                          ),
-                                        ),
+                                        (ifPostedToday(list[index].time!))
+                                            ? Text(
+                                                displayTime(list[index].time!),
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.0285,
+                                                ))
+                                            : Text(
+                                                '${day} ${month} ${year}',
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.0285,
+                                                ),
+                                              ),
                                       ],
                                     ),
                                   )
-
-
-
                                 ],
                               ),
                             );

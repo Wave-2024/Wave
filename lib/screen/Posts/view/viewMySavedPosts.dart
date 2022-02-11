@@ -1,13 +1,10 @@
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForSavedPost.dart';
-
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -210,7 +207,6 @@ Widget displayMySavedPosts(
                           size: displayWidth(context) * 0.0485,
                         )
                       : const SizedBox(),
-
                 ],
               ),
               Opacity(
@@ -230,7 +226,8 @@ Widget displayMySavedPosts(
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: displayWidth(context) * 0.034,
-                          color: Colors.black87, fontWeight: FontWeight.w600),
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600),
                     )),
               ),
               Opacity(
@@ -357,20 +354,21 @@ Widget displayMySavedPosts(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    (ifPostedToday(post.dateOfPost))?
-                    Text(displayTime(post.dateOfPost),style: TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w600,
-                      fontSize: displayWidth(context) * 0.033,
-                    ))
-                        :Text(
-                      '${day} ${month} ${year}',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w600,
-                        fontSize: displayWidth(context) * 0.033,
-                      ),
-                    ),
+                    (ifPostedToday(post.dateOfPost))
+                        ? Text(displayTime(post.dateOfPost),
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayWidth(context) * 0.033,
+                            ))
+                        : Text(
+                            '${day} ${month} ${year}',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayWidth(context) * 0.033,
+                            ),
+                          ),
                   ],
                 ),
               )

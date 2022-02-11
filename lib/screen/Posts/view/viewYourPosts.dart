@@ -380,7 +380,13 @@ Widget displayYourPosts(
                   children: [
                     InkWell(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => usersWhoLikedScreen(usersWhoLiked: post.likes,),));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => usersWhoLikedScreen(
+                                usersWhoLiked: post.likes,
+                              ),
+                            ));
                       },
                       child: Text(
                         post.likes.length.toString() + ' likes',
@@ -390,20 +396,21 @@ Widget displayYourPosts(
                             fontWeight: FontWeight.bold),
                       ),
                     ),
-                    (ifPostedToday(post.dateOfPost))?
-                    Text(displayTime(post.dateOfPost),style: TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w600,
-                      fontSize: displayWidth(context) * 0.033,
-                    ))
-                        :Text(
-                      '${day} ${month} ${year}',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w600,
-                        fontSize: displayWidth(context) * 0.033,
-                      ),
-                    ),
+                    (ifPostedToday(post.dateOfPost))
+                        ? Text(displayTime(post.dateOfPost),
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayWidth(context) * 0.033,
+                            ))
+                        : Text(
+                            '${day} ${month} ${year}',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                              fontSize: displayWidth(context) * 0.033,
+                            ),
+                          ),
                   ],
                 ),
               )

@@ -3,5 +3,5 @@ class StoryModel {
   final DateTime? storyTime;
   List<dynamic>? views;
   final String? uid;
-  StoryModel({this.story, this.uid,this.views, this.storyTime});
+  StoryModel({this.story, this.uid, this.views, this.storyTime});
 }

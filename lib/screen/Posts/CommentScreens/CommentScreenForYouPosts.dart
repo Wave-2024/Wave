@@ -62,7 +62,7 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
           backgroundColor: Colors.white,
           formKey: formKey,
           errorText: 'Comment cannot be blank',
-          sendButtonMethod: ()async {
+          sendButtonMethod: () async {
             FocusManager.instance.primaryFocus?.unfocus();
             await Provider.of<manager>(context, listen: false).commentOnPost(
                 currentUser!.uid,
@@ -74,10 +74,14 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
               commentController!.clear();
             });
           },
-          userImage: (myProfile!.dp!='')?myProfile.dp:constants().fetchDpUrl,
+          userImage:
+              (myProfile!.dp != '') ? myProfile.dp : constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
+          sendWidget: Icon(
+            Icons.send,
+            color: Colors.orange[600],
+          ),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -147,7 +151,8 @@ class _postDetailForMyPostsState extends State<CommentScreenForYourPosts> {
                                             .data()['likes'] ??
                                         [];
                                     return Padding(
-                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      padding:
+                                          const EdgeInsets.only(bottom: 12.0),
                                       child: DisplayCommentBox(
                                         uid: uid,
                                         commentTime: commentTime,

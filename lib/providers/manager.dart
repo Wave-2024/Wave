@@ -16,7 +16,6 @@ import 'package:nexus/utils/widgets.dart';
 class manager extends ChangeNotifier {
   List<NotificationModel> notificationList = [];
 
-
   List<StoryModel> feedStoryList = [];
 
   Map<String, PostModel> feedPostMap = {};
@@ -87,9 +86,7 @@ class manager extends ChangeNotifier {
           views: data['views'] ?? []);
       allUsers[myUid] = updatedUser;
       notifyListeners();
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   Future<void> deleteCommentFromThisPost(
@@ -125,9 +122,7 @@ class manager extends ChangeNotifier {
       });
       allUsers = temp;
       notifyListeners();
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   // Function to set posts and stories that will be diplayed on your feed screen
@@ -192,9 +187,7 @@ class manager extends ChangeNotifier {
           allUsers[uid]!.changeCoverPicture(value);
           notifyListeners();
         });
-      } catch (error) {
-        print(error);
-      }
+      } catch (error) {}
     });
   }
 
@@ -213,9 +206,7 @@ class manager extends ChangeNotifier {
           allUsers[uid]!.changeDP(downloadLink);
           notifyListeners();
         });
-      } catch (error) {
-        print(error);
-      }
+      } catch (error) {}
     });
   }
 
@@ -253,9 +244,7 @@ class manager extends ChangeNotifier {
         allUsers[uid] = updateUser!;
         notifyListeners();
       });
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   Future<void> followUser(String myUid, String yourUid) async {
@@ -429,9 +418,7 @@ class manager extends ChangeNotifier {
           notifyListeners();
         });
       });
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   // Function to delete post
@@ -443,9 +430,7 @@ class manager extends ChangeNotifier {
       notifyListeners();
       await http.delete(Uri.parse(api));
       await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   // Update likes to server
@@ -544,9 +529,7 @@ class manager extends ChangeNotifier {
         }
         break;
       default:
-        {
-          print('passed wrong choice');
-        }
+        {}
     }
 
     List<dynamic> likes = [];
@@ -651,9 +634,7 @@ class manager extends ChangeNotifier {
         }
         break;
       default:
-        {
-          print('passed wrong choice');
-        }
+        {}
     }
     List<dynamic> likes = [];
     final String api = constants().fetchApi + 'posts/${opId}/${postId}.json';
@@ -685,9 +666,7 @@ class manager extends ChangeNotifier {
       savedPostsMap = tempPosts;
       savedPostsKeys = tempKeys;
       notifyListeners();
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   Future<void> updateCaption(
@@ -710,9 +689,7 @@ class manager extends ChangeNotifier {
       notifyListeners();
       await http.patch(Uri.parse(api),
           body: json.encode({'caption': updatedCaption}));
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   Future<PostModel> getThisPostDetail(String op, String postId) async {
@@ -729,9 +706,7 @@ class manager extends ChangeNotifier {
           post_id: postId,
           likes: data[postId] ?? []);
       return returnThisPost;
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
     return returnThisPost!;
   }
 
@@ -743,7 +718,7 @@ class manager extends ChangeNotifier {
     final String api = constants().fetchApi + 'saved/${myUid}.json';
     try {
       savedPostsMap[postModel.post_id] = postModel;
-      print('saving');
+
       notifyListeners();
       await http
           .post(Uri.parse(api),
@@ -778,9 +753,7 @@ class manager extends ChangeNotifier {
       savedPostsMap.remove(postId);
       savedPostsKeys.remove(postId);
       notifyListeners();
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   Future<void> setNotifications(String myUid) async {
@@ -957,8 +930,6 @@ class manager extends ChangeNotifier {
         await http.patch(Uri.parse(api),
             body: json.encode({'views': tempViews}));
       }
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 }

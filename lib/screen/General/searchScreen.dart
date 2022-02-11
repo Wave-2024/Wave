@@ -39,20 +39,19 @@ class _searchScreenState extends State<searchScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final List<NexusUser> list =
         Provider.of<manager>(context).fetchAllUsers.values.toList();
     Widget displayUserHeads(NexusUser user) {
       return InkWell(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => userProfile(
-                  uid: user.uid,
-                ),
-              ));
-        },
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => userProfile(
+                    uid: user.uid,
+                  ),
+                ));
+          },
           child: ListTile(
               tileColor: Colors.transparent,
               onTap: () {
@@ -86,11 +85,9 @@ class _searchScreenState extends State<searchScreen> {
                         size: displayWidth(context) * 0.075,
                         color: Colors.orange[400],
                       ),
-                    ))
-      );
+                    )));
     }
 
-    
     return Scaffold(
         body: SafeArea(
       child: Container(
@@ -99,19 +96,24 @@ class _searchScreenState extends State<searchScreen> {
         color: Colors.white,
         child: (screenLoading!)
             ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: displayHeight(context)*0.2,),
-            Expanded(child: Image.asset('images/searchLoad.gif')),
-            Expanded(
-              child: Text('Fetching Profiles',style: TextStyle(
-                color: Colors.black54,fontSize: displayWidth(context)*0.05,
-                fontWeight: FontWeight.bold
-              ),),
-            )
-          ],
-        )
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: displayHeight(context) * 0.2,
+                  ),
+                  Expanded(child: Image.asset('images/searchLoad.gif')),
+                  Expanded(
+                    child: Text(
+                      'Fetching Profiles',
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: displayWidth(context) * 0.05,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              )
             : SingleChildScrollView(
                 child: (Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -132,9 +134,13 @@ class _searchScreenState extends State<searchScreen> {
                                 });
                               } else {
                                 List<NexusUser> tempList = list
-                                    .where((element) => (element.uid!=currentUser!.uid) &&
-                                        (element.title.toLowerCase().contains(value.toLowerCase()) ||
-                                            element.username.toLowerCase().contains(value.toLowerCase())))
+                                    .where((element) =>
+                                        (element.uid != currentUser!.uid) &&
+                                        (element.title.toLowerCase().contains(
+                                                value.toLowerCase()) ||
+                                            element.username
+                                                .toLowerCase()
+                                                .contains(value.toLowerCase())))
                                     .toList();
                                 setState(() {
                                   displayList = tempList;

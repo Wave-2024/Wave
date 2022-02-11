@@ -74,10 +74,14 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
               commentController!.clear();
             });
           },
-          userImage: (myProfile!.dp!='')?myProfile.dp:constants().fetchDpUrl,
+          userImage:
+              (myProfile!.dp != '') ? myProfile.dp : constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
+          sendWidget: Icon(
+            Icons.send,
+            color: Colors.orange[600],
+          ),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),

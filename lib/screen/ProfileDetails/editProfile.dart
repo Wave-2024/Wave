@@ -59,7 +59,8 @@ class _editProfileScreenState extends State<editProfileScreen> {
     final Map<String, bool>? listOfUserNames =
         Provider.of<usernameProvider>(context).fetchUserNames;
 
-    final Map<String,NexusUser> allUsers = Provider.of<manager>(context).fetchAllUsers;
+    final Map<String, NexusUser> allUsers =
+        Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -87,7 +88,6 @@ class _editProfileScreenState extends State<editProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                       
                         TextFormField(
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -112,9 +112,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
                             }
                           },
                           controller: userNameController,
-                              
                           decoration: const InputDecoration(
-                                
                               labelText: "User Name",
                               labelStyle: TextStyle(color: Colors.black54)),
                         ),
@@ -127,7 +125,6 @@ class _editProfileScreenState extends State<editProfileScreen> {
                           minLines: 1,
                           controller: bioController,
                           decoration: const InputDecoration(
-                            
                               labelText: "Bio",
                               labelStyle: TextStyle(color: Colors.black54)),
                         ),
@@ -185,8 +182,6 @@ class _editProfileScreenState extends State<editProfileScreen> {
                                   ),
                           ),
                         )
-                          
-                        
                       ],
                     ),
                   ),

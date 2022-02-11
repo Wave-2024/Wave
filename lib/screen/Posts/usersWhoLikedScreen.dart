@@ -4,6 +4,7 @@ import 'package:nexus/providers/manager.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
+
 class usersWhoLikedScreen extends StatelessWidget {
   final List<dynamic>? usersWhoLiked;
   usersWhoLikedScreen({this.usersWhoLiked});
@@ -31,7 +32,8 @@ class usersWhoLikedScreen extends StatelessWidget {
           child: ListView.builder(
             itemCount: usersWhoLiked!.length,
             itemBuilder: (context, index) {
-              return displayProfileHeads(context, allUsers[usersWhoLiked![index]]!);
+              return displayProfileHeads(
+                  context, allUsers[usersWhoLiked![index]]!);
             },
           ),
         ),

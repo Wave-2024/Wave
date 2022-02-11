@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/ProfileDetails/editProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
+
 class editPostScreen extends StatefulWidget {
   final PostModel? post;
   editPostScreen({this.post});
@@ -31,16 +31,24 @@ class _editPostScreenState extends State<editPostScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('Edit',style: TextStyle(color: Colors.black),),
+        title: Text(
+          'Edit',
+          style: TextStyle(color: Colors.black),
+        ),
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
-          IconButton(onPressed: () {
-            Provider.of<manager>(context,listen: false).updateCaption(currentUser!.uid, widget.post!.post_id, captionController!.text.toString());
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Post updated successfully")));
-            Navigator.pop(context);
-          }, icon: Icon(Icons.check),
-          color: Colors.orange
-          )
+          IconButton(
+              onPressed: () {
+                Provider.of<manager>(context, listen: false).updateCaption(
+                    currentUser!.uid,
+                    widget.post!.post_id,
+                    captionController!.text.toString());
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Post updated successfully")));
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.check),
+              color: Colors.orange)
         ],
       ),
       body: Container(
@@ -57,9 +65,8 @@ class _editPostScreenState extends State<editPostScreen> {
             controller: captionController,
             decoration: const InputDecoration(
                 hintText: "Write a caption...",
-                hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400)),
+                hintStyle:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w400)),
           ),
         ),
       ),

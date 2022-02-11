@@ -55,7 +55,7 @@ class _profiletScreenState extends State<profiletScreen> {
         await Provider.of<manager>(context, listen: false)
             .setMyPosts(currentUser!.uid);
         localStore.setBool('myPosts', true);
-        loadScreenForProfile=false;
+        loadScreenForProfile = false;
       }
       init = false;
     }
@@ -232,8 +232,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                     elevation: 6.0,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(
-                                            color: Colors
-                                                .orange[600]!),
+                                            color: Colors.orange[600]!),
                                         borderRadius:
                                             BorderRadius.circular(12)),
                                     child: Padding(
@@ -486,7 +485,9 @@ class _profiletScreenState extends State<profiletScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => FollowersScreen(
-                                          allUsers: Provider.of<manager>(context).fetchAllUsers,
+                                            allUsers:
+                                                Provider.of<manager>(context)
+                                                    .fetchAllUsers,
                                             followers: myProfile.followers),
                                       ));
                                 },
@@ -520,7 +521,9 @@ class _profiletScreenState extends State<profiletScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => FollowingScreen(
-                                          allUsers: Provider.of<manager>(context).fetchAllUsers,
+                                            allUsers:
+                                                Provider.of<manager>(context)
+                                                    .fetchAllUsers,
                                             following: myProfile.followings),
                                       ));
                                 },

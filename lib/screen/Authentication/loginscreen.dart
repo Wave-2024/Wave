@@ -134,7 +134,7 @@ class _loginScreenState extends State<loginScreen> {
                                 email: email!.text.toString(),
                                 password: password!.text.toString())
                             .then((value) {
-                          print(value);
+
                           if (value != 'valid') {
                             setState(() {
                               isLoading = false;

@@ -7,15 +7,14 @@ import 'package:nexus/utils/devicesize.dart';
 
 class FollowersScreen extends StatefulWidget {
   List<dynamic> followers;
-  Map<String,NexusUser> allUsers;
-  FollowersScreen({required this.followers,required this.allUsers});
+  Map<String, NexusUser> allUsers;
+  FollowersScreen({required this.followers, required this.allUsers});
 
   @override
   State<FollowersScreen> createState() => _FollowersScreenState();
 }
 
 class _FollowersScreenState extends State<FollowersScreen> {
-
   List<NexusUser> displayList = [];
   List<NexusUser> primaryList = [];
 
@@ -25,26 +24,27 @@ class _FollowersScreenState extends State<FollowersScreen> {
   @override
   void initState() {
     super.initState();
-    currentUser =FirebaseAuth.instance.currentUser;
+    currentUser = FirebaseAuth.instance.currentUser;
     createMyFollowersList();
     searchController = TextEditingController();
   }
 
-  createMyFollowersList(){
+  createMyFollowersList() {
     for (var element in widget.followers) {
       NexusUser user = widget.allUsers[element]!;
       primaryList.add(user);
     }
     displayList = primaryList;
   }
-  searchBox(){
+
+  searchBox() {
     return Container(
       height: displayHeight(context) * 0.08,
       width: displayWidth(context),
       //color: Colors.red,
       child: Padding(
-        padding: const EdgeInsets.only(
-            top: 8.0, bottom: 8.0, left: 10, right: 10),
+        padding:
+            const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 10, right: 10),
         child: Center(
           child: TextFormField(
             onChanged: (value) {
@@ -54,9 +54,14 @@ class _FollowersScreenState extends State<FollowersScreen> {
                 });
               } else {
                 List<NexusUser> tempList = primaryList
-                    .where((element) => (element.uid!=currentUser!.uid) &&
-                    (element.title.toLowerCase().contains(value.toLowerCase()) ||
-                        element.username.toLowerCase().contains(value.toLowerCase())))
+                    .where((element) =>
+                        (element.uid != currentUser!.uid) &&
+                        (element.title
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            element.username
+                                .toLowerCase()
+                                .contains(value.toLowerCase())))
                     .toList();
                 setState(() {
                   displayList = tempList;
@@ -117,28 +122,40 @@ class _FollowersScreenState extends State<FollowersScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      if(displayList[index].uid!=currentUser!.uid){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: displayList[index].uid),));
+                      if (displayList[index].uid != currentUser!.uid) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  userProfile(uid: displayList[index].uid),
+                            ));
                       }
                     },
-                    visualDensity: const VisualDensity(horizontal: 0,vertical: -4),
-                    leading: (displayList[index].dp!='')?CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(displayList[index].dp),
-                      radius: displayWidth(context) * 0.05,
-                    ):CircleAvatar( backgroundColor: Colors.grey[200],
-                      radius: displayWidth(context) * 0.05,
-                      child: Icon(
-                        Icons.person,
-                        size: displayWidth(context) * 0.075,
-                        color: Colors.orange[400],
-                      ),),
+                    visualDensity:
+                        const VisualDensity(horizontal: 0, vertical: -4),
+                    leading: (displayList[index].dp != '')
+                        ? CircleAvatar(
+                            backgroundImage: CachedNetworkImageProvider(
+                                displayList[index].dp),
+                            radius: displayWidth(context) * 0.05,
+                          )
+                        : CircleAvatar(
+                            backgroundColor: Colors.grey[200],
+                            radius: displayWidth(context) * 0.05,
+                            child: Icon(
+                              Icons.person,
+                              size: displayWidth(context) * 0.075,
+                              color: Colors.orange[400],
+                            ),
+                          ),
                     subtitle: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
                           displayList[index].username,
                           style: TextStyle(
-                              color: Colors.black45, fontSize: displayWidth(context) * 0.035),
+                              color: Colors.black45,
+                              fontSize: displayWidth(context) * 0.035),
                         ),
                         Opacity(
                             opacity: 0.0,
@@ -147,10 +164,10 @@ class _FollowersScreenState extends State<FollowersScreen> {
                             )),
                         (displayList[index].followers.length >= 25)
                             ? Icon(
-                          Icons.verified,
-                          color: Colors.orange[400],
-                          size: displayWidth(context) * 0.048,
-                        )
+                                Icons.verified,
+                                color: Colors.orange[400],
+                                size: displayWidth(context) * 0.048,
+                              )
                             : const SizedBox(),
                       ],
                     ),
@@ -165,7 +182,6 @@ class _FollowersScreenState extends State<FollowersScreen> {
                 },
               ),
             ],
-
           ),
         ),
       ),

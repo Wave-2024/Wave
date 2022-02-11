@@ -65,7 +65,6 @@ class _feedScreenState extends State<feedScreen> {
     return;
   }
 
-
   @override
   void didChangeDependencies() async {
     final SharedPreferences localStore = await localStoreInstance;
@@ -237,7 +236,6 @@ class _feedScreenState extends State<feedScreen> {
                                                           ));
                                                     },
                                                     child: Card(
-
                                                       shape:
                                                           RoundedRectangleBorder(
                                                         borderRadius:

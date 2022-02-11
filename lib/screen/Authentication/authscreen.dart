@@ -43,11 +43,10 @@ class authScreen extends StatelessWidget {
                           Text(
                             "Wave",
                             style: TextStyle(
-                              fontSize: displayWidth(context) * 0.12,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.indigo,
-                              fontFamily: 'Pacifico'
-                            ),
+                                fontSize: displayWidth(context) * 0.12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.indigo,
+                                fontFamily: 'Pacifico'),
                           ),
                           Text(
                             'Find people with the same \ninterests as you',
@@ -97,7 +96,6 @@ class authScreen extends StatelessWidget {
                         ));
                   },
                 ),
-
                 Opacity(
                   opacity: 0.0,
                   child: Divider(
@@ -127,9 +125,7 @@ class authScreen extends StatelessWidget {
                           builder: (context) => const registerScreen(),
                         ));
                   },
-                  ),
-
-              
+                ),
               ],
             ),
           ),

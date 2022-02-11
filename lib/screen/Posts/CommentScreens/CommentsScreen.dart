@@ -143,7 +143,7 @@ class _postDetailScreenState extends State<CommentScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
-                                    // print(snapshot.data.docs[index].documentId);
+
                                     String comment = snapshot.data.docs[index]
                                         .data()['comment'];
                                     Timestamp timeStamp = snapshot
