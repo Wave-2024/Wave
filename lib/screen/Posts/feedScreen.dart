@@ -65,7 +65,7 @@ class _feedScreenState extends State<feedScreen> {
     return;
   }
 
- 
+
   @override
   void didChangeDependencies() async {
     final SharedPreferences localStore = await localStoreInstance;
@@ -463,30 +463,26 @@ class _feedScreenState extends State<feedScreen> {
                                     height: displayHeight(context) * 0.01,
                                   )),
                               (Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 21.0,
-                                              right: 21,
-                                              top: 10,
-                                              bottom: 40),
-                                          child: ListView.builder(
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            itemBuilder: (context, index) {
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 18.0),
-                                                child: displayPostsForFeed(
-                                                    context,
-                                                    feedPosts[index],
-                                                    allUsers,
-                                                    currentUser!.uid.toString(),
-                                                    months,
-                                                    savedPosts),
-                                              );
-                                            },
-                                            itemCount: feedPosts.length,
-                                          ),
+                                padding: const EdgeInsets.only(
+                                    left: 21.0, right: 21, top: 10, bottom: 40),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 18.0),
+                                      child: displayPostsForFeed(
+                                          context,
+                                          feedPosts[index],
+                                          allUsers,
+                                          currentUser!.uid.toString(),
+                                          months,
+                                          savedPosts),
+                                    );
+                                  },
+                                  itemCount: feedPosts.length,
+                                ),
                               )),
                               suggestionCards(
                                 currentUser: currentUser!,
