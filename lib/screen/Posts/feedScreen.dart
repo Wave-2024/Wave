@@ -105,7 +105,6 @@ class _feedScreenState extends State<feedScreen> {
         Provider.of<manager>(context).fetchFeedPostList;
     final Map<String, NexusUser> allUsers =
         Provider.of<manager>(context).fetchAllUsers;
-    NexusUser myProfile = allUsers[currentUser!.uid]!;
 
     return Scaffold(
       body: SafeArea(
@@ -238,6 +237,7 @@ class _feedScreenState extends State<feedScreen> {
                                                           ));
                                                     },
                                                     child: Card(
+
                                                       shape:
                                                           RoundedRectangleBorder(
                                                         borderRadius:
@@ -249,7 +249,6 @@ class _feedScreenState extends State<feedScreen> {
                                                             color: Colors
                                                                 .orange[600]!),
                                                       ),
-                                                      color: Colors.white,
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsets

@@ -229,13 +229,15 @@ class _profiletScreenState extends State<profiletScreen> {
                                   top: displayHeight(context) * 0.1655,
                                   left: displayWidth(context) * 0.02,
                                   child: Card(
-                                    color: Colors.orange[300],
                                     elevation: 6.0,
                                     shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Colors
+                                                .orange[600]!),
                                         borderRadius:
                                             BorderRadius.circular(12)),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(2),
+                                      padding: const EdgeInsets.all(1.5),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: (myProfile.dp != '')

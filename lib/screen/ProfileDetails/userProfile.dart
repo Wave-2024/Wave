@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
@@ -131,12 +130,14 @@ class _userProfileState extends State<userProfile> {
                                 top: displayHeight(context) * 0.1655,
                                 left: displayWidth(context) * 0.02,
                                 child: Card(
-                                  color: Colors.orange[300],
                                   elevation: 6.0,
                                   shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                          color: Colors
+                                              .orange[600]!),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Padding(
-                                    padding: const EdgeInsets.all(2.5),
+                                    padding: const EdgeInsets.all(1.5),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: (thisProfile.dp != '')
