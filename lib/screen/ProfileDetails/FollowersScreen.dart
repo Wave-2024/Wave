@@ -117,7 +117,9 @@ class _FollowersScreenState extends State<FollowersScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: displayList[index].uid),));
+                      if(displayList[index].uid!=currentUser!.uid){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => userProfile(uid: displayList[index].uid),));
+                      }
                     },
                     visualDensity: const VisualDensity(horizontal: 0,vertical: -4),
                     leading: (displayList[index].dp!='')?CircleAvatar(
