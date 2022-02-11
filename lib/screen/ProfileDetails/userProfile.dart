@@ -153,7 +153,7 @@ class _userProfileState extends State<userProfile> {
                                                   const EdgeInsets.all(10.0),
                                               child: Icon(
                                                 Icons.person,
-                                                color: Colors.white,
+                                                color: Colors.orange[400],
                                                 size:
                                                     displayWidth(context) * 0.1,
                                               ),
@@ -225,15 +225,19 @@ class _userProfileState extends State<userProfile> {
                       Opacity(
                         opacity: 0.0,
                         child: Divider(
-                          height: displayHeight(context) * 0.01,
+                          height: displayHeight(context) * 0.008,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 15.0),
+                        padding: const EdgeInsets.only(left: 15.0,right: 12.0),
                         child: (thisProfile.bio != '')
                             ? Container(
                                 child: Text(
                                   thisProfile.bio,
+                                  style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: displayWidth(context)*0.035
+                                  ),
                                   textAlign: TextAlign.start,
                                   overflow: TextOverflow.clip,
                                 ),

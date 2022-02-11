@@ -250,7 +250,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                               )
                                             : Icon(
                                                 Icons.person,
-                                                color: Colors.white,
+                                                color: Colors.orange[400],
                                                 size: displayWidth(context) *
                                                     0.175,
                                               ),
@@ -415,7 +415,7 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, top: 2),
+                          padding: const EdgeInsets.only(left: 15.0, top: 1),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -449,15 +449,19 @@ class _profiletScreenState extends State<profiletScreen> {
                         Opacity(
                           opacity: 0.0,
                           child: Divider(
-                            height: displayHeight(context) * 0.01,
+                            height: displayHeight(context) * 0.008,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0),
+                          padding: const EdgeInsets.only(left: 15.0,right: 12),
                           child: (myProfile.bio != '')
                               ? Container(
                                   child: Text(
                                     myProfile.bio,
+                                    style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: displayWidth(context)*0.035
+                                    ),
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.clip,
                                   ),
