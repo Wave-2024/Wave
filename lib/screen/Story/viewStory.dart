@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/Story/storyViewersScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
@@ -64,14 +63,15 @@ class _viewStoryState extends State<viewStory> {
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15)),
                   ),
-                  child: ListView.builder(
+                  child: (allUsers[widget.myUid]!.views.isNotEmpty)?
+                      ListView.builder(
                     padding: const EdgeInsets.all(16.0),
                     itemBuilder: (context, index) {
                       return displayProfileHeads(context,
                           allUsers[allUsers[widget.myUid]!.views[index]]!);
                     },
                     itemCount: allUsers[widget.myUid]!.views.length,
-                  ),
+                  ):const Center(child: Text('No views',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500),),),
                 );
               },
             );
