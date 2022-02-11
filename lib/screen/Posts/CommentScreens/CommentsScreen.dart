@@ -11,6 +11,8 @@ import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utils/constants.dart';
+
 class CommentScreen extends StatefulWidget {
   final String? postId;
   final NexusUser? postOwner;
@@ -74,7 +76,7 @@ class _postDetailScreenState extends State<CommentScreen> {
               });
             }
           },
-          userImage: myProfile!.dp,
+          userImage: (myProfile!.dp != '') ? myProfile.dp : constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
           sendWidget: Icon(Icons.send,color: Colors.orange[600],),
