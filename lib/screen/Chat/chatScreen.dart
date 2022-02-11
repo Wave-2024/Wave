@@ -93,7 +93,7 @@ class _chatScreenState extends State<chatScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 30.0),
                     child: Text(
-                      'Chat\'s',
+                      'Inbox',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
