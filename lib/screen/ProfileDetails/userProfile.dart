@@ -295,6 +295,7 @@ class _userProfileState extends State<userProfile> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => FollowingScreen(
+                                        allUsers: Provider.of<manager>(context).fetchAllUsers,
                                           following: thisProfile.followings),
                                     ));
                               },

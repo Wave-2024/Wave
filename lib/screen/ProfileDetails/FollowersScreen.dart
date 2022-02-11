@@ -82,6 +82,12 @@ class _FollowersScreenState extends State<FollowersScreen> {
   }
 
   @override
+  void dispose() {
+    searchController!.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
