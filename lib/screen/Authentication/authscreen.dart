@@ -49,7 +49,7 @@ class authScreen extends StatelessWidget {
                                 fontFamily: 'Pacifico'),
                           ),
                           Text(
-                            'Find people with the same \ninterests as you',
+                            'Don\'t cease towards the shore\nSurf on the wave and explore',
                             style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 color: Colors.black54,
