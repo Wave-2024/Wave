@@ -35,15 +35,16 @@ class _welcomeScreenState extends State<welcomeScreen> {
       localStore.setBool('feedPosts', false);
       localStore.setBool('myPosts', false);
       await Provider.of<manager>(context, listen: false).setAllUsers();
-      await Provider.of<manager>(context,listen: false).setSavedPostsOnce(currentUser!.uid);
+      await Provider.of<manager>(context, listen: false)
+          .setSavedPostsOnce(currentUser!.uid);
       init = false;
-      if (mounted) {
+      /*if (mounted) {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => homescreen(),
             ));
-      }
+      }*/
     }
     super.didChangeDependencies();
   }
@@ -60,14 +61,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: displayHeight(context) * 0.4,
+                height: displayHeight(context) * 0.35,
               ),
               Image.asset(
                 'images/wave.png',
                 width: displayWidth(context) * 0.5,
                 fit: BoxFit.cover,
               ),
-
               Expanded(
                 child: Image.asset(
                   'images/openLoad.gif',
@@ -78,35 +78,69 @@ class _welcomeScreenState extends State<welcomeScreen> {
               ),
               Expanded(
                 child: SizedBox(
-                  height: displayHeight(context)*0.2,
+                  height: displayHeight(context) * 0.2,
                 ),
               ),
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      'Made with ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: displayWidth(context) * 0.04,
-                          color: Colors.black),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Made with ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: displayWidth(context) * 0.04,
+                              color: Colors.black),
+                        ),
+                        const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                        ),
+                        Text(
+                          ' in India',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: displayWidth(context) * 0.04,
+                              color: Colors.black),
+                        )
+                      ],
                     ),
-                    const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
+                    Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.05,)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Wave ",
+                          style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.w500,
+                              fontSize: displayWidth(context) * 0.03),
+                        ),
+                        Icon(
+                          Icons.copyright,
+                          color: Colors.black54,
+                          size: displayWidth(context) * 0.035,
+                        ),
+                        Text(
+                          " ${DateTime.now().year}",
+                          style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.w500,
+                              fontSize: displayWidth(context) * 0.03),
+                        ),
+                      ],
                     ),
-                    Text(
-                      ' in India',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: displayWidth(context) * 0.04,
-                          color: Colors.black),
-                    )
+
+
                   ],
                 ),
-              )
+              ),
             ],
           )),
     );
