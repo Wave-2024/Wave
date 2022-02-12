@@ -328,13 +328,29 @@ Widget displayProfileHeads(BuildContext context, NexusUser user) {
 
 String displayTime(DateTime time) {
   if (time.hour == 0) {
-    return '12:${time.minute} AM';
+    if (time.minute < 10) {
+      return '12:0${time.minute} AM';
+    } else {
+      return '12:${time.minute} AM';
+    }
   } else if (time.hour == 12) {
-    return '12:${time.minute} PM';
+    if (time.minute < 10) {
+      return '12:0${time.minute} PM';
+    } else {
+      return '12:${time.minute} PM';
+    }
   } else if (time.hour < 12) {
-    return '${time.hour}:${time.minute} AM';
+    if (time.minute < 10) {
+      return '${time.hour}:0${time.minute} AM';
+    } else {
+      return '${time.hour}:${time.minute} AM';
+    }
   } else {
-    return '${time.hour - 12}:${time.minute} PM';
+    if (time.minute < 10) {
+      return '${time.hour - 12}:0${time.minute} PM';
+    } else {
+      return '${time.hour - 12}:${time.minute} PM';
+    }
   }
 }
 
