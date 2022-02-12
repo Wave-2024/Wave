@@ -166,14 +166,18 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                                     String commentId = snapshot.data.docs[index]
                                             .data()['commentId'] ??
                                         '';
-                                    return DisplayCommentBox(
-                                        uid: uid,
-                                        commentTime: commentTime,
-                                        replies: replies,
-                                        likes: likes,
-                                        postId: widget.postId!,
-                                        comment: comment,
-                                        commentId: commentId);
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: DisplayCommentBox(
+                                          uid: uid,
+                                          commentTime: commentTime,
+                                          replies: replies,
+                                          likes: likes,
+                                          postId: widget.postId!,
+                                          comment: comment,
+                                          commentId: commentId),
+                                    );
                                   },
                                   itemCount: snapshot.data.docs.length,
                                 );

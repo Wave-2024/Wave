@@ -149,14 +149,18 @@ class _postDetailForMyPostsState extends State<CommentScreenForSavedPosts> {
                                         .data.docs[index]
                                         .data()['time'];
                                     DateTime commentTime = timeStamp.toDate();
-                                    return DisplayCommentBox(
-                                        postId: widget.postId!,
-                                        uid: uid,
-                                        commentTime: commentTime,
-                                        replies: replies,
-                                        likes: likes,
-                                        comment: comment,
-                                        commentId: commentId);
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 12.0),
+                                      child: DisplayCommentBox(
+                                          postId: widget.postId!,
+                                          uid: uid,
+                                          commentTime: commentTime,
+                                          replies: replies,
+                                          likes: likes,
+                                          comment: comment,
+                                          commentId: commentId),
+                                    );
                                   },
                                   itemCount: snapshot.data.docs.length,
                                 );

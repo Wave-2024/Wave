@@ -66,6 +66,7 @@ class DisplayCommentBox extends StatelessWidget {
     String timeDiff = differenceOfTimeForComment(DateTime.now(), commentTime);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
