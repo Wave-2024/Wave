@@ -89,7 +89,7 @@ class _viewMySavedPostScreenState extends State<viewMySavedPostScreen> {
         width: displayWidth(context),
         child: Padding(
             padding: const EdgeInsets.only(
-                top: 12.0, left: 21, right: 21, bottom: 12),
+                top: 12.0, left: 16, right: 16, bottom: 12),
             child: ScrollablePositionedList.builder(
               itemCount: savedPostsMap.length,
               initialScrollIndex: widget.index!,
@@ -124,7 +124,7 @@ Widget displayMySavedPosts(
   String month = months[dateTime.month - 1];
   NexusUser user = mapOfUsers[post.uid];
   return Container(
-    height: displayHeight(context) * 0.68,
+    height: displayHeight(context) * 0.7,
     width: displayWidth(context),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(25),
@@ -136,8 +136,8 @@ Widget displayMySavedPosts(
           borderRadius: BorderRadius.circular(25),
           color: Colors.white,
         ),
-        height: displayHeight(context) * 0.64,
-        width: displayWidth(context) * 0.8,
+        height: displayHeight(context) * 0.66,
+        width: displayWidth(context) * 0.84,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -278,9 +278,9 @@ Widget displayMySavedPosts(
                     borderRadius: BorderRadius.circular(25),
                     child: CachedNetworkImage(
                       imageUrl: post.image,
-                      height: displayHeight(context) * 0.38,
-                      width: displayWidth(context) * 0.68,
-                      fit: BoxFit.contain,
+                      height: displayHeight(context) * 0.402,
+                      width: displayWidth(context) * 0.8,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),

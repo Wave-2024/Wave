@@ -67,6 +67,8 @@ class _feedScreenState extends State<feedScreen> {
 
   @override
   void didChangeDependencies() async {
+    await Provider.of<manager>(context, listen: false)
+        .setNotifications(currentUser!.uid);
     final SharedPreferences localStore = await localStoreInstance;
     if (!localStore.getBool('feedPosts')!) {
       loadScreen = true;
@@ -74,9 +76,13 @@ class _feedScreenState extends State<feedScreen> {
       loadScreen = false;
       localStore.setBool('feedPosts', true);
     }
-    await Provider.of<manager>(context, listen: false)
-        .setNotifications(currentUser!.uid);
+
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -112,11 +118,24 @@ class _feedScreenState extends State<feedScreen> {
           width: displayWidth(context),
           color: Colors.white,
           child: (loadScreen!)
-              ? Center(
-                  child: Image.asset(
-                  'images/postLoad.gif',
-                  fit: BoxFit.contain,
-                ))
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: displayHeight(context) * 0.2,
+                    ),
+                    Expanded(child: Image.asset('images/postLoad.gif')),
+                    Expanded(
+                        child: Text(
+                      'Fetching posts',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                          fontSize: displayWidth(context) * 0.05),
+                    )),
+                  ],
+                )
               : LiquidPullToRefresh(
                   color: Colors.orange[400],
                   animSpeedFactor: 5,
@@ -128,7 +147,7 @@ class _feedScreenState extends State<feedScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        height: displayHeight(context) * 0.08,
+                        height: displayHeight(context) * 0.07,
                         width: displayWidth(context),
                         color: Colors.white,
                         child: Padding(
@@ -148,7 +167,7 @@ class _feedScreenState extends State<feedScreen> {
                                           color: Colors.orange,
                                           fontWeight: FontWeight.w400,
                                           fontSize:
-                                              displayWidth(context) * 0.07),
+                                              displayWidth(context) * 0.069),
                                     )),
                               ),
                               GestureDetector(
@@ -177,9 +196,8 @@ class _feedScreenState extends State<feedScreen> {
                         ),
                       ),
                       Container(
-                        height: displayHeight(context) * 0.83,
+                        height: displayHeight(context) * 0.86,
                         width: displayWidth(context),
-                        // color: Colors.yellow,
                         child: SingleChildScrollView(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -190,7 +208,7 @@ class _feedScreenState extends State<feedScreen> {
                                 width: displayWidth(context),
                                 //  color: Colors.blue,
                                 padding:
-                                    const EdgeInsets.only(left: 16, right: 16),
+                                    const EdgeInsets.only(left: 6, right: 2),
                                 child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
@@ -355,7 +373,7 @@ class _feedScreenState extends State<feedScreen> {
                                         // color: Colors.red,
                                         child: ListView.builder(
                                           padding: EdgeInsets.only(
-                                              left: (myStory) ? 3 : 6,
+                                              left: (myStory) ? 1.5 : 6,
                                               right: 2),
                                           scrollDirection: Axis.horizontal,
                                           shrinkWrap: true,
@@ -461,7 +479,7 @@ class _feedScreenState extends State<feedScreen> {
                                   )),
                               (Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 21.0, right: 21, top: 10, bottom: 40),
+                                    left: 16.0, right: 16, top: 10, bottom: 40),
                                 child: ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
@@ -497,9 +515,16 @@ class _feedScreenState extends State<feedScreen> {
   }
 }
 
-class suggestionCards extends StatelessWidget {
+class suggestionCards extends StatefulWidget {
   suggestionCards({this.currentUser});
   final User? currentUser;
+
+  @override
+  State<suggestionCards> createState() => _suggestionCardsState();
+}
+
+class _suggestionCardsState extends State<suggestionCards> {
+  bool? isFollowingSomeone = false;
 
   @override
   Widget build(BuildContext context) {
@@ -508,8 +533,8 @@ class suggestionCards extends StatelessWidget {
     final List<NexusUser>? suggestedUser = allUsers.values
         .toList()
         .where((element) =>
-            element.uid != currentUser!.uid &&
-            !(element.followers.contains(currentUser!.uid)))
+            element.uid != widget.currentUser!.uid &&
+            !(element.followers.contains(widget.currentUser!.uid)))
         .toList();
     suggestedUser!
         .sort(((a, b) => b.followers.length > a.followers.length ? 1 : 0));
@@ -517,7 +542,6 @@ class suggestionCards extends StatelessWidget {
     return Container(
       height: displayHeight(context) * 0.7,
       width: displayWidth(context),
-      //color: Colors.brown,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -683,10 +707,25 @@ class suggestionCards extends StatelessWidget {
                                 ),
                               ),
                               InkWell(
-                                onTap: () {
-                                  Provider.of<manager>(context, listen: false)
-                                      .followUser(currentUser!.uid,
-                                          suggestedUser[index].uid);
+                                onTap: () async {
+                                  if (isFollowingSomeone!) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            duration: Duration(seconds: 5),
+                                            content: Text(
+                                                'Please wait for a moment, server is processing previous requests.')));
+                                  } else {
+                                    setState(() {
+                                      isFollowingSomeone = true;
+                                    });
+                                    await Provider.of<manager>(context,
+                                            listen: false)
+                                        .followUser(widget.currentUser!.uid,
+                                            suggestedUser[index].uid);
+                                    setState(() {
+                                      isFollowingSomeone = false;
+                                    });
+                                  }
                                 },
                                 child: Container(
                                   height: displayHeight(context) * 0.045,
@@ -807,7 +846,7 @@ Widget displayPostsForFeed(
           color: Colors.white,
         ),
         height: displayHeight(context) * 0.66,
-        width: displayWidth(context) * 0.8,
+        width: displayWidth(context) * 0.84,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -891,7 +930,7 @@ Widget displayPostsForFeed(
                 child: Container(
                     height: displayHeight(context) * 0.03,
                     width: displayWidth(context) * 0.68,
-                    //color: Colors.redAccent,
+                    
                     child: Text(
                       post.caption,
                       maxLines: 1,
@@ -951,8 +990,8 @@ Widget displayPostsForFeed(
                     borderRadius: BorderRadius.circular(25),
                     child: CachedNetworkImage(
                       imageUrl: post.image,
-                      height: displayHeight(context) * 0.4,
-                      width: displayWidth(context) * 0.68,
+                      height: displayHeight(context) * 0.402,
+                      width: displayWidth(context) * 0.8,
                       fit: BoxFit.cover,
                     ),
                   ),

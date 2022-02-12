@@ -93,7 +93,7 @@ class _viewYourPostsSceenState extends State<viewYourPostsSceen> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.only(
-                top: 12.0, left: 21, right: 21, bottom: 12),
+                top: 12.0, left: 16, right: 16, bottom: 12),
             child: ScrollablePositionedList.builder(
               // itemScrollController: itemController,
               itemCount: posts.length,
@@ -139,7 +139,7 @@ Widget displayYourPosts(
           color: Colors.white,
         ),
         height: displayHeight(context) * 0.66,
-        width: displayWidth(context) * 0.8,
+        width: displayWidth(context) * 0.84,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -262,8 +262,8 @@ Widget displayYourPosts(
                     borderRadius: BorderRadius.circular(25),
                     child: CachedNetworkImage(
                       imageUrl: post.image,
-                      height: displayHeight(context) * 0.38,
-                      width: displayWidth(context) * 0.68,
+                      height: displayHeight(context) * 0.402,
+                      width: displayWidth(context) * 0.8,
                       fit: BoxFit.cover,
                     ),
                   ),

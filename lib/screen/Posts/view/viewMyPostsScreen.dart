@@ -97,7 +97,7 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.only(
-                top: 12.0, left: 21, right: 21, bottom: 12),
+                top: 12.0, left: 16, right: 16, bottom: 12),
             child: ScrollablePositionedList.builder(
               // itemScrollController: itemController,
               itemCount: myPostList.length,
@@ -143,7 +143,7 @@ Widget displayMyPosts(
           color: Colors.white,
         ),
         height: displayHeight(context) * 0.66,
-        width: displayWidth(context) * 0.8,
+        width: displayWidth(context) * 0.84,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -186,7 +186,9 @@ Widget displayMyPosts(
                                 ),
                               ),
                       ),
-                      const VerticalDivider(),
+                      VerticalDivider(
+                        width: displayWidth(context) * 0.028,
+                      ),
                       InkWell(
                         child: Text(
                           user.username,
@@ -327,7 +329,7 @@ Widget displayMyPosts(
                 child: Container(
                     height: displayHeight(context) * 0.03,
                     width: displayWidth(context) * 0.68,
-                    //color: Colors.redAccent,
+                    
                     child: Text(
                       post.caption,
                       maxLines: 1,
@@ -387,8 +389,8 @@ Widget displayMyPosts(
                     borderRadius: BorderRadius.circular(25),
                     child: CachedNetworkImage(
                       imageUrl: post.image,
-                      height: displayHeight(context) * 0.38,
-                      width: displayWidth(context) * 0.68,
+                      height: displayHeight(context) * 0.402,
+                      width: displayWidth(context) * 0.8,
                       fit: BoxFit.cover,
                     ),
                   ),
