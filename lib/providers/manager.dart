@@ -757,6 +757,7 @@ class manager extends ChangeNotifier {
   }
 
   Future<void> setNotifications(String myUid) async {
+
     List<NotificationModel> tempList = [];
     final String api = constants().fetchApi + 'notifications/${myUid}.json';
     try {
@@ -765,7 +766,7 @@ class manager extends ChangeNotifier {
         final notificationData =
             json.decode(notificationResponse.body) as Map<String, dynamic>;
         notificationData.forEach((key, value) {
-          if (myPostsMap.containsKey(value['postId'])) {
+
             tempList.add(NotificationModel(
                 notificationId: key,
                 read: value['read'],
@@ -773,10 +774,12 @@ class manager extends ChangeNotifier {
                 postId: value['postId'],
                 time: DateTime.parse(value['time']),
                 type: value['type']));
-          }
+
         });
       }
+
       notificationList = tempList;
+
       notifyListeners();
     } catch (error) {
       debugPrint(error.toString());
