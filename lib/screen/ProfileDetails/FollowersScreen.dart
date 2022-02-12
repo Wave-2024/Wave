@@ -132,7 +132,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
                       }
                     },
                     visualDensity:
-                        const VisualDensity(horizontal: 0, vertical: -4),
+                        const VisualDensity(horizontal: 0, vertical: -3),
                     leading: (displayList[index].dp != '')
                         ? CircleAvatar(
                             backgroundImage: CachedNetworkImageProvider(

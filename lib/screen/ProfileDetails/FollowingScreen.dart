@@ -137,7 +137,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                       }
                     },
                     visualDensity:
-                        const VisualDensity(horizontal: 0, vertical: -4),
+                        const VisualDensity(horizontal: 0, vertical: -3),
                     leading: (displayList[index].dp != '')
                         ? CircleAvatar(
                             backgroundImage: CachedNetworkImageProvider(
