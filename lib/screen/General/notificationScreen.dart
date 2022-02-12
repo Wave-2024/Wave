@@ -12,6 +12,7 @@ import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/widgets.dart';
 
@@ -22,11 +23,15 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   bool? init;
+  bool? isScreenLoading;
   User currentUser = FirebaseAuth.instance.currentUser!;
+  final Future<SharedPreferences> localStoreInstance =
+  SharedPreferences.getInstance();
   @override
   void initState() {
     super.initState();
     init = true;
+    isScreenLoading = false;
   }
 
   @override
@@ -36,8 +41,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   void didChangeDependencies() async {
+
     if (init!) {
-      await Provider.of<manager>(context).setMyPosts(currentUser.uid);
+      final SharedPreferences localStore = await localStoreInstance;
+      if (!localStore.getBool('myPosts')!) {
+        isScreenLoading = true;
+        await Provider.of<manager>(context, listen: false)
+            .setMyPosts(currentUser.uid);
+        localStore.setBool('myPosts', true);
+        isScreenLoading = false;
+      }
       init = false;
     }
     super.didChangeDependencies();
@@ -78,8 +91,28 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: Container(
           height: displayHeight(context),
           width: displayWidth(context),
-          child: Padding(
+          color: Colors.white,
+          child: (isScreenLoading!)?Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: displayHeight(context) * 0.2,
+              ),
+              Expanded(
+                  child: Image.asset('images/notificationLoad.gif')),
+              Expanded(
+                  child: Text(
+                    'Fetching your notifications',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                        fontSize: displayWidth(context) * 0.05),
+                  )),
+            ],
+          ):Padding(
             padding:
+
                 const EdgeInsets.only(top: 16.0, bottom: 16, left: 8, right: 8),
             child: SingleChildScrollView(
               child: Column(
@@ -122,12 +155,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       String day = dateTime.day.toString();
                       String year = dateTime.year.toString();
                       String month = months[dateTime.month - 1];
+                      PostModel? post;
                       switch (list[index].type) {
                         case 'like':
                           {
                             postIndex = myPosts.indexWhere((element) =>
                                 element.post_id == list[index].postId);
-                            PostModel post = myPosts[postIndex];
+                            if(postIndex!=-1){
+                              post = myPosts[postIndex];
+                            }
+
                             tile = Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
@@ -160,7 +197,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       ),
                                       (postIndex != -1)
                                           ? CachedNetworkImage(
-                                              imageUrl: post.image,
+                                              imageUrl: post!.image,
                                               height:
                                                   displayHeight(context) * 0.05,
                                               width:
@@ -212,7 +249,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           {
                             int postIndex = myPosts.indexWhere((element) =>
                                 element.post_id == list[index].postId);
-                            PostModel post = myPosts[postIndex];
+                            if(postIndex!=-1){
+                              post = myPosts[postIndex];
+                            }
+
                             tile = Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
@@ -245,7 +285,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       ),
                                       (postIndex != -1)
                                           ? CachedNetworkImage(
-                                              imageUrl: post.image,
+                                              imageUrl: post!.image,
                                               height:
                                                   displayHeight(context) * 0.05,
                                               width:
