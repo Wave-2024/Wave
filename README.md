@@ -9,6 +9,9 @@
 - The search option helps to explore and give the upper hand in finding anyone, also following and unfollowing is made convenient for the user. The inbox holds the chat heads of the conversation, simply letting the user chat with the person of their interest.
 - An indispensable feature provides an Encryption that makes the conversations undecipherable.
 
+## Snaphots                                              
+<img src = "snaps/9.png" height = "400em" /> || <img src = "snaps/1.png" height = "400em" /> || <img src = "snaps/2.png" height = "400em" /> || <img src = "snaps/6.png" height = "400em" />  <img src = "snaps/4.png" height = "400em"/> || <img src = "snaps/5.png" height = "400em"/> || <img src = "snaps/8.png" height = "400em"/> || <img src = "snaps/7.png" height = "400em"/> 
+
 ## Packages
 - http - https://pub.dev/packages/http
 - provider - https://pub.dev/packages/provider
@@ -20,10 +23,6 @@
 - shared_preferences - https://pub.dev/packages/shared_preferences
 - flutter_slidable - https://pub.dev/packages/flutter_slidable
 - intl - https://pub.dev/packages/intl
-
-## Snaphots
-
-<img src = "snaps/9.png" height = "400em" /> || <img src = "snaps/1.png" height = "400em" /> || <img src = "snaps/2.png" height = "400em" /> || <img src = "snaps/6.png" height = "400em" />  <img src = "snaps/4.png" height = "400em"/> || <img src = "snaps/5.png" height = "400em"/> || <img src = "snaps/8.png" height = "400em"/> || <img src = "snaps/7.png" height = "400em"/> 
 
 ## Requirements
 
