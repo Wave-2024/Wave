@@ -143,9 +143,9 @@ Widget displayMyPosts(
           color: Colors.white,
         ),
         height: displayHeight(context) * 0.66,
-        width: displayWidth(context) * 0.84,
+        width: displayWidth(context) * 0.85,
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +322,7 @@ Widget displayMyPosts(
               Opacity(
                 opacity: 0.0,
                 child: Divider(
-                  height: displayHeight(context) * 0.02,
+                  height: displayHeight(context) * 0.01,
                 ),
               ),
               Center(
@@ -343,7 +343,7 @@ Widget displayMyPosts(
               Opacity(
                 opacity: 0.0,
                 child: Divider(
-                  height: displayHeight(context) * 0.02,
+                  height: displayHeight(context) * 0.015,
                 ),
               ),
               Center(
@@ -389,7 +389,7 @@ Widget displayMyPosts(
                     borderRadius: BorderRadius.circular(25),
                     child: CachedNetworkImage(
                       imageUrl: post.image,
-                      height: displayHeight(context) * 0.402,
+                      height: displayHeight(context) * 0.4,
                       width: displayWidth(context) * 0.8,
                       fit: BoxFit.cover,
                     ),

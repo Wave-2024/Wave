@@ -139,7 +139,7 @@ Widget displayMySavedPosts(
         height: displayHeight(context) * 0.66,
         width: displayWidth(context) * 0.84,
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +233,7 @@ Widget displayMySavedPosts(
               Opacity(
                 opacity: 0.0,
                 child: Divider(
-                  height: displayHeight(context) * 0.02,
+                  height: displayHeight(context) * 0.015,
                 ),
               ),
               Center(

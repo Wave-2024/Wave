@@ -579,15 +579,15 @@ class _suggestionCardsState extends State<suggestionCards> {
                     height: displayHeight(context) * 0.45,
                     width: displayWidth(context) * 0.65,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(20),
                       color: Colors.grey[200],
                     ),
                     child: Center(
                       child: Container(
                         height: displayHeight(context) * 0.45,
-                        width: displayWidth(context) * 0.55,
+                        width: displayWidth(context) * 0.58,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(20),
                           color: Colors.white,
                         ),
                         child: Padding(
@@ -597,9 +597,10 @@ class _suggestionCardsState extends State<suggestionCards> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Card(
-                                color: Colors.orange[300],
                                 elevation: 6.0,
                                 shape: RoundedRectangleBorder(
+                                    side:
+                                        BorderSide(color: Colors.orange[600]!),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Padding(
                                   padding: const EdgeInsets.all(2.5),

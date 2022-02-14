@@ -5,6 +5,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/Encrypt_Message.dart';
+import 'package:nexus/utils/constants.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
@@ -119,8 +120,10 @@ class _inboxScreenState extends State<inboxScreen> {
             backgroundColor: Colors.white,
             commentController: messageController,
             formKey: formKey,
-            userImage: allUsers[widget.myId]!.dp,
-            sendWidget: Icon(
+            userImage: allUsers[widget.myId]!.dp != ''
+                ? allUsers[widget.myId]!.dp
+                : constants().fetchDpUrl,
+            sendWidget: const Icon(
               Icons.send,
               color: Colors.orangeAccent,
             ),
