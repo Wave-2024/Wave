@@ -15,6 +15,7 @@ class registerScreen extends StatefulWidget {
 }
 
 class _registerScreenState extends State<registerScreen> {
+  bool ispasswordhidden = true;
   bool? isLoading;
   bool? isScreenLoading;
   bool init =
@@ -157,7 +158,7 @@ class _registerScreenState extends State<registerScreen> {
                         padding: const EdgeInsets.only(
                             top: 10, left: 18.0, right: 18),
                         child: TextFormField(
-                          obscureText: true,
+                          obscureText: ispasswordhidden,
                           controller: password,
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -166,6 +167,18 @@ class _registerScreenState extends State<registerScreen> {
                             return null;
                           },
                           decoration: InputDecoration(
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    ispasswordhidden = !ispasswordhidden;
+                                  });
+                                },
+                                child: Icon(
+                                  !ispasswordhidden
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
                               hintStyle: TextStyle(
                                   fontSize: displayWidth(context) * 0.04),
                               hintText: '*******',

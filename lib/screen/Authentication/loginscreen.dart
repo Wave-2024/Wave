@@ -13,8 +13,13 @@ class loginScreen extends StatefulWidget {
   @override
   State<loginScreen> createState() => _loginScreenState();
 }
+ 
 
 class _loginScreenState extends State<loginScreen> {
+  bool ispasswordhidden = true;
+  void _passwordstatus() {
+    ispasswordhidden = !ispasswordhidden;
+  }
   TextEditingController? email;
   TextEditingController? password;
   bool? isLoading;
@@ -108,8 +113,20 @@ class _loginScreenState extends State<loginScreen> {
                       return null;
                     },
                     controller: password,
-                    obscureText: true,
-                    decoration: const InputDecoration(
+                    obscureText: ispasswordhidden,
+                    decoration:  InputDecoration(
+                      suffixIcon: InkWell(
+                        onTap: ()
+                        {
+                          setState(() {
+                            ispasswordhidden=!ispasswordhidden;
+                          });
+                        },
+                        child: Icon(
+                          !ispasswordhidden?
+                          Icons.visibility:Icons.visibility_off,
+                        ),
+                      ),
                       labelStyle: TextStyle(color: Colors.black),
                       labelText: "Password",
                       hintText: "********",
@@ -134,7 +151,6 @@ class _loginScreenState extends State<loginScreen> {
                                 email: email!.text.toString(),
                                 password: password!.text.toString())
                             .then((value) {
-
                           if (value != 'valid') {
                             setState(() {
                               isLoading = false;
@@ -318,4 +334,6 @@ class _loginScreenState extends State<loginScreen> {
       ),
     );
   }
+
+ 
 }
