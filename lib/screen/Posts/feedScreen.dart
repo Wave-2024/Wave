@@ -834,7 +834,7 @@ Widget displayPostsForFeed(
   String month = months[dateTime.month - 1];
   NexusUser user = mapOfUsers[post.uid];
   return Container(
-    height: displayHeight(context) * 0.7,
+    height: displayHeight(context) * 0.725,
     width: displayWidth(context),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(25),
@@ -846,7 +846,7 @@ Widget displayPostsForFeed(
           borderRadius: BorderRadius.circular(25),
           color: Colors.white,
         ),
-        height: displayHeight(context) * 0.66,
+        height: displayHeight(context) * 0.685,
         width: displayWidth(context) * 0.84,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -855,70 +855,101 @@ Widget displayPostsForFeed(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      if (myUid != user.uid) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => userProfile(
-                                uid: user.uid,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          if (myUid != user.uid) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => userProfile(
+                                    uid: user.uid,
+                                  ),
+                                ));
+                          }
+                        },
+                        child: (user.dp != '')
+                            ? CircleAvatar(
+                                backgroundColor: Colors.grey[200],
+                                radius: displayWidth(context) * 0.045,
+                                backgroundImage: NetworkImage(user.dp),
+                              )
+                            : CircleAvatar(
+                                radius: displayWidth(context) * 0.045,
+                                backgroundColor: Colors.grey[200],
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.orange[300],
+                                  size: displayWidth(context) * 0.05,
+                                ),
                               ),
-                            ));
-                      }
-                    },
-                    child: (user.dp != '')
-                        ? CircleAvatar(
-                            backgroundColor: Colors.grey[200],
-                            radius: displayWidth(context) * 0.045,
-                            backgroundImage: NetworkImage(user.dp),
-                          )
-                        : CircleAvatar(
-                            radius: displayWidth(context) * 0.045,
-                            backgroundColor: Colors.grey[200],
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.orange[300],
-                              size: displayWidth(context) * 0.05,
-                            ),
-                          ),
+                      ),
+                      VerticalDivider(
+                        width: displayWidth(context) * 0.028,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          if (myUid != user.uid) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => userProfile(
+                                    uid: user.uid,
+                                  ),
+                                ));
+                          }
+                        },
+                        child: Text(
+                          user.username,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: displayWidth(context) * 0.035,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      VerticalDivider(
+                        width: displayWidth(context) * 0.005,
+                      ),
+                      (user.followers.length >= 25)
+                          ? Icon(
+                              Icons.verified,
+                              color: Colors.orange[400],
+                              size: displayWidth(context) * 0.0485,
+                            )
+                          : const SizedBox(),
+                    ],
                   ),
-                  VerticalDivider(
-                    width: displayWidth(context) * 0.028,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      if (myUid != user.uid) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => userProfile(
-                                uid: user.uid,
-                              ),
-                            ));
-                      }
-                    },
-                    child: Text(
-                      user.username,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: displayWidth(context) * 0.035,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  VerticalDivider(
-                    width: displayWidth(context) * 0.005,
-                  ),
-                  (user.followers.length >= 25)
-                      ? Icon(
-                          Icons.verified,
-                          color: Colors.orange[400],
-                          size: displayWidth(context) * 0.0485,
-                        )
-                      : const SizedBox(),
+                  IconButton(onPressed: () {
+                     showModalBottomSheet(
+                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(15),topLeft: Radius.circular(15))),
+                         context: context, builder: (context){
+                       return Container(
+                         height: displayHeight(context)*0.28,
+                         child: Padding(
+                           padding: const EdgeInsets.all(8.0),
+                           child: ListView(
+                             children: [
+                               ListTile(
+                                 title: Text('Hide Post'),
+                               ),
+                               ListTile(
+                                 title: Text('Report Post'),
+                               ),
+                               ListTile(
+                                 title: Text('Block User'),
+                               ),
+                             ],
+                           ),
+                         ),
+                       );
+                     });
+                  }, icon: Icon(Icons.more_vert),color: Colors.grey[600],),
                 ],
               ),
               Opacity(
