@@ -165,8 +165,10 @@ class manager extends ChangeNotifier {
             uid: value['uid'],
             post_id: key,
             likes: value['likes'] ?? []);
-        feedPostMap[key] = p;
-        list.add(p);
+        if(timeBetweenInDays(p.dateOfPost, DateTime.now())<=5){
+          feedPostMap[key] = p;
+          list.add(p);
+        }
       });
     }
     return list;

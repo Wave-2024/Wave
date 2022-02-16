@@ -65,6 +65,12 @@ int timeBetween(DateTime from, DateTime to) {
   return to.difference(from).inHours;
 }
 
+int timeBetweenInDays(DateTime from, DateTime to) {
+  from = DateTime(from.year, from.month, from.day, from.hour, from.minute);
+  to = DateTime(to.year, to.month, to.day, to.hour, to.minute);
+  return to.difference(from).inDays;
+}
+
 int findDifferenc(int a, int b) {
   return (a - b).abs();
 }
