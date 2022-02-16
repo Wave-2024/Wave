@@ -63,6 +63,12 @@ See this document for full instructions:
 - Comment 'want to work on this' to work on the particular issue and wait for admin to assign you with the task.
 - Create a new branch.
 - Commit the required changes ( Commit message should be understandable )
+- Do the following things before raising PR :-
+- Delete the files
+     - google-services.json
+     - constants.dart
+     - encrypt_message.dart
+- Fetch upstream
 - Create new Pull Request
 
 ## Get in touch
