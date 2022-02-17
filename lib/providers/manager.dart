@@ -132,7 +132,7 @@ class manager extends ChangeNotifier {
     List<dynamic> myFollowing = allUsers[myUid]!.followings;
     for (int i = 0; i < myFollowing.length; ++i) {
       String uid = myFollowing[i].toString();
-      tempPostList.addAll(await getListOfPostsUsingUid(uid));
+      tempPostList.addAll(await getListOfPostsUsingUid(myUid,uid));
       if (hasStory(myFollowing[i])) {
         tempStoryList.add(StoryModel(
           story: allUsers[myFollowing[i]]!.story,
@@ -150,7 +150,7 @@ class manager extends ChangeNotifier {
   }
 
   // Funtion that returns a future list of posts using a provided uid -> only used by setFeedPost()
-  Future<List<PostModel>> getListOfPostsUsingUid(String uid) async {
+  Future<List<PostModel>> getListOfPostsUsingUid(String myUid,String uid) async {
     List<PostModel> list = [];
     final String apiForPosts = constants().fetchApi + 'posts/${uid}.json';
     final responseOfPosts = await http.get(Uri.parse(apiForPosts));
@@ -159,13 +159,14 @@ class manager extends ChangeNotifier {
           json.decode(responseOfPosts.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
+          hiddenFrom: value['hiddenFrom']??[],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
             uid: value['uid'],
             post_id: key,
             likes: value['likes'] ?? []);
-        if(timeBetweenInDays(p.dateOfPost, DateTime.now())<=5){
+        if(timeBetweenInDays(p.dateOfPost, DateTime.now())<=5 && !(p.hiddenFrom.contains(myUid))){
           feedPostMap[key] = p;
           list.add(p);
         }
@@ -333,6 +334,7 @@ class manager extends ChangeNotifier {
       final postData = json.decode(postResponse.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
+            hiddenFrom: value['hiddenFrom']??[],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
@@ -358,6 +360,7 @@ class manager extends ChangeNotifier {
       final postData = json.decode(postResponse.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
+            hiddenFrom: value['hiddenFrom']??[],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
@@ -403,6 +406,7 @@ class manager extends ChangeNotifier {
             .then((v) {
           final postData = json.decode(v.body) as Map<String, dynamic>;
           myPostsMap[postData['name']] = PostModel(
+              hiddenFrom: [],
               caption: caption,
               dateOfPost: datetime,
               image: value,
@@ -410,6 +414,7 @@ class manager extends ChangeNotifier {
               post_id: postData['name'],
               likes: []);
           myPostsList.add(PostModel(
+            hiddenFrom: [],
               caption: caption,
               dateOfPost: datetime,
               image: value,
@@ -457,6 +462,7 @@ class manager extends ChangeNotifier {
               feedPostList.indexWhere((element) => element.post_id == postId);
           feedPostList.removeAt(index);
           feedPostMap[postId] = PostModel(
+            hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -466,6 +472,7 @@ class manager extends ChangeNotifier {
           feedPostList.insert(
               index,
               PostModel(
+                  hiddenFrom: oldPost.hiddenFrom,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
                   image: oldPost.image,
@@ -484,6 +491,7 @@ class manager extends ChangeNotifier {
               myPostsList.indexWhere((element) => element.post_id == postId);
           myPostsList.removeAt(index);
           myPostsMap[postId] = PostModel(
+              hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -493,6 +501,7 @@ class manager extends ChangeNotifier {
           myPostsList.insert(
               index,
               PostModel(
+                  hiddenFrom: oldPost.hiddenFrom,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
                   image: oldPost.image,
@@ -512,6 +521,7 @@ class manager extends ChangeNotifier {
               yourPostsList.indexWhere((element) => element.post_id == postId);
           yourPostsList.removeAt(index);
           yourPostsMap[postId] = PostModel(
+              hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -521,6 +531,7 @@ class manager extends ChangeNotifier {
           yourPostsList.insert(
               index,
               PostModel(
+                  hiddenFrom: oldPost.hiddenFrom,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
                   image: oldPost.image,
@@ -562,6 +573,7 @@ class manager extends ChangeNotifier {
               feedPostList.indexWhere((element) => element.post_id == postId);
           feedPostList.removeAt(index);
           feedPostMap[postId] = PostModel(
+              hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -573,6 +585,7 @@ class manager extends ChangeNotifier {
               index,
               PostModel(
                   caption: oldPost.caption,
+                  hiddenFrom: oldPost.hiddenFrom,
                   dateOfPost: oldPost.dateOfPost,
                   image: oldPost.image,
                   uid: oldPost.uid,
@@ -590,6 +603,7 @@ class manager extends ChangeNotifier {
               myPostsList.indexWhere((element) => element.post_id == postId);
           myPostsList.removeAt(index);
           myPostsMap[postId] = PostModel(
+              hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -604,6 +618,7 @@ class manager extends ChangeNotifier {
                   image: oldPost.image,
                   uid: oldPost.uid,
                   post_id: oldPost.post_id,
+                  hiddenFrom: oldPost.hiddenFrom,
                   likes: likes));
           notifyListeners();
         }
@@ -617,6 +632,7 @@ class manager extends ChangeNotifier {
               yourPostsList.indexWhere((element) => element.post_id == postId);
           yourPostsList.removeAt(index);
           yourPostsMap[postId] = PostModel(
+              hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -627,6 +643,7 @@ class manager extends ChangeNotifier {
               index,
               PostModel(
                   caption: oldPost.caption,
+                  hiddenFrom: oldPost.hiddenFrom,
                   dateOfPost: oldPost.dateOfPost,
                   image: oldPost.image,
                   uid: oldPost.uid,
@@ -680,6 +697,7 @@ class manager extends ChangeNotifier {
           myPostsList.indexWhere((element) => element.post_id == postId);
       myPostsList.removeAt(index);
       PostModel updatedPost = PostModel(
+          hiddenFrom: oldPost.hiddenFrom,
           caption: updatedCaption,
           dateOfPost: oldPost.dateOfPost,
           image: oldPost.image,
@@ -701,6 +719,7 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       returnThisPost = PostModel(
+        hiddenFrom: data['hiidenFrom'],
           caption: data['caption'],
           dateOfPost: DateTime.parse(data['dateOfPost']),
           image: data['image'],
@@ -937,4 +956,42 @@ class manager extends ChangeNotifier {
       }
     } catch (error) {}
   }
+
+
+  // *****  Post reporting functions  **** ////
+
+
+  Future<void> reportPost(String myUid,String report,String postOwnerId,String postId)async{
+    feedPostMap[postId]!.hideThisPostForMe(myUid);
+    int index = feedPostList.indexWhere((element) => element.post_id == postId);
+    feedPostList.removeAt(index);
+    await reportThisPost(postOwnerId, postId, report);
+    notifyListeners();
+  }
+
+  Future<List<dynamic>> fetchListOfUsersWhoHideThisPost(String postOwnerId , String postId)async{
+    List<dynamic> users = [];
+    final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
+    final response = await http.get(Uri.parse(api));
+    if(json.decode(response.body)!=null){
+      final data = json.decode(response.body) as Map<String,dynamic>;
+      users = data['hiddenFrom']??[];
+      return users;
+    }
+    return users;
+  }
+
+  Future<void> hidePost(String myUid,String postOwnerId,String postId)async{
+    feedPostMap[postId]!.hideThisPostForMe(myUid);
+    int index = feedPostList.indexWhere((element) => element.post_id == postId);
+    feedPostList.removeAt(index);
+    final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
+    List<dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
+    currentListOfHiddenUsers.add(myUid);
+    await http.patch(Uri.parse(api),body: json.encode({
+      'hiddenFrom' : currentListOfHiddenUsers
+    }));
+    notifyListeners();
+  }
+
 }

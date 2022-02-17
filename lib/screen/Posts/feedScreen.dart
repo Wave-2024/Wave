@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/NotificationModel.dart';
@@ -937,6 +938,48 @@ Widget displayPostsForFeed(
                              children: [
                                ListTile(
                                  title: Text('Hide Post'),
+                                 onTap: (){
+                                   Navigator.pop(context);
+                                   showDialog(
+                                     context: context,
+                                     builder: (context) {
+                                       return CupertinoAlertDialog(
+                                         title: const Text('Hide post'),
+                                         actions: [
+                                           Padding(
+                                             padding: const EdgeInsets.all(8.0),
+                                             child: Center(
+                                                 child: TextButton(
+                                                   child: const Text(
+                                                     'No',
+                                                     style: TextStyle(
+                                                         color: Colors.black87),
+                                                   ),
+                                                   onPressed: () {
+                                                     Navigator.pop(context);
+                                                   },
+                                                 )),
+                                           ),
+                                           Padding(
+                                             padding:
+                                             const EdgeInsets.all(8.0),
+                                             child: Center(
+                                                 child: TextButton(
+                                                   onPressed: () async {
+                                                     await Provider.of<manager>(context,listen: false).hidePost(myUid,post.uid,post.post_id);
+                                                     Navigator.pop(context);
+                                                   },
+                                                   child : const Text('Yes',
+                                                       style: TextStyle(
+                                                           color:
+                                                           Colors.black87)),
+                                                 )),
+                                           ),
+                                         ],
+                                       );
+                                     },
+                                   );
+                                 },
                                ),
                                ListTile(
                                  title: Text('Report Post'),
