@@ -166,7 +166,7 @@ class manager extends ChangeNotifier {
             uid: value['uid'],
             post_id: key,
             likes: value['likes'] ?? []);
-        if(timeBetweenInDays(p.dateOfPost, DateTime.now())<=5 && !(p.hiddenFrom.contains(myUid))){
+        if(timeBetweenInDays(p.dateOfPost, DateTime.now())<=6 && !(p.hiddenFrom.contains(myUid))){
           feedPostMap[key] = p;
           list.add(p);
         }
@@ -966,6 +966,12 @@ class manager extends ChangeNotifier {
     int index = feedPostList.indexWhere((element) => element.post_id == postId);
     feedPostList.removeAt(index);
     await reportThisPost(postOwnerId, postId, report);
+    final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
+    List<dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
+    currentListOfHiddenUsers.add(myUid);
+    await http.patch(Uri.parse(api),body: json.encode({
+      'hiddenFrom' : currentListOfHiddenUsers
+    }));
     notifyListeners();
   }
 
