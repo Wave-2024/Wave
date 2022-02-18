@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexus/models/PostModel.dart';
@@ -9,6 +10,7 @@ import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForYouPosts.dart'
 import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:nexus/utils/reportContainer.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -126,7 +128,7 @@ Widget displayYourPosts(
   String month = months[dateTime.month - 1];
   NexusUser user = mapOfUsers[post.uid];
   return Container(
-    height: displayHeight(context) * 0.7,
+    height: displayHeight(context) * 0.725,
     width: displayWidth(context),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(25),
@@ -138,7 +140,7 @@ Widget displayYourPosts(
           borderRadius: BorderRadius.circular(25),
           color: Colors.white,
         ),
-        height: displayHeight(context) * 0.66,
+        height: displayHeight(context) * 0.685,
         width: displayWidth(context) * 0.84,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -191,6 +193,49 @@ Widget displayYourPosts(
                         ),
                       ),
                     ],
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  topLeft: Radius.circular(15))),
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              height: displayHeight(context) * 0.1,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListView(
+                                    children: [
+                                      ListTile(
+                                        title: const Text('Report Post'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          showModalBottomSheet(
+                                              shape: const RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.only(
+                                                      topLeft:
+                                                      Radius.circular(15),
+                                                      topRight:
+                                                      Radius.circular(15))),
+                                              context: context,
+                                              builder: (BuildContext cx) {
+                                                return reportContainer(postId: post.post_id,myUid: myUid,postOwnerId: post.uid);
+                                              });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          });
+                    },
+                    icon: const Icon(Icons.more_vert),
+                    color: Colors.grey[600],
                   ),
                 ],
               ),

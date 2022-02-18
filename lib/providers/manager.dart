@@ -72,6 +72,7 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       NexusUser updatedUser = NexusUser(
+        blocked: data['blocked'],
           bio: data['bio'],
           coverImage: data['coverImage'],
           dp: data['dp'],
@@ -107,6 +108,7 @@ class manager extends ChangeNotifier {
       final userData = json.decode(userResponse.body) as Map<String, dynamic>;
       userData.forEach((key, value) {
         temp[key] = NexusUser(
+          blocked: value['blocked']??[],
             views: value['views'] ?? [],
             story: value['story'] ?? '',
             storyTime: DateTime.parse(value['storyTime']),
@@ -232,7 +234,8 @@ class manager extends ChangeNotifier {
               }))
           .then((value) {
         updateUser = NexusUser(
-            views: oldUser!.views,
+          blocked: oldUser!.blocked,
+            views: oldUser.views,
             story: oldUser.story,
             storyTime: oldUser.storyTime,
             bio: bio,
@@ -962,17 +965,23 @@ class manager extends ChangeNotifier {
 
 
   Future<void> reportPost(String myUid,String report,String postOwnerId,String postId)async{
-    feedPostMap[postId]!.hideThisPostForMe(myUid);
-    int index = feedPostList.indexWhere((element) => element.post_id == postId);
-    feedPostList.removeAt(index);
-    await reportThisPost(postOwnerId, postId, report);
-    final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
-    List<dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
-    currentListOfHiddenUsers.add(myUid);
-    await http.patch(Uri.parse(api),body: json.encode({
-      'hiddenFrom' : currentListOfHiddenUsers
-    }));
-    notifyListeners();
+    if(!feedPostMap[postId]!.hiddenFrom.contains(myUid)) {
+      feedPostMap[postId]!.hideThisPostForMe(myUid);
+      int index = feedPostList.indexWhere((element) =>
+      element.post_id == postId);
+      feedPostList.removeAt(index);
+      await reportThisPost(postOwnerId, postId, report);
+      final String api = constants().fetchApi +
+          'posts/${postOwnerId}/${postId}.json';
+      List<
+          dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(
+          postOwnerId, postId);
+      currentListOfHiddenUsers.add(myUid);
+      await http.patch(Uri.parse(api), body: json.encode({
+        'hiddenFrom': currentListOfHiddenUsers
+      }));
+      notifyListeners();
+    }
   }
 
   Future<List<dynamic>> fetchListOfUsersWhoHideThisPost(String postOwnerId , String postId)async{
@@ -988,16 +997,41 @@ class manager extends ChangeNotifier {
   }
 
   Future<void> hidePost(String myUid,String postOwnerId,String postId)async{
-    feedPostMap[postId]!.hideThisPostForMe(myUid);
-    int index = feedPostList.indexWhere((element) => element.post_id == postId);
-    feedPostList.removeAt(index);
-    final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
-    List<dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
-    currentListOfHiddenUsers.add(myUid);
+    if(!feedPostMap[postId]!.hiddenFrom.contains(myUid)){
+      feedPostMap[postId]!.hideThisPostForMe(myUid);
+      int index = feedPostList.indexWhere((element) => element.post_id == postId);
+      feedPostList.removeAt(index);
+      final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
+      List<dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
+      currentListOfHiddenUsers.add(myUid);
+      await http.patch(Uri.parse(api),body: json.encode({
+        'hiddenFrom' : currentListOfHiddenUsers
+      }));
+      notifyListeners();
+    }
+  }
+
+
+  // ****** Blocking / Unblocking methods ***** //
+
+  Future<void> block(String myUid,String yourUid)async{
+    allUsers[myUid]!.blockThisUser(yourUid);
+    final String api = constants().fetchApi+'users/${myUid}.json';
     await http.patch(Uri.parse(api),body: json.encode({
-      'hiddenFrom' : currentListOfHiddenUsers
+      'blocked' : allUsers[myUid]!.blocked,
+    }));
+    await unFollowUser(myUid, yourUid);
+    notifyListeners();
+  }
+
+  Future<void> unBlock(String myUid,String yourUid)async{
+    allUsers[myUid]!.unblockThisUser(yourUid);
+    final String api = constants().fetchApi+'users/${myUid}.json';
+    await http.patch(Uri.parse(api),body: json.encode({
+      'blocked' : allUsers[myUid]!.blocked
     }));
     notifyListeners();
   }
+
 
 }

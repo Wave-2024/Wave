@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
@@ -25,6 +26,7 @@ class _userProfileState extends State<userProfile> {
   bool loadAfterFollowProcess = false;
   bool init = true;
   bool? amIFollowing;
+  bool blockingUserProcess = false;
   @override
   void initState() {
     loadScreen = true;
@@ -52,6 +54,10 @@ class _userProfileState extends State<userProfile> {
         Provider.of<manager>(context).fetchAllUsers[widget.uid.toString()];
     amIFollowing = thisProfile!.followers.contains(currentUser!.uid);
     List<PostModel> posts = Provider.of<manager>(context).fetchYourPostsList;
+    bool isBlocked = Provider.of<manager>(context)
+        .fetchAllUsers[currentUser!.uid]!
+        .blocked
+        .contains(widget.uid);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -82,6 +88,19 @@ class _userProfileState extends State<userProfile> {
                     ),
                   ],
                 )
+              :(blockingUserProcess)?
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children:  [
+              const CircularProgressIndicator(
+                color: Colors.deepOrangeAccent,
+                backgroundColor: Colors.white,
+              ),
+              Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.04,)),
+              const Text('Processing your request ...'),
+            ],
+          )
               : SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -194,6 +213,149 @@ class _userProfileState extends State<userProfile> {
                                     ),
                                   ),
                                 )),
+                            Positioned(
+                                right: displayWidth(context) * 0.02,
+                                top: displayHeight(context) * 0.005,
+                                child: InkWell(
+                                  onTap: () {
+                                    (isBlocked)
+                                        ? showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CupertinoAlertDialog(
+                                                title: Text(
+                                                    'Unblock ${thisProfile.username} ?'),
+                                                actions: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                            color:
+                                                                Colors.black87),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                      onPressed: () async {
+                                                        setState(() {
+                                                          blockingUserProcess = true;
+                                                        });
+                                                        Navigator.pop(context);
+                                                        await Provider.of<
+                                                                    manager>(
+                                                                context,
+                                                                listen: false)
+                                                            .unBlock(
+                                                                currentUser!
+                                                                    .uid,
+                                                                widget.uid!);
+                                                        setState(() {
+                                                          blockingUserProcess = false;
+                                                        });
+
+                                                      },
+                                                      child: Text('Yes',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .green[800])),
+                                                    )),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          )
+                                        : showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CupertinoAlertDialog(
+                                                title: Text(
+                                                    'Block ${thisProfile.username} ?'),
+                                                actions: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                      onPressed: () async {
+                                                        setState(() {
+                                                          blockingUserProcess = true;
+                                                        });
+                                                        Navigator.pop(context);
+                                                        await Provider.of<
+                                                                    manager>(
+                                                                context,
+                                                                listen: false)
+                                                            .block(
+                                                                currentUser!
+                                                                    .uid,
+                                                                widget.uid!);
+                                                        setState(() {
+                                                          blockingUserProcess = false;
+                                                        });
+                                                      },
+                                                      child: Text('Yes',
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                              color: Colors.red[300]),
+                                                    )),
+                                                  )),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                  },
+                                  child: Card(
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    color: Colors.white70,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Center(
+                                        child: Icon(
+                                          (isBlocked)
+                                              ? Icons.lock_open
+                                              : Icons.lock,
+                                          color: Colors.red[300],
+                                          size: displayWidth(context) * 0.05,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )),
                           ],
                         ),
                       ),
@@ -229,20 +391,19 @@ class _userProfileState extends State<userProfile> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 15.0,right: 12.0),
+                        padding: const EdgeInsets.only(left: 15.0, right: 12.0),
                         child: (thisProfile.bio != '')
                             ? Container(
                                 child: Text(
                                   thisProfile.bio,
                                   style: TextStyle(
                                       color: Colors.black87,
-                                      fontSize: displayWidth(context)*0.035
-                                  ),
+                                      fontSize: displayWidth(context) * 0.035),
                                   textAlign: TextAlign.start,
                                   overflow: TextOverflow.clip,
                                 ),
                               )
-                            : SizedBox(),
+                            : const SizedBox(),
                       ),
                       Opacity(
                         opacity: 0.0,
@@ -261,6 +422,8 @@ class _userProfileState extends State<userProfile> {
                             Expanded(
                                 child: InkWell(
                               onTap: () {
+                                (isBlocked)?ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unblock ${thisProfile.username} to see their followers')))
+                                    :
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -296,6 +459,8 @@ class _userProfileState extends State<userProfile> {
                             Expanded(
                                 child: InkWell(
                               onTap: () {
+                                (isBlocked)?ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unblock ${thisProfile.username} to see their following')))
+                                    :
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -368,21 +533,27 @@ class _userProfileState extends State<userProfile> {
                           children: [
                             InkWell(
                               onTap: () {
-                                if (amIFollowing!) {
-                                  setState(() {
-                                    amIFollowing = !amIFollowing!;
-                                  });
-                                  Provider.of<manager>(context, listen: false)
-                                      .unFollowUser(currentUser!.uid.toString(),
-                                          thisProfile.uid);
-                                } else {
-                                  setState(() {
-                                    amIFollowing = !amIFollowing!;
-                                  });
-                                  Provider.of<manager>(context, listen: false)
-                                      .followUser(currentUser!.uid.toString(),
-                                          thisProfile.uid);
+                                if(isBlocked){
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('It seems you have blocked ${thisProfile.username}.')));
                                 }
+                                else{
+                                  if (amIFollowing!) {
+                                    setState(() {
+                                      amIFollowing = !amIFollowing!;
+                                    });
+                                    Provider.of<manager>(context, listen: false)
+                                        .unFollowUser(currentUser!.uid.toString(),
+                                        thisProfile.uid);
+                                  } else {
+                                    setState(() {
+                                      amIFollowing = !amIFollowing!;
+                                    });
+                                    Provider.of<manager>(context, listen: false)
+                                        .followUser(currentUser!.uid.toString(),
+                                        thisProfile.uid);
+                                  }
+                                }
+
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -493,43 +664,50 @@ class _userProfileState extends State<userProfile> {
                           ),
                         ),
                       ),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        //dragStartBehavior: DragStartBehavior.down,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3),
-                        itemCount: posts.length,
-                        padding: const EdgeInsets.all(8),
+                      (isBlocked)
+                          ? const Padding(
+                              padding: EdgeInsets.only(top: 50.0),
+                              child:
+                                  Center(child: Text('Unblock to see posts')),
+                            )
+                          : GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              //dragStartBehavior: DragStartBehavior.down,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3),
+                              itemCount: posts.length,
+                              padding: const EdgeInsets.all(8),
 
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => viewYourPostsSceen(
-                                      yourUid: thisProfile.uid,
-                                      index: index,
-                                      myUid: currentUser!.uid,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              viewYourPostsSceen(
+                                            yourUid: thisProfile.uid,
+                                            index: index,
+                                            myUid: currentUser!.uid,
+                                          ),
+                                        ));
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: CachedNetworkImage(
+                                          height: displayHeight(context) * 0.1,
+                                          width: displayWidth(context) * 0.3,
+                                          fit: BoxFit.cover,
+                                          imageUrl: posts[index].image),
                                     ),
-                                  ));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: CachedNetworkImage(
-                                    height: displayHeight(context) * 0.1,
-                                    width: displayWidth(context) * 0.3,
-                                    fit: BoxFit.cover,
-                                    imageUrl: posts[index].image),
-                              ),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ],
                   ),
                 ),
