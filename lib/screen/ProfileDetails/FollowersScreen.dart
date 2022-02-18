@@ -2,13 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
+import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
+import 'package:provider/provider.dart';
 
 class FollowersScreen extends StatefulWidget {
+  bool isThisMe;
   List<dynamic> followers;
   Map<String, NexusUser> allUsers;
-  FollowersScreen({required this.followers, required this.allUsers});
+  FollowersScreen({required this.followers, required this.allUsers,required this.isThisMe});
 
   @override
   State<FollowersScreen> createState() => _FollowersScreenState();
@@ -17,10 +20,9 @@ class FollowersScreen extends StatefulWidget {
 class _FollowersScreenState extends State<FollowersScreen> {
   List<NexusUser> displayList = [];
   List<NexusUser> primaryList = [];
-
+  bool processing = false;
   TextEditingController? searchController;
   User? currentUser;
-
   @override
   void initState() {
     super.initState();
@@ -109,7 +111,22 @@ class _FollowersScreenState extends State<FollowersScreen> {
         color: Colors.white,
         height: displayHeight(context),
         width: displayWidth(context),
-        child: Padding(
+        child: (processing) ?
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children:  [
+            const CircularProgressIndicator(
+              color: Colors.deepOrangeAccent,
+              backgroundColor: Colors.white,
+            ),
+            Opacity(opacity: 0.0,child: Divider(height: displayHeight(context)*0.04,)),
+            const Text('Processing your request ...'),
+          ],
+        )
+            :
+
+        Padding(
           padding: const EdgeInsets.all(4.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -178,6 +195,35 @@ class _FollowersScreenState extends State<FollowersScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: displayWidth(context) * 0.038),
                     ),
+                    trailing:  (widget.isThisMe)? InkWell(
+                        splashColor: Colors.orange,
+                        onTap: () async {
+                          if(processing){
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please wait , processing previous request')));
+                          }
+                          else{
+                            setState(() {
+                              processing = true;
+                            });
+                            await Provider.of<manager>(context,listen: false).unFollowUser(widget.followers[index],currentUser!.uid);
+                            setState(() {
+                              primaryList.removeAt(index);
+                              processing = false;
+                            });
+
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.orange)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Remove',style: TextStyle(fontSize: displayWidth(context)*0.03),),
+                          ),
+                        )
+                    ):const SizedBox()
                   );
                 },
               ),
