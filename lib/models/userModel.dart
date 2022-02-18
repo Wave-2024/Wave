@@ -9,6 +9,7 @@ class NexusUser {
     required this.bio,
     required this.coverImage,
     required this.dp,
+    required this.blocked,
     required this.email,
     required this.followers,
     required this.followings,
@@ -32,8 +33,10 @@ class NexusUser {
   String story;
   DateTime storyTime;
   List<dynamic> views;
+  List<dynamic> blocked;
 
   factory NexusUser.fromJson(Map<String, dynamic> json) => NexusUser(
+    blocked: json['blocked'],
         bio: json["bio"],
         coverImage: json["coverImage"],
         dp: json["dp"],
@@ -94,6 +97,14 @@ class NexusUser {
 
   removeFollower(String existingUser) {
     followers.remove(existingUser);
+  }
+
+  blockThisUser(String uid){
+    blocked.add(uid);
+  }
+
+  unblockThisUser(String uid){
+    blocked.remove(uid);
   }
 
   editProfile(String newUsername, String newTitle, String newBio) {

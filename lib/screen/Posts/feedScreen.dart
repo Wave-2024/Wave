@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/NotificationModel.dart';
@@ -20,6 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/reportContainer.dart';
 import 'CommentScreens/CommentsScreen.dart';
 
 class feedScreen extends StatefulWidget {
@@ -925,31 +927,103 @@ Widget displayPostsForFeed(
                           : const SizedBox(),
                     ],
                   ),
-                  IconButton(onPressed: () {
-                     showModalBottomSheet(
-                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(15),topLeft: Radius.circular(15))),
-                         context: context, builder: (context){
-                       return Container(
-                         height: displayHeight(context)*0.28,
-                         child: Padding(
-                           padding: const EdgeInsets.all(8.0),
-                           child: ListView(
-                             children: [
-                               ListTile(
-                                 title: Text('Hide Post'),
-                               ),
-                               ListTile(
-                                 title: Text('Report Post'),
-                               ),
-                               ListTile(
-                                 title: Text('Block User'),
-                               ),
-                             ],
-                           ),
-                         ),
-                       );
-                     });
-                  }, icon: Icon(Icons.more_vert),color: Colors.grey[600],),
+                  IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  topLeft: Radius.circular(15))),
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              height: displayHeight(context) * 0.2,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListView(
+                                    children: [
+                                      ListTile(
+                                        title: Text('Hide Post'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CupertinoAlertDialog(
+                                                title: const Text('Hide post'),
+                                                actions: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                      onPressed: () async {
+                                                        await Provider.of<
+                                                                    manager>(
+                                                                context,
+                                                                listen: false)
+                                                            .hidePost(
+                                                                myUid,
+                                                                post.uid,
+                                                                post.post_id);
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: const Text('Yes',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black87)),
+                                                    )),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: const Text('Report Post'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          showModalBottomSheet(
+                                              shape: const RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.only(
+                                                      topLeft:
+                                                          Radius.circular(15),
+                                                      topRight:
+                                                          Radius.circular(15))),
+                                              context: context,
+                                              builder: (BuildContext cx) {
+                                                return reportContainer(postId: post.post_id,myUid: myUid,postOwnerId: post.uid);
+                                              });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          });
+                    },
+                    icon: Icon(Icons.more_vert),
+                    color: Colors.grey[600],
+                  ),
                 ],
               ),
               Opacity(
@@ -962,7 +1036,6 @@ Widget displayPostsForFeed(
                 child: Container(
                     height: displayHeight(context) * 0.03,
                     width: displayWidth(context) * 0.68,
-                    
                     child: Text(
                       post.caption,
                       maxLines: 1,
@@ -1180,3 +1253,5 @@ Widget displayPostsForFeed(
     ),
   );
 }
+
+

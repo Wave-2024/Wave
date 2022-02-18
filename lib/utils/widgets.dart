@@ -376,3 +376,11 @@ Future<File> compressAndGetFile(File file, String targetPath) async {
   );
   return result!;
 }
+
+Future<void> reportThisPost(String postOwnerId,String postId,String report)async{
+  await FirebaseFirestore.instance.collection('reports').doc().set({
+    'report' : report,
+    'postId' : postId,
+    'postOwnerId' : postOwnerId,
+  });
+}

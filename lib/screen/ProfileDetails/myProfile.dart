@@ -489,6 +489,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => FollowersScreen(
+                                          isThisMe: true,
                                             allUsers:
                                                 Provider.of<manager>(context)
                                                     .fetchAllUsers,
