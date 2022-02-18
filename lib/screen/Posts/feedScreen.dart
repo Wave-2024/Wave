@@ -1277,207 +1277,209 @@ class _reportContainerState extends State<reportContainer> {
       Padding(
         padding: const EdgeInsets.all(
             16.0),
-        child: Column(
-          mainAxisAlignment:
-          MainAxisAlignment.start,
-          crossAxisAlignment:
-          CrossAxisAlignment
-              .start,
-          children: [
-            Center(
-                child: Text('Report',
-                    style: TextStyle(
-                      color: Colors
-                          .black,
-                      fontWeight:
-                      FontWeight
-                          .bold,
-                      fontSize:
-                      displayWidth(
-                          cx) *
-                          0.05,
-                    ))),
-            Divider(
-              height: displayHeight(context)*0.03,
-              color: Colors.black54,
-            ),
-            Text(
-              'Why are you reporting this post?',
-              style: TextStyle(
-                  color:
-                  Colors.black87,
-                  fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment:
+            MainAxisAlignment.start,
+            crossAxisAlignment:
+            CrossAxisAlignment
+                .start,
+            children: [
+              Center(
+                  child: Text('Report',
+                      style: TextStyle(
+                        color: Colors
+                            .black,
+                        fontWeight:
+                        FontWeight
+                            .bold,
+                        fontSize:
+                        displayWidth(
+                            cx) *
+                            0.05,
+                      ))),
+              Divider(
+                height: displayHeight(context)*0.03,
+                color: Colors.black54,
+              ),
+              Text(
+                'Why are you reporting this post?',
+                style: TextStyle(
+                    color:
+                    Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize:
+                    displayWidth(
+                        cx) *
+                        0.04),
+              ),
+              Opacity(
+                child: Divider(height: displayHeight(context)*0.012,),
+                opacity: 0.0,
+              ),
+              Text(
+                'After you report this post ,we will investigate and if found liable of the assertion, actions shall be taken duly. The post will be concealed momentarily.',
+                style: TextStyle(
+                  color: Colors.black54,
                   fontSize:
                   displayWidth(
-                      cx) *
-                      0.04),
-            ),
-            const Opacity(
-              child: Divider(),
-              opacity: 0.0,
-            ),
-            Text(
-              'After you report this post ,we will investigate and if found liable of the assertion, actions shall be taken duly. The post will be concealed momentarily.',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize:
-                displayWidth(
-                    context) *
-                    0.036,
+                      context) *
+                      0.036,
+                ),
               ),
-            ),
-            const Opacity(
-                opacity: 0.0,
-                child: Divider()),
-            ListTile(
-              leading: Image.asset(
-                'images/adult.png',
-                height: displayHeight(
-                    context) *
-                    0.03,
-                width: displayWidth(
-                    context) *
-                    0.05,
-                fit: BoxFit.contain,
+              const Opacity(
+                  opacity: 0.0,
+                  child: Divider()),
+              ListTile(
+                leading: Image.asset(
+                  'images/adult.png',
+                  height: displayHeight(
+                      context) *
+                      0.03,
+                  width: displayWidth(
+                      context) *
+                      0.05,
+                  fit: BoxFit.contain,
+                ),
+                visualDensity:
+                const VisualDensity(
+                    vertical: -4,
+                    horizontal: 0),
+                title: const Text(
+                    "Nudity or Sexual Content"),
+                onTap: () async {
+                  setState(() {
+                    loadScreen = true;
+                  });
+                  await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Nudity or Sexual Content",
+                      widget.postOwnerId!, widget.postId!);
+                  setState(() {
+                    loadScreen = false;
+                  });
+                  Navigator.pop(cx);
+                  ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
+                },
               ),
-              visualDensity:
-              const VisualDensity(
-                  vertical: -4,
-                  horizontal: 0),
-              title: const Text(
-                  "Nudity or Sexual Content"),
-              onTap: () async {
-                setState(() {
-                  loadScreen = true;
-                });
-                await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Nudity or Sexual Content",
-                    widget.postOwnerId!, widget.postId!);
-                setState(() {
-                  loadScreen = false;
-                });
-                Navigator.pop(cx);
-                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
-              },
-            ),
-            ListTile(
-              leading: Image.asset(
-                'images/dontlike.png',
-                height: displayHeight(
-                    context) *
-                    0.03,
-                width: displayWidth(
-                    context) *
-                    0.05,
-                fit: BoxFit.contain,
+              ListTile(
+                leading: Image.asset(
+                  'images/dontlike.png',
+                  height: displayHeight(
+                      context) *
+                      0.03,
+                  width: displayWidth(
+                      context) *
+                      0.05,
+                  fit: BoxFit.contain,
+                ),
+                visualDensity:
+                const VisualDensity(
+                    vertical: -4,
+                    horizontal: 0),
+                title: const Text(
+                  "I don't like it",
+                  style: TextStyle(),
+                ),
+                onTap: () async {
+                  setState(() {
+                    loadScreen = true;
+                  });
+                  await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "I don't like it",
+                      widget.postOwnerId!, widget.postId!);
+                  setState(() {
+                    loadScreen = false;
+                  });
+                  Navigator.pop(cx);
+                  ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
+                },
               ),
-              visualDensity:
-              const VisualDensity(
-                  vertical: -4,
-                  horizontal: 0),
-              title: const Text(
-                "I don't like it",
-                style: TextStyle(),
+              ListTile(
+                leading: Image.asset(
+                  'images/scam.png',
+                  height: displayHeight(
+                      context) *
+                      0.03,
+                  width: displayWidth(
+                      context) *
+                      0.05,
+                  fit: BoxFit.contain,
+                ),
+                title: const Text(
+                    "Scam or fraud"),
+                onTap: () async {
+                  setState(() {
+                    loadScreen = true;
+                  });
+                  await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Scam or fraud",
+                     widget.postOwnerId!, widget.postId!);
+                  setState(() {
+                    loadScreen = false;
+                  });
+                  Navigator.pop(cx);
+                  ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
+                },
               ),
-              onTap: () async {
-                setState(() {
-                  loadScreen = true;
-                });
-                await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "I don't like it",
-                    widget.postOwnerId!, widget.postId!);
-                setState(() {
-                  loadScreen = false;
-                });
-                Navigator.pop(cx);
-                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
-              },
-            ),
-            ListTile(
-              leading: Image.asset(
-                'images/scam.png',
-                height: displayHeight(
-                    context) *
-                    0.03,
-                width: displayWidth(
-                    context) *
-                    0.05,
-                fit: BoxFit.contain,
+              ListTile(
+                leading: Image.asset(
+                  'images/violence.png',
+                  height: displayHeight(
+                      context) *
+                      0.03,
+                  width: displayWidth(
+                      context) *
+                      0.05,
+                  fit: BoxFit.contain,
+                ),
+                visualDensity:
+                const VisualDensity(
+                    vertical: -4,
+                    horizontal: 0),
+                title: const Text(
+                    "Violence"),
+                onTap: () async {
+                  setState(() {
+                    loadScreen = true;
+                  });
+                  await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Violence",
+                      widget.postOwnerId!, widget.postId!);
+                  setState(() {
+                    loadScreen = false;
+                  });
+                  Navigator.pop(cx);
+                  ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
+                },
               ),
-              title: const Text(
-                  "Scam or fraud"),
-              onTap: () async {
-                setState(() {
-                  loadScreen = true;
-                });
-                await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Scam or fraud",
-                   widget.postOwnerId!, widget.postId!);
-                setState(() {
-                  loadScreen = false;
-                });
-                Navigator.pop(cx);
-                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
-              },
-            ),
-            ListTile(
-              leading: Image.asset(
-                'images/violence.png',
-                height: displayHeight(
-                    context) *
-                    0.03,
-                width: displayWidth(
-                    context) *
-                    0.05,
-                fit: BoxFit.contain,
+              ListTile(
+                leading: Image.asset(
+                  'images/hurt.png',
+                  height: displayHeight(
+                      context) *
+                      0.03,
+                  width: displayWidth(
+                      context) *
+                      0.05,
+                  fit: BoxFit.contain,
+                ),
+                visualDensity:
+                const VisualDensity(
+                    vertical: -4,
+                    horizontal: 0),
+                title: const Text(
+                    "Suicide or self injury case"),
+                onTap: () async {
+                  setState(() {
+                    loadScreen = true;
+                  });
+                  await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Suicide or self injury case",
+                     widget.postOwnerId!, widget.postId!);
+                  setState(() {
+                    loadScreen = false;
+                  });
+                  Navigator.pop(cx);
+                  ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
+                },
               ),
-              visualDensity:
-              const VisualDensity(
-                  vertical: -4,
-                  horizontal: 0),
-              title: const Text(
-                  "Violence"),
-              onTap: () async {
-                setState(() {
-                  loadScreen = true;
-                });
-                await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Violence",
-                    widget.postOwnerId!, widget.postId!);
-                setState(() {
-                  loadScreen = false;
-                });
-                Navigator.pop(cx);
-                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
-              },
-            ),
-            ListTile(
-              leading: Image.asset(
-                'images/hurt.png',
-                height: displayHeight(
-                    context) *
-                    0.03,
-                width: displayWidth(
-                    context) *
-                    0.05,
-                fit: BoxFit.contain,
-              ),
-              visualDensity:
-              const VisualDensity(
-                  vertical: -4,
-                  horizontal: 0),
-              title: const Text(
-                  "Suicide or self injury case"),
-              onTap: () async {
-                setState(() {
-                  loadScreen = true;
-                });
-                await Provider.of<manager>(cx,listen: false).reportPost(widget.myUid!, "Suicide or self injury case",
-                   widget.postOwnerId!, widget.postId!);
-                setState(() {
-                  loadScreen = false;
-                });
-                Navigator.pop(cx);
-                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(content: Text('Done !!')));
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
