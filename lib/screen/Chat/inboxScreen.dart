@@ -40,6 +40,16 @@ class _inboxScreenState extends State<inboxScreen> {
   Widget build(BuildContext context) {
     Map<String, NexusUser>? allUsers =
         Provider.of<manager>(context, listen: false).fetchAllUsers;
+    bool haveIBlocked = Provider.of<manager>(context)
+        .fetchAllUsers[widget.myId]!
+        .blocked
+        .contains(widget.yourUid);
+
+    bool haveTheyBlocked = Provider.of<manager>(context)
+        .fetchAllUsers[widget.yourUid]!
+        .blocked
+        .contains(widget.myId);
+    
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -107,15 +117,21 @@ class _inboxScreenState extends State<inboxScreen> {
             textColor: Colors.black,
             sendButtonMethod: () {
               String normalMessage = messageController!.text.toString();
-              if (normalMessage.trim().isNotEmpty) {
-                String encryptedMessage =
-                    encryptMessage().encryptThisMessage(normalMessage);
-                sendMessage(widget.chatId.toString(), encryptedMessage,
-                    widget.myId!, widget.yourUid!);
-                setState(() {
-                  messageController!.clear();
-                });
+              if(haveTheyBlocked || haveIBlocked){
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('You can no longer reply to this conversation')));
               }
+              else{
+                if (normalMessage.trim().isNotEmpty) {
+                  String encryptedMessage =
+                  encryptMessage().encryptThisMessage(normalMessage);
+                  sendMessage(widget.chatId.toString(), encryptedMessage,
+                      widget.myId!, widget.yourUid!);
+                  setState(() {
+                    messageController!.clear();
+                  });
+                }  
+              }
+              
             },
             backgroundColor: Colors.white,
             commentController: messageController,
@@ -151,7 +167,7 @@ class _inboxScreenState extends State<inboxScreen> {
                         : ListView.builder(
                             reverse: true,
                             shrinkWrap: true,
-                            physics: AlwaysScrollableScrollPhysics(),
+                            physics: const AlwaysScrollableScrollPhysics(),
                             itemCount: snapshot.data.docs.length,
                             itemBuilder: (context, index) {
                               String encryptedMessage =
