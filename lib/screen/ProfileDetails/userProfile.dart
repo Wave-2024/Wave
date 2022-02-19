@@ -461,10 +461,14 @@ class _userProfileState extends State<userProfile> {
                                     child: InkWell(
                                   onTap: () {
                                     (haveIBlocked || haveTheyBlocked)
-                                        ? ScaffoldMessenger.of(context)
+                                        ? (haveIBlocked)? ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
-                                                    'Cannot perform operation')))
+                                                    'You have blocked ${thisProfile.username}'))):
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        content: Text(
+                                            '${thisProfile.username} has blocked you')))
                                         : Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -507,10 +511,14 @@ class _userProfileState extends State<userProfile> {
                                     child: InkWell(
                                   onTap: () {
                                     (haveIBlocked || haveTheyBlocked)
-                                        ? ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    'Cannot perform operation')))
+                                        ? (haveIBlocked)? ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        content: Text(
+                                            'You have blocked ${thisProfile.username}'))):
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        content: Text(
+                                            '${thisProfile.username} has blocked you')))
                                         : Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -592,10 +600,14 @@ class _userProfileState extends State<userProfile> {
                                 InkWell(
                                   onTap: () {
                                     if (haveIBlocked || haveTheyBlocked) {
+                                      (haveIBlocked)? ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                          content: Text(
+                                              'You have blocked ${thisProfile.username}'))):
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Cannot perform this operation')));
+                                          content: Text(
+                                              '${thisProfile.username} has blocked you')));
                                     } else {
                                       if (amIFollowing!) {
                                         setState(() {
