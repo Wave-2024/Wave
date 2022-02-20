@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
@@ -9,6 +10,7 @@ import 'package:nexus/utils/DisplayComment.dart';
 import 'package:nexus/utils/constants.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
+import 'package:nexus/utils/reportContainer.dart';
 import 'package:provider/provider.dart';
 
 import '../usersWhoLikedScreen.dart';
@@ -169,14 +171,66 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                                     return Padding(
                                       padding:
                                           const EdgeInsets.only(bottom: 8.0),
-                                      child: DisplayCommentBox(
+                                      child: InkWell(
+                                        onLongPress: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CupertinoAlertDialog(
+                                                //content: Text('Are you sure you want to sign-out ?'),
+                                                title: const Text('Report comment ?'),
+                                                actions: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                          child: const Text(
+                                                            'No',
+                                                            style: TextStyle(
+                                                                color: Colors.black87),
+                                                          ),
+                                                          onPressed: () {
+                                                            Navigator.pop(context);
+                                                          },
+                                                        )),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Center(
+                                                        child: TextButton(
+                                                          onPressed: () async {
+                                                            Navigator.pop(context);
+                                                            showModalBottomSheet(context: context, builder: (context){
+                                                              return reportContainerForComment(
+                                                                myUid: myProfile.uid,
+                                                                postId: postDetail.post_id,
+                                                                commentId: commentId,
+                                                              );
+                                                            });
+                                                          },
+
+                                                          child: const Text('Yes',
+                                                              style: TextStyle(
+                                                                  color:
+                                                                  Colors.black87)),
+                                                        )),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: DisplayCommentBox(
                                           uid: uid,
                                           commentTime: commentTime,
                                           replies: replies,
                                           likes: likes,
-                                          postId: widget.postId!,
                                           comment: comment,
-                                          commentId: commentId),
+                                          commentId: commentId,
+                                          postId: widget.postId!,
+                                        ),
+                                      ),
                                     );
                                   },
                                   itemCount: snapshot.data.docs.length,
