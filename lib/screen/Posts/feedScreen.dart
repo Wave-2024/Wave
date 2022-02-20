@@ -535,7 +535,8 @@ class _suggestionCardsState extends State<suggestionCards> {
     final List<NexusUser>? suggestedUser = allUsers.values
         .toList()
         .where((element) =>
-            element.uid != widget.currentUser!.uid &&
+            element.uid != widget.currentUser!.uid && !allUsers[widget.currentUser!.uid]!.blocked.contains(element.uid) &&
+                !allUsers[element.uid]!.blocked.contains(widget.currentUser!.uid) &&
             !(element.followers.contains(widget.currentUser!.uid)))
         .toList();
     suggestedUser!

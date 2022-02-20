@@ -378,9 +378,19 @@ Future<File> compressAndGetFile(File file, String targetPath) async {
 }
 
 Future<void> reportThisPost(String postOwnerId,String postId,String report)async{
-  await FirebaseFirestore.instance.collection('reports').doc().set({
+  await FirebaseFirestore.instance.collection('reportsForPosts').doc().set({
     'report' : report,
     'postId' : postId,
     'postOwnerId' : postOwnerId,
   });
 }
+
+Future<void> reportThisComment(String postId,String commentId,String report)async{
+  await FirebaseFirestore.instance.collection('reportsForComments').doc().set({
+    'report' : report,
+    'postId' : postId,
+    'commentId' : commentId,
+  });
+}
+
+
