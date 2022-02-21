@@ -12,6 +12,30 @@
 ## Snaphots                                              
 <img src = "snaps/9.png" height = "400em" /> || <img src = "snaps/1.png" height = "400em" /> || <img src = "snaps/2.png" height = "400em" /> || <img src = "snaps/6.png" height = "400em" />  <img src = "snaps/4.png" height = "400em"/> || <img src = "snaps/5.png" height = "400em"/> || <img src = "snaps/8.png" height = "400em"/> || <img src = "snaps/7.png" height = "400em"/> 
 
+### Dont forget to :star: the repo
+
+## License
+```
+Copyright © 2022 Subhojeet Sahoo
+
+Being Open Source doesn't mean you can just make a copy of the app and upload it on playstore or sell
+a closed source copy of the same.
+Read the following carefully:
+1. Any copy of a software under GPL must be under same license. So you can't upload the app on a closed source
+  app repository like PlayStore/AppStore without distributing the source code.
+2. You can't sell any copied/modified version of the app under any "non-free" license.
+   You must provide the copy with the original software or with instructions on how to obtain original software,
+   should clearly state all changes, should clearly disclose full source code, should include same license
+   and all copyrights should be retained.
+
+In simple words, You can ONLY use the source code of this app for `Open Source` Project under `GPL v3.0` or later
+with all your source code CLEARLY DISCLOSED on any code hosting platform like GitHub, with clear INSTRUCTIONS on
+how to obtain the original software, should clearly STATE ALL CHANGES made and should RETAIN all copyrights.
+Use of this software under any "non-free" license is NOT permitted.
+```
+
+See the [MIT License](https://github.com/Alpha17-2/Wave/blob/master/LICENSE) for more details.
+
 ## Packages
 - http - https://pub.dev/packages/http
 - provider - https://pub.dev/packages/provider
@@ -57,18 +81,22 @@ See this document for full instructions:
 - Go to Firebase Firestore database and create a new database in test mode.
 - Go to Firebase Firestore Storage and create a new database in test mode.
 
+## Facing any Issue?
+
+Have a look at some [common Issues](https://github.com/Alpha17-2/Wave/issues) that you might face. If your problem is not there, feel free to raise an issue :)
+
+
 ## Contribute
 
 - Check out the issues .
 - Comment 'want to work on this' to work on the particular issue and wait for admin to assign you with the task.
-- Create a new branch.
-- Commit the required changes ( Commit message should be understandable )
-- Do the following things before raising PR :-
-- Delete the files
+- Create a new branch with name dev-pr.
+- Add your new changes.
+- Commit the required changes ( Commit message should be understandable ) 
+- Do not commit the files you created : 
      - google-services.json
      - constants.dart
      - encrypt_message.dart
-- Fetch upstream
 - Create new Pull Request
 
 ## Get in touch
