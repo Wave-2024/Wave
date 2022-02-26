@@ -722,7 +722,7 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       returnThisPost = PostModel(
-        hiddenFrom: data['hiidenFrom'],
+        hiddenFrom: data['hiidenFrom']??[],
           caption: data['caption'],
           dateOfPost: DateTime.parse(data['dateOfPost']),
           image: data['image'],
@@ -742,7 +742,6 @@ class manager extends ChangeNotifier {
     final String api = constants().fetchApi + 'saved/${myUid}.json';
     try {
       savedPostsMap[postModel.post_id] = postModel;
-
       notifyListeners();
       await http
           .post(Uri.parse(api),
