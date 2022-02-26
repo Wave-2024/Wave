@@ -148,7 +148,7 @@ class _viewStoryState extends State<viewStory> {
     return SafeArea(
         child: Scaffold(
             body: Container(
-                color: Colors.grey,
+                color: Colors.black87,
                 height: displayHeight(context),
                 width: displayWidth(context),
                 child: Padding(
