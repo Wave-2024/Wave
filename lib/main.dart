@@ -1,4 +1,3 @@
-
 /*
 Copyright © 2022 Subhojeet Sahoo
 
@@ -20,10 +19,10 @@ Use of this software under any "non-free" license is NOT permitted.
 
  */
 
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/providers/usernameProvider.dart';
@@ -38,9 +37,14 @@ Future<void> main() async {
   await Firebase.initializeApp();
   runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(
