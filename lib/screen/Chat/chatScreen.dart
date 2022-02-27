@@ -33,7 +33,6 @@ class _chatScreenState extends State<chatScreen> {
     Map<String, NexusUser>? allUsers =
         Provider.of<manager>(context, listen: false).fetchAllUsers;
     NexusUser? myProfile = allUsers[currentUser!.uid.toString()];
-    List<dynamic> myFollowingId = myProfile!.followings;
     displayChatHead(String chatId, String lastSeen, String yourUid) {
       return ListTile(
           isThreeLine: false,
@@ -63,7 +62,7 @@ class _chatScreenState extends State<chatScreen> {
           leading: (allUsers[yourUid]!.dp != '')
               ? CircleAvatar(
                   backgroundColor: Colors.grey[200],
-                  backgroundImage: NetworkImage(allUsers[yourUid]!.dp),
+                  backgroundImage: CachedNetworkImageProvider(allUsers[yourUid]!.dp),
                   radius: displayWidth(context) * 0.05,
                 )
               : CircleAvatar(
