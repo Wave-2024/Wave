@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/screen/General/decideScreen.dart';
+import 'package:nexus/screen/General/policyScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
@@ -194,42 +195,170 @@ class _registerScreenState extends State<registerScreen> {
                         child: GestureDetector(
                           onTap: () {
                             if (_formKey.currentState!.validate()) {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              _auth
-                                  .signUp(
-                                email: email!.text.toString(),
-                                password: password!.text.toString(),
-                                title: fullName!.text.toString(),
-                                username: username!.text.toString(),
-                              )
-                                  .then((value) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                                if (value != 'valid') {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            content: Text(value!),
-                                            actions: [
-                                              TextButton(
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (ctx) {
+                                    return Container(
+                                      height: displayHeight(context) * 0.32,
+                                      width: displayWidth(context),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.sticky_note_2,
+                                                  color: Colors.indigo,
+                                                ),
+                                                Text(
+                                                  'Accept User Policy',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: displayWidth(
+                                                              context) *
+                                                          0.05),
+                                                ),
+                                                IconButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(ctx);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                      color: Colors.red[300],
+                                                    ))
+                                              ],
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                            ),
+                                            const Opacity(
+                                                opacity: 0.0, child: Divider()),
+                                            Text(
+                                              'By clicking on "Register to Wave", you agree to our Terms and User Policy.',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize:
+                                                      displayWidth(context) *
+                                                          0.042),
+                                            ),
+                                            Opacity(
+                                                opacity: 0.0, child: Divider()),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                TextButton(
                                                   onPressed: () {
-                                                    Navigator.pop(context);
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const policyScreen(),
+                                                        ));
                                                   },
-                                                  child:
-                                                      const Text("Try again"))
-                                            ],
-                                          ));
-                                } else {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => decideScreen(),
-                                      ));
-                                }
-                              });
+                                                  style: ButtonStyle(
+                                                      elevation:
+                                                          MaterialStateProperty
+                                                              .all(5.0),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Colors
+                                                                  .indigoAccent),
+                                                      shape: MaterialStateProperty.all(
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)))),
+                                                  child: const Text(
+                                                    'View User Policy',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      Navigator.pop(ctx);
+                                                      isLoading = true;
+                                                    });
+                                                    _auth
+                                                        .signUp(
+                                                      email: email!.text.toString(),
+                                                      password: password!.text.toString(),
+                                                      title: fullName!.text.toString(),
+                                                      username: username!.text.toString(),
+                                                    )
+                                                        .then((value) {
+                                                      setState(() {
+                                                        isLoading = false;
+                                                      });
+                                                      if (value != 'valid') {
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (context) => AlertDialog(
+                                                              content: Text(value!),
+                                                              actions: [
+                                                                TextButton(
+                                                                    onPressed: () {
+                                                                      Navigator.pop(context);
+                                                                    },
+                                                                    child:
+                                                                    const Text("Try again"))
+                                                              ],
+                                                            ));
+                                                      } else {
+                                                        Navigator.pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => decideScreen(),
+                                                            ));
+                                                      }
+                                                    });
+
+                                                  },
+                                                  style: ButtonStyle(
+                                                      elevation:
+                                                          MaterialStateProperty
+                                                              .all(5.0),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Colors
+                                                                  .orange[600]),
+                                                      shape: MaterialStateProperty.all(
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)))),
+                                                  child: const Text(
+                                                    'Register to Wave',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }
                           },
                           child: Container(

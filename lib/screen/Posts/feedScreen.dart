@@ -531,7 +531,7 @@ class _suggestionCardsState extends State<suggestionCards> {
   @override
   Widget build(BuildContext context) {
     final Map<String, NexusUser> allUsers =
-        Provider.of<manager>(context).fetchAllUsers;
+        Provider.of<manager>(context,listen: false).fetchAllUsers;
     final List<NexusUser>? suggestedUser = allUsers.values
         .toList()
         .where((element) =>
