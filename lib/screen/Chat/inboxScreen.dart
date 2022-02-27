@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_box/comment/comment.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
@@ -35,6 +36,14 @@ class _inboxScreenState extends State<inboxScreen> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
   }
+  
+  Future<void> clearConversation() async {
+    await FirebaseFirestore.instance.collection('chat-room').doc(widget.chatId).collection('chat-room').get().then((value) {
+      for(DocumentSnapshot message in value.docs){
+        message.reference.delete();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +68,69 @@ class _inboxScreenState extends State<inboxScreen> {
           iconTheme: const IconThemeData(
             color: Colors.black,
           ),
+          actions: [
+            IconButton(onPressed: () {
+              showDialog(
+
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    content: Text("Deleting this chat will delete the chat for ${allUsers[widget.yourUid]!.username} too. Are you sure you want to delete the chat?"),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        (allUsers[widget.yourUid]!.dp.isNotEmpty)
+                            ? CircleAvatar(
+                          radius: displayWidth(context) * 0.042,
+                          backgroundImage: NetworkImage(
+                            allUsers[widget.yourUid]!.dp,
+                          ),
+                        )
+                            : CircleAvatar(
+                          radius: displayWidth(context) * 0.042,
+                          child: const Icon(
+                            Icons.person,
+                            color: Colors.orange,
+                          ),
+                          backgroundColor: Colors.grey[200],
+                        ),
+
+                        const Opacity(opacity: 0.0,child: VerticalDivider()),
+                        const Text('Delete chat',style: TextStyle(fontWeight: FontWeight.w600),),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                              child: const Text(
+                                'CANCEL',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.indigoAccent),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                      TextButton(
+                              onPressed: () async {
+                                await clearConversation();
+                                Navigator.pop(context);
+                              },
+
+                              child: const Text('DELETE CHAT',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                      color:
+                                      Colors.red)),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+            }, icon: Icon(Icons.delete,color: Colors.red[400],))
+          ],
           title: Row(
             children: [
               InkWell(
@@ -118,7 +190,7 @@ class _inboxScreenState extends State<inboxScreen> {
             sendButtonMethod: () {
               String normalMessage = messageController!.text.toString();
               if(haveTheyBlocked || haveIBlocked){
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('You can no longer reply to this conversation')));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You can no longer reply to this conversation')));
               }
               else{
                 if (normalMessage.trim().isNotEmpty) {
