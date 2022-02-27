@@ -66,30 +66,6 @@ class manager extends ChangeNotifier {
     return allUsers;
   }
 
-  Future<void> setMyProfile(String myUid) async {
-    final String api = constants().fetchApi + 'users/${myUid}.json';
-    try {
-      final response = await http.get(Uri.parse(api));
-      final data = json.decode(response.body) as Map<String, dynamic>;
-      NexusUser updatedUser = NexusUser(
-        blocked: data['blocked'],
-          bio: data['bio'],
-          coverImage: data['coverImage'],
-          dp: data['dp'],
-          email: data['email'],
-          followers: data['followers'] ?? [],
-          followings: data['followings'] ?? [],
-          title: data['title'],
-          uid: data['uid'],
-          username: data['username'],
-          story: data['story'] ?? '',
-          storyTime: DateTime.parse(data['storyTime']),
-          views: data['views'] ?? []);
-      allUsers[myUid] = updatedUser;
-      notifyListeners();
-    } catch (error) {}
-  }
-
   Future<void> deleteCommentFromThisPost(
       String postId, String commentId) async {
     await FirebaseFirestore.instance
@@ -722,7 +698,7 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       returnThisPost = PostModel(
-        hiddenFrom: data['hiidenFrom'],
+        hiddenFrom: data['hiidenFrom']??[],
           caption: data['caption'],
           dateOfPost: DateTime.parse(data['dateOfPost']),
           image: data['image'],
@@ -742,7 +718,6 @@ class manager extends ChangeNotifier {
     final String api = constants().fetchApi + 'saved/${myUid}.json';
     try {
       savedPostsMap[postModel.post_id] = postModel;
-
       notifyListeners();
       await http
           .post(Uri.parse(api),
@@ -1031,6 +1006,30 @@ class manager extends ChangeNotifier {
       'blocked' : allUsers[myUid]!.blocked
     }));
     notifyListeners();
+  }
+  
+  Future<void> updateMyProfile(String myUid)async{
+    final String api = constants().fetchApi+'users/${myUid}.json';
+    try{
+      final response = await http.get(Uri.parse(api));
+      final data = json.decode(response.body) as Map<String,dynamic>;
+      NexusUser user = NexusUser(bio: data['bio'], coverImage: data['coverImage'],
+          dp: data['dp'], 
+          blocked: data['blocked']??[], 
+          email: data['email'],
+          followers: data['followers']??[], 
+          followings: data['followings']??[],
+          title: data['title'],
+          uid: myUid,
+          username: data['username'],
+          story: data['story'], storyTime: DateTime.parse(data['storyTime']),
+          views: data['views']??[]);
+      allUsers[myUid] = user;
+      notifyListeners();
+    }
+    catch(error){
+      rethrow;
+    }
   }
 
 

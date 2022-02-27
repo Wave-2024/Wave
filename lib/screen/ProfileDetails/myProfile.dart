@@ -48,7 +48,7 @@ class _profiletScreenState extends State<profiletScreen> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      await Provider.of<manager>(context).setAllUsers();
+      await Provider.of<manager>(context).updateMyProfile(currentUser!.uid);
       final SharedPreferences localStore = await localStoreInstance;
       if (!localStore.getBool('myPosts')!) {
         loadScreenForProfile = true;
