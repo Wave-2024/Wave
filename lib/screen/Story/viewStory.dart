@@ -33,7 +33,7 @@ class _viewStoryState extends State<viewStory> {
   @override
   void didChangeDependencies() async {
     if (init!) {
-      Provider.of<manager>(context)
+      Provider.of<manager>(context,listen: false)
           .increaseViewsOnStory(widget.story!.uid!, widget.myUid!);
     }
     init = false;
@@ -55,8 +55,6 @@ class _viewStoryState extends State<viewStory> {
               context: context,
               builder: (context) {
                 return Container(
-                  height: displayHeight(context) * 0.45,
-                  width: displayWidth(context),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -64,16 +62,51 @@ class _viewStoryState extends State<viewStory> {
                         topRight: Radius.circular(15)),
                   ),
                   child: (allUsers[widget.myUid]!.views.isNotEmpty)
-                      ? ListView.builder(
-                          padding: const EdgeInsets.all(16.0),
-                          itemBuilder: (context, index) {
-                            return displayProfileHeads(
-                                context,
-                                allUsers[
-                                    allUsers[widget.myUid]!.views[index]]!);
-                          },
-                          itemCount: allUsers[widget.myUid]!.views.length,
-                        )
+                      ? Padding(
+                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                        child: SingleChildScrollView(
+                          child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Views',style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold,fontSize: displayWidth(context)*0.04),),
+                                  Opacity(opacity: 0.0,child: VerticalDivider(
+                                    width: displayWidth(context)*0.02,
+                                  ),),
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey[200],
+                                    radius: displayWidth(context) *
+                                        0.03,
+                                    child: Text(
+                                      allUsers[widget.myUid!]!.views.length.toString(),
+                                      style: TextStyle(
+                                          color: Colors.black45,
+                                          fontSize: displayWidth(
+                                              context) *
+                                              0.03),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(16.0),
+                                  itemBuilder: (context, index) {
+                                    return displayProfileHeads(
+                                        context,
+                                        allUsers[
+                                            allUsers[widget.myUid]!.views[index]]!);
+                                  },
+                                  itemCount: allUsers[widget.myUid]!.views.length,
+                                ),
+                            ],
+                          ),
+                        ),
+                      )
                       : const Center(
                           child: Text(
                             'No views',
