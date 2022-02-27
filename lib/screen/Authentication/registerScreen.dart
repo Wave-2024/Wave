@@ -111,7 +111,7 @@ class _registerScreenState extends State<registerScreen> {
                           decoration: InputDecoration(
                             hintStyle: TextStyle(
                                 fontSize: displayWidth(context) * 0.04),
-                            hintText: 'Alpha',
+                            hintText: 'Wave',
                             labelText: "Full Name",
                           ),
                         ),
@@ -151,7 +151,7 @@ class _registerScreenState extends State<registerScreen> {
                           decoration: InputDecoration(
                               hintStyle: TextStyle(
                                   fontSize: displayWidth(context) * 0.04),
-                              hintText: 'username@gmail.com',
+                              hintText: 'example@example.com',
                               labelText: "Email"),
                         ),
                       ),
@@ -199,162 +199,174 @@ class _registerScreenState extends State<registerScreen> {
                                   context: context,
                                   builder: (ctx) {
                                     return Container(
-                                      height: displayHeight(context) * 0.32,
-                                      width: displayWidth(context),
+                                  
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.sticky_note_2,
-                                                  color: Colors.indigo,
-                                                ),
-                                                Text(
-                                                  'Accept User Policy',
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: displayWidth(
-                                                              context) *
-                                                          0.05),
-                                                ),
-                                                IconButton(
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.sticky_note_2,
+                                                    color: Colors.indigo,
+                                                  ),
+                                                  Text(
+                                                    'Accept User Policy',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: displayWidth(
+                                                                context) *
+                                                            0.05),
+                                                  ),
+                                                  IconButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(ctx);
+                                                      },
+                                                      icon: Icon(
+                                                        Icons.close,
+                                                        color: Colors.red[300],
+                                                      ))
+                                                ],
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                              ),
+                                              const Opacity(
+                                                  opacity: 0.0,
+                                                  child: Divider()),
+                                              Text(
+                                                'By clicking on "Register to Wave", you agree to our Terms and User Policy.',
+                                                style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize:
+                                                        displayWidth(context) *
+                                                            0.042),
+                                              ),
+                                              Opacity(
+                                                  opacity: 0.0,
+                                                  child: Divider()),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  TextButton(
                                                     onPressed: () {
-                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const policyScreen(),
+                                                          ));
                                                     },
-                                                    icon: Icon(
-                                                      Icons.close,
-                                                      color: Colors.red[300],
-                                                    ))
-                                              ],
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                            ),
-                                            const Opacity(
-                                                opacity: 0.0, child: Divider()),
-                                            Text(
-                                              'By clicking on "Register to Wave", you agree to our Terms and User Policy.',
-                                              style: TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize:
-                                                      displayWidth(context) *
-                                                          0.042),
-                                            ),
-                                            Opacity(
-                                                opacity: 0.0, child: Divider()),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const policyScreen(),
-                                                        ));
-                                                  },
-                                                  style: ButtonStyle(
-                                                      elevation:
-                                                          MaterialStateProperty
-                                                              .all(5.0),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all(Colors
-                                                                  .indigoAccent),
-                                                      shape: MaterialStateProperty.all(
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8)))),
-                                                  child: const Text(
-                                                    'View User Policy',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w600),
+                                                    style: ButtonStyle(
+                                                        elevation:
+                                                            MaterialStateProperty
+                                                                .all(5.0),
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all(Colors
+                                                                    .indigoAccent),
+                                                        shape: MaterialStateProperty.all(
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8)))),
+                                                    child: const Text(
+                                                      'View User Policy',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
                                                   ),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      Navigator.pop(ctx);
-                                                      isLoading = true;
-                                                    });
-                                                    _auth
-                                                        .signUp(
-                                                      email: email!.text.toString(),
-                                                      password: password!.text.toString(),
-                                                      title: fullName!.text.toString(),
-                                                      username: username!.text.toString(),
-                                                    )
-                                                        .then((value) {
+                                                  TextButton(
+                                                    onPressed: () {
                                                       setState(() {
-                                                        isLoading = false;
+                                                        Navigator.pop(ctx);
+                                                        isLoading = true;
                                                       });
-                                                      if (value != 'valid') {
-                                                        showDialog(
-                                                            context: context,
-                                                            builder: (context) => AlertDialog(
-                                                              content: Text(value!),
-                                                              actions: [
-                                                                TextButton(
-                                                                    onPressed: () {
-                                                                      Navigator.pop(context);
-                                                                    },
-                                                                    child:
-                                                                    const Text("Try again"))
-                                                              ],
-                                                            ));
-                                                      } else {
-                                                        Navigator.pushReplacement(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) => decideScreen(),
-                                                            ));
-                                                      }
-                                                    });
-
-                                                  },
-                                                  style: ButtonStyle(
-                                                      elevation:
-                                                          MaterialStateProperty
-                                                              .all(5.0),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all(Colors
-                                                                  .orange[600]),
-                                                      shape: MaterialStateProperty.all(
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8)))),
-                                                  child: const Text(
-                                                    'Register to Wave',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ],
+                                                      _auth
+                                                          .signUp(
+                                                        email: email!.text
+                                                            .toString(),
+                                                        password: password!.text
+                                                            .toString(),
+                                                        title: fullName!.text
+                                                            .toString(),
+                                                        username: username!.text
+                                                            .toString(),
+                                                      )
+                                                          .then((value) {
+                                                        setState(() {
+                                                          isLoading = false;
+                                                        });
+                                                        if (value != 'valid') {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) =>
+                                                                      AlertDialog(
+                                                                        content:
+                                                                            Text(value!),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                              onPressed: () {
+                                                                                Navigator.pop(context);
+                                                                              },
+                                                                              child: const Text("Try again"))
+                                                                        ],
+                                                                      ));
+                                                        } else {
+                                                          Navigator.pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        decideScreen(),
+                                                              ));
+                                                        }
+                                                      });
+                                                    },
+                                                    style: ButtonStyle(
+                                                        elevation:
+                                                            MaterialStateProperty
+                                                                .all(5.0),
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all(Colors
+                                                                        .orange[
+                                                                    600]),
+                                                        shape: MaterialStateProperty.all(
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8)))),
+                                                    child: const Text(
+                                                      'Register to Wave',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     );

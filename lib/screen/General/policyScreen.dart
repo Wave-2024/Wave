@@ -14,9 +14,17 @@ class policyScreen extends StatelessWidget {
       fontSize: displayWidth(context)*0.038,
       color: Colors.black87,
     );
-    var divider = Opacity(opacity: 0.0,child: Divider(),);
+    var divider = const Opacity(
+      opacity: 0.0,
+      child: Divider(),
+    );
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.orange[400],elevation: 0,title: Text('Terms of Service'),iconTheme: IconThemeData(color: Colors.white),),
+      appBar: AppBar(
+        backgroundColor: Colors.orange[600],
+        elevation: 0,
+        title: const Text('User policy'),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: Container(
         height: displayHeight(context),
         width: displayWidth(context),
