@@ -1,6 +1,9 @@
 # Wave
 ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white) ![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white) ![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
+## Download
+
+<a href='https://play.google.com/store/apps/details?id=com.Alpha.nexus'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
 
 ## About
 - An android app developed with Flutter and Dart. Uses Firebase for back-end services such as Authentication, Database ( No SQL ) and Storage.
