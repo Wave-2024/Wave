@@ -116,77 +116,79 @@ class _FollowingScreenState extends State<FollowingScreen> {
         width: displayWidth(context),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              searchBox(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: displayList.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    onTap: () {
-                      if (displayList[index].uid != currentUser!.uid) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  userProfile(uid: displayList[index].uid),
-                            ));
-                      }
-                    },
-                    visualDensity:
-                        const VisualDensity(horizontal: 0, vertical: -3),
-                    leading: (displayList[index].dp != '')
-                        ? CircleAvatar(
-                            backgroundImage: CachedNetworkImageProvider(
-                                displayList[index].dp),
-                            radius: displayWidth(context) * 0.05,
-                          )
-                        : CircleAvatar(
-                            backgroundColor: Colors.grey[200],
-                            radius: displayWidth(context) * 0.05,
-                            child: Icon(
-                              Icons.person,
-                              size: displayWidth(context) * 0.075,
-                              color: Colors.orange[400],
-                            ),
-                          ),
-                    subtitle: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          displayList[index].username,
-                          style: TextStyle(
-                              color: Colors.black45,
-                              fontSize: displayWidth(context) * 0.035),
-                        ),
-                        Opacity(
-                            opacity: 0.0,
-                            child: VerticalDivider(
-                              width: displayWidth(context) * 0.003,
-                            )),
-                        (displayList[index].followers.length >= 25)
-                            ? Icon(
-                                Icons.verified,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                searchBox(),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: displayList.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      onTap: () {
+                        if (displayList[index].uid != currentUser!.uid) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    userProfile(uid: displayList[index].uid),
+                              ));
+                        }
+                      },
+                      visualDensity:
+                          const VisualDensity(horizontal: 0, vertical: -3),
+                      leading: (displayList[index].dp != '')
+                          ? CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(
+                                  displayList[index].dp),
+                              radius: displayWidth(context) * 0.05,
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Colors.grey[200],
+                              radius: displayWidth(context) * 0.05,
+                              child: Icon(
+                                Icons.person,
+                                size: displayWidth(context) * 0.075,
                                 color: Colors.orange[400],
-                                size: displayWidth(context) * 0.048,
-                              )
-                            : const SizedBox(),
-                      ],
-                    ),
-                    title: Text(
-                      displayList[index].title,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: displayWidth(context) * 0.038),
-                    ),
-                  );
-                },
-              ),
-            ],
+                              ),
+                            ),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            displayList[index].username,
+                            style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: displayWidth(context) * 0.035),
+                          ),
+                          Opacity(
+                              opacity: 0.0,
+                              child: VerticalDivider(
+                                width: displayWidth(context) * 0.003,
+                              )),
+                          (displayList[index].followers.length >= 25)
+                              ? Icon(
+                                  Icons.verified,
+                                  color: Colors.orange[400],
+                                  size: displayWidth(context) * 0.048,
+                                )
+                              : const SizedBox(),
+                        ],
+                      ),
+                      title: Text(
+                        displayList[index].title,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: displayWidth(context) * 0.038),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
