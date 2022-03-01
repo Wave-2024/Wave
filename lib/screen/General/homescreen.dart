@@ -1,8 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
-import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/Posts/addPostScreen.dart';
 import 'package:nexus/screen/Chat/chatScreen.dart';
 import 'package:nexus/screen/Posts/feedScreen.dart';
@@ -10,6 +7,7 @@ import 'package:nexus/screen/ProfileDetails/myProfile.dart';
 import 'package:nexus/screen/General/searchScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';
+import 'package:upgrader/upgrader.dart';
 
 class homescreen extends StatelessWidget {
   final List<dynamic> screens = [
@@ -81,7 +79,13 @@ class homescreen extends StatelessWidget {
       body: Container(
         height: displayHeight(context),
         width: displayWidth(context),
-        child: screens[screenIndex],
+        child: UpgradeAlert(
+          showReleaseNotes: true,
+          canDismissDialog: true,
+          minAppVersion: "1.0.0+3",
+          child: screens[screenIndex],
+        )
+        ,
       ),
     );
   }
