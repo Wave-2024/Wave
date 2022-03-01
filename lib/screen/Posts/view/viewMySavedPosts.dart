@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/General/fullScreenImage.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForSavedPost.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -237,50 +238,31 @@ Widget displayMySavedPosts(
                 ),
               ),
               Center(
-                child: InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return BackdropFilter(
-                          filter: ImageFilter.blur(
-                            sigmaX: 10,
-                            sigmaY: 10,
-                          ),
-                          child: Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            elevation: 5,
-                            backgroundColor: Colors.transparent,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: CachedNetworkImage(
-                                  imageUrl: post.image,
-                                  fit: BoxFit.contain,
-                                  height: displayHeight(context) * 0.5,
-                                )),
-                          ),
-                        );
+                child: Hero(
+                  tag: post.post_id,
+                  child: Material(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => fullScreenImage(image: post.image,postId: post.post_id,),));
                       },
-                    );
-                  },
-                  onDoubleTap: () {
-                    if (post.likes.contains(myUid)) {
-                      Provider.of<manager>(context, listen: false)
-                          .dislikePost(myUid, post.uid, post.post_id, 'saved');
-                    } else {
-                      Provider.of<manager>(context, listen: false)
-                          .likePost(myUid, post.uid, post.post_id, 'saved');
-                    }
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: CachedNetworkImage(
-                      imageUrl: post.image,
-                      height: displayHeight(context) * 0.402,
-                      width: displayWidth(context) * 0.8,
-                      fit: BoxFit.cover,
+                      onDoubleTap: () {
+                        if (post.likes.contains(myUid)) {
+                          Provider.of<manager>(context, listen: false)
+                              .dislikePost(myUid, post.uid, post.post_id, 'saved');
+                        } else {
+                          Provider.of<manager>(context, listen: false)
+                              .likePost(myUid, post.uid, post.post_id, 'saved');
+                        }
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: CachedNetworkImage(
+                          imageUrl: post.image,
+                          height: displayHeight(context) * 0.402,
+                          width: displayWidth(context) * 0.8,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),

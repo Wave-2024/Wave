@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:nexus/models/NotificationModel.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/StoryModel.dart';
@@ -56,6 +55,10 @@ class manager extends ChangeNotifier {
     return [...yourPostsList];
   }
 
+  List<StoryModel> get fetchStoryList {
+    return [...feedStoryList];
+  }
+
   List<PostModel> get fetchFeedPostList {
     return [...feedPostList];
   }
@@ -76,6 +79,8 @@ class manager extends ChangeNotifier {
         .delete();
   }
 
+  //**********    User details methods    *********//
+
   Future<void> setAllUsers() async {
     final String api = constants().fetchApi + 'users.json';
     Map<String, NexusUser> temp = {};
@@ -84,7 +89,7 @@ class manager extends ChangeNotifier {
       final userData = json.decode(userResponse.body) as Map<String, dynamic>;
       userData.forEach((key, value) {
         temp[key] = NexusUser(
-          blocked: value['blocked']??[],
+            blocked: value['blocked'] ?? [],
             views: value['views'] ?? [],
             story: value['story'] ?? '',
             storyTime: DateTime.parse(value['storyTime']),
@@ -103,55 +108,8 @@ class manager extends ChangeNotifier {
     } catch (error) {}
   }
 
-  // Function to set posts and stories that will be diplayed on your feed screen
-  Future<void> setFeedPosts(String myUid) async {
-    List<PostModel> tempPostList = [];
-    List<StoryModel> tempStoryList = [];
-    List<dynamic> myFollowing = allUsers[myUid]!.followings;
-    for (int i = 0; i < myFollowing.length; ++i) {
-      String uid = myFollowing[i].toString();
-      tempPostList.addAll(await getListOfPostsUsingUid(myUid,uid));
-      if (hasStory(myFollowing[i])) {
-        tempStoryList.add(StoryModel(
-          story: allUsers[myFollowing[i]]!.story,
-          storyTime: allUsers[myFollowing[i]]!.storyTime,
-          views: allUsers[myFollowing[i]]!.views,
-          uid: myFollowing[i],
-        ));
-      }
-    }
-    feedStoryList = tempStoryList;
-    feedPostList = tempPostList;
-    feedStoryList.sort((a, b) => b.storyTime!.compareTo(a.storyTime!));
-    feedPostList.sort((a, b) => b.dateOfPost.compareTo(a.dateOfPost));
-    notifyListeners();
-  }
 
-  // Funtion that returns a future list of posts using a provided uid -> only used by setFeedPost()
-  Future<List<PostModel>> getListOfPostsUsingUid(String myUid,String uid) async {
-    List<PostModel> list = [];
-    final String apiForPosts = constants().fetchApi + 'posts/${uid}.json';
-    final responseOfPosts = await http.get(Uri.parse(apiForPosts));
-    if (json.decode(responseOfPosts.body) != null) {
-      final postData =
-          json.decode(responseOfPosts.body) as Map<String, dynamic>;
-      postData.forEach((key, value) {
-        PostModel p = PostModel(
-          hiddenFrom: value['hiddenFrom']??[],
-            caption: value['caption'],
-            dateOfPost: DateTime.parse(value['dateOfPost']),
-            image: value['image'],
-            uid: value['uid'],
-            post_id: key,
-            likes: value['likes'] ?? []);
-        if(timeBetweenInDays(p.dateOfPost, DateTime.now())<=6 && !(p.hiddenFrom.contains(myUid))){
-          feedPostMap[key] = p;
-          list.add(p);
-        }
-      });
-    }
-    return list;
-  }
+  //**********    User details update methods    *********//
 
   Future<void> addCoverPicture(File? newImage, String uid) async {
     String imageLocation = 'users/${uid}/details/cp';
@@ -191,10 +149,6 @@ class manager extends ChangeNotifier {
     });
   }
 
-  List<StoryModel> get fetchStoryList {
-    return [...feedStoryList];
-  }
-
   Future<void> editMyProfile(
       String uid, String fullName, String userName, String bio) async {
     final String api = constants().fetchApi + 'users/${uid}.json';
@@ -210,7 +164,7 @@ class manager extends ChangeNotifier {
               }))
           .then((value) {
         updateUser = NexusUser(
-          blocked: oldUser!.blocked,
+            blocked: oldUser!.blocked,
             views: oldUser.views,
             story: oldUser.story,
             storyTime: oldUser.storyTime,
@@ -228,6 +182,9 @@ class manager extends ChangeNotifier {
       });
     } catch (error) {}
   }
+
+
+  //**********    Follow / Unfollow methods    *********//
 
   Future<void> followUser(String myUid, String yourUid) async {
     allUsers[myUid]!.addFollowing(yourUid);
@@ -303,7 +260,50 @@ class manager extends ChangeNotifier {
     await setFeedPosts(myUid);
   }
 
-  // Function to set my posts
+  //**********    Setting posts -> Feed posts , My posts , Your posts   *********//
+
+  Future<void> setFeedPosts(String myUid) async {
+    List<PostModel> tempPostList = [];
+    List<StoryModel> tempStoryList = [];
+    final String api = constants().fetchApi + 'posts.json';
+    final res = await http.get(Uri.parse(api));
+    final data = json.decode(res.body) as Map<String, dynamic>;
+    List<dynamic> myFollowing = allUsers[myUid]!.followings;
+    for (String uid in myFollowing) {
+      if (hasStory(uid)) {
+        tempStoryList.add(StoryModel(
+            story: allUsers[uid]!.story,
+            storyTime: allUsers[uid]!.storyTime,
+            views: allUsers[uid]!.views,
+            uid: uid));
+      }
+      if (data.containsKey(uid)) {
+        final headPostMap = data[uid] as Map<String, dynamic>;
+        for (String postId in headPostMap.keys.toList()) {
+          final postMap = headPostMap[postId] as Map<String, dynamic>;
+          PostModel p = PostModel(
+              hiddenFrom: postMap['hiddenFrom'] ?? [],
+              caption: postMap['caption'],
+              dateOfPost: DateTime.parse(postMap['dateOfPost']),
+              image: postMap['image'],
+              uid: postMap['uid'],
+              post_id: postId,
+              likes: postMap['likes'] ?? []);
+          if (timeBetweenInDays(p.dateOfPost, DateTime.now()) <= 6 &&
+              !(p.hiddenFrom.contains(myUid))) {
+            feedPostMap[postId] = p;
+            tempPostList.add(p);
+          }
+        }
+      }
+    }
+    feedPostList = tempPostList;
+    feedPostList = tempPostList;
+    feedStoryList.sort((a, b) => b.storyTime!.compareTo(a.storyTime!));
+    feedPostList.sort((a, b) => b.dateOfPost.compareTo(a.dateOfPost));
+    notifyListeners();
+  }
+
   Future<void> setMyPosts(String uid) async {
     List<PostModel> tempList = [];
     Map<String, PostModel> tempMap = {};
@@ -313,7 +313,7 @@ class manager extends ChangeNotifier {
       final postData = json.decode(postResponse.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
-            hiddenFrom: value['hiddenFrom']??[],
+            hiddenFrom: value['hiddenFrom'] ?? [],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
@@ -329,7 +329,6 @@ class manager extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Function to set your posts
   Future<void> setYourPosts(String uid) async {
     List<PostModel> tempList = [];
     Map<String, PostModel> tempMap = {};
@@ -339,7 +338,7 @@ class manager extends ChangeNotifier {
       final postData = json.decode(postResponse.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
-            hiddenFrom: value['hiddenFrom']??[],
+            hiddenFrom: value['hiddenFrom'] ?? [],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
             image: value['image'],
@@ -355,7 +354,6 @@ class manager extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Function to add new post
   Future<void> addNewPost(String caption, String uid, File image) async {
     final String api = constants().fetchApi + 'posts/${uid}.json';
     try {
@@ -393,7 +391,7 @@ class manager extends ChangeNotifier {
               post_id: postData['name'],
               likes: []);
           myPostsList.add(PostModel(
-            hiddenFrom: [],
+              hiddenFrom: [],
               caption: caption,
               dateOfPost: datetime,
               image: value,
@@ -407,7 +405,6 @@ class manager extends ChangeNotifier {
     } catch (error) {}
   }
 
-  // Function to delete post
   Future<void> deletePost(String myUid, String postId) async {
     final String api = constants().fetchApi + 'posts/${myUid}/$postId.json';
     try {
@@ -441,7 +438,7 @@ class manager extends ChangeNotifier {
               feedPostList.indexWhere((element) => element.post_id == postId);
           feedPostList.removeAt(index);
           feedPostMap[postId] = PostModel(
-            hiddenFrom: oldPost.hiddenFrom,
+              hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
               image: oldPost.image,
@@ -698,7 +695,7 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       returnThisPost = PostModel(
-        hiddenFrom: data['hiidenFrom']??[],
+          hiddenFrom: data['hiidenFrom'] ?? [],
           caption: data['caption'],
           dateOfPost: DateTime.parse(data['dateOfPost']),
           image: data['image'],
@@ -756,7 +753,6 @@ class manager extends ChangeNotifier {
   }
 
   Future<void> setNotifications(String myUid) async {
-
     List<NotificationModel> tempList = [];
     final String api = constants().fetchApi + 'notifications/${myUid}.json';
     try {
@@ -765,15 +761,13 @@ class manager extends ChangeNotifier {
         final notificationData =
             json.decode(notificationResponse.body) as Map<String, dynamic>;
         notificationData.forEach((key, value) {
-
-            tempList.add(NotificationModel(
-                notificationId: key,
-                read: value['read'],
-                notifierUid: value['notifierUid'],
-                postId: value['postId'],
-                time: DateTime.parse(value['time']),
-                type: value['type']));
-
+          tempList.add(NotificationModel(
+              notificationId: key,
+              read: value['read'],
+              notifierUid: value['notifierUid'],
+              postId: value['postId'],
+              time: DateTime.parse(value['time']),
+              type: value['type']));
         });
       }
 
@@ -935,102 +929,102 @@ class manager extends ChangeNotifier {
     } catch (error) {}
   }
 
-
   // *****  Post reporting functions  **** ////
 
-
-  Future<void> reportPost(String myUid,String report,String postOwnerId,String postId)async{
-    if(!feedPostMap[postId]!.hiddenFrom.contains(myUid)) {
+  Future<void> reportPost(
+      String myUid, String report, String postOwnerId, String postId) async {
+    if (!feedPostMap[postId]!.hiddenFrom.contains(myUid)) {
       feedPostMap[postId]!.hideThisPostForMe(myUid);
-      int index = feedPostList.indexWhere((element) =>
-      element.post_id == postId);
+      int index =
+          feedPostList.indexWhere((element) => element.post_id == postId);
       feedPostList.removeAt(index);
       await reportThisPost(postOwnerId, postId, report);
-      final String api = constants().fetchApi +
-          'posts/${postOwnerId}/${postId}.json';
-      List<
-          dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(
-          postOwnerId, postId);
+      final String api =
+          constants().fetchApi + 'posts/${postOwnerId}/${postId}.json';
+      List<dynamic> currentListOfHiddenUsers =
+          await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
       currentListOfHiddenUsers.add(myUid);
-      await http.patch(Uri.parse(api), body: json.encode({
-        'hiddenFrom': currentListOfHiddenUsers
-      }));
+      await http.patch(Uri.parse(api),
+          body: json.encode({'hiddenFrom': currentListOfHiddenUsers}));
       notifyListeners();
     }
   }
 
-  Future<List<dynamic>> fetchListOfUsersWhoHideThisPost(String postOwnerId , String postId)async{
+  Future<List<dynamic>> fetchListOfUsersWhoHideThisPost(
+      String postOwnerId, String postId) async {
     List<dynamic> users = [];
-    final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
+    final String api =
+        constants().fetchApi + 'posts/${postOwnerId}/${postId}.json';
     final response = await http.get(Uri.parse(api));
-    if(json.decode(response.body)!=null){
-      final data = json.decode(response.body) as Map<String,dynamic>;
-      users = data['hiddenFrom']??[];
+    if (json.decode(response.body) != null) {
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      users = data['hiddenFrom'] ?? [];
       return users;
     }
     return users;
   }
 
-  Future<void> hidePost(String myUid,String postOwnerId,String postId)async{
-    if(!feedPostMap[postId]!.hiddenFrom.contains(myUid)){
+  Future<void> hidePost(String myUid, String postOwnerId, String postId) async {
+    if (!feedPostMap[postId]!.hiddenFrom.contains(myUid)) {
       feedPostMap[postId]!.hideThisPostForMe(myUid);
-      int index = feedPostList.indexWhere((element) => element.post_id == postId);
+      int index =
+          feedPostList.indexWhere((element) => element.post_id == postId);
       feedPostList.removeAt(index);
-      final String api = constants().fetchApi+'posts/${postOwnerId}/${postId}.json';
-      List<dynamic> currentListOfHiddenUsers = await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
+      final String api =
+          constants().fetchApi + 'posts/${postOwnerId}/${postId}.json';
+      List<dynamic> currentListOfHiddenUsers =
+          await fetchListOfUsersWhoHideThisPost(postOwnerId, postId);
       currentListOfHiddenUsers.add(myUid);
-      await http.patch(Uri.parse(api),body: json.encode({
-        'hiddenFrom' : currentListOfHiddenUsers
-      }));
+      await http.patch(Uri.parse(api),
+          body: json.encode({'hiddenFrom': currentListOfHiddenUsers}));
       notifyListeners();
     }
   }
 
-
   // ****** Blocking / Unblocking methods ***** //
 
-  Future<void> block(String myUid,String yourUid)async{
+  Future<void> block(String myUid, String yourUid) async {
     allUsers[myUid]!.blockThisUser(yourUid);
-    final String api = constants().fetchApi+'users/${myUid}.json';
-    await http.patch(Uri.parse(api),body: json.encode({
-      'blocked' : allUsers[myUid]!.blocked,
-    }));
+    final String api = constants().fetchApi + 'users/${myUid}.json';
+    await http.patch(Uri.parse(api),
+        body: json.encode({
+          'blocked': allUsers[myUid]!.blocked,
+        }));
     await unFollowUser(myUid, yourUid);
     notifyListeners();
   }
 
-  Future<void> unBlock(String myUid,String yourUid)async{
+  Future<void> unBlock(String myUid, String yourUid) async {
     allUsers[myUid]!.unblockThisUser(yourUid);
-    final String api = constants().fetchApi+'users/${myUid}.json';
-    await http.patch(Uri.parse(api),body: json.encode({
-      'blocked' : allUsers[myUid]!.blocked
-    }));
+    final String api = constants().fetchApi + 'users/${myUid}.json';
+    await http.patch(Uri.parse(api),
+        body: json.encode({'blocked': allUsers[myUid]!.blocked}));
     notifyListeners();
   }
-  
-  Future<void> updateMyProfile(String myUid)async{
-    final String api = constants().fetchApi+'users/${myUid}.json';
-    try{
+
+  Future<void> updateMyProfile(String myUid) async {
+    final String api = constants().fetchApi + 'users/${myUid}.json';
+    try {
       final response = await http.get(Uri.parse(api));
-      final data = json.decode(response.body) as Map<String,dynamic>;
-      NexusUser user = NexusUser(bio: data['bio'], coverImage: data['coverImage'],
-          dp: data['dp'], 
-          blocked: data['blocked']??[], 
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      NexusUser user = NexusUser(
+          bio: data['bio'],
+          coverImage: data['coverImage'],
+          dp: data['dp'],
+          blocked: data['blocked'] ?? [],
           email: data['email'],
-          followers: data['followers']??[], 
-          followings: data['followings']??[],
+          followers: data['followers'] ?? [],
+          followings: data['followings'] ?? [],
           title: data['title'],
           uid: myUid,
           username: data['username'],
-          story: data['story'], storyTime: DateTime.parse(data['storyTime']),
-          views: data['views']??[]);
+          story: data['story'],
+          storyTime: DateTime.parse(data['storyTime']),
+          views: data['views'] ?? []);
       allUsers[myUid] = user;
       notifyListeners();
-    }
-    catch(error){
+    } catch (error) {
       rethrow;
     }
   }
-
-
 }

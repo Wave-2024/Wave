@@ -10,6 +10,7 @@ import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/General/fullScreenImage.dart';
 import 'package:nexus/screen/General/notificationScreen.dart';
 import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/screen/Story/uploadStory.dart';
@@ -63,7 +64,7 @@ class _feedScreenState extends State<feedScreen> {
 
   Future<void> setPosts() async {
     await Provider.of<manager>(context, listen: false)
-        .setFeedPosts(currentUser!.uid.toString());
+        .setFeedPosts(currentUser!.uid);
     return;
   }
 
@@ -198,7 +199,7 @@ class _feedScreenState extends State<feedScreen> {
                         ),
                       ),
                       Container(
-                        height: displayHeight(context) * 0.86,
+                        height: displayHeight(context) * 0.82,
                         width: displayWidth(context),
                         child: SingleChildScrollView(
                           child: Column(
@@ -531,12 +532,13 @@ class _suggestionCardsState extends State<suggestionCards> {
   @override
   Widget build(BuildContext context) {
     final Map<String, NexusUser> allUsers =
-        Provider.of<manager>(context,listen: false).fetchAllUsers;
+        Provider.of<manager>(context, listen: false).fetchAllUsers;
     final List<NexusUser>? suggestedUser = allUsers.values
         .toList()
         .where((element) =>
-            element.uid != widget.currentUser!.uid && !allUsers[widget.currentUser!.uid]!.blocked.contains(element.uid) &&
-                !allUsers[element.uid]!.blocked.contains(widget.currentUser!.uid) &&
+            element.uid != widget.currentUser!.uid &&
+            !allUsers[widget.currentUser!.uid]!.blocked.contains(element.uid) &&
+            !allUsers[element.uid]!.blocked.contains(widget.currentUser!.uid) &&
             !(element.followers.contains(widget.currentUser!.uid)))
         .toList();
     suggestedUser!
@@ -956,7 +958,8 @@ Widget displayPostsForFeed(
                                                 actions: [
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
                                                       child: const Text(
@@ -972,7 +975,8 @@ Widget displayPostsForFeed(
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
                                                       onPressed: () async {
@@ -1003,15 +1007,22 @@ Widget displayPostsForFeed(
                                         onTap: () {
                                           Navigator.pop(context);
                                           showModalBottomSheet(
-                                              shape: const RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.only(
-                                                      topLeft:
-                                                          Radius.circular(15),
-                                                      topRight:
-                                                          Radius.circular(15))),
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(15),
+                                                              topRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          15))),
                                               context: context,
                                               builder: (BuildContext cx) {
-                                                return reportContainer(postId: post.post_id,myUid: myUid,postOwnerId: post.uid);
+                                                return reportContainer(
+                                                    postId: post.post_id,
+                                                    myUid: myUid,
+                                                    postOwnerId: post.uid);
                                               });
                                         },
                                       ),
@@ -1054,51 +1065,31 @@ Widget displayPostsForFeed(
                 ),
               ),
               Center(
-                child: InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return BackdropFilter(
-                          filter: ImageFilter.blur(
-                            sigmaX: 10,
-                            sigmaY: 10,
-                          ),
-                          child: Dialog(
-                            insetAnimationCurve: Curves.easeInOutQuad,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            elevation: 5,
-                            backgroundColor: Colors.transparent,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: CachedNetworkImage(
-                                  imageUrl: post.image,
-                                  fit: BoxFit.contain,
-                                  height: displayHeight(context) * 0.5,
-                                )),
-                          ),
-                        );
+                child: Hero(
+                  tag: post.post_id,
+                  child: Material(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => fullScreenImage(image: post.image,postId: post.post_id,),));
                       },
-                    );
-                  },
-                  onDoubleTap: () {
-                    if (post.likes.contains(myUid)) {
-                      Provider.of<manager>(context, listen: false)
-                          .dislikePost(myUid, post.uid, post.post_id, 'feed');
-                    } else {
-                      Provider.of<manager>(context, listen: false)
-                          .likePost(myUid, post.uid, post.post_id, 'feed');
-                    }
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: CachedNetworkImage(
-                      imageUrl: post.image,
-                      height: displayHeight(context) * 0.402,
-                      width: displayWidth(context) * 0.8,
-                      fit: BoxFit.cover,
+                      onDoubleTap: () {
+                        if (post.likes.contains(myUid)) {
+                          Provider.of<manager>(context, listen: false)
+                              .dislikePost(myUid, post.uid, post.post_id, 'feed');
+                        } else {
+                          Provider.of<manager>(context, listen: false)
+                              .likePost(myUid, post.uid, post.post_id, 'feed');
+                        }
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: CachedNetworkImage(
+                          imageUrl: post.image,
+                          height: displayHeight(context) * 0.402,
+                          width: displayWidth(context) * 0.8,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -1254,5 +1245,3 @@ Widget displayPostsForFeed(
     ),
   );
 }
-
-
