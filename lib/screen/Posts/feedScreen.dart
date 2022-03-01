@@ -63,7 +63,7 @@ class _feedScreenState extends State<feedScreen> {
 
   Future<void> setPosts() async {
     await Provider.of<manager>(context, listen: false)
-        .setFeedPosts(currentUser!.uid.toString());
+        .setFeedPosts(currentUser!.uid);
     return;
   }
 
@@ -198,7 +198,7 @@ class _feedScreenState extends State<feedScreen> {
                         ),
                       ),
                       Container(
-                        height: displayHeight(context) * 0.86,
+                        height: displayHeight(context) * 0.82,
                         width: displayWidth(context),
                         child: SingleChildScrollView(
                           child: Column(
@@ -531,12 +531,13 @@ class _suggestionCardsState extends State<suggestionCards> {
   @override
   Widget build(BuildContext context) {
     final Map<String, NexusUser> allUsers =
-        Provider.of<manager>(context,listen: false).fetchAllUsers;
+        Provider.of<manager>(context, listen: false).fetchAllUsers;
     final List<NexusUser>? suggestedUser = allUsers.values
         .toList()
         .where((element) =>
-            element.uid != widget.currentUser!.uid && !allUsers[widget.currentUser!.uid]!.blocked.contains(element.uid) &&
-                !allUsers[element.uid]!.blocked.contains(widget.currentUser!.uid) &&
+            element.uid != widget.currentUser!.uid &&
+            !allUsers[widget.currentUser!.uid]!.blocked.contains(element.uid) &&
+            !allUsers[element.uid]!.blocked.contains(widget.currentUser!.uid) &&
             !(element.followers.contains(widget.currentUser!.uid)))
         .toList();
     suggestedUser!
@@ -956,7 +957,8 @@ Widget displayPostsForFeed(
                                                 actions: [
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
                                                       child: const Text(
@@ -972,7 +974,8 @@ Widget displayPostsForFeed(
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
                                                       onPressed: () async {
@@ -1003,15 +1006,22 @@ Widget displayPostsForFeed(
                                         onTap: () {
                                           Navigator.pop(context);
                                           showModalBottomSheet(
-                                              shape: const RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.only(
-                                                      topLeft:
-                                                          Radius.circular(15),
-                                                      topRight:
-                                                          Radius.circular(15))),
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(15),
+                                                              topRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          15))),
                                               context: context,
                                               builder: (BuildContext cx) {
-                                                return reportContainer(postId: post.post_id,myUid: myUid,postOwnerId: post.uid);
+                                                return reportContainer(
+                                                    postId: post.post_id,
+                                                    myUid: myUid,
+                                                    postOwnerId: post.uid);
                                               });
                                         },
                                       ),
@@ -1254,5 +1264,3 @@ Widget displayPostsForFeed(
     ),
   );
 }
-
-
