@@ -266,26 +266,32 @@ Widget displayYourPosts(
                 ),
               ),
               Center(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => fullScreenImage(image: post.image),));
-                  },
-                  onDoubleTap: () {
-                    if (post.likes.contains(myUid)) {
-                      Provider.of<manager>(context, listen: false)
-                          .dislikePost(myUid, post.uid, post.post_id, 'yours');
-                    } else {
-                      Provider.of<manager>(context, listen: false)
-                          .likePost(myUid, post.uid, post.post_id, 'yours');
-                    }
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: CachedNetworkImage(
-                      imageUrl: post.image,
-                      height: displayHeight(context) * 0.402,
-                      width: displayWidth(context) * 0.8,
-                      fit: BoxFit.cover,
+                child: Hero(
+                  tag: post.post_id,
+                  transitionOnUserGestures: true,
+                  child: Material(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => fullScreenImage(image: post.image,postId: post.post_id,),));
+                      },
+                      onDoubleTap: () {
+                        if (post.likes.contains(myUid)) {
+                          Provider.of<manager>(context, listen: false)
+                              .dislikePost(myUid, post.uid, post.post_id, 'yours');
+                        } else {
+                          Provider.of<manager>(context, listen: false)
+                              .likePost(myUid, post.uid, post.post_id, 'yours');
+                        }
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: CachedNetworkImage(
+                          imageUrl: post.image,
+                          height: displayHeight(context) * 0.402,
+                          width: displayWidth(context) * 0.8,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),

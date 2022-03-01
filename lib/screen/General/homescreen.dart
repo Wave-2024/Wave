@@ -39,11 +39,12 @@ class homescreen extends StatelessWidget {
                   .updateIndex(value);
             }
           },
-          elevation: 5,
+          elevation: 8,
           currentIndex: screenIndex,
           selectedItemColor: Colors.orange,
           unselectedItemColor: Colors.black45,
           showUnselectedLabels: true,
+          backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
           selectedLabelStyle: TextStyle(
               fontWeight: FontWeight.w600,
@@ -53,16 +54,16 @@ class homescreen extends StatelessWidget {
                 icon:
                     Icon((screenIndex == 0) ? Icons.home : Icons.home_outlined),
                 label: "Home",
-                backgroundColor: Colors.white),
+                ),
             BottomNavigationBarItem(
                 icon: Icon(
                     (screenIndex == 1) ? Icons.search : Icons.search_outlined),
                 label: "Search",
-                backgroundColor: Colors.white),
+                ),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.add),
                 label: "New",
-                backgroundColor: Colors.white),
+                ),
             BottomNavigationBarItem(
                 icon:
                     Icon((screenIndex == 3) ? Icons.mail : Icons.mail_outline),
@@ -72,7 +73,7 @@ class homescreen extends StatelessWidget {
                 icon: Icon(
                     (screenIndex == 4) ? Icons.person : Icons.person_outline),
                 label: "Profile",
-                backgroundColor: Colors.white)
+                )
           ],
         ),
       ),

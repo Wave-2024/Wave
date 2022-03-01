@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:nexus/utils/devicesize.dart';
 class fullScreenImage extends StatelessWidget {
   final String? image;
-  fullScreenImage({this.image});
+  final String? postId;
+  fullScreenImage({this.image,this.postId});
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +14,17 @@ class fullScreenImage extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.black87),
         backgroundColor: Colors.white,
       ),
-      body: Container(
-        height: displayHeight(context),
-        width: displayWidth(context),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          image: DecorationImage(
-            image: CachedNetworkImageProvider(image!),fit: BoxFit.contain
-          )
+      body: Hero(
+        tag: postId!,
+        child: Container(
+          height: displayHeight(context),
+          width: displayWidth(context),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(image!),fit: BoxFit.contain
+            )
+          ),
         ),
       ),
     );
