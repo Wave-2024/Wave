@@ -12,6 +12,7 @@ import 'package:nexus/screen/Posts/view/viewMySavedPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
+import 'package:nexus/screen/ProfileDetails/uploadImageScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -87,49 +88,16 @@ class _profiletScreenState extends State<profiletScreen> {
 
     Map<String, PostModel>? savedPosts =
         Provider.of<manager>(context).fetchSavedPostsMap;
-    Future pickImageForCoverPicture() async {
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (mounted) {
-        if (pickedFile != null) {
-          setState(() {
-            loadScreenForEdititng = true;
-            imagefile = File(pickedFile.path);
-          });
-          File? compressedFile = await checkAnCompress();
-          setState(() {
-            imagefile = compressedFile;
-          });
-          await Provider.of<manager>(context, listen: false)
-              .addCoverPicture(imagefile, currentUser!.uid.toString())
-              .then((value) {
-            setState(() {
-              loadScreenForEdititng = false;
-            });
-          });
-        }
-      }
-    }
 
-    Future pickImageForProfilePicture() async {
+    Future pickImage(String type) async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (mounted) {
-        if (pickedFile != null) {
-          setState(() {
-            loadScreenForEdititng = true;
-            imagefile = File(pickedFile.path);
-          });
-          File? compressedFile = await checkAnCompress();
-          setState(() {
-            imagefile = compressedFile;
-          });
-          await Provider.of<manager>(context, listen: false)
-              .addProfilePicture(imagefile, currentUser!.uid.toString())
-              .then((value) {
-            setState(() {
-              loadScreenForEdititng = false;
-            });
-          });
-        }
+      if (pickedFile != null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => uploadImageScreen(
+                  originalFile: File(pickedFile.path), imageType: type),
+            ));
       }
     }
 
@@ -139,46 +107,25 @@ class _profiletScreenState extends State<profiletScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (loadScreenForProfile! || loadScreenForEdititng!)
-              ? (loadScreenForProfile!)
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: displayHeight(context) * 0.2,
-                        ),
-                        Expanded(
-                            child: Image.asset('images/updateProfile.gif')),
-                        Expanded(
-                            child: Text(
-                          'Fetching your details',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black54,
-                              fontSize: displayWidth(context) * 0.05),
-                        )),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: displayHeight(context) * 0.2,
-                        ),
-                        Expanded(child: Image.asset('images/uploadPost.gif')),
-                        Expanded(
-                          child: Text(
-                            'Uploading image',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold,
-                                fontSize: displayWidth(context) * 0.05),
-                          ),
-                        ),
-                      ],
-                    )
+          child: (loadScreenForProfile!)
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: displayHeight(context) * 0.2,
+                    ),
+                    Expanded(child: Image.asset('images/updateProfile.gif')),
+                    Expanded(
+                        child: Text(
+                      'Fetching your details',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                          fontSize: displayWidth(context) * 0.05),
+                    )),
+                  ],
+                )
               : Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: SingleChildScrollView(
@@ -265,21 +212,16 @@ class _profiletScreenState extends State<profiletScreen> {
                                     onPressed: () {
                                       showModalBottomSheet(
                                         context: context,
-                                        builder: (context) {
-                                          return Container(
-                                            height:
-                                                displayHeight(context) * 0.18,
-                                            width: displayWidth(context),
+                                        builder: (cnt) {
+                                          return SingleChildScrollView(
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
                                                 ListTile(
                                                   onTap: () async {
-                                                    pickImageForCoverPicture()
-                                                        .then((value) =>
-                                                            Navigator.pop(
-                                                                context));
+                                                    Navigator.pop(cnt);
+                                                    pickImage("CP");
                                                   },
                                                   tileColor: Colors.white,
                                                   title: Text(
@@ -296,10 +238,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                                 ListTile(
                                                   tileColor: Colors.white,
                                                   onTap: () async {
-                                                    pickImageForProfilePicture()
-                                                        .then((value) =>
-                                                            Navigator.pop(
-                                                                context));
+                                                    Navigator.pop(context);
+                                                    pickImage("DP");
                                                   },
                                                   title: Text(
                                                     'Change Profile Picture',
@@ -453,15 +393,15 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0,right: 12),
+                          padding: const EdgeInsets.only(left: 15.0, right: 12),
                           child: (myProfile.bio != '')
                               ? Container(
                                   child: Text(
                                     myProfile.bio,
                                     style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: displayWidth(context)*0.035
-                                    ),
+                                        color: Colors.black87,
+                                        fontSize:
+                                            displayWidth(context) * 0.035),
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.clip,
                                   ),
@@ -489,7 +429,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => FollowersScreen(
-                                          isThisMe: true,
+                                            isThisMe: true,
                                             allUsers:
                                                 Provider.of<manager>(context)
                                                     .fetchAllUsers,
