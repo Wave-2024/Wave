@@ -89,6 +89,8 @@ class manager extends ChangeNotifier {
       final userData = json.decode(userResponse.body) as Map<String, dynamic>;
       userData.forEach((key, value) {
         temp[key] = NexusUser(
+            accountType: value['accountType'] ?? '',
+            linkInBio: value['linkInBio'] ?? '',
             blocked: value['blocked'] ?? [],
             views: value['views'] ?? [],
             story: value['story'] ?? '',
@@ -107,7 +109,6 @@ class manager extends ChangeNotifier {
       notifyListeners();
     } catch (error) {}
   }
-
 
   //**********    User details update methods    *********//
 
@@ -149,11 +150,9 @@ class manager extends ChangeNotifier {
     });
   }
 
-  Future<void> editMyProfile(
-      String uid, String fullName, String userName, String bio) async {
+  Future<void> editMyProfile(String uid, String fullName, String userName,
+      String bio, String accountType, String linkInBio) async {
     final String api = constants().fetchApi + 'users/${uid}.json';
-    NexusUser? oldUser = allUsers[uid];
-    NexusUser? updateUser;
     try {
       http
           .patch(Uri.parse(api),
@@ -161,28 +160,16 @@ class manager extends ChangeNotifier {
                 'title': fullName,
                 'username': userName,
                 'bio': bio,
+                'linkInBio': linkInBio,
+                'accountType': accountType
               }))
           .then((value) {
-        updateUser = NexusUser(
-            blocked: oldUser!.blocked,
-            views: oldUser.views,
-            story: oldUser.story,
-            storyTime: oldUser.storyTime,
-            bio: bio,
-            coverImage: oldUser.coverImage,
-            dp: oldUser.dp,
-            email: oldUser.email,
-            followers: oldUser.followers,
-            followings: oldUser.followings,
-            title: fullName,
-            uid: uid,
-            username: userName);
-        allUsers[uid] = updateUser!;
+        allUsers[uid]!
+            .editProfile(userName, fullName, bio, linkInBio, accountType);
         notifyListeners();
       });
     } catch (error) {}
   }
-
 
   //**********    Follow / Unfollow methods    *********//
 
@@ -265,9 +252,12 @@ class manager extends ChangeNotifier {
   Future<void> setFeedPosts(String myUid) async {
     List<PostModel> tempPostList = [];
     List<StoryModel> tempStoryList = [];
+    Map<String, dynamic> data = {};
     final String api = constants().fetchApi + 'posts.json';
     final res = await http.get(Uri.parse(api));
-    final data = json.decode(res.body) as Map<String, dynamic>;
+    if (json.decode(res.body) != null) {
+      data = json.decode(res.body) as Map<String, dynamic>;
+    }
     List<dynamic> myFollowing = allUsers[myUid]!.followings;
     for (String uid in myFollowing) {
       if (hasStory(uid)) {
@@ -282,6 +272,8 @@ class manager extends ChangeNotifier {
         for (String postId in headPostMap.keys.toList()) {
           final postMap = headPostMap[postId] as Map<String, dynamic>;
           PostModel p = PostModel(
+              postType: postMap['postType'],
+              video: postMap['video'],
               hiddenFrom: postMap['hiddenFrom'] ?? [],
               caption: postMap['caption'],
               dateOfPost: DateTime.parse(postMap['dateOfPost']),
@@ -313,6 +305,8 @@ class manager extends ChangeNotifier {
       final postData = json.decode(postResponse.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
+            postType: value['postType'],
+            video: value['video'],
             hiddenFrom: value['hiddenFrom'] ?? [],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
@@ -338,6 +332,8 @@ class manager extends ChangeNotifier {
       final postData = json.decode(postResponse.body) as Map<String, dynamic>;
       postData.forEach((key, value) {
         PostModel p = PostModel(
+            postType: value['postType'],
+            video: value['video'],
             hiddenFrom: value['hiddenFrom'] ?? [],
             caption: value['caption'],
             dateOfPost: DateTime.parse(value['dateOfPost']),
@@ -354,7 +350,53 @@ class manager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addNewPost(String caption, String uid, File image) async {
+  Future<void> newTextPost(String caption, String uid) async {
+    final String api = constants().fetchApi + 'posts/${uid}.json';
+    try {
+      DateTime datetime = DateTime.now();
+      final String dateOfPost = datetime.toString();
+      http
+          .post(Uri.parse(api),
+              body: json.encode({
+                'caption': caption,
+                'postType': 'text',
+                'video': '',
+                'image': '',
+                'uid': uid,
+                'likes': [],
+                'dateOfPost': dateOfPost,
+              }))
+          .then((v) {
+        final postData = json.decode(v.body) as Map<String, dynamic>;
+        myPostsMap[postData['name']] = PostModel(
+            postType: "text",
+            video: '',
+            hiddenFrom: [],
+            caption: caption,
+            dateOfPost: datetime,
+            image: '',
+            uid: uid,
+            post_id: postData['name'],
+            likes: []);
+        myPostsList.add(PostModel(
+            postType: 'text',
+            video: '',
+            hiddenFrom: [],
+            caption: caption,
+            dateOfPost: datetime,
+            image: '',
+            uid: uid,
+            post_id: postData['name'],
+            likes: []));
+
+        notifyListeners();
+      });
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> newImagePost(String caption, String uid, File image) async {
     final String api = constants().fetchApi + 'posts/${uid}.json';
     try {
       var random = Random();
@@ -375,6 +417,8 @@ class manager extends ChangeNotifier {
             .post(Uri.parse(api),
                 body: json.encode({
                   'caption': caption,
+                  'postType': 'image',
+                  'video': '',
                   'image': value,
                   'uid': uid,
                   'likes': [],
@@ -383,6 +427,8 @@ class manager extends ChangeNotifier {
             .then((v) {
           final postData = json.decode(v.body) as Map<String, dynamic>;
           myPostsMap[postData['name']] = PostModel(
+              postType: "image",
+              video: '',
               hiddenFrom: [],
               caption: caption,
               dateOfPost: datetime,
@@ -391,6 +437,8 @@ class manager extends ChangeNotifier {
               post_id: postData['name'],
               likes: []);
           myPostsList.add(PostModel(
+              postType: 'image',
+              video: '',
               hiddenFrom: [],
               caption: caption,
               dateOfPost: datetime,
@@ -404,6 +452,68 @@ class manager extends ChangeNotifier {
       });
     } catch (error) {}
   }
+
+
+  Future<void> newVideoPost(String caption, String uid, File video) async {
+    final String api = constants().fetchApi + 'posts/${uid}.json';
+    try {
+      var random = Random();
+      DateTime datetime = DateTime.now();
+      final String dateOfPost = datetime.toString();
+      int random1 = random.nextInt(999999);
+      int random2 = random.nextInt(555555);
+      int random3 = random.nextInt(101);
+      int random4 = random.nextInt(540);
+      final String name = '${random1}${random2}${random3}${random4}';
+      final String location = '${uid}${name}';
+      final Reference storageReference =
+          FirebaseStorage.instance.ref().child(location);
+      final UploadTask uploadTask = storageReference.putFile(video);
+      final TaskSnapshot taskSnapshot = await uploadTask;
+      taskSnapshot.ref.getDownloadURL().then((value) async {
+        http
+            .post(Uri.parse(api),
+                body: json.encode({
+                  'caption': caption,
+                  'postType': 'video',
+                  'video': value,
+                  'image': '',
+                  'uid': uid,
+                  'likes': [],
+                  'dateOfPost': dateOfPost,
+                }))
+            .then((v) {
+          final postData = json.decode(v.body) as Map<String, dynamic>;
+          myPostsMap[postData['name']] = PostModel(
+              postType: "video",
+              video: value,
+              hiddenFrom: [],
+              caption: caption,
+              dateOfPost: datetime,
+              image: '',
+              uid: uid,
+              post_id: postData['name'],
+              likes: []);
+          myPostsList.add(PostModel(
+              postType: 'video',
+              video: value,
+              hiddenFrom: [],
+              caption: caption,
+              dateOfPost: datetime,
+              image: '',
+              uid: uid,
+              post_id: postData['name'],
+              likes: []));
+
+          notifyListeners();
+        });
+      });
+    } catch (error) {}
+  }
+
+
+
+
 
   Future<void> deletePost(String myUid, String postId) async {
     final String api = constants().fetchApi + 'posts/${myUid}/$postId.json';
@@ -438,6 +548,8 @@ class manager extends ChangeNotifier {
               feedPostList.indexWhere((element) => element.post_id == postId);
           feedPostList.removeAt(index);
           feedPostMap[postId] = PostModel(
+              postType: oldPost.postType,
+              video: oldPost.video,
               hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
@@ -448,6 +560,8 @@ class manager extends ChangeNotifier {
           feedPostList.insert(
               index,
               PostModel(
+                  postType: oldPost.postType,
+                  video: oldPost.video,
                   hiddenFrom: oldPost.hiddenFrom,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
@@ -467,6 +581,8 @@ class manager extends ChangeNotifier {
               myPostsList.indexWhere((element) => element.post_id == postId);
           myPostsList.removeAt(index);
           myPostsMap[postId] = PostModel(
+              postType: oldPost.postType,
+              video: oldPost.video,
               hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
@@ -477,6 +593,8 @@ class manager extends ChangeNotifier {
           myPostsList.insert(
               index,
               PostModel(
+                  postType: oldPost.postType,
+                  video: oldPost.video,
                   hiddenFrom: oldPost.hiddenFrom,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
@@ -497,6 +615,8 @@ class manager extends ChangeNotifier {
               yourPostsList.indexWhere((element) => element.post_id == postId);
           yourPostsList.removeAt(index);
           yourPostsMap[postId] = PostModel(
+              postType: oldPost.postType,
+              video: oldPost.video,
               hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
@@ -507,6 +627,8 @@ class manager extends ChangeNotifier {
           yourPostsList.insert(
               index,
               PostModel(
+                  postType: oldPost.postType,
+                  video: oldPost.video,
                   hiddenFrom: oldPost.hiddenFrom,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
@@ -549,6 +671,8 @@ class manager extends ChangeNotifier {
               feedPostList.indexWhere((element) => element.post_id == postId);
           feedPostList.removeAt(index);
           feedPostMap[postId] = PostModel(
+              postType: oldPost.postType,
+              video: oldPost.video,
               hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
@@ -560,6 +684,8 @@ class manager extends ChangeNotifier {
           feedPostList.insert(
               index,
               PostModel(
+                  postType: oldPost.postType,
+                  video: oldPost.video,
                   caption: oldPost.caption,
                   hiddenFrom: oldPost.hiddenFrom,
                   dateOfPost: oldPost.dateOfPost,
@@ -579,6 +705,8 @@ class manager extends ChangeNotifier {
               myPostsList.indexWhere((element) => element.post_id == postId);
           myPostsList.removeAt(index);
           myPostsMap[postId] = PostModel(
+              postType: oldPost.postType,
+              video: oldPost.video,
               hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
@@ -589,6 +717,8 @@ class manager extends ChangeNotifier {
           myPostsList.insert(
               index,
               PostModel(
+                  postType: oldPost.postType,
+                  video: oldPost.video,
                   caption: oldPost.caption,
                   dateOfPost: oldPost.dateOfPost,
                   image: oldPost.image,
@@ -608,6 +738,8 @@ class manager extends ChangeNotifier {
               yourPostsList.indexWhere((element) => element.post_id == postId);
           yourPostsList.removeAt(index);
           yourPostsMap[postId] = PostModel(
+              postType: oldPost.postType,
+              video: oldPost.video,
               hiddenFrom: oldPost.hiddenFrom,
               caption: oldPost.caption,
               dateOfPost: oldPost.dateOfPost,
@@ -618,6 +750,8 @@ class manager extends ChangeNotifier {
           yourPostsList.insert(
               index,
               PostModel(
+                  postType: oldPost.postType,
+                  video: oldPost.video,
                   caption: oldPost.caption,
                   hiddenFrom: oldPost.hiddenFrom,
                   dateOfPost: oldPost.dateOfPost,
@@ -673,6 +807,8 @@ class manager extends ChangeNotifier {
           myPostsList.indexWhere((element) => element.post_id == postId);
       myPostsList.removeAt(index);
       PostModel updatedPost = PostModel(
+          postType: oldPost.postType,
+          video: oldPost.video,
           hiddenFrom: oldPost.hiddenFrom,
           caption: updatedCaption,
           dateOfPost: oldPost.dateOfPost,
@@ -695,7 +831,9 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       returnThisPost = PostModel(
-          hiddenFrom: data['hiidenFrom'] ?? [],
+          video: data['video'],
+          postType: data['postType'],
+          hiddenFrom: data['hiddenFrom'] ?? [],
           caption: data['caption'],
           dateOfPost: DateTime.parse(data['dateOfPost']),
           image: data['image'],
@@ -1008,6 +1146,8 @@ class manager extends ChangeNotifier {
       final response = await http.get(Uri.parse(api));
       final data = json.decode(response.body) as Map<String, dynamic>;
       NexusUser user = NexusUser(
+          linkInBio: data['linkInBio'],
+          accountType: data['accountType'],
           bio: data['bio'],
           coverImage: data['coverImage'],
           dp: data['dp'],
