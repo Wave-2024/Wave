@@ -51,6 +51,7 @@ dependencies:
   path_provider: ^2.0.9
   shared_preferences: ^2.0.13
   upgrader: ^3.13.0
+  video_player: ^2.2.19
 
 
 dev_dependencies:

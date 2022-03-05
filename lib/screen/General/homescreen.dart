@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
 import 'package:nexus/screen/Chat/chatScreen.dart';
 import 'package:nexus/screen/Posts/feedScreen.dart';
+import 'package:nexus/screen/Posts/newPost/VideoPost.dart';
 import 'package:nexus/screen/Posts/newPost/imagePost.dart';
 import 'package:nexus/screen/Posts/newPost/textPost.dart';
 import 'package:nexus/screen/ProfileDetails/myProfile.dart';
@@ -68,7 +69,14 @@ class homescreen extends StatelessWidget {
                             ListTile(
                               visualDensity: const VisualDensity(
                                   horizontal: 0, vertical: -2),
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VideoPost(),
+                                    ));
+                              },
                               title: const Text('New Video post'),
                             ),
                             ListTile(

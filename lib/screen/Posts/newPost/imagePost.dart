@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:nexus/providers/manager.dart';
+import 'package:nexus/providers/screenIndexProvider.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import '../../../utils/widgets.dart';
 
 class imagePost extends StatefulWidget {
@@ -135,25 +138,29 @@ class _imagePostState extends State<imagePost> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
-
                         child: Padding(
-                          padding: const EdgeInsets.only(left:8.0,right: 8.0),
-                          child: (imageFile != null)
-                              ? Image.file(imageFile!,fit: BoxFit.contain,)
-                              : const Center(
-                                  child: Text(
-                                    'No image selected',
-                                    style: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                        )),
-                    Opacity(child: Divider(
-                      height: displayHeight(context)*0.04,
-                    ),opacity: 0.0,),
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: (imageFile != null)
+                          ? Image.file(
+                              imageFile!,
+                              fit: BoxFit.contain,
+                            )
+                          : const Center(
+                              child: Text(
+                                'No image selected',
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                    )),
+                    Opacity(
+                      child: Divider(
+                        height: displayHeight(context) * 0.04,
+                      ),
+                      opacity: 0.0,
+                    ),
                     Expanded(
-
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                         child: TextFormField(
@@ -190,7 +197,29 @@ class _imagePostState extends State<imagePost> {
                     ),
                     const Opacity(opacity: 0.0, child: Divider()),
                     TextButton.icon(
-                      onPressed: _cropImage,
+                      onPressed: () async {
+                        if (imageFile != null) {
+                          setState(() {
+                            uploadingPost = true;
+                          });
+                          File? postImage = await checkAnCompress();
+                          await Provider.of<manager>(context, listen: false)
+                              .newImagePost(captionController!.text.toString(),
+                                  currentUser!.uid, imageFile!);
+                          setState(() {
+                            uploadingPost = false;
+                          });
+                          Navigator.pop(context);
+                          Provider.of<screenIndexProvider>(context,
+                                  listen: false)
+                              .updateIndex(4);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Post Successfull')));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Please upload an image')));
+                        }
+                      },
                       label: const Text('Submit Post',
                           style: TextStyle(color: Colors.white)),
                       icon: const Icon(Icons.check, color: Colors.white),
