@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-NexusUser userFromJson(String str) => NexusUser.fromJson(json.decode(str));
-
 String userToJson(NexusUser data) => json.encode(data.toJson());
 
 class NexusUser {
   NexusUser({
+    required this.linkInBio,
+    required this.accountType,
     required this.bio,
     required this.coverImage,
     required this.dp,
@@ -21,35 +21,23 @@ class NexusUser {
     required this.views,
   });
 
-  String bio;
-  String coverImage;
-  String dp;
-  String email;
-  List<dynamic> followers;
-  List<dynamic> followings;
-  String title;
-  String uid;
-  String username;
-  String story;
-  DateTime storyTime;
-  List<dynamic> views;
-  List<dynamic> blocked;
+  String bio; // Bio of the user typically an introduction of the user
+  String coverImage; // An image link of the cover image of user
+  String dp; // An image link for the dp of user
+  String accountType; // Describing the type of account ['Meme','Sports','News','Music','Dance','Social','Business','Celebrity','Gaming']
+  String email; // Email id of the user
+  List<dynamic> followers; // List of uid of the users who follow this current user
+  List<dynamic> followings; // List of uid of the users who this current user follow
+  String title; // Title of the user
+  String uid; // uid of the user
+  String username; // username of the user ( unique )
+  String story; // image link for the story
+  DateTime storyTime; // Time of story
+  String linkInBio; // link in bio to navigate to any website using this link
+  List<dynamic> views; // list of users who viewed the stories
+  List<dynamic> blocked; // list of blocked user's uid
 
-  factory NexusUser.fromJson(Map<String, dynamic> json) => NexusUser(
-    blocked: json['blocked'],
-        bio: json["bio"],
-        coverImage: json["coverImage"],
-        dp: json["dp"],
-        views: json['views'] ?? [],
-        email: json["email"],
-        followers: List<String>.from(json["followers"].map((x) => x)),
-        followings: List<String>.from(json["followings"].map((x) => x)),
-        title: json["title"],
-        uid: json["uid"],
-        username: json["username"],
-        story: json['story'],
-        storyTime: DateTime.parse(json['storyTime']),
-      );
+
 
   Map<String, dynamic> toJson() => {
         "bio": bio,
@@ -63,6 +51,7 @@ class NexusUser {
         "username": username,
         'views': [],
       };
+
 
   addStory(String storyImage) {
     story = storyImage;
@@ -107,9 +96,11 @@ class NexusUser {
     blocked.remove(uid);
   }
 
-  editProfile(String newUsername, String newTitle, String newBio) {
+  editProfile(String newUsername, String newTitle, String newBio,String newLinkInBio,String newAccountType) {
     username = newUsername;
     title = newTitle;
     bio = newBio;
+    linkInBio = newLinkInBio;
+    accountType = newAccountType;
   }
 }
