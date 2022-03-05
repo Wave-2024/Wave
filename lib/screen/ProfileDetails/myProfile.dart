@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/General/AboutWave.dart';
+import 'package:nexus/screen/General/policyScreen.dart';
 import 'package:nexus/screen/Posts/view/viewMyPostsScreen.dart';
 import 'package:nexus/screen/Posts/view/viewMySavedPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
@@ -20,6 +22,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Authentication/authscreen.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'blockedUsersScreen.dart';
 
 class profiletScreen extends StatefulWidget {
   @override
@@ -294,60 +297,203 @@ class _profiletScreenState extends State<profiletScreen> {
                                   top: displayHeight(context) * 0.005,
                                   child: IconButton(
                                     iconSize: displayWidth(context) * 0.08,
-                                    icon: const Icon(Icons.logout),
+                                    icon: const Icon(Icons.settings),
                                     onPressed: () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return CupertinoAlertDialog(
-                                            //content: Text('Are you sure you want to sign-out ?'),
-                                            title: const Text('Logout'),
-                                            actions: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Center(
-                                                    child: TextButton(
-                                                  child: const Text(
-                                                    'No',
-                                                    style: TextStyle(
-                                                        color: Colors.black87),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                )),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Center(
-                                                    child: TextButton.icon(
-                                                  onPressed: () async {
-                                                    _auth
-                                                        .signOut()
-                                                        .then((value) {
-                                                      Navigator.pushReplacement(
+                                      await showModalBottomSheet(
+                                          context: context,
+                                          builder: (ctx) {
+                                            return SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  ListTile(
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
                                                             builder: (context) =>
-                                                                const authScreen(),
+                                                                editProfileScreen(
+                                                              user: myProfile,
+                                                            ),
                                                           ));
-                                                    });
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.logout,
-                                                    color: Colors.red,
+                                                    },
+                                                    title: const Text(
+                                                        'Edit Profile'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
                                                   ),
-                                                  label: const Text('Yes',
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.black87)),
-                                                )),
+                                                  ListTile(
+                                                    title: const Text(
+                                                        'Blocked Contacts'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const blockedUsersScreen(),
+                                                          ));
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    title: const Text(
+                                                        'About Wave'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const AboutWaveScreen(),
+                                                          ));
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    title: const Text(
+                                                        'User Policy'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const policyScreen(),
+                                                          ));
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    onTap: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return CupertinoAlertDialog(
+                                                            //content: Text('Are you sure you want to sign-out ?'),
+                                                            title: const Text(
+                                                                'Logout'),
+                                                            actions: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            8.0),
+                                                                child: Center(
+                                                                    child:
+                                                                        TextButton(
+                                                                  child:
+                                                                      const Text(
+                                                                    'No',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black87),
+                                                                  ),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                )),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Center(
+                                                                    child:
+                                                                        TextButton
+                                                                            .icon(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    _auth
+                                                                        .signOut()
+                                                                        .then(
+                                                                            (value) {
+                                                                      Navigator.pushReplacement(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                const authScreen(),
+                                                                          ));
+                                                                    });
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .logout,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ),
+                                                                  label: const Text(
+                                                                      'Yes',
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.black87)),
+                                                                )),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    title: Center(
+                                                        child: Row(
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.logout,
+                                                          color: Colors.white,
+                                                        ),
+                                                        Opacity(
+                                                            opacity: 0.0,
+                                                            child:
+                                                                VerticalDivider(
+                                                              width: displayWidth(
+                                                                      context) *
+                                                                  0.01,
+                                                            )),
+                                                        Text(
+                                                          'Logout',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize:
+                                                                  displayWidth(
+                                                                          context) *
+                                                                      0.045),
+                                                        ),
+                                                      ],
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                    )),
+                                                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                                    textColor: Colors.white,
+                                                    tileColor: Colors.red[400],
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          );
-                                        },
-                                      );
+                                            );
+                                          });
                                     },
                                     color: Colors.white70,
                                   )),
