@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nexus/providers/screenIndexProvider.dart';
-import 'package:nexus/screen/Posts/addPostScreen.dart';
 import 'package:nexus/screen/Chat/chatScreen.dart';
 import 'package:nexus/screen/Posts/feedScreen.dart';
+import 'package:nexus/screen/Posts/newPost/imagePost.dart';
+import 'package:nexus/screen/Posts/newPost/textPost.dart';
 import 'package:nexus/screen/ProfileDetails/myProfile.dart';
 import 'package:nexus/screen/General/searchScreen.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -29,11 +30,78 @@ class homescreen extends StatelessWidget {
           iconSize: displayWidth(context) * 0.05,
           onTap: (value) {
             if (value == 2) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => addPostScreen(),
-                  ));
+              showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              visualDensity: const VisualDensity(
+                                  horizontal: 0, vertical: -2),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TextPost(),
+                                    ));
+                              },
+                              title: const Text('New Text Post'),
+                            ),
+                            ListTile(
+                              visualDensity: const VisualDensity(
+                                  horizontal: 0, vertical: -2),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => imagePost(),
+                                    ));
+                              },
+                              title: const Text('New Image post'),
+                            ),
+                            ListTile(
+                              visualDensity: const VisualDensity(
+                                  horizontal: 0, vertical: -2),
+                              onTap: () {},
+                              title: const Text('New Video post'),
+                            ),
+                            ListTile(
+                              visualDensity: const VisualDensity(
+                                  horizontal: 0, vertical: -4),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                              },
+                              textColor: Colors.red,
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  ),
+                                  Opacity(
+                                    opacity: 0.0,
+                                    child: VerticalDivider(),
+                                  ),
+                                  Text(
+                                    'Cancel',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  });
             } else {
               Provider.of<screenIndexProvider>(context, listen: false)
                   .updateIndex(value);
@@ -51,29 +119,28 @@ class homescreen extends StatelessWidget {
               fontSize: displayWidth(context) * 0.034),
           items: [
             BottomNavigationBarItem(
-                icon:
-                    Icon((screenIndex == 0) ? Icons.home : Icons.home_outlined),
-                label: "Home",
-                ),
+              icon: Icon((screenIndex == 0) ? Icons.home : Icons.home_outlined),
+              label: "Home",
+            ),
             BottomNavigationBarItem(
-                icon: Icon(
-                    (screenIndex == 1) ? Icons.search : Icons.search_outlined),
-                label: "Search",
-                ),
+              icon: Icon(
+                  (screenIndex == 1) ? Icons.search : Icons.search_outlined),
+              label: "Search",
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.add),
-                label: "New",
-                ),
+              icon: Icon(Icons.add),
+              label: "New",
+            ),
             BottomNavigationBarItem(
                 icon:
                     Icon((screenIndex == 3) ? Icons.mail : Icons.mail_outline),
                 label: "Inbox",
                 backgroundColor: Colors.white),
             BottomNavigationBarItem(
-                icon: Icon(
-                    (screenIndex == 4) ? Icons.person : Icons.person_outline),
-                label: "Profile",
-                )
+              icon: Icon(
+                  (screenIndex == 4) ? Icons.person : Icons.person_outline),
+              label: "Profile",
+            )
           ],
         ),
       ),
@@ -85,8 +152,7 @@ class homescreen extends StatelessWidget {
           canDismissDialog: true,
           minAppVersion: "1.0.0+3",
           child: screens[screenIndex],
-        )
-        ,
+        ),
       ),
     );
   }
