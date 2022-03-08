@@ -259,6 +259,26 @@ class manager extends ChangeNotifier {
       data = json.decode(res.body) as Map<String, dynamic>;
     }
     List<dynamic> myFollowing = allUsers[myUid]!.followings;
+
+    if (data.containsKey(myUid)) {
+      // Trying to set my posts
+      final MyPostMap = data[myUid] as Map<String, dynamic>;
+      for (String postId in MyPostMap.keys.toList()) {
+        final postMap = MyPostMap[postId] as Map<String, dynamic>;
+        PostModel p = PostModel(
+            postType: postMap['postType'],
+            video: postMap['video'],
+            hiddenFrom: postMap['hiddenFrom'] ?? [],
+            caption: postMap['caption'],
+            dateOfPost: DateTime.parse(postMap['dateOfPost']),
+            image: postMap['image'],
+            uid: postMap['uid'],
+            post_id: postId,
+            likes: postMap['likes'] ?? []);
+        myPostsMap[postId] = p;
+        myPostsList.add(p);
+      }
+    }
     for (String uid in myFollowing) {
       if (hasStory(uid)) {
         tempStoryList.add(StoryModel(
@@ -407,7 +427,7 @@ class manager extends ChangeNotifier {
       int random3 = random.nextInt(101);
       int random4 = random.nextInt(540);
       final String name = '${random1}${random2}${random3}${random4}';
-      final String location = '${uid}${name}';
+      final String location = '${uid}/posts/image/${name}';
       final Reference storageReference =
           FirebaseStorage.instance.ref().child(location);
       final UploadTask uploadTask = storageReference.putFile(image);
@@ -453,7 +473,6 @@ class manager extends ChangeNotifier {
     } catch (error) {}
   }
 
-
   Future<void> newVideoPost(String caption, String uid, File video) async {
     final String api = constants().fetchApi + 'posts/${uid}.json';
     try {
@@ -465,7 +484,7 @@ class manager extends ChangeNotifier {
       int random3 = random.nextInt(101);
       int random4 = random.nextInt(540);
       final String name = '${random1}${random2}${random3}${random4}';
-      final String location = '${uid}${name}';
+      final String location = '${uid}/posts/video/${name}';
       final Reference storageReference =
           FirebaseStorage.instance.ref().child(location);
       final UploadTask uploadTask = storageReference.putFile(video);
@@ -510,10 +529,6 @@ class manager extends ChangeNotifier {
       });
     } catch (error) {}
   }
-
-
-
-
 
   Future<void> deletePost(String myUid, String postId) async {
     final String api = constants().fetchApi + 'posts/${myUid}/$postId.json';

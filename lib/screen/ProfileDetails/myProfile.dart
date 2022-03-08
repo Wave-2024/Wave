@@ -52,15 +52,8 @@ class _profiletScreenState extends State<profiletScreen> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      await Provider.of<manager>(context).updateMyProfile(currentUser!.uid);
-      final SharedPreferences localStore = await localStoreInstance;
-      if (!localStore.getBool('myPosts')!) {
-        loadScreenForProfile = true;
-        await Provider.of<manager>(context, listen: false)
-            .setMyPosts(currentUser!.uid);
-        localStore.setBool('myPosts', true);
-        loadScreenForProfile = false;
-      }
+      await Provider.of<manager>(context, listen: false)
+          .updateMyProfile(currentUser!.uid);
       init = false;
     }
     super.didChangeDependencies();
@@ -68,7 +61,6 @@ class _profiletScreenState extends State<profiletScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -88,7 +80,6 @@ class _profiletScreenState extends State<profiletScreen> {
     NexusUser? myProfile = Provider.of<manager>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     List<PostModel> posts = Provider.of<manager>(context).fetchMyPostsList;
-
     Map<String, PostModel>? savedPosts =
         Provider.of<manager>(context).fetchSavedPostsMap;
 
@@ -341,7 +332,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                           context,
                                                           MaterialPageRoute(
                                                             builder: (context) =>
-                                                                const blockedUsersScreen(),
+                                                                blockedUsersScreen(),
                                                           ));
                                                     },
                                                   ),
@@ -914,6 +905,48 @@ class _profiletScreenState extends State<profiletScreen> {
                           padding: const EdgeInsets.all(8),
 
                           itemBuilder: (context, index) {
+                            var child;
+
+                            switch (posts[index].postType) {
+                              case "image":
+                                {
+                                  child = CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: posts[index].image);
+                                }
+                                break;
+                              case "video":
+                                {
+                                  child = Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(
+                                          color: Colors.black87,
+                                          width: displayWidth(context) * 0.001),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Image.asset(
+                                        'images/video_prev.png',
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                break;
+                              case "text":
+                                {
+                                  child = Container(
+                                    child: Center(
+                                        child: Text(posts[index].caption)),
+                                  );
+                                }
+                                break;
+                              default:
+                                {}
+                                break;
+                            }
+
                             return InkWell(
                               onTap: () {},
                               child: Padding(
@@ -933,14 +966,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   ),
                                                 ));
                                           },
-                                          child: CachedNetworkImage(
-                                              height:
-                                                  displayHeight(context) * 0.1,
-                                              width:
-                                                  displayWidth(context) * 0.3,
-                                              fit: BoxFit.cover,
-                                              imageUrl: posts[index].image),
-                                        )
+                                          child: child)
                                       : InkWell(
                                           onTap: () {
                                             Navigator.push(
@@ -953,16 +979,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   ),
                                                 ));
                                           },
-                                          child: CachedNetworkImage(
-                                              height:
-                                                  displayHeight(context) * 0.1,
-                                              width:
-                                                  displayWidth(context) * 0.3,
-                                              fit: BoxFit.cover,
-                                              imageUrl: savedPosts.values
-                                                  .toList()[index]
-                                                  .image),
-                                        ),
+                                          child: child),
                                 ),
                               ),
                             );
