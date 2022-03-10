@@ -32,11 +32,12 @@ class _welcomeScreenState extends State<welcomeScreen> {
   void didChangeDependencies() async {
     if (init) {
       final SharedPreferences localStore = await localStoreInstance;
-      localStore.setBool('feedPosts', false);
       localStore.setBool('myPosts', false);
       await Provider.of<manager>(context, listen: false).setAllUsers();
       await Provider.of<manager>(context, listen: false)
           .setSavedPostsOnce(currentUser!.uid);
+      await Provider.of<manager>(context, listen: false)
+          .setFeedPosts(currentUser!.uid);
       init = false;
       if (mounted) {
         Navigator.pushReplacement(

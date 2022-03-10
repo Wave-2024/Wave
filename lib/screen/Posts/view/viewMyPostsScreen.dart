@@ -6,6 +6,7 @@ import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/General/fullScreenImage.dart';
+import 'package:nexus/screen/General/fullScreenVideo.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
 import 'package:nexus/screen/Posts/editPost.dart';
 import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
@@ -14,6 +15,7 @@ import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:video_player/video_player.dart';
 
 class viewMyPostScreen extends StatefulWidget {
   final String? myUid;
@@ -55,6 +57,382 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
         Provider.of<manager>(context).fetchSavedPostsMap;
     Map<String, NexusUser> mapOfUsers =
         Provider.of<manager>(context).fetchAllUsers;
+
+    Widget displayTextPost(
+      PostModel post,
+      String myUid,
+    ) {
+      NexusUser user = mapOfUsers[post.uid]!;
+      DateTime dateTime = post.dateOfPost;
+      String day = dateTime.day.toString();
+      String year = dateTime.year.toString();
+      String month = months[dateTime.month - 1];
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          color: Colors.grey[200],
+        ),
+        padding: EdgeInsets.all(10),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            color: Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (myUid != user.uid) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => userProfile(
+                                      uid: user.uid,
+                                    ),
+                                  ));
+                            }
+                          },
+                          child: (user.dp != '')
+                              ? CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  radius: displayWidth(context) * 0.045,
+                                  backgroundImage: NetworkImage(user.dp),
+                                )
+                              : CircleAvatar(
+                                  radius: displayWidth(context) * 0.045,
+                                  backgroundColor: Colors.grey[200],
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.orange[300],
+                                    size: displayWidth(context) * 0.05,
+                                  ),
+                                ),
+                        ),
+                        VerticalDivider(
+                          width: displayWidth(context) * 0.028,
+                        ),
+                        InkWell(
+                          child: Text(
+                            user.username,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: displayWidth(context) * 0.035,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        VerticalDivider(
+                          width: displayWidth(context) * 0.005,
+                        ),
+                        (user.followers.length >= 25)
+                            ? Icon(
+                                Icons.verified,
+                                color: Colors.orange[400],
+                                size: displayWidth(context) * 0.0485,
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                height: displayHeight(context) * 0.18,
+                                width: displayWidth(context),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: ListTile(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    editPostScreen(
+                                                  post: post,
+                                                ),
+                                              ));
+                                        },
+                                        leading: const Icon(Icons.edit),
+                                        title: const Text(
+                                          'Edit caption',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ListTile(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return CupertinoAlertDialog(
+                                                  title: const Text(
+                                                    'Delete post',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  content: const Text(
+                                                      'Are you sure you want to delete this post ?'),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: const Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black54),
+                                                        )),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Provider.of<manager>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .deletePost(myUid,
+                                                                  post.post_id);
+                                                          Navigator.pop(
+                                                              context);
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  const SnackBar(
+                                                            content: Text(
+                                                                'Post deleted'),
+                                                            duration: Duration(
+                                                                seconds: 2),
+                                                          ));
+                                                        },
+                                                        child: const Text(
+                                                            'Delete',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .red))),
+                                                  ],
+                                                );
+                                              });
+                                        },
+                                        leading: Icon(
+                                          Icons.delete,
+                                          color: Colors.red[400],
+                                        ),
+                                        title: const Text(
+                                          'Delete post',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.more_vert))
+                  ],
+                ),
+                Opacity(
+                  opacity: 0.0,
+                  child: Divider(
+                    height: displayHeight(context) * 0.01,
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text(
+                      post.caption,
+                      //maxLines: 1,
+                      //overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: displayWidth(context) * 0.034,
+                        color: Colors.black87,
+                        //fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ),
+                ),
+                //Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  child: Container(
+                    height: displayHeight(context) * 0.075,
+                    width: displayWidth(context) * 0.8,
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                if (post.likes.contains(myUid)) {
+                                  Provider.of<manager>(context, listen: false)
+                                      .dislikePost(myUid, post.uid,
+                                          post.post_id, 'self');
+                                } else {
+                                  Provider.of<manager>(context, listen: false)
+                                      .likePost(myUid, post.uid, post.post_id,
+                                          'self');
+                                }
+                              },
+                              child: (post.likes.contains(myUid))
+                                  ? CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      radius: displayWidth(context) * 0.04,
+                                      child: Center(
+                                        child: Image.asset(
+                                          'images/like.png',
+                                          height:
+                                              displayHeight(context) * 0.035,
+                                        ),
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      radius: displayWidth(context) * 0.04,
+                                      child: Center(
+                                        child: Image.asset(
+                                          'images/like_out.png',
+                                          height:
+                                              displayHeight(context) * 0.035,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            const Opacity(
+                                opacity: 0.0, child: VerticalDivider()),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CommentScreenForMyPosts(
+                                        postOwner: user,
+                                        postId: post.post_id,
+                                      ),
+                                    ));
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.transparent,
+                                radius: displayWidth(context) * 0.04,
+                                child: Center(
+                                  child: Image.asset(
+                                    'images/comment.png',
+                                    height: displayHeight(context) * 0.035,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: displayWidth(context) * 0.04,
+                          child: InkWell(
+                            onTap: () {
+                              if (savedPostsMap.containsKey(post.post_id)) {
+                                Provider.of<manager>(context, listen: false)
+                                    .unsavePost(post.post_id, myUid);
+                              } else {
+                                Provider.of<manager>(context, listen: false)
+                                    .savePost(post, myUid);
+                              }
+                            },
+                            child: Center(
+                              child: Center(
+                                  child: (savedPostsMap
+                                          .containsKey(post.post_id))
+                                      ? Image.asset(
+                                          'images/bookmark.png',
+                                          height:
+                                              displayHeight(context) * 0.035,
+                                        )
+                                      : Image.asset(
+                                          'images/bookmark_out.png',
+                                          height:
+                                              displayHeight(context) * 0.035,
+                                        )),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12.0, right: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => usersWhoLikedScreen(
+                                    usersWhoLiked: post.likes),
+                              ));
+                        },
+                        child: Text(
+                          post.likes.length.toString() + ' likes',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: displayWidth(context) * 0.035,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      (ifPostedToday(post.dateOfPost))
+                          ? Text(displayTime(post.dateOfPost),
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w600,
+                                fontSize: displayWidth(context) * 0.033,
+                              ))
+                          : Text(
+                              '${day} ${month} ${year}',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w600,
+                                fontSize: displayWidth(context) * 0.033,
+                              ),
+                            ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -67,7 +445,7 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
           });
         },
         backgroundColor: Colors.white,
-        elevation: 10,
+        elevation: 0,
         child: (isRefreshing)
             ? Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -82,7 +460,8 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
         title: Text(
           'My Posts',
           style: TextStyle(
-              color: Colors.black, fontSize: displayWidth(context) * 0.045),
+              color: Color.fromARGB(255, 36, 29, 29),
+              fontSize: displayWidth(context) * 0.045),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -91,6 +470,7 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
       body: Container(
         height: displayHeight(context),
         width: displayWidth(context),
+        color: Colors.white,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.only(
@@ -102,7 +482,9 @@ class _viewMyPostScreenState extends State<viewMyPostScreen> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
-                  child: displayMyPosts(context, myPostList[index], mapOfUsers,
+                  child: (myPostList[index].postType == 'text')
+                      ? displayTextPost(myPostList[index], widget.myUid!)
+                      : displayMyPosts(context, myPostList[index], mapOfUsers,
                       widget.myUid!, months, savedPostsMap),
                 );
               },
@@ -326,7 +708,6 @@ Widget displayMyPosts(
                 child: Container(
                     height: displayHeight(context) * 0.03,
                     width: displayWidth(context) * 0.68,
-                    
                     child: Text(
                       post.caption,
                       maxLines: 1,
@@ -349,12 +730,22 @@ Widget displayMyPosts(
                   child: Material(
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => fullScreenImage(image: post.image,postId: post.post_id,),));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => (post.postType == 'image')
+                                  ? fullScreenImage(
+                                      image: post.image,
+                                      postId: post.post_id,
+                                    )
+                                  : CachePage(videoUrl: post.video),
+                            ));
                       },
                       onDoubleTap: () {
                         if (post.likes.contains(myUid)) {
                           Provider.of<manager>(context, listen: false)
-                              .dislikePost(myUid, post.uid, post.post_id, 'self');
+                              .dislikePost(
+                                  myUid, post.uid, post.post_id, 'self');
                         } else {
                           Provider.of<manager>(context, listen: false)
                               .likePost(myUid, post.uid, post.post_id, 'self');
@@ -362,12 +753,26 @@ Widget displayMyPosts(
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(25),
-                        child: CachedNetworkImage(
-                          imageUrl: post.image,
-                          height: displayHeight(context) * 0.4,
-                          width: displayWidth(context) * 0.8,
-                          fit: BoxFit.cover,
-                        ),
+                        child: (post.postType == 'image')
+                            ? CachedNetworkImage(
+                                imageUrl: post.image,
+                                height: displayHeight(context) * 0.4,
+                                width: displayWidth(context) * 0.8,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                height: displayHeight(context) * 0.4,
+                                width: displayWidth(context) * 0.8,
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: Image.asset(
+                                      'images/video_prev.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
                       ),
                     ),
                   ),

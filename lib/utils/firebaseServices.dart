@@ -8,6 +8,8 @@ Future<void> createNewNexusUser(
   try {
     await http.put(Uri.parse(api),
         body: json.encode({
+          'accountType' : 'Social',
+          'linkInBio' : '',
           'story': '',
           'storyTime': DateTime.now().toString(),
           'views': [],

@@ -145,7 +145,10 @@ class _editProfileScreenState extends State<editProfileScreen> {
                                           .toString(),
                                       titleController!.text.toString(),
                                       userNameController!.text.toString(),
-                                      bioController!.text.toString())
+                                      bioController!.text.toString(),
+                                'type',
+                                'link'
+                              )
                                   .then((value) {
                                 setState(() {
                                   isEditing = false;
