@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/models/userModel.dart';
@@ -58,12 +59,89 @@ class _listTileForBlockedUserState extends State<listTileForBlockedUser> {
 
   @override
   Widget build(BuildContext context) {
+   
     // Properties of list tile would be
     // leading - Circleavatar displaying dp
     // subtitle - title of user
     // title - username of user
     // trailing - unblock
-    return ListTile();
+    return ListTile(
+      leading: (widget.user!.dp!='')
+                          ? CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(
+                                 (widget.user!.dp)),
+                              radius: displayWidth(context) * 0.05,
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Colors.grey[200],
+                              radius: displayWidth(context) * 0.05,
+                              child: Icon(
+                                Icons.person,
+                                size: displayWidth(context) * 0.075,
+                                color: Colors.orange[400],
+                              ),
+                            ),
+                            subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.user!.username,
+                            style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: displayWidth(context) * 0.035),
+                          ),
+                          Opacity(
+                              opacity: 0.0,
+                              child: VerticalDivider(
+                                width: displayWidth(context) * 0.003,
+                              )),
+                          (widget.user!.followers.length >= 25)
+                              ? Icon(
+                                  Icons.verified,
+                                  color: Colors.orange[400],
+                                  size: displayWidth(context) * 0.048,
+                                )
+                              : const SizedBox(),
+                        ],
+                      ),
+                      title: Text(
+                        widget.user!.title,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: displayWidth(context) * 0.038),
+                      ),
+                       trailing:   InkWell(
+                          splashColor: Colors.orange,
+                          onTap: () async {
+                            if(isProcessing){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please wait , processing previous request')));
+                            }
+                            else{
+                              setState(() {
+                                isProcessing = true;
+                              });
+                              await Provider.of<manager>(context,listen: false).unBlock(widget.user!.uid,currentUser!.uid);
+                              setState(() {
+                                  
+                                isProcessing = false;
+                              });
+
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.orange)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text('Unblock',style: TextStyle(fontSize: displayWidth(context)*0.03),),
+                            ),
+                          )
+                      )
+                    );
+    
   }
 }
 
