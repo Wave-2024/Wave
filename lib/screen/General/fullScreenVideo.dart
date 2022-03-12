@@ -37,6 +37,12 @@ class _CachePageState extends State<CachePage> {
   }
 
   @override
+  void dispose() {
+    // this method dispose the controllers
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
