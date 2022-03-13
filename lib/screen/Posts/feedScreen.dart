@@ -175,6 +175,17 @@ class _feedScreenState extends State<feedScreen> {
                           width: displayWidth(context) * 0.028,
                         ),
                         InkWell(
+                          onTap: () {
+                            if (myUid != user.uid) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => userProfile(
+                                      uid: user.uid,
+                                    ),
+                                  ));
+                            }
+                          },
                           child: Text(
                             user.username,
                             style: TextStyle(
