@@ -492,45 +492,59 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, top: 1),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, top: 1, right: 15),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                myProfile.username,
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: displayWidth(context) * 0.045,
-                                    fontWeight: FontWeight.bold),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    myProfile.username,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: displayWidth(context) * 0.045,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Opacity(
+                                      opacity: 0.0,
+                                      child: VerticalDivider(
+                                        width: displayWidth(context) * 0.015,
+                                      )),
+                                  (myProfile.followers.length >= 25)
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 1.5),
+                                          child: Icon(
+                                            Icons.verified,
+                                            color: Colors.orange[400],
+                                            size: displayWidth(context) * 0.048,
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
                               ),
-                              Opacity(
-                                  opacity: 0.0,
-                                  child: VerticalDivider(
-                                    width: displayWidth(context) * 0.015,
-                                  )),
-                              (myProfile.followers.length >= 25)
-                                  ? Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 1.5),
-                                      child: Icon(
-                                        Icons.verified,
-                                        color: Colors.orange[400],
-                                        size: displayWidth(context) * 0.048,
-                                      ),
-                                    )
-                                  : const SizedBox(),
+                              Text(
+                                myProfile.accountType,
+                                style: TextStyle(
+                                  color: Colors.black45,
+                                    fontSize: displayWidth(context) * 0.04,
+                                    fontWeight: FontWeight.w600),
+                              )
                             ],
                           ),
                         ),
                         Opacity(
                           opacity: 0.0,
                           child: Divider(
-                            height: displayHeight(context) * 0.008,
+                            height: displayHeight(context) * 0.004,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, right: 12),
+                          padding: const EdgeInsets.only(left: 15.0, right: 100),
                           child: (myProfile.bio != '')
                               ? Container(
                                   child: Text(
@@ -545,12 +559,24 @@ class _profiletScreenState extends State<profiletScreen> {
                                 )
                               : const SizedBox(),
                         ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 12),
+                          child: Text(myProfile.linkInBio,style: TextStyle(
+                            fontSize: displayWidth(context)*0.035,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.indigo,
+                          ),),
+                        ),
+
                         Opacity(
                           opacity: 0.0,
                           child: Divider(
                             height: displayHeight(context) * 0.005,
                           ),
                         ),
+
+
                         Container(
                           height: displayHeight(context) * 0.1,
                           width: displayWidth(context),
@@ -939,15 +965,14 @@ class _profiletScreenState extends State<profiletScreen> {
                                     padding: EdgeInsets.all(25),
                                     child: Center(
                                         child: Text(
-                                          posts[index].caption,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 8,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                              displayWidth(context) *
-                                                  0.022),
-                                        )),
+                                      posts[index].caption,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 8,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize:
+                                              displayWidth(context) * 0.022),
+                                    )),
                                   );
                                 }
                                 break;

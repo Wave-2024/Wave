@@ -24,7 +24,7 @@ class NexusUser {
   String bio; // Bio of the user typically an introduction of the user
   String coverImage; // An image link of the cover image of user
   String dp; // An image link for the dp of user
-  String accountType; // Describing the type of account ['Meme','Sports','News','Music','Dance','Social','Business','Celebrity','Gaming']
+  String accountType; // Describing the type of account ['Meme','Sports','News','Music','Dance','Social','Business','Celebrity','Gaming','Developer']
   String email; // Email id of the user
   List<dynamic> followers; // List of uid of the users who follow this current user
   List<dynamic> followings; // List of uid of the users who this current user follow
