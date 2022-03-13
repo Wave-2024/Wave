@@ -906,7 +906,6 @@ class _profiletScreenState extends State<profiletScreen> {
 
                           itemBuilder: (context, index) {
                             var child;
-
                             switch (posts[index].postType) {
                               case "image":
                                 {
@@ -937,8 +936,18 @@ class _profiletScreenState extends State<profiletScreen> {
                               case "text":
                                 {
                                   child = Container(
+                                    padding: EdgeInsets.all(25),
                                     child: Center(
-                                        child: Text(posts[index].caption)),
+                                        child: Text(
+                                          posts[index].caption,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 8,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize:
+                                              displayWidth(context) *
+                                                  0.022),
+                                        )),
                                   );
                                 }
                                 break;

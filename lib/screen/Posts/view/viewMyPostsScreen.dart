@@ -760,7 +760,8 @@ Widget displayMyPosts(
                                 width: displayWidth(context) * 0.8,
                                 fit: BoxFit.cover,
                               )
-                            : Container(
+                            :
+                        Container(
                                 height: displayHeight(context) * 0.4,
                                 width: displayWidth(context) * 0.8,
                                 child: Center(
