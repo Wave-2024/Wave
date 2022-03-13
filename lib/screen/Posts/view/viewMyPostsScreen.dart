@@ -738,7 +738,7 @@ Widget displayMyPosts(
                                       image: post.image,
                                       postId: post.post_id,
                                     )
-                                  : CachePage(videoUrl: post.video),
+                                  : fullScreenVideo(videoUrl: post.video),
                             ));
                       },
                       onDoubleTap: () {
