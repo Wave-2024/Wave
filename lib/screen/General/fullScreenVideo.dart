@@ -1,16 +1,16 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 
-class CachePage extends StatefulWidget {
+class fullScreenVideo extends StatefulWidget {
   final String? videoUrl;
 
-  CachePage({this.videoUrl});
+  fullScreenVideo({this.videoUrl});
 
   @override
-  _CachePageState createState() => _CachePageState();
+  _fullScreenVideoState createState() => _fullScreenVideoState();
 }
 
-class _CachePageState extends State<CachePage> {
+class _fullScreenVideoState extends State<fullScreenVideo> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerDataSource _betterPlayerDataSource;
 

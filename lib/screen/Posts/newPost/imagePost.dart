@@ -214,9 +214,9 @@ class _imagePostState extends State<imagePost> {
                                   listen: false)
                               .updateIndex(4);
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Post Successfull')));
+                              const SnackBar(content: Text('Post Successfull')));
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text('Please upload an image')));
                         }
                       },
