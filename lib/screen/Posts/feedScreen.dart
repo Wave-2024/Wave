@@ -10,7 +10,7 @@ import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/StoryModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/fullScreenImage.dart';
+import 'package:nexus/screen/Posts/view/fullScreenImage.dart';
 import 'package:nexus/screen/General/notificationScreen.dart';
 import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
 import 'package:nexus/screen/Story/uploadStory.dart';
@@ -23,7 +23,7 @@ import 'package:badges/badges.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/reportContainer.dart';
-import '../General/fullScreenVideo.dart';
+import 'view/fullScreenVideo.dart';
 import 'CommentScreens/CommentScreenForMyPosts.dart';
 import 'CommentScreens/CommentsScreen.dart';
 import 'editPost.dart';
@@ -1004,7 +1004,7 @@ class _suggestionCardsState extends State<suggestionCards> {
                                           )
                                         : Icon(
                                             Icons.person,
-                                            color: Colors.white,
+                                            color: Colors.orange[600],
                                             size: displayWidth(context) * 0.15,
                                           ),
                                   ),

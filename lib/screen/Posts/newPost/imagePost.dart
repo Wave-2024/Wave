@@ -102,7 +102,7 @@ class _imagePostState extends State<imagePost> {
                   _cropImage();
                 }
               },
-              icon: Icon(Icons.crop))
+              icon: const Icon(Icons.crop))
         ],
         elevation: 0,
         backgroundColor: Colors.white,
@@ -202,7 +202,6 @@ class _imagePostState extends State<imagePost> {
                           setState(() {
                             uploadingPost = true;
                           });
-                          File? postImage = await checkAnCompress();
                           await Provider.of<manager>(context, listen: false)
                               .newImagePost(captionController!.text.toString(),
                                   currentUser!.uid, imageFile!);

@@ -107,10 +107,10 @@ class _listTileForBlockedUserState extends State<listTileForBlockedUser> {
         ),
         trailing: (isProcessing)
             ? Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(8.0),
                 child: CircularProgressIndicator(
                   color: Colors.teal,
-
+                  backgroundColor: Colors.white,
                   value: displayWidth(context) * 0.01,
                 ),
               )

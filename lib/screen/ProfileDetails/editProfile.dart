@@ -172,66 +172,66 @@ class _editProfileScreenState extends State<editProfileScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          TextButton(
-                                              onPressed: () {
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Social');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Social')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Social')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Business');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Business')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title : const Text('Business')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Celebrity');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Celebrity')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Celebrity')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Sports');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Sports')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Sports')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Developer');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Developer')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Developer')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('News');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('News')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('News')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Music');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Music')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Music')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Dance');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Dance')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Dance')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Meme');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Meme')),
-                                          TextButton(
-                                              onPressed: () {
+                                              title: const Text('Meme')),
+                                          ListTile(
+                                              onTap: () {
                                                 setAccountType('Gaming');
                                                 Navigator.pop(ctx);
                                               },
-                                              child: const Text('Gaming')),
+                                              title: const Text('Gaming')),
                                         ],
                                       ),
                                     ),

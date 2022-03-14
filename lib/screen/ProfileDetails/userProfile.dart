@@ -395,7 +395,7 @@ class _userProfileState extends State<userProfile> {
                                                         fit: BoxFit.fill,
                                                       ),
                                                       Text(
-                                                        'Block',
+                                                          (haveIBlocked)?'Unblock':'Block',
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.black87,

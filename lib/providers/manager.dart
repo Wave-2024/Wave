@@ -252,6 +252,7 @@ class manager extends ChangeNotifier {
   Future<void> setFeedPosts(String myUid) async {
     List<PostModel> tempPostList = [];
     List<StoryModel> tempStoryList = [];
+    List<PostModel> tempMyPosts = [];
     Map<String, dynamic> data = {};
     final String api = constants().fetchApi + 'posts.json';
     final res = await http.get(Uri.parse(api));
@@ -276,7 +277,7 @@ class manager extends ChangeNotifier {
             post_id: postId,
             likes: postMap['likes'] ?? []);
         myPostsMap[postId] = p;
-        myPostsList.add(p);
+        tempMyPosts.add(p);
       }
     }
     for (String uid in myFollowing) {
@@ -309,7 +310,8 @@ class manager extends ChangeNotifier {
         }
       }
     }
-    feedPostList = tempPostList;
+    myPostsList = tempMyPosts;
+    feedStoryList = tempStoryList;
     feedPostList = tempPostList;
     feedStoryList.sort((a, b) => b.storyTime!.compareTo(a.storyTime!));
     feedPostList.sort((a, b) => b.dateOfPost.compareTo(a.dateOfPost));

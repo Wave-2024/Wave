@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/fullScreenImage.dart';
+import 'package:nexus/screen/Posts/view/fullScreenImage.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForSavedPost.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -13,7 +13,7 @@ import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import '../../General/fullScreenVideo.dart';
+import 'fullScreenVideo.dart';
 import '../usersWhoLikedScreen.dart';
 
 class viewMySavedPostScreen extends StatefulWidget {

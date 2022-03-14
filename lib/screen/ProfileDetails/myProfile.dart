@@ -15,6 +15,7 @@ import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
 import 'package:nexus/screen/ProfileDetails/uploadImageScreen.dart';
+import 'package:nexus/screen/ProfileDetails/viewDPorCP.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -181,13 +182,37 @@ class _profiletScreenState extends State<profiletScreen> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: (myProfile.dp != '')
-                                            ? CachedNetworkImage(
-                                                imageUrl: myProfile.dp,
-                                                height: displayHeight(context) *
-                                                    0.0905,
-                                                width: displayWidth(context) *
-                                                    0.175,
-                                                fit: BoxFit.cover,
+                                            ? Hero(
+                                                tag: 'dp-tag',
+                                                child: Material(
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                viewDPorCP(
+                                                                    image:
+                                                                        myProfile
+                                                                            .dp,
+                                                                    tag:
+                                                                        'dp-tag',
+                                                                    title: myProfile
+                                                                        .title),
+                                                          ));
+                                                    },
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: myProfile.dp,
+                                                      height: displayHeight(
+                                                              context) *
+                                                          0.0905,
+                                                      width: displayWidth(
+                                                              context) *
+                                                          0.175,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
                                               )
                                             : Icon(
                                                 Icons.person,
@@ -320,7 +345,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   ),
                                                   ListTile(
                                                     title: const Text(
-                                                        'Blocked Contacts'),
+                                                        'Blocked Users'),
                                                     visualDensity:
                                                         const VisualDensity(
                                                       horizontal: 0,
@@ -530,7 +555,7 @@ class _profiletScreenState extends State<profiletScreen> {
                               Text(
                                 myProfile.accountType,
                                 style: TextStyle(
-                                  color: Colors.black45,
+                                    color: Colors.black45,
                                     fontSize: displayWidth(context) * 0.04,
                                     fontWeight: FontWeight.w600),
                               )
@@ -544,7 +569,8 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, right: 100),
+                          padding:
+                              const EdgeInsets.only(left: 15.0, right: 100),
                           child: (myProfile.bio != '')
                               ? Container(
                                   child: Text(
@@ -559,29 +585,28 @@ class _profiletScreenState extends State<profiletScreen> {
                                 )
                               : const SizedBox(),
                         ),
-
                         Padding(
                           padding: const EdgeInsets.only(left: 15.0, right: 12),
                           child: InkWell(
-                            onTap: ()async {
+                            onTap: () async {
                               await openLink(myProfile.linkInBio);
                             },
-                            child: Text(myProfile.linkInBio,style: TextStyle(
-                              fontSize: displayWidth(context)*0.035,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.indigo,
-                            ),),
+                            child: Text(
+                              myProfile.linkInBio,
+                              style: TextStyle(
+                                fontSize: displayWidth(context) * 0.035,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.indigo,
+                              ),
+                            ),
                           ),
                         ),
-
                         Opacity(
                           opacity: 0.0,
                           child: Divider(
                             height: displayHeight(context) * 0.005,
                           ),
                         ),
-
-
                         Container(
                           height: displayHeight(context) * 0.1,
                           width: displayWidth(context),
@@ -967,12 +992,12 @@ class _profiletScreenState extends State<profiletScreen> {
                               case "text":
                                 {
                                   child = Container(
-                                    padding: EdgeInsets.all(25),
+                                    padding: EdgeInsets.all(12),
                                     child: Center(
                                         child: Text(
                                       posts[index].caption,
                                       overflow: TextOverflow.ellipsis,
-                                      maxLines: 8,
+                                      maxLines: 7,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize:

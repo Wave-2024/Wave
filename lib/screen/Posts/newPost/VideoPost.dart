@@ -69,6 +69,7 @@ class _VideoPostState extends State<VideoPost> {
         title: const Text('New Post', style: TextStyle(color: Colors.black)),
       ),
       body: Container(
+        color: Colors.white,
         height: displayHeight(context),
         width: displayWidth(context),
         child: (uploadingPost!)
@@ -97,7 +98,7 @@ class _VideoPostState extends State<VideoPost> {
                   children: [
                     Expanded(
                       child: Container(
-                        color: Colors.red,
+                        color: Colors.white,
                         //height: displayHeight(context) * 0.4,
                         //width: displayWidth(context),
                         child: (_videoController != null)
