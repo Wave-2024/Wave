@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nexus/screen/AboutWave/OpenSource.dart';
 import 'package:nexus/screen/AboutWave/privacyPolicyScreen.dart';
+import 'package:nexus/screen/AboutWave/termsOfUse.dart';
 class AboutWaveScreen extends StatelessWidget {
   const AboutWaveScreen({Key? key}) : super(key: key);
 
@@ -26,9 +28,15 @@ class AboutWaveScreen extends StatelessWidget {
               title: Text('Privacy Policy'),
             ),
             ListTile(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => termsOfUseScreen(),));
+              },
               title: Text('Terms of Use'),
             ),
             ListTile(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => OpenSourceDetail(),));
+              },
               title: Text('Open Source Development'),
             ),
           ],
