@@ -562,11 +562,16 @@ class _profiletScreenState extends State<profiletScreen> {
 
                         Padding(
                           padding: const EdgeInsets.only(left: 15.0, right: 12),
-                          child: Text(myProfile.linkInBio,style: TextStyle(
-                            fontSize: displayWidth(context)*0.035,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.indigo,
-                          ),),
+                          child: InkWell(
+                            onTap: ()async {
+                              await openLink(myProfile.linkInBio);
+                            },
+                            child: Text(myProfile.linkInBio,style: TextStyle(
+                              fontSize: displayWidth(context)*0.035,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.indigo,
+                            ),),
+                          ),
                         ),
 
                         Opacity(
