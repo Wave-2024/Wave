@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus/providers/usernameProvider.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
 import 'package:nexus/screen/General/decideScreen.dart';
-import 'package:nexus/screen/General/policyScreen.dart';
+import 'package:nexus/screen/AboutWave/policyScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:provider/provider.dart';

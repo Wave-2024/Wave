@@ -7,14 +7,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/AboutWave.dart';
-import 'package:nexus/screen/General/policyScreen.dart';
+import 'package:nexus/screen/AboutWave/AboutWave.dart';
+import 'package:nexus/screen/AboutWave/policyScreen.dart';
 import 'package:nexus/screen/Posts/view/viewMyPostsScreen.dart';
 import 'package:nexus/screen/Posts/view/viewMySavedPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
 import 'package:nexus/screen/ProfileDetails/uploadImageScreen.dart';
+import 'package:nexus/screen/ProfileDetails/viewDPorCP.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -181,13 +182,37 @@ class _profiletScreenState extends State<profiletScreen> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: (myProfile.dp != '')
-                                            ? CachedNetworkImage(
-                                                imageUrl: myProfile.dp,
-                                                height: displayHeight(context) *
-                                                    0.0905,
-                                                width: displayWidth(context) *
-                                                    0.175,
-                                                fit: BoxFit.cover,
+                                            ? Hero(
+                                                tag: 'dp-tag',
+                                                child: Material(
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                viewDPorCP(
+                                                                    image:
+                                                                        myProfile
+                                                                            .dp,
+                                                                    tag:
+                                                                        'dp-tag',
+                                                                    title: myProfile
+                                                                        .title),
+                                                          ));
+                                                    },
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: myProfile.dp,
+                                                      height: displayHeight(
+                                                              context) *
+                                                          0.0905,
+                                                      width: displayWidth(
+                                                              context) *
+                                                          0.175,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
                                               )
                                             : Icon(
                                                 Icons.person,
@@ -320,7 +345,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   ),
                                                   ListTile(
                                                     title: const Text(
-                                                        'Blocked Contacts'),
+                                                        'Blocked Users'),
                                                     visualDensity:
                                                         const VisualDensity(
                                                       horizontal: 0,
@@ -492,45 +517,60 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, top: 1),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, top: 1, right: 15),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                myProfile.username,
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: displayWidth(context) * 0.045,
-                                    fontWeight: FontWeight.bold),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    myProfile.username,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: displayWidth(context) * 0.045,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Opacity(
+                                      opacity: 0.0,
+                                      child: VerticalDivider(
+                                        width: displayWidth(context) * 0.015,
+                                      )),
+                                  (myProfile.followers.length >= 25)
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 1.5),
+                                          child: Icon(
+                                            Icons.verified,
+                                            color: Colors.orange[400],
+                                            size: displayWidth(context) * 0.048,
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
                               ),
-                              Opacity(
-                                  opacity: 0.0,
-                                  child: VerticalDivider(
-                                    width: displayWidth(context) * 0.015,
-                                  )),
-                              (myProfile.followers.length >= 25)
-                                  ? Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 1.5),
-                                      child: Icon(
-                                        Icons.verified,
-                                        color: Colors.orange[400],
-                                        size: displayWidth(context) * 0.048,
-                                      ),
-                                    )
-                                  : const SizedBox(),
+                              Text(
+                                myProfile.accountType,
+                                style: TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: displayWidth(context) * 0.04,
+                                    fontWeight: FontWeight.w600),
+                              )
                             ],
                           ),
                         ),
                         Opacity(
                           opacity: 0.0,
                           child: Divider(
-                            height: displayHeight(context) * 0.008,
+                            height: displayHeight(context) * 0.004,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, right: 12),
+                          padding:
+                              const EdgeInsets.only(left: 15.0, right: 100),
                           child: (myProfile.bio != '')
                               ? Container(
                                   child: Text(
@@ -544,6 +584,22 @@ class _profiletScreenState extends State<profiletScreen> {
                                   ),
                                 )
                               : const SizedBox(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 12),
+                          child: InkWell(
+                            onTap: () async {
+                              await openLink(myProfile.linkInBio);
+                            },
+                            child: Text(
+                              myProfile.linkInBio,
+                              style: TextStyle(
+                                fontSize: displayWidth(context) * 0.035,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.indigo,
+                              ),
+                            ),
+                          ),
                         ),
                         Opacity(
                           opacity: 0.0,
@@ -906,7 +962,6 @@ class _profiletScreenState extends State<profiletScreen> {
 
                           itemBuilder: (context, index) {
                             var child;
-
                             switch (posts[index].postType) {
                               case "image":
                                 {
@@ -937,8 +992,17 @@ class _profiletScreenState extends State<profiletScreen> {
                               case "text":
                                 {
                                   child = Container(
+                                    padding: EdgeInsets.all(12),
                                     child: Center(
-                                        child: Text(posts[index].caption)),
+                                        child: Text(
+                                      posts[index].caption,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 7,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize:
+                                              displayWidth(context) * 0.022),
+                                    )),
                                   );
                                 }
                                 break;

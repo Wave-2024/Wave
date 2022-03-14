@@ -19,16 +19,21 @@ class editProfileScreen extends StatefulWidget {
 class _editProfileScreenState extends State<editProfileScreen> {
   TextEditingController? titleController;
   TextEditingController? userNameController;
+  TextEditingController? accountTypeController;
   TextEditingController? bioController;
   bool? isEditing;
   bool init = true;
+  TextEditingController? linkInBioController;
   bool? isScreenLoading;
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
+    linkInBioController = TextEditingController(text: widget.user!.linkInBio);
     titleController = TextEditingController(text: widget.user!.title);
     userNameController = TextEditingController(text: widget.user!.username);
     bioController = TextEditingController(text: widget.user!.bio);
+    accountTypeController =
+        TextEditingController(text: widget.user!.accountType);
     isEditing = false;
     isScreenLoading = true;
     super.initState();
@@ -49,16 +54,23 @@ class _editProfileScreenState extends State<editProfileScreen> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    accountTypeController!.dispose();
+    linkInBioController!.dispose();
     titleController!.dispose();
     userNameController!.dispose();
     bioController!.dispose();
+  }
+
+  setAccountType(String accountType) {
+    setState(() {
+      accountTypeController = TextEditingController(text: accountType);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final Map<String, bool>? listOfUserNames =
         Provider.of<usernameProvider>(context).fetchUserNames;
-
     final Map<String, NexusUser> allUsers =
         Provider.of<manager>(context).fetchAllUsers;
     return Scaffold(
@@ -128,10 +140,117 @@ class _editProfileScreenState extends State<editProfileScreen> {
                               labelText: "Bio",
                               labelStyle: TextStyle(color: Colors.black54)),
                         ),
+                        TextFormField(
+                          controller: linkInBioController,
+                          validator: (link) {
+                            if (link!.isEmpty) {
+                              return null;
+                            } else {
+                              bool _valid = Uri.parse(link).isAbsolute;
+                              if (!_valid) {
+                                return 'Please enter valid URL';
+                              } else {
+                                return null;
+                              }
+                            }
+                          },
+                          decoration: const InputDecoration(
+                              labelText: "Link",
+                              labelStyle: TextStyle(color: Colors.black54)),
+                        ),
+                        const Opacity(opacity: 0.0, child: Divider()),
+                        TextFormField(
+                          controller: accountTypeController,
+                          onTap: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (ctx) {
+                                  return SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Social');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Social')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Business');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title : const Text('Business')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Celebrity');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Celebrity')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Sports');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Sports')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Developer');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Developer')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('News');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('News')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Music');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Music')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Dance');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Dance')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Meme');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Meme')),
+                                          ListTile(
+                                              onTap: () {
+                                                setAccountType('Gaming');
+                                                Navigator.pop(ctx);
+                                              },
+                                              title: const Text('Gaming')),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                          },
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                              suffixIcon: Icon(
+                                Icons.arrow_drop_down_circle_outlined,
+                                color: Colors.indigo,
+                              ),
+                              labelText: "Account Type",
+                              labelStyle: TextStyle(color: Colors.black54)),
+                        ),
                         Opacity(
                             opacity: 0.0,
                             child: Divider(
-                              height: displayHeight(context) * 0.05,
+                              height: displayHeight(context) * 0.03,
                             )),
                         GestureDetector(
                           onTap: () {
@@ -141,13 +260,13 @@ class _editProfileScreenState extends State<editProfileScreen> {
                               });
                               Provider.of<manager>(context, listen: false)
                                   .editMyProfile(
-                                      FirebaseAuth.instance.currentUser!.uid
-                                          .toString(),
-                                      titleController!.text.toString(),
-                                      userNameController!.text.toString(),
-                                      bioController!.text.toString(),
-                                'type',
-                                'link'
+                                FirebaseAuth.instance.currentUser!.uid
+                                    .toString(),
+                                titleController!.text.toString(),
+                                userNameController!.text.toString(),
+                                bioController!.text.toString(),
+                                accountTypeController!.text.toString(),
+                                linkInBioController!.text.toString(),
                               )
                                   .then((value) {
                                 setState(() {

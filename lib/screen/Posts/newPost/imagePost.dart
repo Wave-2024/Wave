@@ -102,7 +102,7 @@ class _imagePostState extends State<imagePost> {
                   _cropImage();
                 }
               },
-              icon: Icon(Icons.crop))
+              icon: const Icon(Icons.crop))
         ],
         elevation: 0,
         backgroundColor: Colors.white,
@@ -202,7 +202,6 @@ class _imagePostState extends State<imagePost> {
                           setState(() {
                             uploadingPost = true;
                           });
-                          File? postImage = await checkAnCompress();
                           await Provider.of<manager>(context, listen: false)
                               .newImagePost(captionController!.text.toString(),
                                   currentUser!.uid, imageFile!);
@@ -214,9 +213,9 @@ class _imagePostState extends State<imagePost> {
                                   listen: false)
                               .updateIndex(4);
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Post Successfull')));
+                              const SnackBar(content: Text('Post Successfull')));
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text('Please upload an image')));
                         }
                       },

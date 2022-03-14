@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
-import 'package:nexus/screen/General/fullScreenImage.dart';
-import 'package:nexus/screen/General/fullScreenVideo.dart';
+import 'package:nexus/screen/Posts/view/fullScreenImage.dart';
+import 'package:nexus/screen/Posts/view/fullScreenVideo.dart';
 import 'package:nexus/screen/Posts/CommentScreens/CommentScreenForMyPosts.dart';
 import 'package:nexus/screen/Posts/editPost.dart';
 import 'package:nexus/screen/Posts/usersWhoLikedScreen.dart';
@@ -738,7 +738,7 @@ Widget displayMyPosts(
                                       image: post.image,
                                       postId: post.post_id,
                                     )
-                                  : CachePage(videoUrl: post.video),
+                                  : fullScreenVideo(videoUrl: post.video),
                             ));
                       },
                       onDoubleTap: () {
@@ -760,7 +760,8 @@ Widget displayMyPosts(
                                 width: displayWidth(context) * 0.8,
                                 fit: BoxFit.cover,
                               )
-                            : Container(
+                            :
+                        Container(
                                 height: displayHeight(context) * 0.4,
                                 width: displayWidth(context) * 0.8,
                                 child: Center(

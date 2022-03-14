@@ -199,6 +199,7 @@ class _uploadImageScreenState extends State<uploadImageScreen> {
       ),
       body: Container(
         height: displayHeight(context),
+        color: Colors.white,
         width: displayWidth(context),
         child: (isProcessing!)
             ? Column(
@@ -277,7 +278,7 @@ class _uploadImageScreenState extends State<uploadImageScreen> {
                                 padding: MaterialStateProperty.all(
                                     const EdgeInsets.all(10.0))),
                             onPressed: _cropImage,
-                            label: Text('Crop image',
+                            label: const Text('Crop image',
                                 style: TextStyle(color: Colors.white))),
                       ],
                     ),

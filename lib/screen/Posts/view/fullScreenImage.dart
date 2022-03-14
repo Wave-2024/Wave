@@ -4,7 +4,7 @@ import 'package:nexus/utils/devicesize.dart';
 class fullScreenImage extends StatelessWidget {
   final String? image;
   final String? postId;
-  fullScreenImage({this.image,this.postId});
+  fullScreenImage({this.image, this.postId});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +24,10 @@ class fullScreenImage extends StatelessWidget {
           height: displayHeight(context),
           width: displayWidth(context),
           decoration: BoxDecoration(
-            color: Colors.white,
-            image: DecorationImage(
-              image: CachedNetworkImageProvider(image!),fit: BoxFit.contain
-            )
-          ),
+              color: Colors.white,
+              image: DecorationImage(
+                  image: CachedNetworkImageProvider(image!),
+                  fit: BoxFit.contain)),
         ),
       ),
     );

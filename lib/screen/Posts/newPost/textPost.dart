@@ -42,7 +42,7 @@ class _TextPostState extends State<TextPost> {
         color: Colors.white,
         height: displayHeight(context),
         width: displayWidth(context),
-        padding: const EdgeInsets.all(36),
+        padding: const EdgeInsets.all(12),
         child: (uploadingPost!)
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
