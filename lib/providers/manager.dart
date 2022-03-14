@@ -261,7 +261,7 @@ class manager extends ChangeNotifier {
     List<dynamic> myFollowing = allUsers[myUid]!.followings;
 
     if (data.containsKey(myUid)) {
-      // Trying to set my posts
+      // Set my posts
       final MyPostMap = data[myUid] as Map<String, dynamic>;
       for (String postId in MyPostMap.keys.toList()) {
         final postMap = MyPostMap[postId] as Map<String, dynamic>;

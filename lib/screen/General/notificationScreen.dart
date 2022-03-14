@@ -12,7 +12,6 @@ import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/widgets.dart';
 
@@ -22,38 +21,16 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  bool? init;
-  bool? isScreenLoading;
   User currentUser = FirebaseAuth.instance.currentUser!;
-  final Future<SharedPreferences> localStoreInstance =
-  SharedPreferences.getInstance();
+
   @override
   void initState() {
     super.initState();
-    init = true;
-    isScreenLoading = false;
   }
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() async {
-
-    if (init!) {
-      final SharedPreferences localStore = await localStoreInstance;
-      if (!localStore.getBool('myPosts')!) {
-        isScreenLoading = true;
-        await Provider.of<manager>(context, listen: false)
-            .setMyPosts(currentUser.uid);
-        localStore.setBool('myPosts', true);
-        isScreenLoading = false;
-      }
-      init = false;
-    }
-    super.didChangeDependencies();
   }
 
   final List<String> months = [
@@ -92,27 +69,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (isScreenLoading!)?Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: displayHeight(context) * 0.2,
-              ),
-              Expanded(
-                  child: Image.asset('images/notificationLoad.gif')),
-              Expanded(
-                  child: Text(
-                    'Fetching your notifications',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                        fontSize: displayWidth(context) * 0.05),
-                  )),
-            ],
-          ):Padding(
+          child: Padding(
             padding:
-
                 const EdgeInsets.only(top: 16.0, bottom: 16, left: 8, right: 8),
             child: SingleChildScrollView(
               child: Column(
@@ -161,7 +119,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           {
                             postIndex = myPosts.indexWhere((element) =>
                                 element.post_id == list[index].postId);
-                            if(postIndex!=-1){
+                            if (postIndex != -1) {
                               post = myPosts[postIndex];
                             }
 
@@ -180,32 +138,70 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(
-                                        Icons.favorite,
-                                        color: Colors.red[600],
-                                      ),
-                                      Text(
-                                        '${user.username} liked your post',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize:
-                                                displayWidth(context) * 0.036),
-                                      ),
-                                      (postIndex != -1)
-                                          ? CachedNetworkImage(
-                                              imageUrl: post!.image,
-                                              height:
-                                                  displayHeight(context) * 0.05,
-                                              width:
-                                                  displayWidth(context) * 0.1,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : const SizedBox(),
-                                    ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16.0, right: 16.0),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          Icons.favorite,
+                                          color: Colors.red[600],
+                                        ),
+                                        const VerticalDivider(),
+                                        SizedBox(
+                                          width: displayWidth(context) * 0.6,
+                                          child: Text(
+                                            '${user.username} liked your post',
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.036),
+                                          ),
+                                        ),
+                                        const VerticalDivider(),
+                                        (postIndex != -1)
+                                            ? (post!.postType == 'text')
+                                                ? Image.asset(
+                                                    'images/textPost.png',
+                                                    height:
+                                                        displayHeight(context) *
+                                                            0.05,
+                                                    width:
+                                                        displayWidth(context) *
+                                                            0.1,
+                                                    fit: BoxFit.contain,
+                                                  )
+                                                : (post.postType == 'video')
+                                                    ? Image.asset(
+                                                        'images/video_prev.png',
+                                                        height: displayHeight(
+                                                                context) *
+                                                            0.05,
+                                                        width: displayWidth(
+                                                                context) *
+                                                            0.1,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        imageUrl: post.image,
+                                                        height: displayHeight(
+                                                                context) *
+                                                            0.05,
+                                                        width: displayWidth(
+                                                                context) *
+                                                            0.1,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                            : const SizedBox(),
+                                      ],
+                                    ),
                                   ),
                                   Opacity(
                                       opacity: 0.0,
@@ -249,7 +245,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           {
                             int postIndex = myPosts.indexWhere((element) =>
                                 element.post_id == list[index].postId);
-                            if(postIndex!=-1){
+                            if (postIndex != -1) {
                               post = myPosts[postIndex];
                             }
 
@@ -268,32 +264,66 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      const Icon(
-                                        Icons.comment_outlined,
-                                        color: Colors.indigo,
-                                      ),
-                                      Text(
-                                        '${user.username} commented on your post',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize:
-                                                displayWidth(context) * 0.036),
-                                      ),
-                                      (postIndex != -1)
-                                          ? CachedNetworkImage(
-                                              imageUrl: post!.image,
-                                              height:
-                                                  displayHeight(context) * 0.05,
-                                              width:
-                                                  displayWidth(context) * 0.1,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : const SizedBox(),
-                                    ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16.0, right: 16.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Icon(
+                                          Icons.comment_outlined,
+                                          color: Colors.indigo,
+                                        ),
+                                        const VerticalDivider(),
+                                        SizedBox(
+                                          width: displayWidth(context) * 0.6,
+                                          child: Text(
+                                            '${user.username} commented on your post',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.036),
+                                          ),
+                                        ),
+                                        const VerticalDivider(),
+                                        (postIndex != -1)
+                                            ? (post!.postType == 'text')
+                                                ? Image.asset(
+                                                    'images/textPost.png',
+                                                    height:
+                                                        displayHeight(context) *
+                                                            0.05,
+                                                    width:
+                                                        displayWidth(context) *
+                                                            0.1,
+                                                    fit: BoxFit.contain,
+                                                  )
+                                                : (post.postType == 'video')
+                                                    ? Image.asset(
+                                                        'images/video_prev.png',
+                                                        height: displayHeight(
+                                                                context) *
+                                                            0.05,
+                                                        width: displayWidth(
+                                                                context) *
+                                                            0.1,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        imageUrl: post.image,
+                                                        height: displayHeight(
+                                                                context) *
+                                                            0.05,
+                                                        width: displayWidth(
+                                                                context) *
+                                                            0.1,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                            : const SizedBox(),
+                                      ],
+                                    ),
                                   ),
                                   Opacity(
                                       opacity: 0.0,
@@ -350,45 +380,62 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Image.asset(
-                                        'images/follow.png',
-                                        height: displayHeight(context) * 0.05,
-                                        fit: BoxFit.cover,
-                                      ),
-                                      Text(
-                                        '${user.username} started following you',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize:
-                                                displayWidth(context) * 0.036),
-                                      ),
-                                      (user.dp != '')
-                                          ? CachedNetworkImage(
-                                              imageUrl: user.dp,
-                                              height:
-                                                  displayHeight(context) * 0.05,
-                                              width:
-                                                  displayWidth(context) * 0.1,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Container(
-                                              height:
-                                                  displayHeight(context) * 0.05,
-                                              width:
-                                                  displayWidth(context) * 0.1,
-                                              color: Colors.grey[200],
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.person,
-                                                  color: Colors.orange[400],
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16.0, right: 16.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Image.asset(
+                                          'images/follow.png',
+                                          height:
+                                              displayHeight(context) * 0.035,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        const Opacity(
+                                          opacity: 0.0,
+                                          child: VerticalDivider(),
+                                        ),
+                                        SizedBox(
+                                          width: displayWidth(context) * 0.6,
+                                          child: Text(
+                                            '${user.username} started following you',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize:
+                                                    displayWidth(context) *
+                                                        0.036),
+                                          ),
+                                        ),
+                                        const Opacity(
+                                          opacity: 0.0,
+                                          child: VerticalDivider(),
+                                        ),
+                                        (user.dp != '')
+                                            ? CachedNetworkImage(
+                                                imageUrl: user.dp,
+                                                height: displayHeight(context) *
+                                                    0.05,
+                                                width:
+                                                    displayWidth(context) * 0.1,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Container(
+                                                height: displayHeight(context) *
+                                                    0.05,
+                                                width:
+                                                    displayWidth(context) * 0.1,
+                                                color: Colors.grey[200],
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: Colors.orange[400],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   Opacity(
                                       opacity: 0.0,
