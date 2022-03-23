@@ -7,11 +7,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nexus/models/PostModel.dart';
 import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
+import 'package:nexus/screen/AboutWave/AboutWave.dart';
+import 'package:nexus/screen/AboutWave/policyScreen.dart';
 import 'package:nexus/screen/Posts/view/viewMyPostsScreen.dart';
 import 'package:nexus/screen/Posts/view/viewMySavedPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
 import 'package:nexus/screen/ProfileDetails/editProfile.dart';
+import 'package:nexus/screen/ProfileDetails/uploadImageScreen.dart';
+import 'package:nexus/screen/ProfileDetails/viewDPorCP.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
@@ -19,6 +23,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Authentication/authscreen.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'blockedUsersScreen.dart';
 
 class profiletScreen extends StatefulWidget {
   @override
@@ -48,15 +53,8 @@ class _profiletScreenState extends State<profiletScreen> {
   @override
   void didChangeDependencies() async {
     if (init) {
-      await Provider.of<manager>(context).updateMyProfile(currentUser!.uid);
-      final SharedPreferences localStore = await localStoreInstance;
-      if (!localStore.getBool('myPosts')!) {
-        loadScreenForProfile = true;
-        await Provider.of<manager>(context, listen: false)
-            .setMyPosts(currentUser!.uid);
-        localStore.setBool('myPosts', true);
-        loadScreenForProfile = false;
-      }
+      await Provider.of<manager>(context, listen: false)
+          .updateMyProfile(currentUser!.uid);
       init = false;
     }
     super.didChangeDependencies();
@@ -64,7 +62,6 @@ class _profiletScreenState extends State<profiletScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -84,52 +81,18 @@ class _profiletScreenState extends State<profiletScreen> {
     NexusUser? myProfile = Provider.of<manager>(context)
         .fetchAllUsers[currentUser!.uid.toString()];
     List<PostModel> posts = Provider.of<manager>(context).fetchMyPostsList;
-
     Map<String, PostModel>? savedPosts =
         Provider.of<manager>(context).fetchSavedPostsMap;
-    Future pickImageForCoverPicture() async {
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (mounted) {
-        if (pickedFile != null) {
-          setState(() {
-            loadScreenForEdititng = true;
-            imagefile = File(pickedFile.path);
-          });
-          File? compressedFile = await checkAnCompress();
-          setState(() {
-            imagefile = compressedFile;
-          });
-          await Provider.of<manager>(context, listen: false)
-              .addCoverPicture(imagefile, currentUser!.uid.toString())
-              .then((value) {
-            setState(() {
-              loadScreenForEdititng = false;
-            });
-          });
-        }
-      }
-    }
 
-    Future pickImageForProfilePicture() async {
+    Future pickImage(String type) async {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (mounted) {
-        if (pickedFile != null) {
-          setState(() {
-            loadScreenForEdititng = true;
-            imagefile = File(pickedFile.path);
-          });
-          File? compressedFile = await checkAnCompress();
-          setState(() {
-            imagefile = compressedFile;
-          });
-          await Provider.of<manager>(context, listen: false)
-              .addProfilePicture(imagefile, currentUser!.uid.toString())
-              .then((value) {
-            setState(() {
-              loadScreenForEdititng = false;
-            });
-          });
-        }
+      if (pickedFile != null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => uploadImageScreen(
+                  originalFile: File(pickedFile.path), imageType: type),
+            ));
       }
     }
 
@@ -139,46 +102,25 @@ class _profiletScreenState extends State<profiletScreen> {
           height: displayHeight(context),
           width: displayWidth(context),
           color: Colors.white,
-          child: (loadScreenForProfile! || loadScreenForEdititng!)
-              ? (loadScreenForProfile!)
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: displayHeight(context) * 0.2,
-                        ),
-                        Expanded(
-                            child: Image.asset('images/updateProfile.gif')),
-                        Expanded(
-                            child: Text(
-                          'Fetching your details',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black54,
-                              fontSize: displayWidth(context) * 0.05),
-                        )),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: displayHeight(context) * 0.2,
-                        ),
-                        Expanded(child: Image.asset('images/uploadPost.gif')),
-                        Expanded(
-                          child: Text(
-                            'Uploading image',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold,
-                                fontSize: displayWidth(context) * 0.05),
-                          ),
-                        ),
-                      ],
-                    )
+          child: (loadScreenForProfile!)
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: displayHeight(context) * 0.2,
+                    ),
+                    Expanded(child: Image.asset('images/updateProfile.gif')),
+                    Expanded(
+                        child: Text(
+                      'Fetching your details',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                          fontSize: displayWidth(context) * 0.05),
+                    )),
+                  ],
+                )
               : Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: SingleChildScrollView(
@@ -240,13 +182,37 @@ class _profiletScreenState extends State<profiletScreen> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: (myProfile.dp != '')
-                                            ? CachedNetworkImage(
-                                                imageUrl: myProfile.dp,
-                                                height: displayHeight(context) *
-                                                    0.0905,
-                                                width: displayWidth(context) *
-                                                    0.175,
-                                                fit: BoxFit.cover,
+                                            ? Hero(
+                                                tag: 'dp-tag',
+                                                child: Material(
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                viewDPorCP(
+                                                                    image:
+                                                                        myProfile
+                                                                            .dp,
+                                                                    tag:
+                                                                        'dp-tag',
+                                                                    title: myProfile
+                                                                        .title),
+                                                          ));
+                                                    },
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: myProfile.dp,
+                                                      height: displayHeight(
+                                                              context) *
+                                                          0.0905,
+                                                      width: displayWidth(
+                                                              context) *
+                                                          0.175,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
                                               )
                                             : Icon(
                                                 Icons.person,
@@ -265,21 +231,16 @@ class _profiletScreenState extends State<profiletScreen> {
                                     onPressed: () {
                                       showModalBottomSheet(
                                         context: context,
-                                        builder: (context) {
-                                          return Container(
-                                            height:
-                                                displayHeight(context) * 0.18,
-                                            width: displayWidth(context),
+                                        builder: (cnt) {
+                                          return SingleChildScrollView(
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
                                                 ListTile(
                                                   onTap: () async {
-                                                    pickImageForCoverPicture()
-                                                        .then((value) =>
-                                                            Navigator.pop(
-                                                                context));
+                                                    Navigator.pop(cnt);
+                                                    pickImage("CP");
                                                   },
                                                   tileColor: Colors.white,
                                                   title: Text(
@@ -296,10 +257,8 @@ class _profiletScreenState extends State<profiletScreen> {
                                                 ListTile(
                                                   tileColor: Colors.white,
                                                   onTap: () async {
-                                                    pickImageForProfilePicture()
-                                                        .then((value) =>
-                                                            Navigator.pop(
-                                                                context));
+                                                    Navigator.pop(context);
+                                                    pickImage("DP");
                                                   },
                                                   title: Text(
                                                     'Change Profile Picture',
@@ -354,60 +313,203 @@ class _profiletScreenState extends State<profiletScreen> {
                                   top: displayHeight(context) * 0.005,
                                   child: IconButton(
                                     iconSize: displayWidth(context) * 0.08,
-                                    icon: const Icon(Icons.logout),
+                                    icon: const Icon(Icons.settings),
                                     onPressed: () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return CupertinoAlertDialog(
-                                            //content: Text('Are you sure you want to sign-out ?'),
-                                            title: const Text('Logout'),
-                                            actions: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Center(
-                                                    child: TextButton(
-                                                  child: const Text(
-                                                    'No',
-                                                    style: TextStyle(
-                                                        color: Colors.black87),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                )),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Center(
-                                                    child: TextButton.icon(
-                                                  onPressed: () async {
-                                                    _auth
-                                                        .signOut()
-                                                        .then((value) {
-                                                      Navigator.pushReplacement(
+                                      await showModalBottomSheet(
+                                          context: context,
+                                          builder: (ctx) {
+                                            return SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  ListTile(
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
                                                             builder: (context) =>
-                                                                const authScreen(),
+                                                                editProfileScreen(
+                                                              user: myProfile,
+                                                            ),
                                                           ));
-                                                    });
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.logout,
-                                                    color: Colors.red,
+                                                    },
+                                                    title: const Text(
+                                                        'Edit Profile'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
                                                   ),
-                                                  label: const Text('Yes',
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.black87)),
-                                                )),
+                                                  ListTile(
+                                                    title: const Text(
+                                                        'Blocked Users'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                blockedUsersScreen(),
+                                                          ));
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    title: const Text(
+                                                        'About Wave'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const AboutWaveScreen(),
+                                                          ));
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    title: const Text(
+                                                        'User Policy'),
+                                                    visualDensity:
+                                                        const VisualDensity(
+                                                      horizontal: 0,
+                                                      vertical: -2,
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pop(ctx);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const policyScreen(),
+                                                          ));
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    onTap: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return CupertinoAlertDialog(
+                                                            //content: Text('Are you sure you want to sign-out ?'),
+                                                            title: const Text(
+                                                                'Logout'),
+                                                            actions: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            8.0),
+                                                                child: Center(
+                                                                    child:
+                                                                        TextButton(
+                                                                  child:
+                                                                      const Text(
+                                                                    'No',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black87),
+                                                                  ),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                )),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Center(
+                                                                    child:
+                                                                        TextButton
+                                                                            .icon(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    _auth
+                                                                        .signOut()
+                                                                        .then(
+                                                                            (value) {
+                                                                      Navigator.pushReplacement(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                const authScreen(),
+                                                                          ));
+                                                                    });
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .logout,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ),
+                                                                  label: const Text(
+                                                                      'Yes',
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.black87)),
+                                                                )),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    title: Center(
+                                                        child: Row(
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.logout,
+                                                          color: Colors.white,
+                                                        ),
+                                                        Opacity(
+                                                            opacity: 0.0,
+                                                            child:
+                                                                VerticalDivider(
+                                                              width: displayWidth(
+                                                                      context) *
+                                                                  0.01,
+                                                            )),
+                                                        Text(
+                                                          'Logout',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize:
+                                                                  displayWidth(
+                                                                          context) *
+                                                                      0.045),
+                                                        ),
+                                                      ],
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                    )),
+                                                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                                    textColor: Colors.white,
+                                                    tileColor: Colors.red[400],
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          );
-                                        },
-                                      );
+                                            );
+                                          });
                                     },
                                     color: Colors.white70,
                                   )),
@@ -415,58 +517,89 @@ class _profiletScreenState extends State<profiletScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0, top: 1),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, top: 1, right: 15),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                myProfile.username,
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: displayWidth(context) * 0.045,
-                                    fontWeight: FontWeight.bold),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    myProfile.username,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: displayWidth(context) * 0.045,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Opacity(
+                                      opacity: 0.0,
+                                      child: VerticalDivider(
+                                        width: displayWidth(context) * 0.015,
+                                      )),
+                                  (myProfile.followers.length >= 25)
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 1.5),
+                                          child: Icon(
+                                            Icons.verified,
+                                            color: Colors.orange[400],
+                                            size: displayWidth(context) * 0.048,
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
                               ),
-                              Opacity(
-                                  opacity: 0.0,
-                                  child: VerticalDivider(
-                                    width: displayWidth(context) * 0.015,
-                                  )),
-                              (myProfile.followers.length >= 25)
-                                  ? Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 1.5),
-                                      child: Icon(
-                                        Icons.verified,
-                                        color: Colors.orange[400],
-                                        size: displayWidth(context) * 0.048,
-                                      ),
-                                    )
-                                  : const SizedBox(),
+                              Text(
+                                myProfile.accountType,
+                                style: TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: displayWidth(context) * 0.04,
+                                    fontWeight: FontWeight.w600),
+                              )
                             ],
                           ),
                         ),
                         Opacity(
                           opacity: 0.0,
                           child: Divider(
-                            height: displayHeight(context) * 0.008,
+                            height: displayHeight(context) * 0.004,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0,right: 12),
+                          padding:
+                              const EdgeInsets.only(left: 15.0, right: 100),
                           child: (myProfile.bio != '')
                               ? Container(
                                   child: Text(
                                     myProfile.bio,
                                     style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: displayWidth(context)*0.035
-                                    ),
+                                        color: Colors.black87,
+                                        fontSize:
+                                            displayWidth(context) * 0.035),
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.clip,
                                   ),
                                 )
                               : const SizedBox(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 12),
+                          child: InkWell(
+                            onTap: () async {
+                              await openLink(myProfile.linkInBio);
+                            },
+                            child: Text(
+                              myProfile.linkInBio,
+                              style: TextStyle(
+                                fontSize: displayWidth(context) * 0.035,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.indigo,
+                              ),
+                            ),
+                          ),
                         ),
                         Opacity(
                           opacity: 0.0,
@@ -489,7 +622,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => FollowersScreen(
-                                          isThisMe: true,
+                                            isThisMe: true,
                                             allUsers:
                                                 Provider.of<manager>(context)
                                                     .fetchAllUsers,
@@ -828,6 +961,56 @@ class _profiletScreenState extends State<profiletScreen> {
                           padding: const EdgeInsets.all(8),
 
                           itemBuilder: (context, index) {
+                            var child;
+                            switch (posts[index].postType) {
+                              case "image":
+                                {
+                                  child = CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: posts[index].image);
+                                }
+                                break;
+                              case "video":
+                                {
+                                  child = Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(
+                                          color: Colors.black87,
+                                          width: displayWidth(context) * 0.001),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Image.asset(
+                                        'images/video_prev.png',
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                break;
+                              case "text":
+                                {
+                                  child = Container(
+                                    padding: EdgeInsets.all(12),
+                                    child: Center(
+                                        child: Text(
+                                      posts[index].caption,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 7,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize:
+                                              displayWidth(context) * 0.022),
+                                    )),
+                                  );
+                                }
+                                break;
+                              default:
+                                {}
+                                break;
+                            }
+
                             return InkWell(
                               onTap: () {},
                               child: Padding(
@@ -847,14 +1030,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   ),
                                                 ));
                                           },
-                                          child: CachedNetworkImage(
-                                              height:
-                                                  displayHeight(context) * 0.1,
-                                              width:
-                                                  displayWidth(context) * 0.3,
-                                              fit: BoxFit.cover,
-                                              imageUrl: posts[index].image),
-                                        )
+                                          child: child)
                                       : InkWell(
                                           onTap: () {
                                             Navigator.push(
@@ -867,16 +1043,7 @@ class _profiletScreenState extends State<profiletScreen> {
                                                   ),
                                                 ));
                                           },
-                                          child: CachedNetworkImage(
-                                              height:
-                                                  displayHeight(context) * 0.1,
-                                              width:
-                                                  displayWidth(context) * 0.3,
-                                              fit: BoxFit.cover,
-                                              imageUrl: savedPosts.values
-                                                  .toList()[index]
-                                                  .image),
-                                        ),
+                                          child: child),
                                 ),
                               ),
                             );

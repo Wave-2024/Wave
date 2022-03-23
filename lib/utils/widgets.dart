@@ -9,6 +9,7 @@ import 'package:nexus/models/userModel.dart';
 import 'package:nexus/providers/manager.dart';
 import 'package:nexus/screen/ProfileDetails/userProfile.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'devicesize.dart';
 
 Widget load(BuildContext context) {
@@ -392,5 +393,17 @@ Future<void> reportThisComment(String postId,String commentId,String report)asyn
     'commentId' : commentId,
   });
 }
+
+Future<void> openLink(String link)async{
+  try{
+    await launch(link);
+  }
+  catch(error){
+    rethrow;
+  }
+}
+
+
+
 
 

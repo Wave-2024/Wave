@@ -12,7 +12,6 @@ import 'package:nexus/utils/devicesize.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:nexus/utils/reportContainer.dart';
 import 'package:provider/provider.dart';
-
 import '../usersWhoLikedScreen.dart';
 
 class CommentScreenForMyPosts extends StatefulWidget {
@@ -92,10 +91,17 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ClipRRect(
+                  (postDetail!.postType=='text')?const SizedBox()
+                      :ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: CachedNetworkImage(
-                      imageUrl: postDetail!.image,
+                    child: (postDetail.postType=='video')?
+                    Image.asset('images/video_prev.png',
+                      height: displayHeight(context) * 0.15,
+                      width: displayWidth(context) * 0.28,
+                      fit: BoxFit.cover,
+                    )
+                        :CachedNetworkImage(
+                      imageUrl: postDetail.image,
                       height: displayHeight(context) * 0.15,
                       width: displayWidth(context) * 0.28,
                       fit: BoxFit.cover,

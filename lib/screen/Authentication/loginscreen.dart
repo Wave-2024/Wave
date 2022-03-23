@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/screen/Authentication/authscreen.dart';
-import 'package:nexus/screen/General/WelcomeScreen.dart';
 import 'package:nexus/screen/General/decideScreen.dart';
 import 'package:nexus/services/AuthService.dart';
 import 'package:nexus/utils/devicesize.dart';
@@ -17,9 +16,6 @@ class loginScreen extends StatefulWidget {
 
 class _loginScreenState extends State<loginScreen> {
   bool ispasswordhidden = true;
-  void _passwordstatus() {
-    ispasswordhidden = !ispasswordhidden;
-  }
   TextEditingController? email;
   TextEditingController? password;
   bool? isLoading;
@@ -95,7 +91,7 @@ class _loginScreenState extends State<loginScreen> {
                     decoration: const InputDecoration(
                       labelStyle: TextStyle(color: Colors.black),
                       labelText: "Email",
-                      hintText: "alpha77@yahoo.com",
+                      hintText: "example@example.com",
                     ),
                   ),
                 ),
@@ -251,7 +247,7 @@ class _loginScreenState extends State<loginScreen> {
                                               decoration: const InputDecoration(
                                                 labelText: "Email",
                                                 hintText:
-                                                    "officialwave@gmail.com",
+                                                    "example@example.com",
                                               ),
                                               controller: email,
                                               validator: (value) {

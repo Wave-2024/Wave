@@ -1,4 +1,6 @@
 class PostModel {
+  final String postType;
+  final String video;
   final String caption;
   final DateTime dateOfPost;
   final String image;
@@ -9,15 +11,16 @@ class PostModel {
 
   PostModel(
       {required this.caption,
-        required this.hiddenFrom,
+      required this.postType,
+      required this.video,
+      required this.hiddenFrom,
       required this.dateOfPost,
       required this.image,
       required this.uid,
       required this.post_id,
       required this.likes});
 
-  hideThisPostForMe(String myUid){
+  hideThisPostForMe(String myUid) {
     hiddenFrom.add(myUid);
   }
-
 }
