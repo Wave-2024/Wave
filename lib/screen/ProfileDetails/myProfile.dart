@@ -962,7 +962,9 @@ class _profiletScreenState extends State<profiletScreen> {
 
                           itemBuilder: (context, index) {
                             var child;
-                            switch (posts[index].postType) {
+                            switch (viewPosts
+                                ? posts[index].postType
+                                : savedPosts.values.toList()[index].postType) {
                               case "image":
                                 {
                                   child = CachedNetworkImage(
