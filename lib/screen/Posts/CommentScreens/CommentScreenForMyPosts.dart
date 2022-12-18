@@ -91,22 +91,24 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  (postDetail!.postType=='text')?const SizedBox()
-                      :ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: (postDetail.postType=='video')?
-                    Image.asset('images/video_prev.png',
-                      height: displayHeight(context) * 0.15,
-                      width: displayWidth(context) * 0.28,
-                      fit: BoxFit.cover,
-                    )
-                        :CachedNetworkImage(
-                      imageUrl: postDetail.image,
-                      height: displayHeight(context) * 0.15,
-                      width: displayWidth(context) * 0.28,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  (postDetail!.postType == 'text')
+                      ? const SizedBox()
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: (postDetail.postType == 'video')
+                              ? Image.asset(
+                                  'images/video_prev.png',
+                                  height: displayHeight(context) * 0.15,
+                                  width: displayWidth(context) * 0.28,
+                                  fit: BoxFit.cover,
+                                )
+                              : CachedNetworkImage(
+                                  imageUrl: postDetail.image,
+                                  height: displayHeight(context) * 0.15,
+                                  width: displayWidth(context) * 0.28,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                   const Opacity(opacity: 0.0, child: Divider()),
                   Container(
                     child: Text(
@@ -184,43 +186,53 @@ class _postDetailForMyPostsState extends State<CommentScreenForMyPosts> {
                                             builder: (context) {
                                               return CupertinoAlertDialog(
                                                 //content: Text('Are you sure you want to sign-out ?'),
-                                                title: const Text('Report comment ?'),
+                                                title: const Text(
+                                                    'Report comment ?'),
                                                 actions: [
                                                   Padding(
-                                                    padding: const EdgeInsets.all(8.0),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
-                                                          child: const Text(
-                                                            'No',
-                                                            style: TextStyle(
-                                                                color: Colors.black87),
-                                                          ),
-                                                          onPressed: () {
-                                                            Navigator.pop(context);
-                                                          },
-                                                        )),
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )),
                                                   ),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
-                                                          onPressed: () async {
-                                                            Navigator.pop(context);
-                                                            showModalBottomSheet(context: context, builder: (context){
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        showModalBottomSheet(
+                                                            context: context,
+                                                            builder: (context) {
                                                               return reportContainerForComment(
-                                                                myUid: myProfile.uid,
-                                                                postId: postDetail.post_id,
-                                                                commentId: commentId,
+                                                                myUid: myProfile
+                                                                    .uid,
+                                                                postId:
+                                                                    postDetail
+                                                                        .post_id,
+                                                                commentId:
+                                                                    commentId,
                                                               );
                                                             });
-                                                          },
-
-                                                          child: const Text('Yes',
-                                                              style: TextStyle(
-                                                                  color:
-                                                                  Colors.black87)),
-                                                        )),
+                                                      },
+                                                      child: const Text('Yes',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black87)),
+                                                    )),
                                                   ),
                                                 ],
                                               );

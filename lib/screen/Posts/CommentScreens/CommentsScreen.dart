@@ -31,6 +31,8 @@ class _postDetailScreenState extends State<CommentScreen> {
 
   @override
   void initState() {
+    print(widget.postId);
+    print(widget.postOwner!.title);
     currentUser = FirebaseAuth.instance.currentUser;
     commentController = TextEditingController();
     super.initState();
@@ -68,7 +70,7 @@ class _postDetailScreenState extends State<CommentScreen> {
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
               FocusManager.instance.primaryFocus?.unfocus();
-             await Provider.of<manager>(context, listen: false).commentOnPost(
+              await Provider.of<manager>(context, listen: false).commentOnPost(
                   currentUser!.uid,
                   widget.postOwner!.uid,
                   postDetail!.post_id,
@@ -78,10 +80,14 @@ class _postDetailScreenState extends State<CommentScreen> {
               });
             }
           },
-          userImage: (myProfile!.dp != '') ? myProfile.dp : constants().fetchDpUrl,
+          userImage:
+              (myProfile!.dp != '') ? myProfile.dp : constants().fetchDpUrl,
           commentController: commentController,
           labelText: "Your Comment",
-          sendWidget: Icon(Icons.send,color: Colors.orange[600],),
+          sendWidget: Icon(
+            Icons.send,
+            color: Colors.orange[600],
+          ),
           textColor: Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -90,22 +96,24 @@ class _postDetailScreenState extends State<CommentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  (postDetail!.postType=='text')?const SizedBox()
-                      :ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: (postDetail.postType=='video')?
-                    Image.asset('images/video_prev.png',
-                      height: displayHeight(context) * 0.15,
-                      width: displayWidth(context) * 0.28,
-                      fit: BoxFit.cover,
-                    )
-                        :CachedNetworkImage(
-                      imageUrl: postDetail.image,
-                      height: displayHeight(context) * 0.15,
-                      width: displayWidth(context) * 0.28,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  (postDetail!.postType == 'text')
+                      ? const SizedBox()
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: (postDetail.postType == 'video')
+                              ? Image.asset(
+                                  'images/video_prev.png',
+                                  height: displayHeight(context) * 0.15,
+                                  width: displayWidth(context) * 0.28,
+                                  fit: BoxFit.cover,
+                                )
+                              : CachedNetworkImage(
+                                  imageUrl: postDetail.image,
+                                  height: displayHeight(context) * 0.15,
+                                  width: displayWidth(context) * 0.28,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                   const Opacity(opacity: 0.0, child: Divider()),
                   Container(
                     child: Text(
@@ -154,7 +162,6 @@ class _postDetailScreenState extends State<CommentScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
-
                                     String comment = snapshot.data.docs[index]
                                         .data()['comment'];
                                     Timestamp timeStamp = snapshot
@@ -172,7 +179,8 @@ class _postDetailScreenState extends State<CommentScreen> {
                                             .data()['likes'] ??
                                         [];
                                     String commentId = snapshot.data.docs[index]
-                                        .data()['commentId']??'';
+                                            .data()['commentId'] ??
+                                        '';
                                     return Padding(
                                       padding:
                                           const EdgeInsets.only(bottom: 12.0),
@@ -183,43 +191,53 @@ class _postDetailScreenState extends State<CommentScreen> {
                                             builder: (context) {
                                               return CupertinoAlertDialog(
                                                 //content: Text('Are you sure you want to sign-out ?'),
-                                                title: const Text('Report comment ?'),
+                                                title: const Text(
+                                                    'Report comment ?'),
                                                 actions: [
                                                   Padding(
-                                                    padding: const EdgeInsets.all(8.0),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
-                                                          child: const Text(
-                                                            'No',
-                                                            style: TextStyle(
-                                                                color: Colors.black87),
-                                                          ),
-                                                          onPressed: () {
-                                                            Navigator.pop(context);
-                                                          },
-                                                        )),
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )),
                                                   ),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Center(
                                                         child: TextButton(
-                                                          onPressed: () async {
-                                                            Navigator.pop(context);
-                                                            showModalBottomSheet(context: context, builder: (context){
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        showModalBottomSheet(
+                                                            context: context,
+                                                            builder: (context) {
                                                               return reportContainerForComment(
-                                                                myUid: myProfile.uid,
-                                                                postId: postDetail.post_id,
-                                                                commentId: commentId,
+                                                                myUid: myProfile
+                                                                    .uid,
+                                                                postId:
+                                                                    postDetail
+                                                                        .post_id,
+                                                                commentId:
+                                                                    commentId,
                                                               );
                                                             });
-                                                          },
-
-                                                          child: const Text('Yes',
-                                                              style: TextStyle(
-                                                                  color:
-                                                                  Colors.black87)),
-                                                        )),
+                                                      },
+                                                      child: const Text('Yes',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black87)),
+                                                    )),
                                                   ),
                                                 ],
                                               );

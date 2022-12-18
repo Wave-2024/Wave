@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nexus/utils/devicesize.dart';
-class viewDPorCP extends StatelessWidget {
- final String? image;
- final String? title;
- final String? tag;
 
- viewDPorCP({this.tag,this.image,this.title});
+class viewDPorCP extends StatelessWidget {
+  final String? image;
+  final String? title;
+  final String? tag;
+
+  viewDPorCP({this.tag, this.image, this.title});
 
   @override
   Widget build(BuildContext context) {

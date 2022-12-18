@@ -9,6 +9,7 @@ import 'package:nexus/screen/Chat/inboxScreen.dart';
 import 'package:nexus/screen/Posts/view/viewYourPosts.dart';
 import 'package:nexus/screen/ProfileDetails/FollowersScreen.dart';
 import 'package:nexus/screen/ProfileDetails/FollowingScreen.dart';
+import 'package:nexus/screen/ProfileDetails/viewDPorCP.dart';
 import 'package:nexus/utils/devicesize.dart';
 import 'package:nexus/utils/widgets.dart';
 import 'package:provider/provider.dart';
@@ -119,7 +120,6 @@ class _userProfileState extends State<userProfile> {
                           Container(
                             height: displayHeight(context) * 0.28,
                             width: displayWidth(context),
-                            //color: Colors.pink,
                             child: Stack(
                               alignment: Alignment.center,
                               fit: StackFit.expand,
@@ -171,14 +171,37 @@ class _userProfileState extends State<userProfile> {
                                           borderRadius:
                                               BorderRadius.circular(12),
                                           child: (thisProfile.dp != '')
-                                              ? CachedNetworkImage(
-                                                  imageUrl: thisProfile.dp,
-                                                  height:
-                                                      displayHeight(context) *
-                                                          0.0905,
-                                                  width: displayWidth(context) *
-                                                      0.175,
-                                                  fit: BoxFit.cover,
+                                              ? Hero(
+                                                  tag: 'dp-tag',
+                                                  child: Material(
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => viewDPorCP(
+                                                                  image:
+                                                                      thisProfile
+                                                                          .dp,
+                                                                  tag: 'dp-tag',
+                                                                  title:
+                                                                      thisProfile
+                                                                          .title),
+                                                            ));
+                                                      },
+                                                      child: CachedNetworkImage(
+                                                        imageUrl:
+                                                            thisProfile.dp,
+                                                        height: displayHeight(
+                                                                context) *
+                                                            0.0905,
+                                                        width: displayWidth(
+                                                                context) *
+                                                            0.175,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 )
                                               : Padding(
                                                   padding: const EdgeInsets.all(
@@ -395,7 +418,9 @@ class _userProfileState extends State<userProfile> {
                                                         fit: BoxFit.fill,
                                                       ),
                                                       Text(
-                                                          (haveIBlocked)?'Unblock':'Block',
+                                                        (haveIBlocked)
+                                                            ? 'Unblock'
+                                                            : 'Block',
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.black87,
@@ -428,7 +453,8 @@ class _userProfileState extends State<userProfile> {
                                       thisProfile.username,
                                       style: TextStyle(
                                           color: Colors.black87,
-                                          fontSize: displayWidth(context) * 0.045,
+                                          fontSize:
+                                              displayWidth(context) * 0.045,
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Opacity(
@@ -438,14 +464,15 @@ class _userProfileState extends State<userProfile> {
                                         )),
                                     (thisProfile.followers.length >= 25)
                                         ? Padding(
-                                      padding: const EdgeInsets.only(
-                                          bottom: 1.5),
-                                      child: Icon(
-                                        Icons.verified,
-                                        color: Colors.orange[400],
-                                        size: displayWidth(context) * 0.048,
-                                      ),
-                                    )
+                                            padding: const EdgeInsets.only(
+                                                bottom: 1.5),
+                                            child: Icon(
+                                              Icons.verified,
+                                              color: Colors.orange[400],
+                                              size:
+                                                  displayWidth(context) * 0.048,
+                                            ),
+                                          )
                                         : const SizedBox(),
                                   ],
                                 ),
@@ -466,32 +493,37 @@ class _userProfileState extends State<userProfile> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15.0, right: 100),
+                            padding:
+                                const EdgeInsets.only(left: 15.0, right: 100),
                             child: (thisProfile.bio != '')
                                 ? Container(
-                              child: Text(
-                                thisProfile.bio,
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize:
-                                    displayWidth(context) * 0.035),
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.clip,
-                              ),
-                            )
+                                    child: Text(
+                                      thisProfile.bio,
+                                      style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize:
+                                              displayWidth(context) * 0.035),
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                  )
                                 : const SizedBox(),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15.0, right: 12),
+                            padding:
+                                const EdgeInsets.only(left: 15.0, right: 12),
                             child: InkWell(
-                              onTap: ()async {
+                              onTap: () async {
                                 await openLink(thisProfile.linkInBio);
                               },
-                              child: Text(thisProfile.linkInBio,style: TextStyle(
-                                fontSize: displayWidth(context)*0.035,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.indigo,
-                              ),),
+                              child: Text(
+                                thisProfile.linkInBio,
+                                style: TextStyle(
+                                  fontSize: displayWidth(context) * 0.035,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.indigo,
+                                ),
+                              ),
                             ),
                           ),
                           Opacity(
@@ -778,7 +810,6 @@ class _userProfileState extends State<userProfile> {
                               child: Divider(
                                 height: displayHeight(context) * 0.01,
                               )),
-
                           (haveIBlocked || haveTheyBlocked)
                               ? const Padding(
                                   padding: EdgeInsets.only(top: 50.0),

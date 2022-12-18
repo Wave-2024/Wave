@@ -392,8 +392,7 @@ class _feedScreenState extends State<feedScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          CommentScreenForMyPosts(
+                                      builder: (context) => CommentScreen(
                                         postOwner: user,
                                         postId: post.post_id,
                                       ),
@@ -548,7 +547,7 @@ class _feedScreenState extends State<feedScreen> {
                                           color: Colors.orange,
                                           fontWeight: FontWeight.w400,
                                           fontSize:
-                                              displayWidth(context) * 0.069),
+                                              displayWidth(context) * 0.06),
                                     )),
                               ),
                               GestureDetector(
@@ -577,7 +576,7 @@ class _feedScreenState extends State<feedScreen> {
                         ),
                       ),
                       Container(
-                        height: displayHeight(context) * 0.82,
+                        height: displayHeight(context) * 0.81,
                         width: displayWidth(context),
                         child: SingleChildScrollView(
                           child: Column(
