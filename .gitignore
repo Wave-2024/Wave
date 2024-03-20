@@ -37,7 +37,7 @@ lib/generated_plugin_registrant.dart
 lib/utils/constants.dart
 lib/utils/Encrypt_Message.dart
 lib/utils/password.txt
-android/app/google-services.json
+#android/app/google-services.json
 
 # Symbolication related
 app.*.symbols
