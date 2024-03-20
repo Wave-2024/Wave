@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "637608151880",
+    "project_id": "wave-dev-42598",
+    "storage_bucket": "wave-dev-42598.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637608151880:android:f001b8bcc31ab3c19f417d",
+        "android_client_info": {
+          "package_name": "com.starcoding.wave"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNJosx7KqYLqDSJH9KVpkM4DRArzOnm94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
