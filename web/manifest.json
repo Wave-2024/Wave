@@ -1,6 +1,6 @@
 {
-    "name": "nexus",
-    "short_name": "nexus",
+    "name": "wave",
+    "short_name": "wave",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
