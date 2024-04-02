@@ -40,6 +40,7 @@ dependencies:
     sdk: flutter
   flutter_image_compress: ^2.2.0
   flutter_slidable: ^3.1.0
+  get: ^4.6.6
   icons_plus: ^5.0.0
   image_cropper: ^5.0.1
   image_picker: ^1.0.7
@@ -54,12 +55,6 @@ dependencies:
   video_player: ^2.8.3
 
 dev_dependencies:
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
