@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:get/route_manager.dart';
+import 'package:wave/utils/routing.dart';
 import 'view/screens/Authentication/login_screen.dart';
 
 Future<void> main() async {
@@ -14,6 +15,9 @@ class Wave extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(home: LoginScreen());
+    return  GetMaterialApp(
+      getPages: AppRoutes.routes,
+      initialRoute: AppRoutes.loginScreen,
+      );
   }
 }
