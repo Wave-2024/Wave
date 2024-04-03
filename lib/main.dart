@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/route_manager.dart';
+import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/utils/routing.dart';
-import 'view/screens/Authentication/login_screen.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +16,16 @@ class Wave extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  GetMaterialApp(
-      getPages: AppRoutes.routes,
-      initialRoute: AppRoutes.loginScreen,
-      );
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthScreenController(),
+        )
+      ],
+      child: GetMaterialApp(
+        getPages: AppRoutes.routes,
+        initialRoute: AppRoutes.loginScreen,
+      ),
+    );
   }
 }

@@ -1,19 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class AuthService {
-
   final FirebaseAuth _auth;
 
   AuthService(this._auth);
-
 
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-
 
   Future<dynamic> signIn(
       {required String email, required String password}) async {
@@ -22,7 +18,7 @@ class AuthService {
           email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      return e;
     }
   }
 
@@ -36,7 +32,7 @@ class AuthService {
       await userCredential.user!.sendEmailVerification();
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      return e;
     }
   }
 
