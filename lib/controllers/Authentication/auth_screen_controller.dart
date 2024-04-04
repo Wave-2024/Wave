@@ -39,17 +39,19 @@ class AuthScreenController extends ChangeNotifier {
       required FirebaseAuth firebaseAuth}) async {
     registerState = REGISTER.CREATING;
     await Future.delayed(Duration.zero);
+    notifyListeners();
     var auth = AuthService(firebaseAuth);
     var authResponse = await auth.signUp(email: email, password: password);
     // Successful sign up
     if (authResponse.runtimeType == UserCredential) {
       registerState = REGISTER.IDLE;
+      notifyListeners();
       return Response(responseStatus: true, response: authResponse);
     }
     // Sign up failed
     else {
       registerState = REGISTER.IDLE;
-
+      notifyListeners();
       return Response(responseStatus: false, response: authResponse);
     }
   }
