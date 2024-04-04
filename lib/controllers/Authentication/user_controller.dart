@@ -7,12 +7,26 @@ class UserController extends ChangeNotifier {
   User? user;
   USER userState = USER.ABSENT;
 
-  Future<void> setUser({required String userID}) async {
+  Future<void> setUser({String? userID, User? user}) async {
+    if (userState != USER.LOADING) {
+      userState = USER.LOADING;
+    }
+    await Future.delayed(Duration.zero);
+    notifyListeners();
+    if (userID != null) {
+      this.user = await UserData.getUser(userID: userID);
+      userState = USER.PRESENT;
+    } else {
+      this.user = user!;
+    }
+    notifyListeners();
+  }
+
+  Future<void> createUser({required User user}) async {
     userState = USER.LOADING;
     await Future.delayed(Duration.zero);
     notifyListeners();
-    user = await UserData.getUser(userID: userID);
-    userState = USER.PRESENT;
-    notifyListeners();
+    await UserData.createUser(user: user);
+    await setUser(user: user);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart' as res;
+import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
@@ -110,25 +111,49 @@ class RegisterScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                       height: 50,
                       onPressed: () async {
+                        // Try to register 
                         res.Response registrationResponse =
                             await authController.startRegistrationProcess(
                                 email: emailController.text,
                                 password: passwordController.text,
-                                firebaseAuth: FirebaseAuth.instance);
+                                firebaseAuth: fb.FirebaseAuth.instance);
+
+                        // If registration is successful
                         if (registrationResponse.responseStatus) {
-                          UserCredential userCredential =
-                              registrationResponse.response as UserCredential;
-                          await userController.setUser(
-                              userID: userCredential.user!.uid);
+                          fb.UserCredential userCredential =
+                              registrationResponse.response
+                                  as fb.UserCredential;
+                          User currentUser = User(
+                              name: nameController.text,
+                              email: emailController.text,
+                              displayPicture: "",
+                              bio: "",
+                              messages: [],
+                              savedPosts: [],
+                              url: "",
+                              following: [],
+                              followers: [],
+                              posts: [],
+                              id: userCredential.user!.uid,
+                              username: "",
+                              stories: [],
+                              blocked: [],
+                              coverPicture: "");
+                          await userController.createUser(user: currentUser);
+
                           Get.showSnackbar(GetSnackBar(
+                            duration: const Duration(seconds: 2),
                             backgroundColor: Colors.green,
                             borderRadius: 5,
-                            message: userCredential.user!.email.toString(),
+                            message: userController.user!.name,
                           ));
-                        } else {
+                        } 
+                        // If registration failed 
+                        else {
                           Get.showSnackbar(GetSnackBar(
                             backgroundColor: errorColor,
                             borderRadius: 5,
+                            duration: const Duration(seconds: 2),
                             message: registrationResponse.response.message
                                 .toString(),
                           ));
