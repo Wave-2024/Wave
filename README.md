@@ -54,4 +54,4 @@ with all your source code CLEARLY DISCLOSED on any code hosting platform like Gi
 how to obtain the original software, should clearly STATE ALL CHANGES made and should RETAIN all copyrights.
 Use of this software under any "non-free" license is NOT permitted.
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License (AGPL). See the [LICENSE](LICENSE) file for details.
