@@ -79,6 +79,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         elevation: 2,
                         child: AuthTextField(
+                          uniqueKey: keyForEmailTextFieldLogin,
                             controller: emailController,
                             label: "Email",
                             visible: true,
@@ -102,6 +103,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         elevation: 2,
                         child: AuthTextField(
+                          uniqueKey: keyForPasswordTextFieldLogin,
                             controller: passwordController,
                             label: "Password",
                             visible: false,
@@ -179,6 +181,7 @@ class LoginScreen extends StatelessWidget {
                               color: primaryButtonColor,
                               child: authController.loginState == LOGIN.IDLE
                                   ? Text(
+                                    key: Key(keyForLoginButton),
                                       "Login",
                                       style: TextStyle(
                                           fontFamily: poppins,
