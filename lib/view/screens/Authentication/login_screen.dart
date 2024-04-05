@@ -252,7 +252,7 @@ class LoginScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Don't hove an occount?",
+                              "Don't have an account?",
                               style: TextStyle(
                                   fontFamily: poppins, color: Colors.black),
                             ),

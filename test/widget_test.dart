@@ -1,30 +1,78 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:wave/main.dart';
+import 'package:provider/provider.dart';
+import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/view/screens/Authentication/login_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Login screen should render widgets', (WidgetTester tester) async {
+    // Wrap the LoginScreen widget with MultiProvider containing the required providers
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+          create: (context) => AuthScreenController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserController(),
+        ),
+        ],
+        child: MaterialApp(
+          home: LoginScreen(),
+        ),
+      ),
+    );
+
+    // Test widget rendering
+    expect(find.text('Login'), findsAtLeast(1));
+    expect(find.text('Email'), findsAtLeast(1));
+    expect(find.text('Password'), findsAtLeast(1));
+    expect(find.text('Forgot Password?'), findsAtLeast(1));
+    expect(find.text('Login with Google'), findsAtLeast(1));
+    expect(find.text('Don\'t have an account?'), findsAtLeast(1));
+    expect(find.text('Register Now'), findsAtLeast(1));
+  });
+
+  testWidgets('Login screen form validation', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const Wave());
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+          create: (context) => AuthScreenController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserController(),
+        ),
+        ],
+        child: MaterialApp(
+          home: LoginScreen(),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Find text fields and submit button
+    final emailField = find.byKey(Key('email_field'));
+    final passwordField = find.byKey(Key('password_field'));
+    final loginButton = find.text('Login');
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Invalid email and password
+    await tester.enterText(emailField, 'invalid-email');
+    await tester.enterText(passwordField, '');
+    await tester.tap(loginButton);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Enter a valid email address'), findsOneWidget);
+    expect(find.text('Password is required'), findsOneWidget);
+
+    // Valid email and password
+    await tester.enterText(emailField, 'valid-email@example.com');
+    await tester.enterText(passwordField, 'valid-password');
+    await tester.tap(loginButton);
+    await tester.pump();
+
+    expect(find.text('Enter a valid email address'), findsNothing);
+    expect(find.text('Password is required'), findsNothing);
   });
 }
