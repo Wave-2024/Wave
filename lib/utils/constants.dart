@@ -22,3 +22,9 @@ final String primaryLogo = "assets/logo/primaryLogo.png";
 // DB constants
 
 var database = FirebaseFirestore.instance.collection("users");
+
+// Keys
+
+final String keyForPasswordTextFieldLogin = "keyForPasswordTextFieldLogin";
+final String keyForEmailTextFieldLogin = "keyForEmailTextFieldLogin";
+final String keyForLoginButton = "keyForLoginButton";

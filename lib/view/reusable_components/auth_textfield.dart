@@ -8,7 +8,9 @@ class AuthTextField extends StatelessWidget {
   final Icon prefixIcon;
   final suffixIcon;
   int? maxLength;
+  String? uniqueKey;
   bool? readOnly;
+
   String? Function(String?)? validator;
 
   AuthTextField(
@@ -19,11 +21,13 @@ class AuthTextField extends StatelessWidget {
       required this.prefixIcon,
       this.suffixIcon,
       this.maxLength,
+      this.uniqueKey,
       required this.validator});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: Key(uniqueKey!),
       readOnly: readOnly ?? false,
       controller: controller,
       validator: validator,
