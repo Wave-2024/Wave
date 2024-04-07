@@ -28,7 +28,7 @@ class Wave extends StatelessWidget {
       ],
       child: GetMaterialApp(
         getPages: AppRoutes.routes,
-        initialRoute: AppRoutes.loginScreen,
+        initialRoute: AppRoutes.splashScreen,
       ),
     );
   }
