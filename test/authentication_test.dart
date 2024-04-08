@@ -5,21 +5,21 @@ import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/utils/constants.dart';
 import 'package:wave/view/screens/Authentication/login_screen.dart';
+import 'package:wave/view/screens/Authentication/register_screen.dart';
 
 void main() {
-
-
-  testWidgets('Login screen should render widgets', (WidgetTester tester) async {
+  testWidgets('Login screen should render widgets',
+      (WidgetTester tester) async {
     // Wrap the LoginScreen widget with MultiProvider containing the required providers
     await tester.pumpWidget(
       MultiProvider(
         providers: [
           ChangeNotifierProvider(
-          create: (context) => AuthScreenController(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UserController(),
-        ),
+            create: (context) => AuthScreenController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => UserController(),
+          ),
         ],
         child: MaterialApp(
           home: LoginScreen(),
@@ -43,11 +43,11 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(
-          create: (context) => AuthScreenController(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UserController(),
-        ),
+            create: (context) => AuthScreenController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => UserController(),
+          ),
         ],
         child: MaterialApp(
           home: LoginScreen(),
@@ -56,8 +56,9 @@ void main() {
     );
 
     // Find text fields and submit button
-    final loginEmailTextField = find.byKey( Key(keyForEmailTextFieldLogin));
-    final loginPasswordTextField = find.byKey(Key(keyForPasswordTextFieldLogin));
+    final loginEmailTextField = find.byKey(Key(keyForEmailTextFieldLogin));
+    final loginPasswordTextField =
+        find.byKey(Key(keyForPasswordTextFieldLogin));
     final loginButton = find.byKey(Key(keyForLoginButton));
 
     // Invalid email and password
@@ -68,6 +69,42 @@ void main() {
 
     expect(find.text('Enter a valid email address'), findsOneWidget);
     expect(find.text('Password is required'), findsOneWidget);
+  });
 
+  testWidgets('Register screen form validation test',
+      (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => AuthScreenController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => UserController(),
+          ),
+        ],
+        child: MaterialApp(
+          home: RegisterScreen(),
+        ),
+      ),
+    );
+
+    // Find text fields and submit button
+    final nameTextField = find.byKey(Key(keyForNameBoxRegister));
+    final emailTextField = find.byKey(Key(keyForEmailTextFieldRegister));
+    final passwordTextField = find.byKey(Key(keyForPasswordTextFieldRegister));
+    final registerButton = find.byKey(Key(keyForRegisterButton));
+
+    // Invalid email and password
+    await tester.enterText(nameTextField, '');
+    await tester.enterText(emailTextField, '');
+    await tester.enterText(passwordTextField, '');
+    await tester.tap(registerButton);
+    await tester.pump();
+
+    expect(find.text('Name cannot be empty'), findsOneWidget);
+    expect(find.text('Email is required'), findsOneWidget);
+    expect(find.text('Password is required'), findsOneWidget);
   });
 }

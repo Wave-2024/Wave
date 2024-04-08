@@ -52,6 +52,7 @@ class RegisterScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   elevation: 1,
                   child: AuthTextField(
+                      uniqueKey: keyForNameBoxRegister,
                       controller: nameController,
                       label: "Name",
                       visible: true,
@@ -71,6 +72,7 @@ class RegisterScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   elevation: 1,
                   child: AuthTextField(
+                      uniqueKey: keyForEmailTextFieldRegister,
                       controller: emailController,
                       label: "Email",
                       visible: true,
@@ -93,6 +95,7 @@ class RegisterScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   elevation: 1,
                   child: AuthTextField(
+                      uniqueKey: keyForPasswordTextFieldRegister,
                       controller: passwordController,
                       label: "Password",
                       visible: false,
@@ -118,6 +121,7 @@ class RegisterScreen extends StatelessWidget {
                   child: Consumer2<AuthScreenController, UserController>(
                     builder: (context, authController, userController, child) {
                       return MaterialButton(
+                        key: Key(keyForRegisterButton),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)),
                         height: 50,
