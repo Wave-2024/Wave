@@ -28,3 +28,8 @@ var database = FirebaseFirestore.instance.collection("users");
 final String keyForPasswordTextFieldLogin = "keyForPasswordTextFieldLogin";
 final String keyForEmailTextFieldLogin = "keyForEmailTextFieldLogin";
 final String keyForLoginButton = "keyForLoginButton";
+final String keyForNameBoxRegister = "keyForNameBoxRegister";
+final String keyForEmailTextFieldRegister = "keyForEmailTextFieldRegister";
+final String keyForPasswordTextFieldRegister =
+    "keyForPasswordTextFieldRegister";
+final String keyForRegisterButton = "keyForRegisterButton";
