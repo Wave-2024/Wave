@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/route_manager.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,10 @@ class Wave extends StatelessWidget {
           create: (context) => AuthScreenController(),
         ),
         ChangeNotifierProvider(
-          create: (context) => UserController(),
+          create: (context) => UserDataController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeNavController(),
         ),
       ],
       child: GetMaterialApp(

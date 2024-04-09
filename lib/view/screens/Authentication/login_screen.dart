@@ -79,7 +79,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         elevation: 2,
                         child: AuthTextField(
-                          uniqueKey: keyForEmailTextFieldLogin,
+                            uniqueKey: keyForEmailTextFieldLogin,
                             controller: emailController,
                             label: "Email",
                             visible: true,
@@ -103,7 +103,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         elevation: 2,
                         child: AuthTextField(
-                          uniqueKey: keyForPasswordTextFieldLogin,
+                            uniqueKey: keyForPasswordTextFieldLogin,
                             controller: passwordController,
                             label: "Password",
                             visible: false,
@@ -133,7 +133,7 @@ class LoginScreen extends StatelessWidget {
                       const SizedBox(
                         height: 25,
                       ),
-                      Consumer2<AuthScreenController, UserController>(
+                      Consumer2<AuthScreenController, UserDataController>(
                         builder:
                             (context, authController, userController, child) {
                           return SizedBox(
@@ -165,6 +165,8 @@ class LoginScreen extends StatelessWidget {
                                       title: "Login Success",
                                       message: userController.user!.name,
                                     ));
+                                    Get.toNamed(AppRoutes.homeNavigationScreen,
+                                        parameters: {'screenIndex': '0'});
                                   }
                                   // Login failed
                                   else {
@@ -181,7 +183,7 @@ class LoginScreen extends StatelessWidget {
                               color: primaryButtonColor,
                               child: authController.loginState == LOGIN.IDLE
                                   ? Text(
-                                    key: Key(keyForLoginButton),
+                                      key: Key(keyForLoginButton),
                                       "Login",
                                       style: TextStyle(
                                           fontFamily: poppins,

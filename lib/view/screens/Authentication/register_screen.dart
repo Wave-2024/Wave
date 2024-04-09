@@ -105,11 +105,14 @@ class RegisterScreen extends StatelessWidget {
                           return 'Password is required';
                         } else if (password.length < 6) {
                           return 'Password must be at least 6 characters long';
-                        } else if (!RegExp(
-                                r'^(?=.*[a-zA-Z].*[a-zA-Z])(?=.*\d.*\d)(?=.*[^a-zA-Z0-9].*[^a-zA-Z0-9]).{6,}$')
-                            .hasMatch(password)) {
-                          return 'Password must contain at least 2 alphabets, 2 digits, and 2 special characters';
                         }
+                        // The below code is commented only for smooth and faster dev process . Add it before production
+
+                        // else if (!RegExp(
+                        //         r'^(?=.*[a-zA-Z].*[a-zA-Z])(?=.*\d.*\d)(?=.*[^a-zA-Z0-9].*[^a-zA-Z0-9]).{6,}$')
+                        //     .hasMatch(password)) {
+                        //   return 'Password must contain at least 2 alphabets, 2 digits, and 2 special characters';
+                        // }
                         return null;
                       }),
                 ),
@@ -118,7 +121,7 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: Consumer2<AuthScreenController, UserController>(
+                  child: Consumer2<AuthScreenController, UserDataController>(
                     builder: (context, authController, userController, child) {
                       return MaterialButton(
                         key: Key(keyForRegisterButton),
