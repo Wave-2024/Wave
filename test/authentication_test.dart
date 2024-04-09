@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
-import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/keys.dart';
 import 'package:wave/view/screens/Authentication/login_screen.dart';
 import 'package:wave/view/screens/Authentication/register_screen.dart';
 
@@ -27,10 +27,11 @@ void main() {
     );
 
     // Find text fields and submit button
-    final loginEmailTextField = find.byKey(Key(keyForEmailTextFieldLogin));
+    final loginEmailTextField =
+        find.byKey(const Key(Keys.keyForEmailTextFieldLogin));
     final loginPasswordTextField =
-        find.byKey(Key(keyForPasswordTextFieldLogin));
-    final loginButton = find.byKey(Key(keyForLoginButton));
+        find.byKey(const Key(Keys.keyForPasswordTextFieldLogin));
+    final loginButton = find.byKey(const Key(Keys.keyForLoginButton));
 
     // Invalid email and password
     await tester.enterText(loginEmailTextField, 'invalidgmail');
@@ -62,10 +63,12 @@ void main() {
     );
 
     // Find text fields and submit button
-    final nameTextField = find.byKey(Key(keyForNameBoxRegister));
-    final emailTextField = find.byKey(Key(keyForEmailTextFieldRegister));
-    final passwordTextField = find.byKey(Key(keyForPasswordTextFieldRegister));
-    final registerButton = find.byKey(Key(keyForRegisterButton));
+    final nameTextField = find.byKey(const Key(Keys.keyForNameBoxRegister));
+    final emailTextField =
+        find.byKey(const Key(Keys.keyForEmailTextFieldRegister));
+    final passwordTextField =
+        find.byKey(const Key(Keys.keyForPasswordTextFieldRegister));
+    final registerButton = find.byKey(const Key(Keys.keyForRegisterButton));
 
     // Empty name, email, and password
     await tester.enterText(nameTextField, '');

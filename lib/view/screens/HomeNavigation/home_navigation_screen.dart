@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
 import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/keys.dart';
 
 class HomeNavigationScreen extends StatelessWidget {
   const HomeNavigationScreen({super.key});
@@ -14,6 +15,7 @@ class HomeNavigationScreen extends StatelessWidget {
         bottomNavigationBar: Consumer<HomeNavController>(
           builder: (context, homeNavController, child) {
             return BottomNavigationBar(
+                key: Key(Keys.keyForBottomNavButton),
                 onTap: (newScreenIndex) {
                   homeNavController.setCurrentScreenIndex(newScreenIndex);
                 },
@@ -28,6 +30,7 @@ class HomeNavigationScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Image.asset(
                           exploreIcon,
+                          key: const Key(Keys.keyForExploreIcon),
                           color: (homeNavController.currentScreenIndex == 0)
                               ? primaryColor
                               : null,
@@ -40,6 +43,7 @@ class HomeNavigationScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Image.asset(
                           searchIcon,
+                          key: const Key(Keys.keyForSearchIcon),
                           color: (homeNavController.currentScreenIndex == 1)
                               ? primaryColor
                               : null,
@@ -52,6 +56,7 @@ class HomeNavigationScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Image.asset(
                           addPostIcon,
+                          key: const Key(Keys.keyForAddPostIcon),
                           color: (homeNavController.currentScreenIndex == 2)
                               ? primaryColor
                               : null,
@@ -64,6 +69,7 @@ class HomeNavigationScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Image.asset(
                           chatIcon,
+                          key: const Key(Keys.keyForChatIcon),
                           color: (homeNavController.currentScreenIndex == 3)
                               ? primaryColor
                               : null,
@@ -76,6 +82,7 @@ class HomeNavigationScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Image.asset(
                           profileIcon,
+                          key: const Key(Keys.keyForProfileIcon),
                           color: (homeNavController.currentScreenIndex == 4)
                               ? primaryColor
                               : null,

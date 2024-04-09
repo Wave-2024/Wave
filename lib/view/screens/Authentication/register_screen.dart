@@ -10,6 +10,7 @@ import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
+import 'package:wave/utils/keys.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -52,7 +53,7 @@ class RegisterScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   elevation: 1,
                   child: AuthTextField(
-                      uniqueKey: keyForNameBoxRegister,
+                      uniqueKey: Keys.keyForNameBoxRegister,
                       controller: nameController,
                       label: "Name",
                       visible: true,
@@ -72,7 +73,7 @@ class RegisterScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   elevation: 1,
                   child: AuthTextField(
-                      uniqueKey: keyForEmailTextFieldRegister,
+                      uniqueKey: Keys.keyForEmailTextFieldRegister,
                       controller: emailController,
                       label: "Email",
                       visible: true,
@@ -95,7 +96,7 @@ class RegisterScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   elevation: 1,
                   child: AuthTextField(
-                      uniqueKey: keyForPasswordTextFieldRegister,
+                      uniqueKey: Keys.keyForPasswordTextFieldRegister,
                       controller: passwordController,
                       label: "Password",
                       visible: false,
@@ -124,7 +125,7 @@ class RegisterScreen extends StatelessWidget {
                   child: Consumer2<AuthScreenController, UserDataController>(
                     builder: (context, authController, userController, child) {
                       return MaterialButton(
-                        key: Key(keyForRegisterButton),
+                        key: Key(Keys.keyForRegisterButton),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)),
                         height: 50,

@@ -9,6 +9,7 @@ import 'package:wave/models/response_model.dart' as res;
 import 'package:wave/utils/constants.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
+import 'package:wave/utils/keys.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
 
@@ -79,7 +80,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         elevation: 2,
                         child: AuthTextField(
-                            uniqueKey: keyForEmailTextFieldLogin,
+                            uniqueKey: Keys.keyForEmailTextFieldLogin,
                             controller: emailController,
                             label: "Email",
                             visible: true,
@@ -103,7 +104,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         elevation: 2,
                         child: AuthTextField(
-                            uniqueKey: keyForPasswordTextFieldLogin,
+                            uniqueKey: Keys.keyForPasswordTextFieldLogin,
                             controller: passwordController,
                             label: "Password",
                             visible: false,
@@ -183,7 +184,7 @@ class LoginScreen extends StatelessWidget {
                               color: primaryButtonColor,
                               child: authController.loginState == LOGIN.IDLE
                                   ? Text(
-                                      key: Key(keyForLoginButton),
+                                      key: const Key(Keys.keyForLoginButton),
                                       "Login",
                                       style: TextStyle(
                                           fontFamily: poppins,
