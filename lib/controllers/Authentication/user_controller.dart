@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/enums.dart';
@@ -15,6 +16,7 @@ class UserDataController extends ChangeNotifier {
     }
 
     if (userID != null) {
+      printInfo(info: "User id received ${userID}");
       this.user = await UserData.getUser(userID: userID);
       userState = USER.PRESENT;
     } else {

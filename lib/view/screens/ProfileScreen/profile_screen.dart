@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
@@ -15,6 +16,10 @@ class ProfileScreen extends StatelessWidget {
     if (self == null) {
       return Scaffold(body: Consumer<UserDataController>(
         builder: (context, userDataController, child) {
+          if (userDataController.user == null) {
+            userDataController.setUser(
+                userID: FirebaseAuth.instance.currentUser!.uid);
+          }
           switch (userDataController.userState) {
             case USER.ABSENT:
               return Center(child: CircularProgressIndicator());

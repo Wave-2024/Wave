@@ -162,6 +162,8 @@ class LoginScreen extends StatelessWidget {
                                         loginResponse.response
                                             as fb.UserCredential;
                                     await prefs.setBool(Pref.login_pref, true);
+                                    await prefs.setString(
+                                        Pref.user_id, userCredential.user!.uid);
                                     await userController.setUser(
                                         userID: userCredential.user!.uid);
                                     Get.showSnackbar(GetSnackBar(

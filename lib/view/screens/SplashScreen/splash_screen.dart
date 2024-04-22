@@ -18,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     decideNavigation();
+    // _navigateToLogin();
   }
 
   decideNavigation() async {
@@ -28,8 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         _navigateToLogin();
       }
-    }
-    else{
+    } else {
       _navigateToLogin();
     }
   }
