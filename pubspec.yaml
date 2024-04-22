@@ -33,6 +33,7 @@ dependencies:
   cloud_firestore: ^4.15.9
   comment_box: ^0.0.18
   cupertino_icons: ^1.0.6
+  custom_refresh_indicator: ^3.1.0
   firebase_auth: ^4.17.9
   firebase_core: ^2.17.1
   firebase_storage: ^11.6.10
@@ -73,9 +74,6 @@ flutter:
   assets:
     - assets/logo/
     - assets/icons/
-  
-
-
 
   fonts:
     - family: Poppins
