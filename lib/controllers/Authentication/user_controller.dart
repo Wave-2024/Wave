@@ -10,14 +10,16 @@ class UserDataController extends ChangeNotifier {
   Future<void> setUser({String? userID, User? user}) async {
     if (userState != USER.LOADING) {
       userState = USER.LOADING;
+      await Future.delayed(Duration.zero);
+      notifyListeners();
     }
-    await Future.delayed(Duration.zero);
-    notifyListeners();
+
     if (userID != null) {
       this.user = await UserData.getUser(userID: userID);
       userState = USER.PRESENT;
     } else {
       this.user = user!;
+      userState = USER.PRESENT;
     }
     notifyListeners();
   }

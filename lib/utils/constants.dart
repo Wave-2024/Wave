@@ -2,6 +2,11 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wave/view/screens/ChatScreen/chat_list_screen.dart';
+import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
+import 'package:wave/view/screens/ExploreScreen/explore_screen.dart';
+import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
+import 'package:wave/view/screens/SearchScreen/search_screen.dart';
 
 final Color primaryColor = Color(0xfbA40606);
 final Color primaryGradient1 = Color(0xfbFF4433);
@@ -19,6 +24,7 @@ final String poppins = "Poppins";
 // Image Constants
 
 final String primaryLogo = "assets/logo/primaryLogo.png";
+final String logo = "assets/logo/logo.png";
 
 // Icons constants
 
@@ -31,3 +37,13 @@ final String addPostIcon = "assets/icons/add_ico.png";
 // DB constants
 
 var database = FirebaseFirestore.instance.collection("users");
+
+// List Of Screens
+
+final List<dynamic> screens = [
+  ExploreScreen(),
+  SearchScreen(),
+  CreatePostScreen(),
+  ChatListScreen(),
+  ProfileScreen()
+];
