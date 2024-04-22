@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/preferences.dart';
 import 'package:wave/utils/routing.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,12 +17,31 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigatetohome();
+    decideNavigation();
+  }
+
+  decideNavigation() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(Pref.login_pref)) {
+      if (prefs.getBool(Pref.login_pref) ?? false) {
+        _navigatetohome();
+      } else {
+        _navigateToLogin();
+      }
+    }
+    else{
+      _navigateToLogin();
+    }
+  }
+
+  _navigateToLogin() async {
+    await Future.delayed(Duration(milliseconds: 3000), () {});
+    Get.offNamed(AppRoutes.loginScreen);
   }
 
   _navigatetohome() async {
     await Future.delayed(Duration(milliseconds: 3000), () {});
-    Get.offNamed(AppRoutes.loginScreen);
+    Get.offNamed(AppRoutes.homeNavigationScreen);
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart' as res;
@@ -10,6 +11,7 @@ import 'package:wave/utils/constants.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/keys.dart';
+import 'package:wave/utils/preferences.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
 
@@ -154,9 +156,12 @@ class LoginScreen extends StatelessWidget {
                                               fb.FirebaseAuth.instance);
                                   // Successful login
                                   if (loginResponse.responseStatus) {
+                                    final SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
                                     fb.UserCredential userCredential =
                                         loginResponse.response
                                             as fb.UserCredential;
+                                    await prefs.setBool(Pref.login_pref, true);
                                     await userController.setUser(
                                         userID: userCredential.user!.uid);
                                     Get.showSnackbar(GetSnackBar(
