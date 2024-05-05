@@ -2,17 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
-import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/constants/custom_colors.dart';
+import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/keys.dart';
+import 'package:wave/view/screens/ChatScreen/chat_list_screen.dart';
+import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
+import 'package:wave/view/screens/ExploreScreen/explore_screen.dart';
+import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
+import 'package:wave/view/screens/SearchScreen/search_screen.dart';
 
 class HomeNavigationScreen extends StatelessWidget {
-  const HomeNavigationScreen({super.key});
+  HomeNavigationScreen({super.key});
+
+  final List<dynamic> screens = [
+    ExploreScreen(),
+    SearchScreen(),
+    CreatePostScreen(),
+    ChatListScreen(),
+    ProfileScreen()
+  ];
 
   @override
   Widget build(BuildContext context) {
     double bottomNavBarItemHeight = 25;
     return Scaffold(
-      backgroundColor: primaryScrBG,
+      backgroundColor: CustomColor.primaryScrBG,
       bottomNavigationBar: Consumer<HomeNavController>(
         builder: (context, homeNavController, child) {
           return BottomNavigationBar(
@@ -31,10 +45,10 @@ class HomeNavigationScreen extends StatelessWidget {
                     icon: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Image.asset(
-                        exploreIcon,
+                        CustomIcon.exploreIcon,
                         key: const Key(Keys.keyForExploreIcon),
                         color: (homeNavController.currentScreenIndex == 0)
-                            ? primaryColor
+                            ? CustomColor.primaryColor
                             : null,
                         height: bottomNavBarItemHeight,
                       ),
@@ -44,10 +58,10 @@ class HomeNavigationScreen extends StatelessWidget {
                     icon: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Image.asset(
-                        searchIcon,
+                        CustomIcon.searchIcon,
                         key: const Key(Keys.keyForSearchIcon),
                         color: (homeNavController.currentScreenIndex == 1)
-                            ? primaryColor
+                            ? CustomColor.primaryColor
                             : null,
                         height: bottomNavBarItemHeight,
                       ),
@@ -57,10 +71,10 @@ class HomeNavigationScreen extends StatelessWidget {
                     icon: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Image.asset(
-                        addPostIcon,
+                        CustomIcon.addPostIcon,
                         key: const Key(Keys.keyForAddPostIcon),
                         color: (homeNavController.currentScreenIndex == 2)
-                            ? primaryColor
+                            ? CustomColor.primaryColor
                             : null,
                         height: bottomNavBarItemHeight,
                       ),
@@ -70,10 +84,10 @@ class HomeNavigationScreen extends StatelessWidget {
                     icon: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Image.asset(
-                        chatIcon,
+                        CustomIcon.chatIcon,
                         key: const Key(Keys.keyForChatIcon),
                         color: (homeNavController.currentScreenIndex == 3)
-                            ? primaryColor
+                            ? CustomColor.primaryColor
                             : null,
                         height: bottomNavBarItemHeight,
                       ),
@@ -83,10 +97,10 @@ class HomeNavigationScreen extends StatelessWidget {
                     icon: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Image.asset(
-                        profileIcon,
+                        CustomIcon.profileIcon,
                         key: const Key(Keys.keyForProfileIcon),
                         color: (homeNavController.currentScreenIndex == 4)
-                            ? primaryColor
+                            ? CustomColor.primaryColor
                             : null,
                         height: bottomNavBarItemHeight,
                       ),

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/preferences.dart';
 import 'package:wave/utils/routing.dart';
 
@@ -18,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     decideNavigation();
+    // _navigateToLogin();
   }
 
   decideNavigation() async {
@@ -28,8 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         _navigateToLogin();
       }
-    }
-    else{
+    } else {
       _navigateToLogin();
     }
   }
@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              primaryLogo,
+              CustomLogo.primaryLogo,
               width: 200,
               height: 200,
             ),

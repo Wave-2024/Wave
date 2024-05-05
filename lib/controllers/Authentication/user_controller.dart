@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/enums.dart';
@@ -6,6 +7,7 @@ import 'package:wave/utils/enums.dart';
 class UserDataController extends ChangeNotifier {
   User? user;
   USER userState = USER.ABSENT;
+  int profilePostViewingOptions = 0;
 
   Future<void> setUser({String? userID, User? user}) async {
     if (userState != USER.LOADING) {
@@ -15,6 +17,7 @@ class UserDataController extends ChangeNotifier {
     }
 
     if (userID != null) {
+      printInfo(info: "User id received ${userID}");
       this.user = await UserData.getUser(userID: userID);
       userState = USER.PRESENT;
     } else {
@@ -30,5 +33,10 @@ class UserDataController extends ChangeNotifier {
     notifyListeners();
     await UserData.createUser(user: user);
     await setUser(user: user);
+  }
+
+  void changePofileViewingOption(int updatedIndex) {
+    profilePostViewingOptions = updatedIndex;
+    notifyListeners();
   }
 }

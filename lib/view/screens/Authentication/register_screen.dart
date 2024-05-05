@@ -7,7 +7,8 @@ import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart' as res;
 import 'package:wave/models/user_model.dart';
-import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/constants/custom_colors.dart';
+import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/keys.dart';
@@ -40,7 +41,7 @@ class RegisterScreen extends StatelessWidget {
                 Text(
                   "Create New Account",
                   style: TextStyle(
-                      fontFamily: poppins,
+                      fontFamily: CustomFont.poppins,
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
                       fontSize: 35),
@@ -172,7 +173,7 @@ class RegisterScreen extends StatelessWidget {
                             // If registration failed
                             else {
                               Get.showSnackbar(GetSnackBar(
-                                backgroundColor: errorColor,
+                                backgroundColor: CustomColor.errorColor,
                                 borderRadius: 5,
                                 duration: const Duration(seconds: 2),
                                 message: registrationResponse.response.message
@@ -181,12 +182,12 @@ class RegisterScreen extends StatelessWidget {
                             }
                           }
                         },
-                        color: primaryButtonColor,
+                        color: CustomColor.primaryButtonColor,
                         child: (authController.registerState == REGISTER.IDLE)
                             ? Text(
                                 "Register",
                                 style: TextStyle(
-                                    fontFamily: poppins,
+                                    fontFamily: CustomFont.poppins,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500),
                               )
@@ -232,7 +233,7 @@ class RegisterScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15)),
                     height: 50,
                     onPressed: () {},
-                    color: authTextBoxColor,
+                    color: CustomColor.authTextBoxColor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -241,7 +242,7 @@ class RegisterScreen extends StatelessWidget {
                         Text(
                           "Sign up with Google",
                           style: TextStyle(
-                              fontFamily: poppins,
+                              fontFamily: CustomFont.poppins,
                               fontSize: 20,
                               fontWeight: FontWeight.w500),
                         ),
