@@ -7,7 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart' as res;
-import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/constants/custom_colors.dart';
+import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/keys.dart';
@@ -33,9 +35,9 @@ class LoginScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              primaryGradient2,
-              primaryGradient1,
-              primaryGradient1,
+              CustomColor.primaryGradient2,
+              CustomColor.primaryGradient1,
+              CustomColor.primaryGradient1,
             ],
           ),
         ),
@@ -45,7 +47,7 @@ class LoginScreen extends StatelessWidget {
             Positioned(
                 top: displayHeight(context) * 0.08,
                 child: Image.asset(
-                  primaryLogo,
+                  CustomLogo.primaryLogo,
                   height: 80,
                   width: 100,
                   fit: BoxFit.contain,
@@ -69,7 +71,7 @@ class LoginScreen extends StatelessWidget {
                       Text(
                         "Login",
                         style: TextStyle(
-                            fontFamily: poppins,
+                            fontFamily: CustomFont.poppins,
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
                             fontSize: 40),
@@ -127,7 +129,7 @@ class LoginScreen extends StatelessWidget {
                           Text(
                             "Forgot Password?",
                             style: TextStyle(
-                              fontFamily: poppins,
+                              fontFamily: CustomFont.poppins,
                               fontSize: 15,
                             ),
                           )
@@ -179,7 +181,7 @@ class LoginScreen extends StatelessWidget {
                                   // Login failed
                                   else {
                                     Get.showSnackbar(GetSnackBar(
-                                      backgroundColor: errorColor,
+                                      backgroundColor: CustomColor.errorColor,
                                       borderRadius: 5,
                                       duration: const Duration(seconds: 2),
                                       message: loginResponse.response.message
@@ -188,13 +190,13 @@ class LoginScreen extends StatelessWidget {
                                   }
                                 }
                               },
-                              color: primaryButtonColor,
+                              color: CustomColor.primaryButtonColor,
                               child: authController.loginState == LOGIN.IDLE
                                   ? Text(
                                       key: const Key(Keys.keyForLoginButton),
                                       "Login",
                                       style: TextStyle(
-                                          fontFamily: poppins,
+                                          fontFamily: CustomFont.poppins,
                                           fontSize: 20,
                                           fontWeight: FontWeight.w500),
                                     )
@@ -240,7 +242,7 @@ class LoginScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15)),
                           height: 50,
                           onPressed: () {},
-                          color: authTextBoxColor,
+                          color: CustomColor.authTextBoxBorderColor,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -249,7 +251,7 @@ class LoginScreen extends StatelessWidget {
                               Text(
                                 "Login with Google",
                                 style: TextStyle(
-                                    fontFamily: poppins,
+                                    fontFamily: CustomFont.poppins,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500),
                               ),
@@ -267,14 +269,14 @@ class LoginScreen extends StatelessWidget {
                             Text(
                               "Don't have an account?",
                               style: TextStyle(
-                                  fontFamily: poppins, color: Colors.black),
+                                  fontFamily: CustomFont.poppins, color: Colors.black),
                             ),
                             TextButton(
                               child: Text(
                                 "Register Now",
                                 style: TextStyle(
-                                    fontFamily: poppins,
-                                    color: primaryColor,
+                                    fontFamily: CustomFont.poppins,
+                                    color: CustomColor.primaryColor,
                                     fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.center,
                               ),

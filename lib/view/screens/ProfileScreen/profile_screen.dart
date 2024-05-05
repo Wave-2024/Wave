@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
-import 'package:wave/utils/constants.dart';
+import 'package:wave/utils/constants/custom_colors.dart';
+import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/constants/custom_icons.dart';
+import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 
@@ -25,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
       // Display my profile if other param is null
       body: other == null
           ? RefreshIndicator(
-              color: primaryColor,
+              color: CustomColor.primaryColor,
               onRefresh: () => _handleRefresh(context),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -63,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
                                           fit: BoxFit.cover,
                                         )
                                       : Image.asset(
-                                          logo,
+                                          CustomLogo.logo,
                                           height: displayHeight(context) * 0.35,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
@@ -105,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                             Text(
                               userDataController.user!.name,
                               style: TextStyle(
-                                  fontFamily: poppins,
+                                  fontFamily: CustomFont.poppins,
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -121,7 +124,7 @@ class ProfileScreen extends StatelessWidget {
                                   userDataController.user!.bio ?? "",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontFamily: poppins,
+                                      fontFamily: CustomFont.poppins,
                                       color: const Color(0xfbA9A9A9),
                                       fontSize: 14,
                                       fontWeight: FontWeight.w100),
@@ -149,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
                                         .min, // Use only the needed space
                                     children: <Widget>[
                                       Image.asset(
-                                        doubleCheckIcon,
+                                        CustomIcon.doubleCheckIcon,
                                         height: 20,
                                       ), // Icon with color
                                       const SizedBox(
@@ -171,13 +174,14 @@ class ProfileScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10.0),
                                     // Border color
                                   ),
-                                  color: primaryColor.withOpacity(0.8),
+                                  color:
+                                      CustomColor.primaryColor.withOpacity(0.8),
                                   child: Row(
                                     mainAxisSize: MainAxisSize
                                         .min, // Use only the needed space
                                     children: <Widget>[
                                       Image.asset(
-                                        sendMessageIcon,
+                                        CustomIcon.sendMessageIcon,
                                         height: 20,
                                         color: Colors.white,
                                       ), // Icon with color
@@ -203,14 +207,163 @@ class ProfileScreen extends StatelessWidget {
                                       // Border color
                                     ),
                                     child: Image.asset(
-                                      moreIcon,
+                                      CustomIcon.moreIcon,
                                       height: 15,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
                               ],
-                            )
+                            ),
+
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 0.2,
+                              height: 40,
+                            ), // First Divider
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .spaceEvenly, // To space out the rows evenly
+                              children: <Widget>[
+                                // Each Column below represents one of the three rows you described
+                                InkWell(
+                                  onTap: () {
+                                    userDataController
+                                        .changePofileViewingOption(0);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Image.asset(CustomIcon.photosIcon,
+                                              height: 23),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            'Photos',
+                                            style: TextStyle(
+                                                fontFamily: CustomFont.poppins,
+                                                fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Visibility(
+                                        visible: userDataController
+                                                .profilePostViewingOptions ==
+                                            0,
+                                        child: Container(
+                                            height: 2.5,
+                                            width: displayWidth(context) * 0.25,
+                                            color: CustomColor.primaryColor
+                                                .withOpacity(0.7)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    userDataController
+                                        .changePofileViewingOption(1);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Image.asset(CustomIcon.videoIcon,
+                                              height: 23),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Videos",
+                                            style: TextStyle(
+                                                fontFamily: CustomFont.poppins,
+                                                fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Visibility(
+                                        visible: userDataController
+                                                .profilePostViewingOptions ==
+                                            1,
+                                        child: InkWell(
+                                          onTap: () {
+                                            userDataController
+                                                .changePofileViewingOption(1);
+                                          },
+                                          child: Container(
+                                              height: 2.5,
+                                              width:
+                                                  displayWidth(context) * 0.25,
+                                              color: CustomColor.primaryColor
+                                                  .withOpacity(0.7)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    userDataController
+                                        .changePofileViewingOption(2);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Image.asset(CustomIcon.savedIcon,
+                                              height: 23),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            'Saved',
+                                            style: TextStyle(
+                                                fontFamily: CustomFont.poppins,
+                                                fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Visibility(
+                                        visible: userDataController
+                                                .profilePostViewingOptions ==
+                                            2,
+                                        child: InkWell(
+                                          onTap: () {
+                                            userDataController
+                                                .changePofileViewingOption(2);
+                                          },
+                                          child: Container(
+                                              height: 2.5,
+                                              width:
+                                                  displayWidth(context) * 0.25,
+                                              color: CustomColor.primaryColor
+                                                  .withOpacity(0.7)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 0.2,
+                              height: 30,
+                            ), // Second Divider
                           ],
                         );
                     }

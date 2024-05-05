@@ -16,7 +16,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: homeNavController,
-          child: const MaterialApp(
+          child:  MaterialApp(
             home: HomeNavigationScreen(),
           ),
         ),

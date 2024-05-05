@@ -7,6 +7,7 @@ import 'package:wave/utils/enums.dart';
 class UserDataController extends ChangeNotifier {
   User? user;
   USER userState = USER.ABSENT;
+  int profilePostViewingOptions = 0;
 
   Future<void> setUser({String? userID, User? user}) async {
     if (userState != USER.LOADING) {
@@ -32,5 +33,10 @@ class UserDataController extends ChangeNotifier {
     notifyListeners();
     await UserData.createUser(user: user);
     await setUser(user: user);
+  }
+
+  void changePofileViewingOption(int updatedIndex) {
+    profilePostViewingOptions = updatedIndex;
+    notifyListeners();
   }
 }
