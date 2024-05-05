@@ -33,6 +33,9 @@ final String searchIcon = "assets/icons/search_ico.png";
 final String chatIcon = "assets/icons/chat_ico.png";
 final String profileIcon = "assets/icons/profile_ico.png";
 final String addPostIcon = "assets/icons/add_ico.png";
+final String doubleCheckIcon = "assets/icons/double_check_ico.png";
+final String sendMessageIcon = "assets/icons/send_message_ico.png";
+final String moreIcon = "assets/icons/more_ico.png";
 
 // DB constants
 
