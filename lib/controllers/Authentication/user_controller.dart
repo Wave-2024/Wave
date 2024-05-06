@@ -39,4 +39,47 @@ class UserDataController extends ChangeNotifier {
     profilePostViewingOptions = updatedIndex;
     notifyListeners();
   }
+
+  Future<void> searchUsersByNameAndUserName(String searchString) async {
+    List<User> users = [];
+    if (searchString.isEmpty || searchString.length < 3) {
+      printInfo(info: "Empty string");
+      searchedUsers = [];
+      notifyListeners();
+      return;
+    }
+    String username = searchString;
+    String name = capitalizeWords(searchString);
+    // Calculate the end of the range by replacing the last character with the next Unicode character
+    String endString = name.substring(0, name.length - 1) +
+        String.fromCharCode(name.codeUnitAt(name.length - 1) + 1);
+
+    // Search user by name (database)
+    var searchUserResponse = await Database.userDatabase
+        .where('name', isGreaterThanOrEqualTo: name)
+        .where('name', isLessThan: endString)
+        .get();
+    for (var index = 0; index < searchUserResponse.docs.length; index++) {
+      var doc = searchUserResponse.docs[index].data();
+      User foundUser = User.fromMap(doc);
+      users.add(foundUser);
+    }
+
+    endString = username.substring(0, username.length - 1) +
+        String.fromCharCode(name.codeUnitAt(username.length - 1) + 1);
+    // Search user by username (database)
+    searchUserResponse = await Database.userDatabase
+        .where('username', isGreaterThanOrEqualTo: username)
+        .where('username', isLessThan: endString)
+        .get();
+    for (var index = 0; index < searchUserResponse.docs.length; index++) {
+      var doc = searchUserResponse.docs[index].data();
+      User foundUser = User.fromMap(doc);
+      users.add(foundUser);
+    }
+
+    searchedUsers = users;
+    printInfo(info: "Number of users found : ${searchedUsers.length}");
+    notifyListeners();
+  }
 }
