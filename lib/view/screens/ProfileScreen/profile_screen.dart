@@ -133,6 +133,7 @@ class ProfileScreen extends StatelessWidget {
                                 // color: Colors.red.shade100,
                                 child: Text(
                                   userDataController.user!.bio ?? "",
+                                  maxLines: 2,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontFamily: CustomFont.poppins,

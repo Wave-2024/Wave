@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/enums.dart';
+import 'package:wave/utils/util_functions.dart';
 
 class UserDataController extends ChangeNotifier {
   User? user;
   USER userState = USER.ABSENT;
   int profilePostViewingOptions = 0;
+  List<User> searchedUsers = [];
 
   Future<void> setUser({String? userID, User? user}) async {
     if (userState != USER.LOADING) {
