@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
-import 'package:wave/utils/keys.dart';
+import 'package:wave/utils/constants/keys.dart';
 import 'package:wave/view/screens/Authentication/login_screen.dart';
 import 'package:wave/view/screens/Authentication/register_screen.dart';
 

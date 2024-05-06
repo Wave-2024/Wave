@@ -3,7 +3,6 @@ import 'package:wave/utils/constants/database.dart';
 
 class UserData {
   static Future<User> getUser({required String userID}) async {
-    
     var userResponse = await Database.userDatabase.doc(userID).get();
     User user = User.fromMap(userResponse.data()!);
     return user;

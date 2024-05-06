@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
-import 'package:wave/utils/preferences.dart';
+import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/routing.dart';
 
 class SplashScreen extends StatefulWidget {

@@ -12,5 +12,4 @@ class Keys {
   static const String keyForPasswordTextFieldRegister = 'keyForPasswordTextFieldRegister';
   static const String keyForRegisterButton = 'keyForRegisterButton';
     static const String keyForBottomNavButton = 'keyForBottomNavButton';
-
 }
