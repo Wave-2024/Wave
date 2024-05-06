@@ -175,7 +175,8 @@ class LoginScreen extends StatelessWidget {
                                       title: "Login Success",
                                       message: userController.user!.name,
                                     ));
-                                    Get.toNamed(AppRoutes.homeNavigationScreen,
+                                    Get.offAllNamed(
+                                        AppRoutes.homeNavigationScreen,
                                         parameters: {'screenIndex': '0'});
                                   }
                                   // Login failed
