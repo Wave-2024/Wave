@@ -3,23 +3,26 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'package:wave/utils/enums.dart';
+
 class User {
   String name;
   String email;
-  List<String> following;
-  List<String> followers;
-  List<String> posts;
+  List<dynamic> following;
+  List<dynamic> followers;
+  List<dynamic> posts;
   String? displayPicture;
   String? bio;
   String? url;
   String id;
   String username;
-  List<String> stories;
-  List<String>? blocked;
+  List<dynamic> stories;
+  List<dynamic>? blocked;
   String coverPicture;
-  List<String>? savedPosts;
-  List<String>? messages;
-  
+  List<dynamic>? savedPosts;
+  List<dynamic>? messages;
+  ACCOUNT_TYPE account_type;
+
   User({
     required this.name,
     required this.email,
@@ -36,24 +39,26 @@ class User {
     required this.coverPicture,
     this.savedPosts,
     this.messages,
+    required this.account_type,
   });
 
   User copyWith({
     String? name,
     String? email,
-    List<String>? following,
-    List<String>? followers,
-    List<String>? posts,
+    List<dynamic>? following,
+    List<dynamic>? followers,
+    List<dynamic>? posts,
     String? displayPicture,
     String? bio,
     String? url,
     String? id,
     String? username,
-    List<String>? stories,
-    List<String>? blocked,
+    List<dynamic>? stories,
+    List<dynamic>? blocked,
     String? coverPicture,
-    List<String>? savedPosts,
-    List<String>? messages,
+    List<dynamic>? savedPosts,
+    List<dynamic>? messages,
+    ACCOUNT_TYPE? account_type,
   }) {
     return User(
       name: name ?? this.name,
@@ -71,6 +76,7 @@ class User {
       coverPicture: coverPicture ?? this.coverPicture,
       savedPosts: savedPosts ?? this.savedPosts,
       messages: messages ?? this.messages,
+      account_type: account_type ?? this.account_type,
     );
   }
 
@@ -91,6 +97,7 @@ class User {
       'coverPicture': coverPicture,
       'savedPosts': savedPosts,
       'messages': messages,
+      'account_type': account_type.toString().split('.').last,
     };
   }
 
@@ -98,19 +105,32 @@ class User {
     return User(
       name: map['name'] as String,
       email: map['email'] as String,
-      following: List<String>.from((map['following'] as List<dynamic>)),
-      followers: List<String>.from((map['followers'] as List<dynamic>)),
-      posts: List<String>.from((map['posts'] as List<dynamic>)),
-      displayPicture: map['displayPicture'] != null ? map['displayPicture'] as String : null,
+      following: List<dynamic>.from((map['following'] as List<dynamic>)),
+      followers: List<dynamic>.from((map['followers'] as List<dynamic>)),
+      posts: List<dynamic>.from((map['posts'] as List<dynamic>)),
+      displayPicture: map['displayPicture'] != null
+          ? map['displayPicture'] as String
+          : null,
       bio: map['bio'] != null ? map['bio'] as String : null,
       url: map['url'] != null ? map['url'] as String : null,
       id: map['id'] as String,
       username: map['username'] as String,
-      stories: List<String>.from((map['stories'] as List<dynamic>)),
-      blocked: map['blocked'] != null ? List<String>.from((map['blocked'] as List<dynamic>)) : null,
+      stories: List<dynamic>.from((map['stories'] as List<dynamic>)),
+      blocked: map['blocked'] != null
+          ? List<dynamic>.from((map['blocked'] as List<dynamic>))
+          : null,
       coverPicture: map['coverPicture'] as String,
-      savedPosts: map['savedPosts'] != null ? List<String>.from((map['savedPosts'] as List<dynamic>)) : null,
-      messages: map['messages'] != null ? List<String>.from((map['messages'] as List<dynamic>)) : null,
+      savedPosts: map['savedPosts'] != null
+          ? List<dynamic>.from((map['savedPosts'] as List<dynamic>))
+          : null,
+      messages: map['messages'] != null
+          ? List<dynamic>.from((map['messages'] as List<dynamic>))
+          : null,
+      account_type: map['account_type'] != null
+          ? (map['account_type'] == 'PRIVATE')
+              ? ACCOUNT_TYPE.PRIVATE
+              : ACCOUNT_TYPE.PUBLIC
+          : ACCOUNT_TYPE.PUBLIC,
     );
   }
 
@@ -121,47 +141,48 @@ class User {
 
   @override
   String toString() {
-    return 'User(name: $name, email: $email, following: $following, followers: $followers, posts: $posts, displayPicture: $displayPicture, bio: $bio, url: $url, id: $id, username: $username, stories: $stories, blocked: $blocked, coverPicture: $coverPicture, savedPosts: $savedPosts, messages: $messages)';
+    return 'User(name: $name, email: $email, following: $following, followers: $followers, posts: $posts, displayPicture: $displayPicture, bio: $bio, url: $url, id: $id, username: $username, stories: $stories, blocked: $blocked, coverPicture: $coverPicture, savedPosts: $savedPosts, messages: $messages, account_type: $account_type)';
   }
 
   @override
   bool operator ==(covariant User other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.name == name &&
-      other.email == email &&
-      listEquals(other.following, following) &&
-      listEquals(other.followers, followers) &&
-      listEquals(other.posts, posts) &&
-      other.displayPicture == displayPicture &&
-      other.bio == bio &&
-      other.url == url &&
-      other.id == id &&
-      other.username == username &&
-      listEquals(other.stories, stories) &&
-      listEquals(other.blocked, blocked) &&
-      other.coverPicture == coverPicture &&
-      listEquals(other.savedPosts, savedPosts) &&
-      listEquals(other.messages, messages);
+
+    return other.name == name &&
+        other.email == email &&
+        listEquals(other.following, following) &&
+        listEquals(other.followers, followers) &&
+        listEquals(other.posts, posts) &&
+        other.displayPicture == displayPicture &&
+        other.bio == bio &&
+        other.url == url &&
+        other.id == id &&
+        other.username == username &&
+        listEquals(other.stories, stories) &&
+        listEquals(other.blocked, blocked) &&
+        other.coverPicture == coverPicture &&
+        listEquals(other.savedPosts, savedPosts) &&
+        listEquals(other.messages, messages) &&
+        other.account_type == account_type;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
-      email.hashCode ^
-      following.hashCode ^
-      followers.hashCode ^
-      posts.hashCode ^
-      displayPicture.hashCode ^
-      bio.hashCode ^
-      url.hashCode ^
-      id.hashCode ^
-      username.hashCode ^
-      stories.hashCode ^
-      blocked.hashCode ^
-      coverPicture.hashCode ^
-      savedPosts.hashCode ^
-      messages.hashCode;
+        email.hashCode ^
+        following.hashCode ^
+        followers.hashCode ^
+        posts.hashCode ^
+        displayPicture.hashCode ^
+        bio.hashCode ^
+        url.hashCode ^
+        id.hashCode ^
+        username.hashCode ^
+        stories.hashCode ^
+        blocked.hashCode ^
+        coverPicture.hashCode ^
+        savedPosts.hashCode ^
+        messages.hashCode ^
+        account_type.hashCode;
   }
 }

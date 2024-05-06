@@ -12,6 +12,7 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/keys.dart';
+import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -59,9 +60,12 @@ class RegisterScreen extends StatelessWidget {
                       label: "Name",
                       visible: true,
                       prefixIcon: const Icon(Icons.mail),
-                      validator: (email) {
-                        if (email == null || email.isEmpty) {
+                      validator: (name) {
+                        if (name == null || name.isEmpty) {
                           return "Name cannot be empty";
+                        }
+                        if (name.length > 25) {
+                          return "Name cannot be longer than 25 characters";
                         }
                         return null;
                       }),
@@ -144,8 +148,11 @@ class RegisterScreen extends StatelessWidget {
                               fb.UserCredential userCredential =
                                   registrationResponse.response
                                       as fb.UserCredential;
+                              String name = nameController.text.trim();
+                              name = capitalizeWords(name);
                               User currentUser = User(
-                                  name: nameController.text,
+                                  account_type: ACCOUNT_TYPE.PUBLIC,
+                                  name: name,
                                   email: emailController.text,
                                   displayPicture: "",
                                   bio: "",
