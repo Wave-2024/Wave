@@ -242,7 +242,7 @@ class LoginScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15)),
                           height: 50,
                           onPressed: () {},
-                          color: CustomColor.authTextBoxBorderColor,
+                          color: CustomColor.authTextBoxColor,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -269,7 +269,8 @@ class LoginScreen extends StatelessWidget {
                             Text(
                               "Don't have an account?",
                               style: TextStyle(
-                                  fontFamily: CustomFont.poppins, color: Colors.black),
+                                  fontFamily: CustomFont.poppins,
+                                  color: Colors.black),
                             ),
                             TextButton(
                               child: Text(
