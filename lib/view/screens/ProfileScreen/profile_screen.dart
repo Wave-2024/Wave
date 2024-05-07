@@ -113,6 +113,17 @@ class ProfileScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              '@${userDataController.user!.username}',
+                              style: TextStyle(
+                                  fontFamily: CustomFont.poppins,
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w300),
+                            ),
+                            const SizedBox(
                               height: 10,
                             ),
                             Padding(
@@ -122,6 +133,7 @@ class ProfileScreen extends StatelessWidget {
                                 // color: Colors.red.shade100,
                                 child: Text(
                                   userDataController.user!.bio ?? "",
+                                  maxLines: 2,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontFamily: CustomFont.poppins,

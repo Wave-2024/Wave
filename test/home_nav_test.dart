@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
-import 'package:wave/utils/keys.dart';
+import 'package:wave/utils/constants/keys.dart';
 import 'package:wave/view/screens/HomeNavigation/home_navigation_screen.dart';
 
 void main() {

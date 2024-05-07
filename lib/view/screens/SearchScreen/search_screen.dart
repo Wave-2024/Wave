@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -16,6 +19,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
+  List<User> users = [];
 
   @override
   void initState() {
@@ -34,6 +38,8 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 800), () {
       // TODO : Perform the search based on query
+      Provider.of<UserDataController>(context, listen: false)
+          .searchUsersByNameAndUserName(_searchController.text);
       printInfo(info: "Searching for: ${_searchController.text}");
     });
   }
