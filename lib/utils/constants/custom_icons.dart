@@ -1,8 +1,12 @@
 class CustomIcon {
   static String exploreIcon = "assets/icons/explore_ico.png";
+  static String exploreFullIcon = "assets/icons/explore_full_ico.png";
   static String searchIcon = "assets/icons/search_ico.png";
+  static String searchFullIcon = "assets/icons/search_full_ico.png";
   static String chatIcon = "assets/icons/chat_ico.png";
+  static String chatFullIcon = "assets/icons/chat_full_ico.png";
   static String profileIcon = "assets/icons/profile_ico.png";
+  static String profileFullIcon = "assets/icons/profile_full_ico.png";
   static String addPostIcon = "assets/icons/add_ico.png";
   static String doubleCheckIcon = "assets/icons/double_check_ico.png";
   static String sendMessageIcon = "assets/icons/send_message_ico.png";
@@ -10,6 +14,5 @@ class CustomIcon {
   static String photosIcon = "assets/icons/images_ico.png";
   static String savedIcon = "assets/icons/saved_ico.png";
   static String videoIcon = "assets/icons/video_ico.png";
-    static String noUserFoundIcon = "assets/icons/no_user_found_ico.png";
-
+  static String noUserFoundIcon = "assets/icons/no_user_found_ico.png";
 }
