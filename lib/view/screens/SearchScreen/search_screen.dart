@@ -8,6 +8,7 @@ import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/device_size.dart';
+import 'package:wave/view/reusable_components/user_container.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -37,7 +38,6 @@ class _SearchScreenState extends State<SearchScreen> {
   void searchUser() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 800), () {
-      // TODO : Perform the search based on query
       Provider.of<UserDataController>(context, listen: false)
           .searchUsersByNameAndUserName(_searchController.text);
       printInfo(info: "Searching for: ${_searchController.text}");
@@ -100,6 +100,44 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
+            Expanded(
+              child: Consumer<UserDataController>(
+                builder: (context, userDataController, child) {
+                  if (_searchController.text.isNotEmpty) {
+                    if (userDataController.searchedUsers.isNotEmpty) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        itemCount: userDataController.searchedUsers.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return UserContainerTile(
+                              user: userDataController.searchedUsers[index]);
+                        },
+                      );
+                    } else {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            CustomIcon.noUserFoundIcon,
+                            height: displayHeight(context) * 0.25,
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            "No User Found",
+                            style: TextStyle(fontFamily: CustomFont.poppins),
+                          )
+                        ],
+                      );
+                    }
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),

@@ -10,4 +10,6 @@ class CustomIcon {
   static String photosIcon = "assets/icons/images_ico.png";
   static String savedIcon = "assets/icons/saved_ico.png";
   static String videoIcon = "assets/icons/video_ico.png";
+    static String noUserFoundIcon = "assets/icons/no_user_found_ico.png";
+
 }
