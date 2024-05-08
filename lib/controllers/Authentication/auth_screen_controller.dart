@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/services/auth_services.dart';
+import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/enums.dart';
 
 class AuthScreenController extends ChangeNotifier {
@@ -54,5 +56,13 @@ class AuthScreenController extends ChangeNotifier {
       notifyListeners();
       return Response(responseStatus: false, response: authResponse);
     }
+  }
+
+  Future<void> signOut({required FirebaseAuth firebaseAuth}) async {
+    var auth = AuthService(firebaseAuth);
+    await auth.signOut();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(Pref.login_pref, false);
+    await prefs.setString(Pref.user_id, "");
   }
 }
