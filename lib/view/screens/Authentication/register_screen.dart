@@ -177,7 +177,7 @@ class RegisterScreen extends StatelessWidget {
                                 borderRadius: 5,
                                 message: userController.user!.name,
                               ));
-                                Get.toNamed(AppRoutes.loginScreen);
+                                Get.offNamed(AppRoutes.homeNavigationScreen);
                             }
                             // If registration failed
                             else {
