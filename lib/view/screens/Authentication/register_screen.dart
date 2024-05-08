@@ -12,6 +12,7 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/constants/keys.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
 
@@ -176,6 +177,7 @@ class RegisterScreen extends StatelessWidget {
                                 borderRadius: 5,
                                 message: userController.user!.name,
                               ));
+                                Get.offNamed(AppRoutes.homeNavigationScreen);
                             }
                             // If registration failed
                             else {
