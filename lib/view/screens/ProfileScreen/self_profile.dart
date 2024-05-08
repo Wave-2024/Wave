@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/utils/routing.dart';
 
 class SelfProfile extends StatelessWidget {
   const SelfProfile({super.key});
@@ -192,7 +194,33 @@ class SelfProfile extends StatelessWidget {
                         SizedBox(
                           width: displayWidth(context) * 0.1,
                           child: MaterialButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.bottomSheet(
+                                  backgroundColor: Colors.white,
+                                  barrierColor: Colors
+                                      .black38, // Background color outside the bottom sheet
+                                  isDismissible: true,
+                                  Wrap(
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.logout),
+                                        title: Text('Logout'),
+                                        onTap: () async {
+                                          // Close the bottom sheet
+                                          await Provider.of<
+                                                      AuthScreenController>(
+                                                  context,
+                                                  listen: false)
+                                              .signOut(
+                                                  firebaseAuth:
+                                                      FirebaseAuth.instance);
+                                          Get.offAllNamed(
+                                              AppRoutes.loginScreen);
+                                        },
+                                      ),
+                                    ],
+                                  ));
+                            },
                             shape: RoundedRectangleBorder(
                               side: const BorderSide(
                                   width: 0.3, color: Colors.black), // Bo
