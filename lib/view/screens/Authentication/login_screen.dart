@@ -156,6 +156,7 @@ class LoginScreen extends StatelessWidget {
                                           password: passwordController.text,
                                           firebaseAuth:
                                               fb.FirebaseAuth.instance);
+
                                   // Successful login
                                   if (loginResponse.responseStatus) {
                                     final SharedPreferences prefs =

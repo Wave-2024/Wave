@@ -2,8 +2,10 @@
 import 'dart:convert';
 
 class CustomResponse {
-  final bool responseStatus;
-  dynamic response;
+
+  final bool responseStatus; // Returns true if the operation was successful, otherwise false.
+  dynamic response; // Returns a dynamic value if required by the situation
+
   CustomResponse({
     required this.responseStatus,
     this.response,
