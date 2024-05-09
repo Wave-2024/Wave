@@ -150,7 +150,7 @@ class LoginScreen extends StatelessWidget {
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   // Try to Login
-                                  res.Response loginResponse =
+                                  res.CustomResponse loginResponse =
                                       await authController.startLoginProcess(
                                           email: emailController.text,
                                           password: passwordController.text,

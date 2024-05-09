@@ -10,7 +10,7 @@ class AuthScreenController extends ChangeNotifier {
   LOGIN loginState = LOGIN.IDLE;
   REGISTER registerState = REGISTER.IDLE;
 
-  Future<Response> startLoginProcess(
+  Future<CustomResponse> startLoginProcess(
       {required String email,
       required String password,
       required FirebaseAuth firebaseAuth}) async {
@@ -24,18 +24,18 @@ class AuthScreenController extends ChangeNotifier {
     if (authResponse.runtimeType == UserCredential) {
       loginState = LOGIN.IDLE;
       notifyListeners();
-      return Response(responseStatus: true, response: authResponse);
+      return CustomResponse(responseStatus: true, response: authResponse);
     }
     // Sign in failed
     else {
       loginState = LOGIN.IDLE;
       notifyListeners();
 
-      return Response(responseStatus: false, response: authResponse);
+      return CustomResponse(responseStatus: false, response: authResponse);
     }
   }
 
-  Future<Response> startRegistrationProcess(
+  Future<CustomResponse> startRegistrationProcess(
       {required String email,
       required String password,
       required FirebaseAuth firebaseAuth}) async {
@@ -48,13 +48,13 @@ class AuthScreenController extends ChangeNotifier {
     if (authResponse.runtimeType == UserCredential) {
       registerState = REGISTER.IDLE;
       notifyListeners();
-      return Response(responseStatus: true, response: authResponse);
+      return CustomResponse(responseStatus: true, response: authResponse);
     }
     // Sign up failed
     else {
       registerState = REGISTER.IDLE;
       notifyListeners();
-      return Response(responseStatus: false, response: authResponse);
+      return CustomResponse(responseStatus: false, response: authResponse);
     }
   }
 

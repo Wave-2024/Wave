@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/routing.dart';
 
@@ -18,7 +19,8 @@ class MoreOptionsModalSheet extends StatelessWidget {
       children: [
         ListTile(
           leading: Icon(Icons.logout),
-          title: Text('Logout'),
+          title: Text('Logout',
+              style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
           onTap: () async {
             // Close the bottom sheet
             await Provider.of<AuthScreenController>(context, listen: false)
@@ -38,10 +40,14 @@ class MoreOptionsModalSheet extends StatelessWidget {
                         userDataController.user!.displayPicture!)
                     : AssetImage(CustomIcon.profileFullIcon) as ImageProvider,
               ),
-              title: Text('Edit Profile'),
+              title: Text(
+                'Edit Profile',
+                style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14),
+              ),
               onTap: () async {
                 Navigator.pop(context);
-                Get.toNamed(AppRoutes.editProfileScreen);
+                Get.toNamed(AppRoutes.editProfileScreen,
+                    arguments: userDataController.user!);
               },
             );
           },
