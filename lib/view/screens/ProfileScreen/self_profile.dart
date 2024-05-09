@@ -12,6 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/utils/routing.dart';
+import 'package:wave/view/screens/ProfileScreen/more_options.dart';
 
 class SelfProfile extends StatelessWidget {
   const SelfProfile({super.key});
@@ -65,7 +66,7 @@ class SelfProfile extends StatelessWidget {
                                 )
                               : Image.asset(
                                   CustomLogo.logo,
-                                  height: displayHeight(context) * 0.35,
+                                  height: displayHeight(context) * 0.25,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                 ),
@@ -195,31 +196,12 @@ class SelfProfile extends StatelessWidget {
                           width: displayWidth(context) * 0.1,
                           child: MaterialButton(
                             onPressed: () {
-                              Get.bottomSheet(
-                                  backgroundColor: Colors.white,
-                                  barrierColor: Colors
-                                      .black38, // Background color outside the bottom sheet
-                                  isDismissible: true,
-                                  Wrap(
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.logout),
-                                        title: Text('Logout'),
-                                        onTap: () async {
-                                          // Close the bottom sheet
-                                          await Provider.of<
-                                                      AuthScreenController>(
-                                                  context,
-                                                  listen: false)
-                                              .signOut(
-                                                  firebaseAuth:
-                                                      FirebaseAuth.instance);
-                                          Get.offAllNamed(
-                                              AppRoutes.loginScreen);
-                                        },
-                                      ),
-                                    ],
-                                  ));
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return MoreOptionsModalSheet();
+                                },
+                              );
                             },
                             shape: RoundedRectangleBorder(
                               side: const BorderSide(
