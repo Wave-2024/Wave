@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart';
@@ -10,6 +15,7 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/device_size.dart';
+import 'package:wave/utils/image_config.dart';
 import 'package:wave/view/reusable_components/textbox_editprofile.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -23,6 +29,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
+  CroppedFile? croppedImageForCoverPhoto;
+  CroppedFile? croppedImageForDisplayPicture;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -74,20 +83,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           alignment: Alignment.topCenter,
                           fit: StackFit.loose,
                           children: [
-                            (userDataController.user!.coverPicture.isNotEmpty)
-                                ? CachedNetworkImage(
-                                    imageUrl:
-                                        userDataController.user!.coverPicture,
+                            (croppedImageForCoverPhoto != null)
+                                ? Image.file(
+                                    File(croppedImageForCoverPhoto!.path),
                                     height: displayHeight(context) * 0.22,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
                                   )
-                                : Image.asset(
-                                    CustomLogo.logo,
-                                    height: displayHeight(context) * 0.22,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
+                                : (userDataController
+                                        .user!.coverPicture.isNotEmpty)
+                                    ? CachedNetworkImage(
+                                        imageUrl: userDataController
+                                            .user!.coverPicture,
+                                        height: displayHeight(context) * 0.22,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        CustomLogo.logo,
+                                        height: displayHeight(context) * 0.22,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      ),
                             Positioned(
                               bottom: 0,
                               child: CircleAvatar(
@@ -97,16 +114,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: CircleAvatar(
                                   // Image avatar
                                   radius: displayWidth(context) * 0.15,
-                                  backgroundImage: (userDataController
-                                                  .user!.displayPicture !=
-                                              null &&
-                                          userDataController
-                                              .user!.displayPicture!.isNotEmpty)
-                                      ? CachedNetworkImageProvider(
-                                          userDataController
-                                              .user!.displayPicture!)
-                                      : const AssetImage("assets/logo/logo.png")
-                                          as ImageProvider,
+                                  backgroundImage:
+                                      (croppedImageForDisplayPicture != null)
+                                          ? FileImage(File(
+                                              croppedImageForDisplayPicture!
+                                                  .path))
+                                          : (userDataController.user!
+                                                          .displayPicture !=
+                                                      null &&
+                                                  userDataController
+                                                      .user!
+                                                      .displayPicture!
+                                                      .isNotEmpty)
+                                              ? CachedNetworkImageProvider(
+                                                  userDataController
+                                                      .user!.displayPicture!)
+                                              : const AssetImage(
+                                                      "assets/logo/logo.png")
+                                                  as ImageProvider,
                                 ),
                               ),
                             ),
@@ -114,8 +139,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 right: 10,
                                 bottom: displayHeight(context) * 0.06,
                                 child: InkWell(
-                                  onTap: () {
+                                  onTap: () async {
+                                    XFile? pickedImage =
+                                        await pickImage(context);
                                     "Changing Cover Picture".printInfo();
+                                    if (pickedImage != null) {
+                                      croppedImageForCoverPhoto =
+                                          await cropImage(
+                                        File(
+                                          pickedImage.path,
+                                        ),
+                                        list: [
+                                          CropAspectRatioPreset.ratio16x9,
+                                          CropAspectRatioPreset.ratio3x2
+                                        ],
+                                      );
+                                      if (croppedImageForCoverPhoto != null) {
+                                        setState(() {});
+                                      }
+                                    }
                                   },
                                   child: CircleAvatar(
                                     backgroundColor: Colors.white,
@@ -131,8 +173,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               right: displayWidth(context) * 0.29,
                               bottom: displayHeight(context) * 0.016,
                               child: InkWell(
-                                onTap: () {
+                                onTap: () async {
                                   "Changing Display Picture".printInfo();
+                                  XFile? pickedImage = await pickImage(context);
+
+                                  if (pickedImage != null) {
+                                    croppedImageForDisplayPicture =
+                                        await cropImage(
+                                      cropStyle: CropStyle.circle,
+                                      File(
+                                        pickedImage.path,
+                                      ),
+                                    );
+                                    if (croppedImageForDisplayPicture != null) {
+                                      setState(() {});
+                                    }
+                                  }
                                 },
                                 child: CircleAvatar(
                                   backgroundColor: Colors.white,
@@ -209,29 +265,53 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           height: displayHeight(context) * 0.06,
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              CustomResponse customResponse =
-                                  await userDataController.updateProfile(
-                                      bio: bioController.text.trim(),
-                                      name: nameController.text.trim(),
-                                      username: userNameController.text.trim());
-                              String message =
-                                  customResponse.response.toString();
-
-                              if (customResponse.responseStatus) {
-                                Get.showSnackbar(const GetSnackBar(
-                                  duration: Duration(seconds: 2),
-                                  backgroundColor: Colors.green,
-                                  borderRadius: 5,
-                                  title: "Success !!",
-                                  message: "Your profile has been updated",
-                                ));
-                              } else {
-                                Get.showSnackbar(const GetSnackBar(
-                                  duration: Duration(seconds: 2),
-                                  backgroundColor: Colors.green,
-                                  borderRadius: 5,
-                                  title: "Something went wrong !!",
-                                ));
+                              if (_formKey.currentState!.validate()) {
+                                StreamSubscription<CustomResponse>? sub;
+                                sub = userDataController
+                                    .updateProfile(
+                                        bio: bioController.text.trim(),
+                                        name: nameController.text.trim(),
+                                        username:
+                                            userNameController.text.trim(),
+                                        displayPicture:
+                                            croppedImageForDisplayPicture,
+                                        coverPicture: croppedImageForCoverPhoto)
+                                    .listen(
+                                  (CustomResponse response) {
+                                    if (response.responseStatus) {
+                                      Get.showSnackbar(GetSnackBar(
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Colors.green,
+                                        borderRadius: 5,
+                                        title: "Success",
+                                        message: response.response ??
+                                            "Your profile has been updated",
+                                      ));
+                                    } else {
+                                      Get.showSnackbar(GetSnackBar(
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: Colors.red,
+                                        borderRadius: 5,
+                                        title: "Error",
+                                        message: response.response ??
+                                            "Something went wrong",
+                                      ));
+                                    }
+                                  },
+                                  onError: (error) {
+                                    Get.showSnackbar(GetSnackBar(
+                                      duration: Duration(seconds: 2),
+                                      backgroundColor: Colors.red,
+                                      borderRadius: 5,
+                                      title: "Error",
+                                      message: "An unexpected error occurred",
+                                    ));
+                                  },
+                                  onDone: () {
+                                    // Cleanup if necessary when stream is done
+                                    sub?.cancel();
+                                  },
+                                );
                               }
                             }
                           },

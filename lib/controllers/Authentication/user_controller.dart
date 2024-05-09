@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/services/storage_service.dart';
 import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/util_functions.dart';
@@ -87,8 +90,13 @@ class UserDataController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<CustomResponse> updateProfile(
-      {String? name, String? bio, String? username}) async {
+  Stream<CustomResponse> updateProfile(
+      {String? name,
+      String? bio,
+      String? username,
+      CroppedFile? coverPicture,
+      CroppedFile? displayPicture}) async* {
+    // First, update the user's text data
     CustomResponse customResponse = await UserData.updateUser(
         userId: user!.id,
         name: name ?? user!.name,
@@ -96,8 +104,80 @@ class UserDataController extends ChangeNotifier {
         bio: bio ?? user!.bio ?? "");
 
     if (customResponse.responseStatus) {
-      user!.copyWith(bio: bio, name: name, username: username);
+      // Update local user instance if the text update is successful
+      user = user!.copyWith(bio: bio, name: name, username: username);
+      yield customResponse; // Yield the result of the text update
+    } else {
+      yield customResponse; // Yield the failure response and return early
+      return;
     }
-    return customResponse;
+
+    // Prepare to upload images if provided
+    List<Future<CustomResponse>> uploadTasks = [];
+
+    if (displayPicture != null) {
+      "Display picture is not null".printInfo();
+      uploadTasks
+          .add(uploadImage(file: displayPicture, type: 'displayPicture'));
+    }
+    if (coverPicture != null) {
+      "Cover picture is not null".printInfo();
+
+      uploadTasks.add(uploadImage(file: coverPicture, type: 'coverPicture'));
+    }
+
+    // Execute image uploads in parallel
+    if (uploadTasks.isNotEmpty) {
+      List<CustomResponse> responses = await Future.wait(uploadTasks);
+
+      // Yield each upload response
+      for (CustomResponse response in responses) {
+        yield response;
+      }
+    }
+  }
+
+  Future<CustomResponse> uploadImage(
+      {required CroppedFile file, required String type}) async {
+    // Mock implementation of the upload process
+    try {
+      // Assume a function that uploads the file and returns a URL or error
+      // Update user profile with new image URL
+      if (type == 'displayPicture') {
+        String? imageUrl = await getImageUrl(
+            File(file.path), "users/${user!.id}/displayPicture");
+
+        if (imageUrl != null) {
+          CustomResponse customResponse = await UserData.updateUser(
+              userId: user!.id, displayPicture: imageUrl);
+          if (customResponse.responseStatus) {
+            user = user!.copyWith(displayPicture: imageUrl);
+          } else {
+            return customResponse;
+          }
+        } else {
+          "No response from server ?".printError();
+        }
+      } else if (type == 'coverPicture') {
+        String? imageUrl = await getImageUrl(
+            File(file.path), "users/${user!.id}/coverPicture");
+        if (imageUrl != null) {
+          CustomResponse customResponse = await UserData.updateUser(
+              userId: user!.id, coverPicture: imageUrl);
+          if (customResponse.responseStatus) {
+            user = user!.copyWith(coverPicture: imageUrl);
+          } else {
+            return customResponse;
+          }
+        }
+      }
+      String message = type == "coverPicture"
+          ? "Your cover photo has been updated successfully"
+          : "Your profile picture has been updated successfully";
+      return CustomResponse(responseStatus: true, response: message);
+    } catch (e) {
+      return CustomResponse(
+          responseStatus: false, response: "Upload failed: $e");
+    }
   }
 }
