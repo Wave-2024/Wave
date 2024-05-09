@@ -1,19 +1,21 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class Response {
-  final bool responseStatus;
-  dynamic response;
-  Response({
+class CustomResponse {
+
+  final bool responseStatus; // Returns true if the operation was successful, otherwise false.
+  dynamic response; // Returns a dynamic value if required by the situation
+
+  CustomResponse({
     required this.responseStatus,
     this.response,
   });
 
-  Response copyWith({
+  CustomResponse copyWith({
     bool? responseStatus,
     dynamic response,
   }) {
-    return Response(
+    return CustomResponse(
       responseStatus: responseStatus ?? this.responseStatus,
       response: response ?? this.response,
     );
@@ -26,8 +28,8 @@ class Response {
     };
   }
 
-  factory Response.fromMap(Map<String, dynamic> map) {
-    return Response(
+  factory CustomResponse.fromMap(Map<String, dynamic> map) {
+    return CustomResponse(
       responseStatus: map['responseStatus'] as bool,
       response: map['response'] as dynamic,
     );
@@ -35,15 +37,15 @@ class Response {
 
   String toJson() => json.encode(toMap());
 
-  factory Response.fromJson(String source) =>
-      Response.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory CustomResponse.fromJson(String source) =>
+      CustomResponse.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() =>
-      'Response(responseStatus: $responseStatus, response: $response)';
+      'CustomResponse(responseStatus: $responseStatus, response: $response)';
 
   @override
-  bool operator ==(covariant Response other) {
+  bool operator ==(covariant CustomResponse other) {
     if (identical(this, other)) return true;
 
     return other.responseStatus == responseStatus && other.response == response;

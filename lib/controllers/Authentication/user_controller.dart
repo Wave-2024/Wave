@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wave/data/users_data.dart';
+import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/enums.dart';
@@ -84,5 +85,19 @@ class UserDataController extends ChangeNotifier {
     searchedUsers = users;
     printInfo(info: "Number of users found : ${searchedUsers.length}");
     notifyListeners();
+  }
+
+  Future<CustomResponse> updateProfile(
+      {String? name, String? bio, String? username}) async {
+    CustomResponse customResponse = await UserData.updateUser(
+        userId: user!.id,
+        name: name ?? user!.name,
+        username: username ?? user!.username,
+        bio: bio ?? user!.bio ?? "");
+
+    if (customResponse.responseStatus) {
+      user!.copyWith(bio: bio, name: name, username: username);
+    }
+    return customResponse;
   }
 }

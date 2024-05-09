@@ -138,7 +138,7 @@ class RegisterScreen extends StatelessWidget {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             // Try to register
-                            res.Response registrationResponse =
+                            res.CustomResponse registrationResponse =
                                 await authController.startRegistrationProcess(
                                     email: emailController.text,
                                     password: passwordController.text,
@@ -177,7 +177,7 @@ class RegisterScreen extends StatelessWidget {
                                 borderRadius: 5,
                                 message: userController.user!.name,
                               ));
-                                Get.offNamed(AppRoutes.homeNavigationScreen);
+                              Get.offNamed(AppRoutes.homeNavigationScreen);
                             }
                             // If registration failed
                             else {

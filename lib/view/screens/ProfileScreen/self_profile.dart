@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -11,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
-import 'package:wave/utils/routing.dart';
+import 'package:wave/view/screens/ProfileScreen/more_options.dart';
 
 class SelfProfile extends StatelessWidget {
   const SelfProfile({super.key});
@@ -48,7 +47,7 @@ class SelfProfile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
-                      height: displayHeight(context) * 0.32,
+                      height: displayHeight(context) * 0.3,
                       width: double.infinity,
                       // color: Colors.red.shade100,
                       child: Stack(
@@ -59,13 +58,13 @@ class SelfProfile extends StatelessWidget {
                               ? CachedNetworkImage(
                                   imageUrl:
                                       userDataController.user!.coverPicture,
-                                  height: displayHeight(context) * 0.25,
+                                  height: displayHeight(context) * 0.22,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                 )
                               : Image.asset(
                                   CustomLogo.logo,
-                                  height: displayHeight(context) * 0.35,
+                                  height: displayHeight(context) * 0.22,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                 ),
@@ -99,7 +98,7 @@ class SelfProfile extends StatelessWidget {
                       userDataController.user!.name,
                       style: TextStyle(
                           fontFamily: CustomFont.poppins,
-                          fontSize: 26,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -109,7 +108,7 @@ class SelfProfile extends StatelessWidget {
                       '@${userDataController.user!.username}',
                       style: TextStyle(
                           fontFamily: CustomFont.poppins,
-                          fontSize: 14,
+                          fontSize: 13,
                           color: Colors.black54,
                           fontWeight: FontWeight.w300),
                     ),
@@ -122,12 +121,12 @@ class SelfProfile extends StatelessWidget {
                         // color: Colors.red.shade100,
                         child: Text(
                           userDataController.user!.bio ?? "",
-                          maxLines: 2,
+                          maxLines: 3,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: CustomFont.poppins,
                               color: const Color(0xfbA9A9A9),
-                              fontSize: 14,
+                              fontSize: 13.6,
                               fontWeight: FontWeight.w100),
                         ),
                       ),
@@ -139,7 +138,7 @@ class SelfProfile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         MaterialButton(
-                          height: displayHeight(context) * 0.05,
+                          height: displayHeight(context) * 0.045,
                           onPressed: () {
                             printInfo(info: "tapped to follow");
                           },
@@ -165,7 +164,7 @@ class SelfProfile extends StatelessWidget {
                           ),
                         ),
                         MaterialButton(
-                          height: displayHeight(context) * 0.05,
+                          height: displayHeight(context) * 0.045,
                           onPressed: () {
                             printInfo(info: "tapped to follow");
                           },
@@ -195,31 +194,12 @@ class SelfProfile extends StatelessWidget {
                           width: displayWidth(context) * 0.1,
                           child: MaterialButton(
                             onPressed: () {
-                              Get.bottomSheet(
-                                  backgroundColor: Colors.white,
-                                  barrierColor: Colors
-                                      .black38, // Background color outside the bottom sheet
-                                  isDismissible: true,
-                                  Wrap(
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.logout),
-                                        title: Text('Logout'),
-                                        onTap: () async {
-                                          // Close the bottom sheet
-                                          await Provider.of<
-                                                      AuthScreenController>(
-                                                  context,
-                                                  listen: false)
-                                              .signOut(
-                                                  firebaseAuth:
-                                                      FirebaseAuth.instance);
-                                          Get.offAllNamed(
-                                              AppRoutes.loginScreen);
-                                        },
-                                      ),
-                                    ],
-                                  ));
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return MoreOptionsModalSheet();
+                                },
+                              );
                             },
                             shape: RoundedRectangleBorder(
                               side: const BorderSide(
@@ -257,7 +237,7 @@ class SelfProfile extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   Image.asset(CustomIcon.photosIcon,
-                                      height: 23),
+                                      height: 18),
                                   const SizedBox(
                                     width: 10,
                                   ),
@@ -265,7 +245,7 @@ class SelfProfile extends StatelessWidget {
                                     'Photos',
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
-                                        fontSize: 15),
+                                        fontSize: 13),
                                   ),
                                 ],
                               ),
@@ -294,7 +274,7 @@ class SelfProfile extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Image.asset(CustomIcon.videoIcon, height: 23),
+                                  Image.asset(CustomIcon.videoIcon, height: 18),
                                   const SizedBox(
                                     width: 10,
                                   ),
@@ -302,7 +282,7 @@ class SelfProfile extends StatelessWidget {
                                     "Videos",
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
-                                        fontSize: 15),
+                                        fontSize: 13),
                                   ),
                                 ],
                               ),
@@ -337,7 +317,7 @@ class SelfProfile extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Image.asset(CustomIcon.savedIcon, height: 23),
+                                  Image.asset(CustomIcon.savedIcon, height: 18),
                                   const SizedBox(
                                     width: 10,
                                   ),
@@ -345,7 +325,7 @@ class SelfProfile extends StatelessWidget {
                                     'Saved',
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
-                                        fontSize: 15),
+                                        fontSize: 13),
                                   ),
                                 ],
                               ),
