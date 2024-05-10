@@ -35,7 +35,8 @@ class PostContent {
 
   String toJson() => json.encode(toMap());
 
-  factory PostContent.fromJson(String source) => PostContent.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory PostContent.fromJson(String source) =>
+      PostContent.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() => 'PostContent(type: $type, url: $url)';
@@ -43,10 +44,8 @@ class PostContent {
   @override
   bool operator ==(covariant PostContent other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.type == type &&
-      other.url == url;
+
+    return other.type == type && other.url == url;
   }
 
   @override

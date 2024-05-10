@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -94,12 +95,27 @@ class SelfProfile extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      userDataController.user!.name,
-                      style: TextStyle(
-                          fontFamily: CustomFont.poppins,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          userDataController.user!.name,
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontFamily: CustomFont.poppins,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Visibility(
+                            visible: userDataController.user!.verified,
+                            child: Image.asset(
+                              CustomIcon.verifiedIcon,
+                              height: 18,
+                            ))
+                      ],
                     ),
                     const SizedBox(
                       height: 5,
@@ -147,21 +163,11 @@ class SelfProfile extends StatelessWidget {
                             side: const BorderSide(
                                 color: Colors.blue), // Border color
                           ),
-                          child: Row(
-                            mainAxisSize:
-                                MainAxisSize.min, // Use only the needed space
-                            children: <Widget>[
-                              Image.asset(
-                                CustomIcon.doubleCheckIcon,
-                                height: 20,
-                              ), // Icon with color
-                              const SizedBox(
-                                  width: 8), // Space between icon and text
-                              const Text('Following',
-                                  style: TextStyle(
-                                      color: Colors.blue)), // Text with color
-                            ],
-                          ),
+                          child: Text('10C Followers',
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontFamily: CustomFont.poppins,
+                                  fontSize: 13)),
                         ),
                         MaterialButton(
                           height: displayHeight(context) * 0.045,
@@ -173,22 +179,11 @@ class SelfProfile extends StatelessWidget {
                             // Border color
                           ),
                           color: CustomColor.primaryColor.withOpacity(0.8),
-                          child: Row(
-                            mainAxisSize:
-                                MainAxisSize.min, // Use only the needed space
-                            children: <Widget>[
-                              Image.asset(
-                                CustomIcon.sendMessageIcon,
-                                height: 20,
-                                color: Colors.white,
-                              ), // Icon with color
-                              const SizedBox(
-                                  width: 8), // Space between icon and text
-                              const Text('Message',
-                                  style: TextStyle(
-                                      color: Colors.white)), // Text with color
-                            ],
-                          ),
+                          child: Text('170 Following',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: CustomFont.poppins,
+                                  fontSize: 13)),
                         ),
                         SizedBox(
                           width: displayWidth(context) * 0.1,
@@ -197,7 +192,7 @@ class SelfProfile extends StatelessWidget {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
-                                  return MoreOptionsModalSheet();
+                                  return const MoreOptionsModalSheet();
                                 },
                               );
                             },

@@ -152,6 +152,7 @@ class RegisterScreen extends StatelessWidget {
                               String name = nameController.text.trim();
                               name = capitalizeWords(name);
                               User currentUser = User(
+                                  verified: false,
                                   account_type: ACCOUNT_TYPE.PUBLIC,
                                   name: name,
                                   email: emailController.text,
