@@ -11,10 +11,16 @@ import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/util_functions.dart';
 
 class UserDataController extends ChangeNotifier {
+  int otherProfileViewOptions = 0;
   User? user;
   USER userState = USER.ABSENT;
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
+
+  void changeOtherProfileViewOptions(int index) {
+    otherProfileViewOptions = index;
+    notifyListeners();
+  }
 
   Future<void> setUser({String? userID, User? user}) async {
     if (userState != USER.LOADING) {

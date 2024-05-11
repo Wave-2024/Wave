@@ -5,6 +5,7 @@ import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
 import 'package:wave/view/screens/CreatePostScreen/search_to_mention.dart';
 import 'package:wave/view/screens/HomeNavigation/home_navigation_screen.dart';
 import 'package:wave/view/screens/ProfileScreen/edit_profile_screen.dart';
+import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
 import 'package:wave/view/screens/SplashScreen/splash_screen.dart';
 
 class AppRoutes {
@@ -15,8 +16,14 @@ class AppRoutes {
   static const String editProfileScreen = '/editProfileScreen';
   static const String createNewPostScreen = '/createNewPostScreen';
   static const String searchToMentionScreen = '/searchToMentionScreen';
+    static const String profileScreen = '/profileScreen';
+
 
   static final List<GetPage> routes = [
+        GetPage(name: profileScreen, page: () => ProfileScreen()
+        ,transition: Transition.downToUp
+        ),
+
     GetPage(name: loginScreen, page: () => LoginScreen()),
     GetPage(name: registerScreen, page: () => RegisterScreen()),
     GetPage(name: splashScreen, page: () => SplashScreen()),

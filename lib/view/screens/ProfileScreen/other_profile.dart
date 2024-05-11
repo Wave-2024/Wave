@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
@@ -6,12 +8,8 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/device_size.dart';
-import 'package:wave/utils/enums.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
-import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/view/screens/ProfileScreen/more_options.dart';
 
 class OtherProfile extends StatefulWidget {
@@ -38,7 +36,6 @@ class _OtherProfileState extends State<OtherProfile> {
           if (otherUserSnapshot.connectionState == ConnectionState.done &&
               otherUserSnapshot.data != null) {
             User? otherUser = otherUserSnapshot.data!;
-            // TODO : @Shruti-1910 Implement the other profile UI
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -70,16 +67,49 @@ class _OtherProfileState extends State<OtherProfile> {
                           backgroundColor: Colors.white,
                           child: CircleAvatar(
                             radius: displayWidth(context) * 0.15,
-                            backgroundImage: (otherUser.displayPicture !=
-                                        null &&
-                                    otherUser.displayPicture!.isNotEmpty)
-                                ? CachedNetworkImageProvider(
-                                    otherUser.displayPicture!)
-                                : const AssetImage("assets/logo/logo.png")
-                                    as ImageProvider,
+                            backgroundImage:
+                                (otherUser.displayPicture != null &&
+                                        otherUser.displayPicture!.isNotEmpty)
+                                    ? CachedNetworkImageProvider(
+                                        otherUser.displayPicture!)
+                                    : const AssetImage("assets/logo/logo.png")
+                                        as ImageProvider,
                           ),
                         ),
-                      )
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 10,
+                        child: MaterialButton(
+                          padding: EdgeInsets.all(8),
+                          height: displayHeight(context) * 0.05,
+                          onPressed: () {
+                            printInfo(info: "tapped to follow");
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: const BorderSide(
+                                color: Colors.blue), // Border color
+                          ),
+                          child: Row(
+                            mainAxisSize:
+                                MainAxisSize.min, // Use only the needed space
+                            children: <Widget>[
+                              Image.asset(
+                                CustomIcon.doubleCheckIcon,
+                                height: 18,
+                              ), // Icon with color
+                              const SizedBox(
+                                  width: 4), // Space between icon and text
+                              Text('Following',
+                                  style: TextStyle(
+                                      fontFamily: CustomFont.poppins,
+                                      fontSize: 12,
+                                      color: Colors.blue)), // Text with color
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -154,7 +184,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         side: const BorderSide(
                             color: Colors.blue), // Border color
                       ),
-                      child: Text('10C Followers',
+                      child: Text('10 Followers',
                           style: TextStyle(
                               color: Colors.blue,
                               fontFamily: CustomFont.poppins,
@@ -207,127 +237,140 @@ class _OtherProfileState extends State<OtherProfile> {
                   color: Colors.grey,
                   thickness: 0.2,
                   height: 40,
-                ), // First Divider
-                Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceEvenly, // To space out the rows evenly
-                  children: <Widget>[
-                    // Each Column below represents one of the three rows you described
-                    InkWell(
-                      onTap: () {
-                      },
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Image.asset(CustomIcon.photosIcon, height: 18),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Photos',
-                                style: TextStyle(
-                                    fontFamily: CustomFont.poppins,
-                                    fontSize: 13),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Visibility(
-                            visible: false,
-                            child: Container(
-                                height: 2.5,
-                                width: displayWidth(context) * 0.25,
-                                color:
-                                    CustomColor.primaryColor.withOpacity(0.7)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        
-                      },
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Image.asset(CustomIcon.videoIcon, height: 18),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                "Videos",
-                                style: TextStyle(
-                                    fontFamily: CustomFont.poppins,
-                                    fontSize: 13),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Visibility(
-                            visible: false,
-                            child: InkWell(
-                              onTap: () {
-                                
-                              },
-                              child: Container(
-                                  height: 2.5,
-                                  width: displayWidth(context) * 0.25,
-                                  color: CustomColor.primaryColor
-                                      .withOpacity(0.7)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        
-                      },
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Image.asset(CustomIcon.savedIcon, height: 18),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Saved',
-                                style: TextStyle(
-                                    fontFamily: CustomFont.poppins,
-                                    fontSize: 13),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Visibility(
-                            visible: false,
-                            child: InkWell(
-                              onTap: () {
-                              },
-                              child: Container(
-                                  height: 2.5,
-                                  width: displayWidth(context) * 0.25,
-                                  color: CustomColor.primaryColor
-                                      .withOpacity(0.7)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
+
+                // First Divider
+
+                Consumer<UserDataController>(
+                  builder: (context, userDataController, child) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceEvenly, // To space out the rows evenly
+                      children: <Widget>[
+                        // Each Column below represents one of the three rows you described
+                        InkWell(
+                          onTap: () {
+                            userDataController.changeOtherProfileViewOptions(0);
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.savedIcon, height: 18),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'All',
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible: userDataController
+                                        .otherProfileViewOptions ==
+                                    0,
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                      height: 2.5,
+                                      width: displayWidth(context) * 0.25,
+                                      color: CustomColor.primaryColor
+                                          .withOpacity(0.7)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            userDataController.changeOtherProfileViewOptions(1);
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.photosIcon,
+                                      height: 18),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Photos',
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible: userDataController
+                                        .otherProfileViewOptions ==
+                                    1,
+                                child: Container(
+                                    height: 2.5,
+                                    width: displayWidth(context) * 0.25,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            userDataController.changeOtherProfileViewOptions(2);
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.videoIcon, height: 18),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Videos",
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible: userDataController
+                                        .otherProfileViewOptions ==
+                                    2,
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                      height: 2.5,
+                                      width: displayWidth(context) * 0.25,
+                                      color: CustomColor.primaryColor
+                                          .withOpacity(0.7)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
                 const Divider(
                   color: Colors.grey,
                   thickness: 0.2,

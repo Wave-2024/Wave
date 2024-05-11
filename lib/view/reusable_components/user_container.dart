@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/constants/custom_icons.dart';
+import 'package:wave/utils/routing.dart';
 
 class UserContainerTile extends StatelessWidget {
   User user;
@@ -11,7 +14,7 @@ class UserContainerTile extends StatelessWidget {
     return ListTile(
       onTap: () {
         // TODO : Navigate to the profile screen
-        // Get.toNamed()
+        Get.toNamed(AppRoutes.profileScreen,arguments: user.id);
       },
       subtitle: Text(
         user.username,
@@ -27,9 +30,25 @@ class UserContainerTile extends StatelessWidget {
             ? const Icon(Icons.person)
             : null,
       ),
-      title: Text(
-        user.name,
-        style: TextStyle(fontFamily: CustomFont.poppins, letterSpacing: 0.1),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            user.name,
+            style:
+                TextStyle(fontFamily: CustomFont.poppins, letterSpacing: 0.1),
+          ),
+          const SizedBox(
+            width: 2,
+          ),
+          Visibility(
+              visible: user.verified,
+              child: Image.asset(
+                CustomIcon.verifiedIcon,
+                height: 15,
+              ))
+        ],
       ),
     );
   }
