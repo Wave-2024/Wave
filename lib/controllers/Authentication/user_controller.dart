@@ -11,10 +11,26 @@ import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/util_functions.dart';
 
 class UserDataController extends ChangeNotifier {
+  int otherProfileViewOptions = 0;
   User? user;
   USER userState = USER.ABSENT;
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
+
+  Map<String, User> otherUsers = {};
+
+  bool otherUserDataPresent(String otherUserId) =>
+      otherUsers.containsKey(otherUserId);
+
+  Future<void> updateOtherUserData(String otherUserId) async {
+    otherUsers[otherUserId] = await UserData.getUser(userID: otherUserId);
+    notifyListeners();
+  }
+
+  void changeOtherProfileViewOptions(int index) {
+    otherProfileViewOptions = index;
+    notifyListeners();
+  }
 
   Future<void> setUser({String? userID, User? user}) async {
     if (userState != USER.LOADING) {

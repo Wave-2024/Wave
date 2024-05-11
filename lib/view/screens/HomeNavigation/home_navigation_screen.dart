@@ -6,6 +6,7 @@ import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/keys.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ChatScreen/chat_list_screen.dart';
 import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
 import 'package:wave/view/screens/ExploreScreen/explore_screen.dart';
@@ -33,8 +34,12 @@ class HomeNavigationScreen extends StatelessWidget {
           return BottomNavigationBar(
               key: Key(Keys.keyForBottomNavButton),
               onTap: (newScreenIndex) {
-                Get.printInfo(info: "Selected ${newScreenIndex} index");
-                homeNavController.setCurrentScreenIndex(newScreenIndex);
+                if (newScreenIndex == 2) {
+                  Get.toNamed(AppRoutes.createNewPostScreen);
+                } else {
+                  Get.printInfo(info: "Selected ${newScreenIndex} index");
+                  homeNavController.setCurrentScreenIndex(newScreenIndex);
+                }
               },
               elevation: 0,
               currentIndex: homeNavController.currentScreenIndex,

@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
-import 'package:wave/utils/routing.dart';
 
-class UserContainerTile extends StatelessWidget {
+class MentionUserTile extends StatelessWidget {
   User user;
-  UserContainerTile({super.key, required this.user});
+  bool isMentioned;
+  final VoidCallback onPressed;
+  MentionUserTile(
+      {super.key,
+      required this.user,
+      required this.isMentioned,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        // TODO : Navigate to the profile screen
-        Get.toNamed(AppRoutes.profileScreen,arguments: user.id);
+        onPressed();
       },
       subtitle: Text(
         user.username,
@@ -39,7 +42,7 @@ class UserContainerTile extends StatelessWidget {
             style:
                 TextStyle(fontFamily: CustomFont.poppins, letterSpacing: 0.1),
           ),
-          const SizedBox(
+          SizedBox(
             width: 2,
           ),
           Visibility(
@@ -50,6 +53,12 @@ class UserContainerTile extends StatelessWidget {
               ))
         ],
       ),
+      trailing: Visibility(
+          visible: isMentioned,
+          child: Image.asset(
+            CustomIcon.doubleCheckIcon,
+            height: 20,
+          )),
     );
   }
 }
