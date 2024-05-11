@@ -17,6 +17,16 @@ class UserDataController extends ChangeNotifier {
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
 
+  Map<String, User> otherUsers = {};
+
+  bool otherUserDataPresent(String otherUserId) =>
+      otherUsers.containsKey(otherUserId);
+
+  Future<void> updateOtherUserData(String otherUserId) async {
+    otherUsers[otherUserId] = await UserData.getUser(userID: otherUserId);
+    notifyListeners();
+  }
+
   void changeOtherProfileViewOptions(int index) {
     otherProfileViewOptions = index;
     notifyListeners();
