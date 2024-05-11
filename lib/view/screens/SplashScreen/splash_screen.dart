@@ -39,8 +39,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Get.offNamed(AppRoutes.loginScreen);
   }
 
-  _navigatetohome() async {
-    await Future.delayed(Duration(milliseconds: 3000), () {});
+  _navigatetohome(String userId) async {
+    await Provider.of<UserDataController>(context,listen: false).setUser(userID: userId);
     Get.offNamed(AppRoutes.homeNavigationScreen);
   }
 
