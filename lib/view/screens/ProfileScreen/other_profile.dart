@@ -224,7 +224,8 @@ class _OtherProfileState extends State<OtherProfile> {
                           side: const BorderSide(
                               color: Colors.blue), // Border color
                         ),
-                        child: Text('10 Followers',
+                        child: Text(
+                            '${otherUser.followers.length}${(otherUser.followers.length > 1) ? ' Followers' : ' Follower'}',
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontFamily: CustomFont.poppins,
@@ -233,14 +234,14 @@ class _OtherProfileState extends State<OtherProfile> {
                       MaterialButton(
                         height: displayHeight(context) * 0.045,
                         onPressed: () {
-                          printInfo(info: "tapped to follow");
+                          printInfo(info: "tapped to follfgodfdfw");
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                           // Border color
                         ),
                         color: CustomColor.primaryColor.withOpacity(0.8),
-                        child: Text('170 Following',
+                        child: Text('${otherUser.following.length} Following',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: CustomFont.poppins,
