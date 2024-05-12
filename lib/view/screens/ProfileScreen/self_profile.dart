@@ -11,7 +11,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/utils/routing.dart';
-import 'package:wave/view/screens/ProfileScreen/more_options.dart';
+import 'package:wave/view/screens/ProfileScreen/more_options_self.dart';
 
 class SelfProfile extends StatelessWidget {
   const SelfProfile({super.key});
@@ -200,7 +200,7 @@ class SelfProfile extends StatelessWidget {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
-                                  return const MoreOptionsModalSheet();
+                                  return const MoreOptionsForSelfProfile();
                                 },
                               );
                             },

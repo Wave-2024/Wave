@@ -9,8 +9,8 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/routing.dart';
 
-class MoreOptionsModalSheet extends StatelessWidget {
-  const MoreOptionsModalSheet({super.key});
+class MoreOptionsForSelfProfile extends StatelessWidget {
+  const MoreOptionsForSelfProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
