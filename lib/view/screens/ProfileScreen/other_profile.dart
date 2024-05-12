@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
@@ -36,7 +37,7 @@ class _OtherProfileState extends State<OtherProfile> {
           builder: (context, userDataController, child) {
             if (!userDataController.otherUserDataPresent(widget.otherUserId)) {
               userDataController.updateOtherUserData(widget.otherUserId);
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else {
               User otherUser =
                   userDataController.otherUsers[widget.otherUserId]!;
@@ -73,7 +74,7 @@ class _OtherProfileState extends State<OtherProfile> {
                               onPressed: () {
                                 Get.back();
                               },
-                              icon: Icon(Icons.arrow_back),
+                              icon: const Icon(Icons.arrow_back),
                               color: Colors.white,
                             )),
                         Positioned(
@@ -97,10 +98,23 @@ class _OtherProfileState extends State<OtherProfile> {
                           bottom: 0,
                           right: 10,
                           child: MaterialButton(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             height: displayHeight(context) * 0.05,
-                            onPressed: () {
-                              printInfo(info: "tapped to follow");
+                            onPressed: () async {
+                              if (userDataController
+                                  .followingUser(otherUser.id)) {
+                                // Current user is following the other user
+                                // Try to unfollow
+                                CustomResponse? customResponse =
+                                    await userDataController
+                                        .unFollowUser(widget.otherUserId);
+                              } else {
+                                // Current user is not following the other user
+                                // Try to follow
+                                CustomResponse? customResponse =
+                                    await userDataController
+                                        .followUser(widget.otherUserId);
+                              }
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -112,12 +126,22 @@ class _OtherProfileState extends State<OtherProfile> {
                                   MainAxisSize.min, // Use only the needed space
                               children: <Widget>[
                                 Image.asset(
-                                  CustomIcon.doubleCheckIcon,
-                                  height: 18,
+                                  (userDataController
+                                          .followingUser(otherUser.id))
+                                      ? CustomIcon.doubleCheckIcon
+                                      : CustomIcon.followIcon,
+                                  height: (userDataController
+                                          .followingUser(otherUser.id))
+                                      ? 18
+                                      : 16,
                                 ), // Icon with color
                                 const SizedBox(
-                                    width: 4), // Space between icon and text
-                                Text('Following',
+                                    width: 5), // Space between icon and text
+                                Text(
+                                    (userDataController
+                                            .followingUser(otherUser.id))
+                                        ? 'Following'
+                                        : 'Follow',
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
                                         fontSize: 12,
