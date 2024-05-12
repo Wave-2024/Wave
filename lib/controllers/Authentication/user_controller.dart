@@ -34,6 +34,10 @@ class UserDataController extends ChangeNotifier {
     await Future.delayed(Duration.zero);
     notifyListeners();
     List<dynamic> followingList = user!.following;
+    List<dynamic> followerList =
+        (await UserData.getUser(userID: otherUserId)).followers;
+
+    // Increase current user's followings
     followingList.add(otherUserId);
     CustomResponse customResponse =
         await UserData.updateUser(userId: user!.id, following: followingList);
@@ -42,30 +46,52 @@ class UserDataController extends ChangeNotifier {
       "Followed".printInfo();
       user!.copyWith(following: followingList);
     }
+
+    // Increasing other user's followers
+    followerList.add(user!.id);
+    customResponse =
+        await UserData.updateUser(userId: otherUserId, followers: followerList);
+
+    otherUsers[otherUserId] = await UserData.getUser(userID: otherUserId);
+
     following_user = FOLLOWING_USER.IDLE;
     notifyListeners();
+
     return customResponse;
   }
 
   Future<CustomResponse?> unFollowUser(String otherUserId) async {
     if (following_user == FOLLOWING_USER.FOLLOWING) {
-      "In process of following".printInfo();
+      "In process of following/unfollowing".printInfo();
       return null;
     }
     following_user = FOLLOWING_USER.FOLLOWING;
     await Future.delayed(Duration.zero);
     notifyListeners();
     List<dynamic> followingList = user!.following;
+    List<dynamic> followerList =
+        (await UserData.getUser(userID: otherUserId)).followers;
+
+    // Decrease current user's followings
     followingList.remove(otherUserId);
     CustomResponse customResponse =
         await UserData.updateUser(userId: user!.id, following: followingList);
 
     if (customResponse.responseStatus) {
-      "Unfollowed".printInfo();
+      "UnFollowed".printInfo();
       user!.copyWith(following: followingList);
     }
+
+    // Decreasing other user's followers
+    followerList.remove(user!.id);
+    customResponse =
+        await UserData.updateUser(userId: otherUserId, followers: followerList);
+
+    otherUsers[otherUserId] = await UserData.getUser(userID: otherUserId);
+
     following_user = FOLLOWING_USER.IDLE;
     notifyListeners();
+
     return customResponse;
   }
 

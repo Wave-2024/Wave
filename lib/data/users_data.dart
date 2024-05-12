@@ -24,6 +24,7 @@ class UserData {
     String? coverPicture,
     String? displayPicture,
     List<dynamic>? following,
+    List<dynamic>? followers,
   }) async {
     try {
       Map<String, dynamic> dataToUpdate = {};
@@ -36,6 +37,7 @@ class UserData {
       if (displayPicture != null)
         dataToUpdate['displayPicture'] = displayPicture;
       if (following != null) dataToUpdate['following'] = following;
+      if (followers != null) dataToUpdate['followers'] = followers;
 
       // Update the document in Firestore only if there's something to update
       if (dataToUpdate.isNotEmpty) {

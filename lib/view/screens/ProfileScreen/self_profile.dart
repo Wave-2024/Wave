@@ -163,7 +163,8 @@ class SelfProfile extends StatelessWidget {
                             side: const BorderSide(
                                 color: Colors.blue), // Border color
                           ),
-                          child: Text('10C Followers',
+                          child: Text(
+                              '${userDataController.user!.followers.length}${(userDataController.user!.followers.length > 1) ? ' Followers' : ' Follower'}',
                               style: TextStyle(
                                   color: Colors.blue,
                                   fontFamily: CustomFont.poppins,
@@ -179,7 +180,8 @@ class SelfProfile extends StatelessWidget {
                             // Border color
                           ),
                           color: CustomColor.primaryColor.withOpacity(0.8),
-                          child: Text('170 Following',
+                          child: Text(
+                              '${userDataController.user!.following.length} Following',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: CustomFont.poppins,
