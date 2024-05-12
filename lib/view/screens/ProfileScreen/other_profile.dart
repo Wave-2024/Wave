@@ -11,7 +11,8 @@ import 'package:wave/utils/device_size.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wave/utils/routing.dart';
-import 'package:wave/view/screens/ProfileScreen/more_options.dart';
+import 'package:wave/view/screens/ProfileScreen/more_options_other_profile.dart';
+import 'package:wave/view/screens/ProfileScreen/more_options_self.dart';
 
 class OtherProfile extends StatefulWidget {
   final String otherUserId;
@@ -257,7 +258,7 @@ class _OtherProfileState extends State<OtherProfile> {
                             showModalBottomSheet(
                               context: context,
                               builder: (context) {
-                                return const MoreOptionsModalSheet();
+                                return const MoreOptionForOtherProfile();
                               },
                             );
                           },
