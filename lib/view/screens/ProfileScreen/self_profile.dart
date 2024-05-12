@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -11,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ProfileScreen/more_options.dart';
 
 class SelfProfile extends StatelessWidget {
@@ -156,7 +156,10 @@ class SelfProfile extends StatelessWidget {
                         MaterialButton(
                           height: displayHeight(context) * 0.045,
                           onPressed: () {
-                            printInfo(info: "tapped to follow");
+                            Get.toNamed(AppRoutes.listUsersScreen, arguments: [
+                              userDataController.user!.followers,
+                              "Followers"
+                            ]);
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -173,7 +176,10 @@ class SelfProfile extends StatelessWidget {
                         MaterialButton(
                           height: displayHeight(context) * 0.045,
                           onPressed: () {
-                            printInfo(info: "tapped to follow");
+                            Get.toNamed(AppRoutes.listUsersScreen, arguments: [
+                              userDataController.user!.following,
+                              "Following"
+                            ]);
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),

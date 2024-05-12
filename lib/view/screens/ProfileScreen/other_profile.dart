@@ -10,6 +10,7 @@ import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ProfileScreen/more_options.dart';
 
 class OtherProfile extends StatefulWidget {
@@ -217,7 +218,8 @@ class _OtherProfileState extends State<OtherProfile> {
                       MaterialButton(
                         height: displayHeight(context) * 0.045,
                         onPressed: () {
-                          printInfo(info: "tapped to follow");
+                          Get.toNamed(AppRoutes.listUsersScreen,
+                              arguments: [otherUser.followers, "Followers"]);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -234,7 +236,8 @@ class _OtherProfileState extends State<OtherProfile> {
                       MaterialButton(
                         height: displayHeight(context) * 0.045,
                         onPressed: () {
-                          printInfo(info: "tapped to follfgodfdfw");
+                          Get.toNamed(AppRoutes.listUsersScreen,
+                              arguments: [otherUser.following, "Following"]);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
