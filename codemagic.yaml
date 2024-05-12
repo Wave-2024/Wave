@@ -1,6 +1,12 @@
 workflows:
   build_android:
     name: Build Android APK
+    on:
+      pull_request:
+        types: [closed]
+        branches:
+          - main
+    if: github.event.pull_request.merged == true
     environment:
       flutter: stable
       java: "17"
