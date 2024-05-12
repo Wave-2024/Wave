@@ -11,11 +11,10 @@ workflows:
         script: flutter build apk --release
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
-
-publishing:
-  email:
-    recipients:
-      - alphaisgod1@gmail.com
-      - skshrutikumari46@gmail.com
-    notify:
-      success: true
+    publishing:
+      email:
+        recipients:
+          - alphaisgod1@gmail.com
+          - skshrutikumari46@gmail.com
+        notify:
+          success: true
