@@ -22,6 +22,53 @@ class UserDataController extends ChangeNotifier {
   bool otherUserDataPresent(String otherUserId) =>
       otherUsers.containsKey(otherUserId);
 
+  bool followingUser(String otherUserId) =>
+      user!.following.contains(otherUserId);
+
+  Future<CustomResponse?> followUser(String otherUserId) async {
+    if (following_user == FOLLOWING_USER.FOLLOWING) {
+      "In process of following".printInfo();
+      return null;
+    }
+    following_user = FOLLOWING_USER.FOLLOWING;
+    await Future.delayed(Duration.zero);
+    notifyListeners();
+    List<dynamic> followingList = user!.following;
+    followingList.add(otherUserId);
+    CustomResponse customResponse =
+        await UserData.updateUser(userId: user!.id, following: followingList);
+
+    if (customResponse.responseStatus) {
+      "Followed".printInfo();
+      user!.copyWith(following: followingList);
+    }
+    following_user = FOLLOWING_USER.IDLE;
+    notifyListeners();
+    return customResponse;
+  }
+
+  Future<CustomResponse?> unFollowUser(String otherUserId) async {
+    if (following_user == FOLLOWING_USER.FOLLOWING) {
+      "In process of following".printInfo();
+      return null;
+    }
+    following_user = FOLLOWING_USER.FOLLOWING;
+    await Future.delayed(Duration.zero);
+    notifyListeners();
+    List<dynamic> followingList = user!.following;
+    followingList.remove(otherUserId);
+    CustomResponse customResponse =
+        await UserData.updateUser(userId: user!.id, following: followingList);
+
+    if (customResponse.responseStatus) {
+      "Unfollowed".printInfo();
+      user!.copyWith(following: followingList);
+    }
+    following_user = FOLLOWING_USER.IDLE;
+    notifyListeners();
+    return customResponse;
+  }
+
   Future<void> updateOtherUserData(String otherUserId) async {
     otherUsers[otherUserId] = await UserData.getUser(userID: otherUserId);
     notifyListeners();
