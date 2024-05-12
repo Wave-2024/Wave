@@ -14,9 +14,9 @@ class UserDataController extends ChangeNotifier {
   int otherProfileViewOptions = 0;
   User? user;
   USER userState = USER.ABSENT;
+  FOLLOWING_USER following_user = FOLLOWING_USER.IDLE;
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
-
   Map<String, User> otherUsers = {};
 
   bool otherUserDataPresent(String otherUserId) =>

@@ -16,38 +16,38 @@ class UserData {
     return user;
   }
 
+  static Future<CustomResponse> updateUser({
+    required String userId,
+    String? name,
+    String? username,
+    String? bio,
+    String? coverPicture,
+    String? displayPicture,
+    List<dynamic>? following,
+  }) async {
+    try {
+      Map<String, dynamic> dataToUpdate = {};
 
-static Future<CustomResponse> updateUser({
-  required String userId,
-  String? name,
-  String? username,
-  String? bio,
-  String? coverPicture,
-  String? displayPicture
-}) async {
-  try {
-    Map<String, dynamic> dataToUpdate = {};
-    
-    // Only add fields that are not null to the map
-    if (name != null) dataToUpdate['name'] = name;
-    if (username != null) dataToUpdate['username'] = username;
-    if (bio != null) dataToUpdate['bio'] = bio;
-    if (coverPicture != null) dataToUpdate['coverPicture'] = coverPicture;
-    if (displayPicture != null) dataToUpdate['displayPicture'] = displayPicture;
-    
-    // Update the document in Firestore only if there's something to update
-    if (dataToUpdate.isNotEmpty) {
-      await Database.userDatabase.doc(userId).update(dataToUpdate);
-      return CustomResponse(responseStatus: true, response: 'Update successful');
-    } else {
-      return CustomResponse(responseStatus: false, response: 'No data to update');
+      // Only add fields that are not null to the map
+      if (name != null) dataToUpdate['name'] = name;
+      if (username != null) dataToUpdate['username'] = username;
+      if (bio != null) dataToUpdate['bio'] = bio;
+      if (coverPicture != null) dataToUpdate['coverPicture'] = coverPicture;
+      if (displayPicture != null)
+        dataToUpdate['displayPicture'] = displayPicture;
+      if (following != null) dataToUpdate['following'] = following;
+
+      // Update the document in Firestore only if there's something to update
+      if (dataToUpdate.isNotEmpty) {
+        await Database.userDatabase.doc(userId).update(dataToUpdate);
+        return CustomResponse(
+            responseStatus: true, response: 'Update successful');
+      } else {
+        return CustomResponse(
+            responseStatus: false, response: 'No data to update');
+      }
+    } on FirebaseException catch (e) {
+      return CustomResponse(responseStatus: false, response: e.toString());
     }
-  } on FirebaseException catch (e) {
-    return CustomResponse(
-      responseStatus: false,
-      response: e.toString()
-    );
   }
-}
-
 }
