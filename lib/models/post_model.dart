@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 
 import 'package:wave/models/post_content_model.dart';
 
@@ -11,6 +12,7 @@ class Post {
   List<PostContent> postList;
   DateTime createdAt;
   String userId;
+  String caption;
   // List<dynamic> likes;
   List<dynamic> mentions;
   Post({
@@ -18,6 +20,7 @@ class Post {
     required this.postList,
     required this.createdAt,
     required this.userId,
+    required this.caption,
     required this.mentions,
   });
   // Collection based variables
@@ -31,13 +34,16 @@ class Post {
     List<PostContent>? postList,
     DateTime? createdAt,
     String? userId,
+    String? caption,
     List<dynamic>? mentions,
   }) {
+    
     return Post(
       id: id ?? this.id,
       postList: postList ?? this.postList,
       createdAt: createdAt ?? this.createdAt,
       userId: userId ?? this.userId,
+      caption: caption ?? this.caption,
       mentions: mentions ?? this.mentions,
     );
   }
@@ -48,6 +54,7 @@ class Post {
       'postList': postList.map((x) => x.toMap()).toList(),
       'createdAt': createdAt.millisecondsSinceEpoch,
       'userId': userId,
+      'caption': caption,
       'mentions': mentions,
     };
   }
@@ -62,6 +69,7 @@ class Post {
       ),
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
       userId: map['userId'] as String,
+      caption: map['caption'] as String,
       mentions: List<dynamic>.from((map['mentions'] as List<dynamic>)),
     );
   }
@@ -73,7 +81,7 @@ class Post {
 
   @override
   String toString() {
-    return 'Post(id: $id, postList: $postList, createdAt: $createdAt, userId: $userId,  mentions: $mentions)';
+    return 'Post(id: $id, postList: $postList, createdAt: $createdAt, userId: $userId, caption: $caption, mentions: $mentions)';
   }
 
   @override
@@ -84,6 +92,7 @@ class Post {
         listEquals(other.postList, postList) &&
         other.createdAt == createdAt &&
         other.userId == userId &&
+        other.caption == caption &&
         listEquals(other.mentions, mentions);
   }
 
@@ -93,6 +102,7 @@ class Post {
         postList.hashCode ^
         createdAt.hashCode ^
         userId.hashCode ^
+        caption.hashCode ^
         mentions.hashCode;
   }
 }

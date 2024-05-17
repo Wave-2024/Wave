@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/device_size.dart';
+import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/CreatePostScreen/add_image_for_post_box.dart';
 
@@ -14,9 +16,6 @@ class CreatePostScreen extends StatelessWidget {
   CreatePostScreen({super.key});
 
   TextEditingController captionController = TextEditingController();
-
-  final ScrollController scrollController = ScrollController();
-
   final FocusNode focusNode = FocusNode();
 
   List<User> mentionedUsers = [];
@@ -44,7 +43,6 @@ class CreatePostScreen extends StatelessWidget {
           child: Consumer<CreatePostController>(
             builder: (context, postController, child) {
               return SingleChildScrollView(
-                controller: scrollController,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12.0, vertical: 10),
@@ -147,7 +145,7 @@ class CreatePostScreen extends StatelessWidget {
                       Visibility(
                         visible: postController.mentionedUsers.isNotEmpty,
                         child: Container(
-                          color: Colors.yellow.shade100,
+                          // color: Colors.yellow.shade100,
                           height: displayHeight(context) * 0.12,
                           width: double.infinity,
                           child: ListView.builder(
@@ -213,28 +211,55 @@ class CreatePostScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15)),
                             height: displayHeight(context) * 0.06,
-                            onPressed: () async {},
+                            onPressed: () async {
+                              final res = await postController.createNewPost(
+                                  userId:
+                                      fb.FirebaseAuth.instance.currentUser!.uid,
+                                  caption: captionController.text);
+                              if (res.responseStatus) {
+                                Get.showSnackbar(const GetSnackBar(
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.green,
+                                  borderRadius: 5,
+                                  title: "Post Successfull!",
+                                  message:
+                                      "Post will be visible in a few minutes",
+                                ));
+                              } else {
+                                Get.showSnackbar(GetSnackBar(
+                                  backgroundColor: CustomColor.errorColor,
+                                  borderRadius: 5,
+                                  duration: const Duration(seconds: 2),
+                                  message: res.response.message.toString(),
+                                ));
+                              }
+                            },
                             color: CustomColor.primaryColor,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  CustomIcon.addPostIcon,
-                                  height: 15,
-                                  color: Colors.white,
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  "Create Post",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: CustomFont.poppins,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
+                            child: (postController.create_post ==
+                                    CREATE_POST.CREATING)
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        CustomIcon.addPostIcon,
+                                        height: 15,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Create Post",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: CustomFont.poppins,
+                                            color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
                       ),
