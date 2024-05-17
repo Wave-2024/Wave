@@ -1,7 +1,13 @@
 workflows:
   build_android:
     name: Build Android APK
-    branch: prod
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'prod'
+          include: true
+          source: true
     environment:
       flutter: stable
       java: "17"
