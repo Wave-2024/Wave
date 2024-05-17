@@ -30,6 +30,7 @@ environment:
 dependencies:
   badges: ^3.1.2
   cached_network_image: ^3.3.1
+  carousel_slider: ^4.2.1
   cloud_firestore: ^4.17.3
   comment_box: ^0.0.18
   cupertino_icons: ^1.0.6
@@ -38,13 +39,13 @@ dependencies:
   firebase_auth: ^4.19.5
   firebase_core: ^2.31.0
   firebase_storage: ^11.7.5
-  google_sign_in: ^6.2.1
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.2.0
   flutter_slidable: ^3.1.0
   flutter_staggered_grid_view: ^0.7.0
   get: ^4.6.6
+  google_sign_in: ^6.2.1
   icons_plus: ^5.0.0
   image_cropper: ^6.0.0
   image_picker: ^1.1.1

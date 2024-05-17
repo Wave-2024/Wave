@@ -108,7 +108,11 @@ class FeedScreen extends StatelessWidget {
                       PostContent(
                           type: "image",
                           url:
-                              "https://i.pinimg.com/564x/b8/de/d2/b8ded21f1c58ce939b37145edf3ddd47.jpg")
+                              "https://i.pinimg.com/564x/b8/de/d2/b8ded21f1c58ce939b37145edf3ddd47.jpg"),
+                      PostContent(
+                          type: "image",
+                          url:
+                              "https://i.pinimg.com/564x/ea/ec/83/eaec837884aa2825ac3359cc5ffeb65d.jpg")
                     ],
                     createdAt: DateTime.now(),
                     userId: "userId",
