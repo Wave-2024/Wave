@@ -189,6 +189,7 @@ class LoginScreen extends StatelessWidget {
                                     Get.showSnackbar(GetSnackBar(
                                       backgroundColor: CustomColor.errorColor,
                                       borderRadius: 5,
+                                      title: "Login Failed",
                                       duration: const Duration(seconds: 2),
                                       message: loginResponse.response.message
                                           .toString(),

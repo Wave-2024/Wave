@@ -18,5 +18,7 @@ class CustomIcon {
   static String verifiedIcon = "assets/icons/verified_ico.png";
   static String addImageIcon = "assets/icons/add_image_ico.png";
   static String followIcon = "assets/icons/follow_ico.png";
+  static String addStoryIcon = "assets/icons/add_story_ico.png";
+
   static String noUserFoundIcon = "assets/icons/no_user_found_ico.png";
 }

@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wave/data/post_data.dart';
 import 'package:wave/models/post_model.dart';
+import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/enums.dart';
@@ -20,6 +23,40 @@ class CreatePostController extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<CustomResponse> createNewPost(
+      {required String userId, String? caption}) async {
+    create_post = CREATE_POST.CREATING;
+    await Future.delayed(Duration.zero);
+    notifyListeners();
+    Post post = Post(
+        id: "",
+        postList: [],
+        createdAt: DateTime.now(),
+        userId: userId,
+        caption: "caption",
+        mentions: []);
+
+    var res = await Database.postDatabase.add(post.toMap());
+    String postId = res.id;
+
+    post = await PostData.createPostModel(
+        userId: userId,
+        caption: caption,
+        id: postId,
+        mediaFiles: selectedMediaFiles,
+        mentionedUsers: mentionedUsers);
+    try {
+      await Database.postDatabase.doc(postId).update(post.toMap());
+      create_post = CREATE_POST.IDLE;
+      notifyListeners();
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (e) {
+      create_post = CREATE_POST.IDLE;
+      notifyListeners();
+      return CustomResponse(responseStatus: false, response: e.toString());
+    }
   }
 
   Future<void> searchUserUsingQuery(String searchString) async {
