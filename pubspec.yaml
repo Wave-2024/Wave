@@ -38,6 +38,7 @@ dependencies:
   firebase_auth: ^4.19.5
   firebase_core: ^2.31.0
   firebase_storage: ^11.7.5
+  google_sign_in: ^6.2.1
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.2.0

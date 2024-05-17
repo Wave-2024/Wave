@@ -9,12 +9,14 @@ import 'package:wave/models/response_model.dart' as res;
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/services/auth_services.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/constants/keys.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
+
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -242,7 +244,7 @@ class RegisterScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
                     height: 50,
-                    onPressed: () {},
+                    onPressed: () => AuthService(fb.FirebaseAuth.instance).signInWithGoogle(),
                     color: CustomColor.authTextBoxColor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
