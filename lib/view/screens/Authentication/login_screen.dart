@@ -1,3 +1,6 @@
+//import 'dart:html';
+
+import 'package:firebase_auth/firebase_auth.dart'; 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart' as res;
+import 'package:wave/services/auth_services.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
@@ -243,7 +247,7 @@ class LoginScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15)),
                           height: 50,
-                          onPressed: () {},
+                          onPressed: () => AuthService(fb.FirebaseAuth.instance).signInWithGoogle(),
                           color: CustomColor.authTextBoxColor,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
