@@ -9,7 +9,7 @@ import 'package:wave/utils/constants/keys.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ChatScreen/chat_list_screen.dart';
 import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
-import 'package:wave/view/screens/ExploreScreen/explore_screen.dart';
+import 'package:wave/view/screens/FeedScreen/feed_screen.dart';
 import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
 import 'package:wave/view/screens/SearchScreen/search_screen.dart';
 
@@ -17,7 +17,7 @@ class HomeNavigationScreen extends StatelessWidget {
   HomeNavigationScreen({super.key});
 
   final List<dynamic> screens = [
-    ExploreScreen(),
+    FeedScreen(),
     SearchScreen(),
     CreatePostScreen(),
     ChatListScreen(),
