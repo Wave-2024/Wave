@@ -65,4 +65,11 @@ class AuthScreenController extends ChangeNotifier {
     await prefs.setBool(Pref.login_pref, false);
     await prefs.setString(Pref.user_id, "");
   }
+
+  Future<CustomResponse> loginWithGoogle(
+      {required FirebaseAuth firebaseAuth}) async {
+    var auth = AuthService(firebaseAuth);
+    CustomResponse customResponse = await auth.signInWithGoogle();
+    return customResponse;
+  }
 }
