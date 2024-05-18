@@ -10,7 +10,6 @@ import 'package:wave/models/response_model.dart' as res;
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
-import 'package:wave/services/auth_services.dart';
 import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';

@@ -217,6 +217,7 @@ class CreatePostScreen extends StatelessWidget {
                                       fb.FirebaseAuth.instance.currentUser!.uid,
                                   caption: captionController.text);
                               if (res.responseStatus) {
+                                postController.resetController();
                                 Get.showSnackbar(const GetSnackBar(
                                   duration: Duration(seconds: 2),
                                   backgroundColor: Colors.green,
@@ -238,7 +239,9 @@ class CreatePostScreen extends StatelessWidget {
                             child: (postController.create_post ==
                                     CREATE_POST.CREATING)
                                 ? const Center(
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    ),
                                   )
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,

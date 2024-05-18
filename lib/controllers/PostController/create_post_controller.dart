@@ -13,9 +13,16 @@ import 'package:wave/utils/util_functions.dart';
 class CreatePostController extends ChangeNotifier {
   CREATE_POST create_post = CREATE_POST.IDLE;
   List<User> mentionedUsers = [];
-  Post? post;
   List<User> searchedUsers = [];
   List<File> selectedMediaFiles = [];
+
+  void resetController() {
+    create_post = CREATE_POST.IDLE;
+    mentionedUsers = [];
+    searchedUsers = [];
+    selectedMediaFiles = [];
+    notifyListeners();
+  }
 
   void addMediaFiles(List<XFile> files) {
     for (var index = 0; index < files.length; ++index) {
