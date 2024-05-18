@@ -15,24 +15,27 @@ class TextBoxForEditProfile extends StatelessWidget {
       this.maxLength,
       this.uniqueKey,
       this.readOnly,
+      this.onChanged,
       this.validator});
 
   final String label;
   final TextEditingController controller;
   final bool visible;
   final Icon? prefixIcon;
-  final suffixIcon;
+  final Widget? suffixIcon;
   int? maxLength;
   int? maxLines;
   String? uniqueKey;
   bool? readOnly;
+  Function(String)? onChanged;
   String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: maxLines == null ? displayHeight(context) * 0.1 : null,
+      height: maxLines == null ? displayHeight(context) * 0.11 : null,
       child: TextFormField(
+        onChanged: onChanged,
         maxLines: maxLines,
         minLines: 1,
         key: uniqueKey != null ? Key(uniqueKey!) : null,

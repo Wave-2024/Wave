@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,12 +34,20 @@ class MoreOptionsForSelfProfile extends StatelessWidget {
             return ListTile(
               leading: CircleAvatar(
                 radius: 14,
-                backgroundImage: userDataController.user!.displayPicture !=
-                            null &&
-                        userDataController.user!.displayPicture!.isNotEmpty
-                    ? CachedNetworkImageProvider(
-                        userDataController.user!.displayPicture!)
-                    : AssetImage(CustomIcon.profileFullIcon) as ImageProvider,
+                backgroundImage:
+                    userDataController.user!.displayPicture != null &&
+                            userDataController.user!.displayPicture!.isNotEmpty
+                        ? CachedNetworkImageProvider(
+                            userDataController.user!.displayPicture!)
+                        : null,
+                child: userDataController.user!.displayPicture == null ||
+                        userDataController.user!.displayPicture!.isEmpty
+                    ? Image.asset(
+                        CustomIcon.profileFullIcon,
+                        height: 15,
+                        fit: BoxFit.contain,
+                      )
+                    : null,
               ),
               title: Text(
                 'Edit Profile',
