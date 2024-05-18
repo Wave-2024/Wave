@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -14,6 +15,7 @@ import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
+import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/image_config.dart';
 import 'package:wave/view/reusable_components/textbox_editprofile.dart';
@@ -31,17 +33,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController bioController = TextEditingController();
   CroppedFile? croppedImageForCoverPhoto;
   CroppedFile? croppedImageForDisplayPicture;
-
+  Timer? debounce;
+  late User user;
+  bool foundUniqueUsername = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    User user = Get.arguments as User;
+    user = Get.arguments as User;
     "Entered Edit Profile Screen with User ${user.name}".printInfo();
     nameController = TextEditingController(text: user.name);
     bioController = TextEditingController(text: user.bio);
     userNameController = TextEditingController(text: user.username);
+    userNameController.addListener(isUsernameUnique);
+  }
+
+  @override
+  void dispose() {
+    debounce?.cancel();
+    super.dispose();
+  }
+
+  Future<void> isUsernameUnique() async {
+    if (debounce?.isActive ?? false) debounce?.cancel();
+    debounce = Timer(const Duration(milliseconds: 800), () async {
+      final QuerySnapshot result = await Database.userDatabase
+          .where('username', isEqualTo: userNameController.text)
+          .get();
+      printInfo(info: "Searching for: ${userNameController.text}");
+      final List<DocumentSnapshot> documents = result.docs;
+      foundUniqueUsername = documents.isEmpty;
+      setState(() {});
+    });
   }
 
   @override
@@ -225,11 +249,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         height: 15,
                       ),
                       TextBoxForEditProfile(
+                        suffixIcon: (user.username != userNameController.text)
+                            ? foundUniqueUsername
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                    size: 16,
+                                  )
+                                : Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: CustomColor.errorColor,
+                                  )
+                            : null,
+                        onChanged: (p0) => isUsernameUnique(),
                         controller: userNameController,
                         label: "Username",
                         // prefixIcon: Icon(Icons.person_2),
                         uniqueKey: "editUserName",
                         visible: true,
+                        maxLines: 1,
+
                         maxLength: 25,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -265,53 +305,76 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           height: displayHeight(context) * 0.06,
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              if (_formKey.currentState!.validate()) {
+                              bool isUsernameChanged =
+                                  user.username != userNameController.text;
+                              bool canUpdateProfile =
+                                  !isUsernameChanged || foundUniqueUsername;
+                              String successMessage =
+                                  "Your profile has been updated successfully.";
+                              String errorMessage = isUsernameChanged
+                                  ? "The username you entered is already in use. Please choose another."
+                                  : "An unexpected error occurred. Please try again later.";
+
+                              if (canUpdateProfile) {
                                 StreamSubscription<CustomResponse>? sub;
                                 sub = userDataController
                                     .updateProfile(
-                                        bio: bioController.text.trim(),
-                                        name: nameController.text.trim(),
-                                        username:
-                                            userNameController.text.trim(),
-                                        displayPicture:
-                                            croppedImageForDisplayPicture,
-                                        coverPicture: croppedImageForCoverPhoto)
+                                  bio: bioController.text.trim(),
+                                  name: nameController.text.trim(),
+                                  username: userNameController.text.trim(),
+                                  displayPicture: croppedImageForDisplayPicture,
+                                  coverPicture: croppedImageForCoverPhoto,
+                                )
                                     .listen(
                                   (CustomResponse response) {
                                     if (response.responseStatus) {
                                       Get.showSnackbar(GetSnackBar(
-                                        duration: Duration(seconds: 2),
+                                        duration: const Duration(seconds: 2),
                                         backgroundColor: Colors.green,
                                         borderRadius: 5,
                                         title: "Success",
-                                        message: response.response ??
-                                            "Your profile has been updated",
+                                        message: successMessage,
                                       ));
                                     } else {
                                       Get.showSnackbar(GetSnackBar(
-                                        duration: Duration(seconds: 2),
+                                        duration: const Duration(seconds: 2),
                                         backgroundColor: Colors.red,
                                         borderRadius: 5,
                                         title: "Error",
                                         message: response.response ??
-                                            "Something went wrong",
+                                            "Something went wrong. Please try again.",
                                       ));
                                     }
                                   },
                                   onError: (error) {
                                     Get.showSnackbar(GetSnackBar(
-                                      duration: Duration(seconds: 2),
+                                      duration: const Duration(seconds: 2),
                                       backgroundColor: Colors.red,
                                       borderRadius: 5,
                                       title: "Error",
-                                      message: "An unexpected error occurred",
+                                      message: errorMessage,
                                     ));
                                   },
                                   onDone: () {
                                     // Cleanup if necessary when stream is done
                                     sub?.cancel();
+                                    setState(() {
+                                      user = user.copyWith(
+                                          name: nameController.text,
+                                          username: userNameController.text,
+                                          bio: bioController.text);
+                                    });
                                   },
                                 );
+                              } else {
+                                Get.showSnackbar(const GetSnackBar(
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.red,
+                                  borderRadius: 5,
+                                  title: "Username Taken",
+                                  message:
+                                      "The username you entered is already taken. Please choose a different one.",
+                                ));
                               }
                             }
                           },
