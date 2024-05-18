@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wave/models/response_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth;
@@ -37,32 +38,22 @@ class AuthService {
     }
   }
 
-  // Future<dynamic> googleLogin() async {
-  //   try {
-  //     final gUser = await GoogleSignIn().signIn();
-  //     if (gUser != null) {
-  //       final gauth = await gUser.authentication;
-  //       final gCred = GoogleAuthProvider.credential(
-  //           accessToken: gauth.accessToken, idToken: gauth.idToken);
-  //       final UserCredential userCredential =
-  //       await auth.signInWithCredential(gCred);
-  //       return userCredential;
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     return e.toString();
-  //   }
-  // }
+  Future<CustomResponse> signInWithGoogle() async {
+    try {
+      final gUser = await GoogleSignIn().signIn();
+      if (gUser != null) {
+        final gauth = await gUser.authentication;
+        final gCred = GoogleAuthProvider.credential(
+            accessToken: gauth.accessToken, idToken: gauth.idToken);
 
-  signInWithGoogle() async {
-    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: gAuth.accessToken,
-      idToken: gAuth.idToken,
-    );
-
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+        final UserCredential userCredential =
+            await auth.signInWithCredential(gCred);
+        return CustomResponse(responseStatus: true, response: userCredential);
+      } else {
+        return CustomResponse(responseStatus: false);
+      }
+    } catch (e) {
+      return CustomResponse(responseStatus: false);
+    }
   }
 }

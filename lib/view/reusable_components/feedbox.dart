@@ -213,7 +213,7 @@ class FeedBox extends StatelessWidget {
         children: [
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
+            mainAxisCellCount: 2.1,
             child: (posts[0].type == 'image')
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(15),
@@ -226,7 +226,7 @@ class FeedBox extends StatelessWidget {
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
+            mainAxisCellCount: 1.2,
             child: (posts[1].type == 'image')
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(15),
@@ -304,15 +304,25 @@ class FeedBox extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Expanded(
-                child: RichText(
-                  maxLines: 2,
-                  // softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  text: createStyledTextSpan(
-                      self: "Subhojeet Sahoo", mentions: ["Aradhana Roy"]),
-                ),
-              ),
+              (post.mentions.isNotEmpty)
+                  ? Expanded(
+                      child: RichText(
+                        maxLines: 2,
+                        // softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                        text: createStyledTextSpan(
+                            self: "Subhojeet Sahoo",
+                            mentions: ["Aradhana Roy"]),
+                      ),
+                    )
+                  : Text(
+                      "Subhojeet Sahoo",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 11.5,
+                          fontFamily: CustomFont.poppins),
+                    ),
             ],
           ),
           SizedBox(height: 8),

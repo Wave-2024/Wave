@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/Authentication/auth_screen_controller.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/models/response_model.dart' as res;
@@ -10,13 +11,13 @@ import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/services/auth_services.dart';
+import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/constants/keys.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
-
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -238,29 +239,87 @@ class RegisterScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: MaterialButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
-                    height: 50,
-                    onPressed: () => AuthService(fb.FirebaseAuth.instance).signInWithGoogle(),
-                    color: CustomColor.authTextBoxColor,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Brand(Brands.google),
-                        const SizedBox(width: 10),
-                        Text(
-                          "Sign up with Google",
-                          style: TextStyle(
-                              fontFamily: CustomFont.poppins,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500),
+                Consumer2<AuthScreenController, UserDataController>(
+                  builder:
+                      (context, authController, userDataController, child) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: MaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                        height: 50,
+                        onPressed: () async {
+                          res.CustomResponse loginResponse =
+                              await authController.loginWithGoogle(
+                                  firebaseAuth: fb.FirebaseAuth.instance);
+                          if (loginResponse.responseStatus) {
+                            final SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            fb.UserCredential userCredential =
+                                loginResponse.response as fb.UserCredential;
+
+                            if (userCredential.additionalUserInfo!.isNewUser) {
+                              await userDataController.createUser(
+                                  user: User(
+                                      verified: false,
+                                      name: userCredential.user!.displayName!,
+                                      email: userCredential.user!.email!,
+                                      following: [],
+                                      followers: [],
+                                      posts: [],
+                                      id: userCredential.user!.uid,
+                                      username: "",
+                                      stories: [],
+                                      blocked: [],
+                                      coverPicture: "",
+                                      account_type: ACCOUNT_TYPE.PUBLIC));
+                            } else {
+                              await userDataController.setUser(
+                                  userID: userCredential.user!.uid);
+                            }
+
+                            await prefs.setBool(Pref.login_pref, true);
+                            await prefs.setString(
+                                Pref.user_id, userCredential.user!.uid);
+
+                            Get.showSnackbar(GetSnackBar(
+                              duration: const Duration(seconds: 2),
+                              backgroundColor: Colors.green,
+                              borderRadius: 5,
+                              title: "Login Success",
+                              message: userDataController.user!.name,
+                            ));
+                            Get.offAllNamed(AppRoutes.homeNavigationScreen,
+                                parameters: {'screenIndex': '0'});
+                          } else {
+                            Get.showSnackbar(GetSnackBar(
+                              backgroundColor: CustomColor.errorColor,
+                              borderRadius: 5,
+                              title: "Login Failed",
+                              duration: const Duration(seconds: 2),
+                              message:
+                                  loginResponse.response.message.toString(),
+                            ));
+                          }
+                        },
+                        color: CustomColor.authTextBoxColor,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Brand(Brands.google),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Login with Google",
+                              style: TextStyle(
+                                  fontFamily: CustomFont.poppins,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
