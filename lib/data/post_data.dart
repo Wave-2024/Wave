@@ -117,14 +117,23 @@ class PostData {
 
 
   static Future<CustomResponse> likePostWithId({required String postId,required String userId})async{
-      Like like = Like(id: "id", userId: userId, createdAt: DateTime.now());
+      Like like = Like(id: userId, userId: userId, createdAt: DateTime.now());
       try{
-        var res = await Database.getPostLikesDatabase(postId).add(like.toMap());
-        await Database.getPostLikesDatabase(postId).doc(res.id).update({'id':res.id});
+        var res = await Database.getPostLikesDatabase(postId).doc(userId).set(like.toMap());
         return CustomResponse(responseStatus: true);
       }on FirebaseException catch(error){
         return CustomResponse(responseStatus: false,response: error.toString());
       }
+  }
+
+  static Future<CustomResponse> unLikePostWithId({required String postId,required String userId})async{
+    Like like = Like(id: userId, userId: userId, createdAt: DateTime.now());
+    try{
+      Database.getPostLikesDatabase(postId).doc(userId).delete();
+      return CustomResponse(responseStatus: true);
+    }on FirebaseException catch(error){
+      return CustomResponse(responseStatus: false,response: error.toString());
+    }
   }
 
 }

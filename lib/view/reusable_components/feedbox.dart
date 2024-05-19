@@ -2,10 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:get/get.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
@@ -412,9 +410,8 @@ class FeedBox extends StatelessWidget {
                       likes.hasData) {
                     // Check if current user has liked the post
                     bool hasLiked = likes.data!.docs.any((element) {
-                      return (element.data()
-                              as Map<String, dynamic>)['userId'] ==
-                          fb.FirebaseAuth.instance.currentUser!.uid;
+                      return (element.id ==
+                          fb.FirebaseAuth.instance.currentUser!.uid);
                     });
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -422,10 +419,19 @@ class FeedBox extends StatelessWidget {
                       children: [
                         InkWell(
                             onTap: () async {
-                              await PostData.likePostWithId(
-                                  postId: post.id,
-                                  userId: fb
-                                      .FirebaseAuth.instance.currentUser!.uid);
+                              if(hasLiked){
+                                await PostData.unLikePostWithId(
+                                    postId: post.id,
+                                    userId: fb
+                                        .FirebaseAuth.instance.currentUser!.uid);
+                              }
+                              else{
+                                await PostData.likePostWithId(
+                                    postId: post.id,
+                                    userId: fb
+                                        .FirebaseAuth.instance.currentUser!.uid);
+                              }
+
                             },
                             child: Icon(
                               hasLiked ? BoxIcons.bxs_like : BoxIcons.bx_like,
