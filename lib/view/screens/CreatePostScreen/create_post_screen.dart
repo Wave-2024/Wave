@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/PostController/create_post_controller.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
@@ -40,8 +41,8 @@ class CreatePostScreen extends StatelessWidget {
         ),
         backgroundColor: CustomColor.primaryBackGround,
         body: SafeArea(
-          child: Consumer<CreatePostController>(
-            builder: (context, postController, child) {
+          child: Consumer2<CreatePostController, UserDataController>(
+            builder: (context, postController, userDataController, child) {
               return SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -217,6 +218,11 @@ class CreatePostScreen extends StatelessWidget {
                                       fb.FirebaseAuth.instance.currentUser!.uid,
                                   caption: captionController.text);
                               if (res.responseStatus) {
+                                List<dynamic> currentPosts =
+                                    userDataController.user!.posts;
+                                currentPosts.add(res.response.toString());
+                                userDataController.updateProfile(
+                                    posts: currentPosts);
                                 postController.resetController();
                                 Get.showSnackbar(const GetSnackBar(
                                   duration: Duration(seconds: 2),

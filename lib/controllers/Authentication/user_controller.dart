@@ -183,6 +183,7 @@ class UserDataController extends ChangeNotifier {
       {String? name,
       String? bio,
       String? username,
+      List<dynamic>? posts,
       CroppedFile? coverPicture,
       CroppedFile? displayPicture}) async* {
     // First, update the user's text data
