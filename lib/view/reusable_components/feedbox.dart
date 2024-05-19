@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
+import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/device_size.dart';
 
 class FeedBox extends StatelessWidget {
   final Post post;
-  const FeedBox({super.key, required this.post});
+  final User poster;
+  const FeedBox({super.key, required this.post,required this.poster});
 
   TextSpan createStyledTextSpan({
     required String self,
@@ -291,15 +293,17 @@ class FeedBox extends StatelessWidget {
       padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const CircleAvatar(
+               CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage(
-                    "https://i.pinimg.com/564x/98/af/c9/98afc975433a4341a6fc0934d960feef.jpg"),
+                backgroundImage: CachedNetworkImageProvider(
+                  poster.displayPicture!
+                    ),
               ),
               const SizedBox(
                 width: 10,
@@ -325,15 +329,19 @@ class FeedBox extends StatelessWidget {
                     ),
             ],
           ),
-          SizedBox(height: 8),
-          Text(
-            post.caption,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
+          SizedBox(height: 12),
+          Padding(
+            padding: (post.postList.length==2) ? EdgeInsets.only(left: 20) : const EdgeInsets.all(0),
+            child: Text(
+              post.caption,
+              maxLines: 4,
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
+            ),
           ),
           const SizedBox(
-            height: 8,
+            height: 15,
           ),
           decideMediaBox(displayHeight(context) * 0.47)
         ],

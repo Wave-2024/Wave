@@ -12,20 +12,20 @@ class UserContainerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      visualDensity: VisualDensity(vertical: -0.5),
       onTap: () {
-        // TODO : Navigate to the profile screen
-        Get.toNamed(AppRoutes.profileScreen,arguments: user.id);
+        Get.toNamed(AppRoutes.profileScreen, arguments: user.id);
       },
       subtitle: Text(
         user.username,
-        style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 13),
+        style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 11),
       ),
       leading: CircleAvatar(
         backgroundImage:
             (user.displayPicture != null && user.displayPicture!.isNotEmpty)
                 ? NetworkImage(user.displayPicture!)
                 : null,
-        radius: 25,
+        radius: 20,
         child: user.displayPicture == null || user.displayPicture!.isEmpty
             ? const Icon(Icons.person)
             : null,
@@ -36,17 +36,22 @@ class UserContainerTile extends StatelessWidget {
         children: [
           Text(
             user.name,
-            style:
-                TextStyle(fontFamily: CustomFont.poppins, letterSpacing: 0.1),
+            style: TextStyle(
+                fontFamily: CustomFont.poppins,
+                fontSize: 12.5,
+                letterSpacing: 0.1),
           ),
           const SizedBox(
             width: 2,
           ),
           Visibility(
               visible: user.verified,
-              child: Image.asset(
-                CustomIcon.verifiedIcon,
-                height: 15,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2.0),
+                child: Image.asset(
+                  CustomIcon.verifiedIcon,
+                  height: 12.2,
+                ),
               ))
         ],
       ),

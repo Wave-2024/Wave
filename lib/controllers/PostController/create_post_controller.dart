@@ -58,7 +58,7 @@ class CreatePostController extends ChangeNotifier {
       await Database.postDatabase.doc(postId).update(post.toMap());
       create_post = CREATE_POST.IDLE;
       notifyListeners();
-      return CustomResponse(responseStatus: true);
+      return CustomResponse(responseStatus: true,response: postId);
     } on FirebaseException catch (e) {
       create_post = CREATE_POST.IDLE;
       notifyListeners();

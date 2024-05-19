@@ -63,7 +63,7 @@ class Post {
     return Post(
       id: map['id'] as String,
       postList: List<PostContent>.from(
-        (map['postList'] as List<int>).map<PostContent>(
+        (map['postList'] as List<dynamic>).map<PostContent>(
           (x) => PostContent.fromMap(x as Map<String, dynamic>),
         ),
       ),
