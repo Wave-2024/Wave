@@ -5,8 +5,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/device_size.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 class FeedBox extends StatelessWidget {
   final Post post;
@@ -315,12 +318,12 @@ class FeedBox extends StatelessWidget {
                         // softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         text: createStyledTextSpan(
-                            self: "Subhojeet Sahoo",
+                            self: poster.name,
                             mentions: ["Aradhana Roy"]),
                       ),
                     )
                   : Text(
-                      "Subhojeet Sahoo",
+                      poster.name,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -334,7 +337,7 @@ class FeedBox extends StatelessWidget {
             padding: (post.postList.length==2) ? EdgeInsets.only(left: 20) : const EdgeInsets.all(0),
             child: Text(
               post.caption,
-              maxLines: 4,
+              maxLines: (post.postList.isEmpty) ? 8 : 4,
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
@@ -343,7 +346,31 @@ class FeedBox extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          decideMediaBox(displayHeight(context) * 0.47)
+          decideMediaBox(displayHeight(context) * 0.47),
+           SizedBox(
+            height: post.postList.isEmpty ? 0 : 15,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+
+              Image.asset(CustomIcon.likeIcon,height: 25,),
+              Padding(
+                padding: const EdgeInsets.only(top:4.0),
+                child: Image.asset(CustomIcon.commentIcon,height: 30,),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top:4.0),
+                child: Image.asset(CustomIcon.shareIcon,height: 28,),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Icon(Icons.bookmark_add_outlined),
+              ),
+
+            ],
+          )
+
         ],
       ),
     );

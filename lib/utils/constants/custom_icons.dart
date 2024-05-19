@@ -19,6 +19,10 @@ class CustomIcon {
   static String addImageIcon = "assets/icons/add_image_ico.png";
   static String followIcon = "assets/icons/follow_ico.png";
   static String addStoryIcon = "assets/icons/add_story_ico.png";
-
+  static String likeIcon = "assets/icons/like_ico.png";
+  static String likeFullIcon = "assets/icons/like_full_ico.png";
   static String noUserFoundIcon = "assets/icons/no_user_found_ico.png";
+  static String commentIcon = "assets/icons/comment_ico.png";
+  static String shareIcon = "assets/icons/share_ico.png";
+
 }
