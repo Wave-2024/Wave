@@ -6,9 +6,11 @@ class Comment {
   String userId;
   String comment;
   DateTime createdAt;
+  String postId;
   Comment({
     required this.id,
     required this.userId,
+    required this.postId,
     required this.comment,
     required this.createdAt,
   });
@@ -18,8 +20,10 @@ class Comment {
     String? userId,
     String? comment,
     DateTime? createdAt,
+    String? postId,
   }) {
     return Comment(
+      postId: postId??this.postId,
       id: id ?? this.id,
       userId: userId ?? this.userId,
       comment: comment ?? this.comment,
@@ -31,6 +35,7 @@ class Comment {
     return <String, dynamic>{
       'id': id,
       'userId': userId,
+      'postId':postId,
       'comment': comment,
       'createdAt': createdAt.millisecondsSinceEpoch,
     };
@@ -39,6 +44,7 @@ class Comment {
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
       id: map['id'] as String,
+      postId: map['postId'] as String,
       userId: map['userId'] as String,
       comment: map['comment'] as String,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
@@ -51,7 +57,7 @@ class Comment {
 
   @override
   String toString() {
-    return 'Comment(id: $id, userId: $userId, comment: $comment, createdAt: $createdAt)';
+    return 'Comment(id: $id, userId: $userId, comment: $comment, createdAt: $createdAt, postId: $postId)';
   }
 
   @override
@@ -60,6 +66,7 @@ class Comment {
   
     return 
       other.id == id &&
+          other.postId==postId &&
       other.userId == userId &&
       other.comment == comment &&
       other.createdAt == createdAt;

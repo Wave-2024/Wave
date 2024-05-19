@@ -1,20 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:get/get.dart';
+import 'package:wave/data/post_data.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
+import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 class FeedBox extends StatelessWidget {
   final Post post;
   final User poster;
-  const FeedBox({super.key, required this.post,required this.poster});
+  const FeedBox({super.key, required this.post, required this.poster});
 
   TextSpan createStyledTextSpan({
     required String self,
@@ -52,7 +58,7 @@ class FeedBox extends StatelessWidget {
     List<PostContent> posts = post.postList;
     // If number of media files is 0
     if (posts.isEmpty) {
-      return SizedBox();
+      return const SizedBox();
     } // If number of media files is 1
     else if (posts.length == 1) {
       if (posts.first.type == "image") {
@@ -62,7 +68,7 @@ class FeedBox extends StatelessWidget {
                 imageUrl: posts.first.url, fit: BoxFit.cover));
       } else {
         // TODO : Handle video files
-        return SizedBox();
+        return const SizedBox();
       }
     } // If number of media files is 2
     else if (posts.length == 2) {
@@ -80,7 +86,7 @@ class FeedBox extends StatelessWidget {
               );
             } else {
               // TODO : Render video
-              return SizedBox();
+              return const SizedBox();
             }
           }).toList(),
           options: CarouselOptions(
@@ -117,7 +123,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player
+                : const SizedBox(), // TODO : Video player
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
@@ -130,7 +136,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player,
+                : const SizedBox(), // TODO : Video player,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
@@ -143,7 +149,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,
+                : const SizedBox(), // TODO : Video player ,
           ),
         ],
       );
@@ -166,7 +172,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player
+                : const SizedBox(), // TODO : Video player
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
@@ -179,7 +185,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player,
+                : const SizedBox(), // TODO : Video player,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
@@ -192,7 +198,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,
+                : const SizedBox(), // TODO : Video player ,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
@@ -205,7 +211,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,
+                : const SizedBox(), // TODO : Video player ,
           ),
         ],
       );
@@ -228,7 +234,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,,
+                : const SizedBox(), // TODO : Video player ,,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
@@ -241,7 +247,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,,
+                : const SizedBox(), // TODO : Video player ,,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
@@ -254,7 +260,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,,
+                : const SizedBox(), // TODO : Video player ,,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
@@ -267,7 +273,7 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,,
+                : const SizedBox(), // TODO : Video player ,,
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 4,
@@ -280,12 +286,12 @@ class FeedBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : SizedBox(), // TODO : Video player ,,
+                : const SizedBox(), // TODO : Video player ,,
           ),
         ],
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -303,39 +309,82 @@ class FeedBox extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-               CircleAvatar(
+              CircleAvatar(
                 radius: 20,
-                backgroundImage: CachedNetworkImageProvider(
-                  poster.displayPicture!
-                    ),
+                backgroundImage:
+                    CachedNetworkImageProvider(poster.displayPicture!),
               ),
               const SizedBox(
                 width: 10,
               ),
               (post.mentions.isNotEmpty)
                   ? Expanded(
-                      child: RichText(
-                        maxLines: 2,
-                        // softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                        text: createStyledTextSpan(
-                            self: poster.name,
-                            mentions: ["Aradhana Roy"]),
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            poster.name,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
+                          ),
+                          SizedBox(
+                            width: 2,
+                          ),
+                          Visibility(
+                              visible: poster.verified,
+                              child: Image.asset(
+                                CustomIcon.verifiedIcon,
+                                height: 12,
+                              )),
+                          Text(
+                            " is with",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
+                          ),
+                          Text(
+                            " Aradhana Roy",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
+                          )
+                        ],
                       ),
                     )
-                  : Text(
-                      poster.name,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontSize: 11.5,
-                          fontFamily: CustomFont.poppins),
+                  : Row(
+                      children: [
+                        Text(
+                          poster.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 11.5,
+                              fontFamily: CustomFont.poppins),
+                        ),
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Visibility(
+                            visible: poster.verified,
+                            child: Image.asset(
+                              CustomIcon.verifiedIcon,
+                              height: 12,
+                            ))
+                      ],
                     ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Padding(
-            padding: (post.postList.length==2) ? EdgeInsets.only(left: 20) : const EdgeInsets.all(0),
+            padding: (post.postList.length == 2)
+                ? const EdgeInsets.only(left: 20)
+                : const EdgeInsets.all(0),
             child: Text(
               post.caption,
               maxLines: (post.postList.isEmpty) ? 8 : 4,
@@ -348,30 +397,126 @@ class FeedBox extends StatelessWidget {
             height: 15,
           ),
           decideMediaBox(displayHeight(context) * 0.47),
-           SizedBox(
+          SizedBox(
             height: post.postList.isEmpty ? 0 : 15,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-
-              Image.asset(CustomIcon.likeIcon,height: 25,),
-              Padding(
-                padding: const EdgeInsets.only(top:4.0),
-                child: Image.asset(CustomIcon.commentIcon,height: 30,),
+              // Like count and like icon
+              StreamBuilder(
+                stream: Database.getPostLikesDatabase(post.id).snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> likes) {
+                  if ((likes.connectionState == ConnectionState.active ||
+                          likes.connectionState == ConnectionState.done) &&
+                      likes.hasData) {
+                    // Check if current user has liked the post
+                    bool hasLiked = likes.data!.docs.any((element) {
+                      return (element.data()
+                              as Map<String, dynamic>)['userId'] ==
+                          fb.FirebaseAuth.instance.currentUser!.uid;
+                    });
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        InkWell(
+                            onTap: () async {
+                              await PostData.likePostWithId(
+                                  postId: post.id,
+                                  userId: fb
+                                      .FirebaseAuth.instance.currentUser!.uid);
+                            },
+                            child: Icon(
+                              hasLiked ? BoxIcons.bxs_like : BoxIcons.bx_like,
+                              size: 22,
+                              color: CustomColor.primaryColor,
+                            )),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${likes.data!.docs.length}',
+                          style: TextStyle(
+                              fontFamily: CustomFont.poppins,
+                              color: CustomColor.primaryColor,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600),
+                        )
+                      ],
+                    );
+                  } else {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        InkWell(
+                            onTap: () async {
+                              await PostData.likePostWithId(
+                                  postId: post.id,
+                                  userId: fb
+                                      .FirebaseAuth.instance.currentUser!.uid);
+                            },
+                            child: Icon(
+                               BoxIcons.bx_like,
+                              size: 22,
+                              color: CustomColor.primaryColor,
+                            )),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${0}',
+                          style: TextStyle(
+                              fontFamily: CustomFont.poppins,
+                              color: CustomColor.primaryColor,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600),
+                        )
+                      ],
+                    );
+                  }
+                },
               ),
-              Padding(
-                padding: const EdgeInsets.only(top:4.0),
-                child: Image.asset(CustomIcon.shareIcon,height: 28,),
+
+              // Comment icon and comment count
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Image.asset(
+                      CustomIcon.commentIcon,
+                      height: 25,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3.50),
+                    child: Text(
+                      '3.1K',
+                      style: TextStyle(
+                          fontFamily: CustomFont.poppins,
+                          color: CustomColor.primaryColor,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  )
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
-                child: Icon(Icons.bookmark_add_outlined),
+                child: Image.asset(
+                  CustomIcon.shareIcon,
+                  height: 22,
+                ),
               ),
-
+              const Padding(
+                padding: EdgeInsets.only(top: 4.0),
+                child: Icon(
+                  Icons.bookmark_add_outlined,
+                  size: 20,
+                ),
+              ),
             ],
           )
-
         ],
       ),
     );
