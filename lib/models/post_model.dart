@@ -13,7 +13,6 @@ class Post {
   DateTime createdAt;
   String userId;
   String caption;
-  // List<dynamic> likes;
   List<dynamic> mentions;
   Post({
     required this.id,
@@ -25,6 +24,7 @@ class Post {
   });
   // Collection based variables
   /*
+    likes
     comments
     reports
   */

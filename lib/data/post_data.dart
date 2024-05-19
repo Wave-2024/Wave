@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+import 'package:wave/models/like_post_model.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/utils/constants/database.dart';
 
 class PostData {
   static Future<Post> createPostModel(
@@ -111,4 +113,18 @@ class PostData {
         return 'unknown';
     }
   }
+
+
+
+  static Future<CustomResponse> likePostWithId({required String postId,required String userId})async{
+      Like like = Like(id: "id", userId: userId, createdAt: DateTime.now());
+      try{
+        var res = await Database.getPostLikesDatabase(postId).add(like.toMap());
+        await Database.getPostLikesDatabase(postId).doc(res.id).update({'id':res.id});
+        return CustomResponse(responseStatus: true);
+      }on FirebaseException catch(error){
+        return CustomResponse(responseStatus: false,response: error.toString());
+      }
+  }
+
 }
