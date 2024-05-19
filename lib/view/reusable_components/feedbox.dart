@@ -72,6 +72,8 @@ class FeedBox extends StatelessWidget {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: CachedNetworkImage(
+                  height: height,
+                  width: double.infinity,
                   imageUrl: pc.url,
                   fit: BoxFit.cover,
                 ),
@@ -83,8 +85,7 @@ class FeedBox extends StatelessWidget {
           }).toList(),
           options: CarouselOptions(
             height: height,
-            aspectRatio: 16 / 9,
-            viewportFraction: 0.85,
+            viewportFraction: 0.9,
             initialPage: 0,
             enableInfiniteScroll: true,
             reverse: false,
