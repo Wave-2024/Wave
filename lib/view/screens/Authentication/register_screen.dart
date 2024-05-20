@@ -248,25 +248,25 @@ class RegisterScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         height: 50,
                         onPressed: () async {
-                          res.CustomResponse loginResponse =
+                          res.CustomResponse loginWithGoogleResponse =
                               await authController.loginWithGoogle(
                                   firebaseAuth: fb.FirebaseAuth.instance);
-                          if (loginResponse.responseStatus) {
+                          if (loginWithGoogleResponse.responseStatus) {
                             final SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
-                            fb.UserCredential userCredential =
-                                loginResponse.response as fb.UserCredential;
+                            fb.UserCredential googleUserCredential =
+                                loginWithGoogleResponse.response as fb.UserCredential;
 
-                            if (userCredential.additionalUserInfo!.isNewUser) {
+                            if (googleUserCredential.additionalUserInfo!.isNewUser) {
                               await userDataController.createUser(
                                   user: User(
                                       verified: false,
-                                      name: userCredential.user!.displayName!,
-                                      email: userCredential.user!.email!,
+                                      name: capitalizeWords(googleUserCredential.user!.displayName!),
+                                      email: googleUserCredential.user!.email!,
                                       following: [],
                                       followers: [],
                                       posts: [],
-                                      id: userCredential.user!.uid,
+                                      id: googleUserCredential.user!.uid,
                                       username: "",
                                       stories: [],
                                       blocked: [],
@@ -274,12 +274,12 @@ class RegisterScreen extends StatelessWidget {
                                       account_type: ACCOUNT_TYPE.PUBLIC));
                             } else {
                               await userDataController.setUser(
-                                  userID: userCredential.user!.uid);
+                                  userID: googleUserCredential.user!.uid);
                             }
 
                             await prefs.setBool(Pref.login_pref, true);
                             await prefs.setString(
-                                Pref.user_id, userCredential.user!.uid);
+                                Pref.user_id, googleUserCredential.user!.uid);
 
                             Get.showSnackbar(GetSnackBar(
                               duration: const Duration(seconds: 2),
@@ -297,7 +297,7 @@ class RegisterScreen extends StatelessWidget {
                               title: "Login Failed",
                               duration: const Duration(seconds: 2),
                               message:
-                                  loginResponse.response.message.toString(),
+                                  loginWithGoogleResponse.response.message.toString(),
                             ));
                           }
                         },
