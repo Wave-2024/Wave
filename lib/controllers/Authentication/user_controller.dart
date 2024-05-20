@@ -137,7 +137,7 @@ class UserDataController extends ChangeNotifier {
   }
 
   Future<void> searchUsersByNameAndUserName(String searchString) async {
-    List<User> users = [];
+    Set<User> users = {};
     if (searchString.isEmpty || searchString.length < 3) {
       printInfo(info: "Empty string");
       searchedUsers = [];
@@ -158,7 +158,10 @@ class UserDataController extends ChangeNotifier {
     for (var index = 0; index < searchUserResponse.docs.length; index++) {
       var doc = searchUserResponse.docs[index].data();
       User foundUser = User.fromMap(doc);
-      users.add(foundUser);
+      if(!users.contains(foundUser)){
+        users.add(foundUser);
+      }
+
     }
 
     endString = username.substring(0, username.length - 1) +
@@ -171,10 +174,14 @@ class UserDataController extends ChangeNotifier {
     for (var index = 0; index < searchUserResponse.docs.length; index++) {
       var doc = searchUserResponse.docs[index].data();
       User foundUser = User.fromMap(doc);
-      users.add(foundUser);
+      if(!users.contains(foundUser)){
+        users.add(foundUser);
+      }
     }
 
-    searchedUsers = users;
+    printInfo(info:"set of searched users : ${users.length}");
+
+    searchedUsers = users.toList();
     printInfo(info: "Number of users found : ${searchedUsers.length}");
     notifyListeners();
   }

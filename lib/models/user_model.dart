@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 import 'package:wave/utils/enums.dart';
 
 class User {
@@ -150,46 +148,11 @@ class User {
   }
 
   @override
-  bool operator ==(covariant User other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
-    return other.verified == verified &&
-        other.name == name &&
-        other.email == email &&
-        listEquals(other.following, following) &&
-        listEquals(other.followers, followers) &&
-        listEquals(other.posts, posts) &&
-        other.displayPicture == displayPicture &&
-        other.bio == bio &&
-        other.url == url &&
-        other.id == id &&
-        other.username == username &&
-        listEquals(other.stories, stories) &&
-        listEquals(other.blocked, blocked) &&
-        other.coverPicture == coverPicture &&
-        listEquals(other.savedPosts, savedPosts) &&
-        listEquals(other.messages, messages) &&
-        other.account_type == account_type;
+    return other is User && other.id == id;
   }
 
   @override
-  int get hashCode {
-    return verified.hashCode ^
-        name.hashCode ^
-        email.hashCode ^
-        following.hashCode ^
-        followers.hashCode ^
-        posts.hashCode ^
-        displayPicture.hashCode ^
-        bio.hashCode ^
-        url.hashCode ^
-        id.hashCode ^
-        username.hashCode ^
-        stories.hashCode ^
-        blocked.hashCode ^
-        coverPicture.hashCode ^
-        savedPosts.hashCode ^
-        messages.hashCode ^
-        account_type.hashCode;
-  }
+  int get hashCode => id.hashCode;
 }
