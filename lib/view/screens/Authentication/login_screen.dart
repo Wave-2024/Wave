@@ -19,6 +19,7 @@ import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/constants/keys.dart';
 import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/routing.dart';
+import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/auth_textfield.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -252,28 +253,28 @@ class LoginScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(15)),
                               height: 50,
                               onPressed: () async {
-                                res.CustomResponse loginResponse =
+                                res.CustomResponse loginWithResponse =
                                     await authController.loginWithGoogle(
                                         firebaseAuth: fb.FirebaseAuth.instance);
-                                if (loginResponse.responseStatus) {
+                                if (loginWithResponse.responseStatus) {
                                   final SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
-                                  fb.UserCredential userCredential =
-                                      loginResponse.response
+                                  fb.UserCredential googleUserCredential =
+                                      loginWithResponse.response
                                           as fb.UserCredential;
 
-                                  if (userCredential
+                                  if (googleUserCredential
                                       .additionalUserInfo!.isNewUser) {
                                     await userDataController.createUser(
                                         user: User(
                                             verified: false,
-                                            name: userCredential
-                                                .user!.displayName!,
-                                            email: userCredential.user!.email!,
+                                            name: capitalizeWords(googleUserCredential
+                                                .user!.displayName!),
+                                            email: googleUserCredential.user!.email!,
                                             following: [],
                                             followers: [],
                                             posts: [],
-                                            id: userCredential.user!.uid,
+                                            id: googleUserCredential.user!.uid,
                                             username: "",
                                             stories: [],
                                             blocked: [],
@@ -281,12 +282,12 @@ class LoginScreen extends StatelessWidget {
                                             account_type: ACCOUNT_TYPE.PUBLIC));
                                   } else {
                                     await userDataController.setUser(
-                                        userID: userCredential.user!.uid);
+                                        userID: googleUserCredential.user!.uid);
                                   }
 
                                   await prefs.setBool(Pref.login_pref, true);
                                   await prefs.setString(
-                                      Pref.user_id, userCredential.user!.uid);
+                                      Pref.user_id, googleUserCredential.user!.uid);
 
                                   Get.showSnackbar(GetSnackBar(
                                     duration: const Duration(seconds: 2),
@@ -304,7 +305,7 @@ class LoginScreen extends StatelessWidget {
                                     borderRadius: 5,
                                     title: "Login Failed",
                                     duration: const Duration(seconds: 2),
-                                    message: loginResponse.response.message
+                                    message: loginWithResponse.response.message
                                         .toString(),
                                   ));
                                 }
