@@ -110,13 +110,13 @@ class RegisterScreen extends StatelessWidget {
                                 uniqueKey: Keys.keyForPasswordTextFieldLogin,
                                 controller: passwordController,
                                 label: "Password",
-                                visible: authController.obscuredText,
+                                visible: authController.obscuredTextReg,
                                 prefixIcon: const Icon(Icons.password),
                                 suffixIcon: GestureDetector(
                                   onTap: () {
-                                    authController.togglePasswordVisibility();
+                                    authController.togglePasswordVisibilityReg();
                                   },
-                                  child: Icon(authController.obscuredText
+                                  child: Icon(authController.obscuredTextReg
                                       ? Icons.visibility
                                       : Icons.visibility_off),
                                 ),
