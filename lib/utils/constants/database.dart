@@ -5,7 +5,11 @@ static var postDatabase = FirebaseFirestore.instance.collection("posts");
 
 static var userDatabase = FirebaseFirestore.instance.collection("users");
 
-static CollectionReference getPostLikesDatabase(String postId){
-  return FirebaseFirestore.instance.collection("posts").doc(postId).collection('likes');
+static CollectionReference getPostLikesDatabase(String postId) {
+  return FirebaseFirestore.instance.collection("posts").doc(postId).collection(
+      'likes');
 }
+  static CollectionReference getPostCommentsDatabase(String postId){
+    return FirebaseFirestore.instance.collection("posts").doc(postId).collection('comments');
+  }
 }

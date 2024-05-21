@@ -123,7 +123,8 @@ class LoginScreen extends StatelessWidget {
                                 prefixIcon: const Icon(Icons.password),
                                 suffixIcon: GestureDetector(
                                   onTap: () {
-                                    authController.togglePasswordVisibilityLogin();
+                                    authController
+                                        .togglePasswordVisibilityLogin();
                                   },
                                   child: Icon(authController.obscuredTextLogin
                                       ? Icons.visibility

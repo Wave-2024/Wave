@@ -1,0 +1,157 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:comment_box/comment/comment.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:wave/data/post_data.dart';
+import 'package:wave/data/users_data.dart';
+import 'package:wave/models/comment_post_model.dart';
+import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/util_functions.dart';
+
+import '../../models/user_model.dart';
+import '../../utils/constants/custom_icons.dart';
+
+class SingleCommentBox extends StatelessWidget {
+  Comment comment;
+
+  SingleCommentBox({required this.comment});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<User>(
+      future: UserData.getUser(userID: comment.userId),
+      builder: (context, AsyncSnapshot<User> user) {
+        if (user.connectionState == ConnectionState.done && user.hasData) {
+          return Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16),
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 15,
+                      backgroundImage: CachedNetworkImageProvider(
+                          user.data!.displayPicture!),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.data!.name,
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: CustomFont.poppins),
+                        ),
+                        const SizedBox(
+                          width: 2,
+                        ),
+                        Visibility(
+                            visible: user.data!.verified,
+                            child: Image.asset(
+                              CustomIcon.verifiedIcon,
+                              height: 11.2,
+                            ))
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 7,
+                    ),
+                    Text(
+                      "${getMonthName(comment.createdAt.month)} ${comment.createdAt.day} '${comment.createdAt.year}",
+                      style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontFamily: CustomFont.poppins,
+                          fontSize: 10),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  comment.comment,
+                  style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontFamily: CustomFont.poppins,
+                      fontSize: 12),
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        "Tapped to like".printInfo();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Bootstrap.heart,
+                            size: 18,
+                            color: Colors.grey.shade800,
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            "5 Likes",
+                            style: TextStyle(
+                                fontFamily: CustomFont.poppins,
+                                fontSize: 11.5,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 15,),
+                    InkWell(
+                      onTap: () {
+                        "Tapped to reply".printInfo();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Bootstrap.reply,
+                            size: 20,
+                            color: Colors.grey.shade800,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            "Reply",
+                            style: TextStyle(
+                                fontFamily: CustomFont.poppins,
+                                fontSize: 11.5,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+  }
+}

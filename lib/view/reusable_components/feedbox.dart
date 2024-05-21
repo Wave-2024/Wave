@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:get/get.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
@@ -14,43 +15,14 @@ import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/database.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:wave/utils/routing.dart';
+import 'package:wave/view/screens/FeedScreen/list_comment_modal_sheet.dart';
 
 class FeedBox extends StatelessWidget {
   final Post post;
   final User poster;
   const FeedBox({super.key, required this.post, required this.poster});
 
-  TextSpan createStyledTextSpan({
-    required String self,
-    required List<String> mentions,
-  }) {
-    // Define styles
-    final TextStyle selfStyle = TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-        fontSize: 11.5,
-        fontFamily: CustomFont.poppins);
-    final TextStyle mentionStyle = TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-        fontSize: 11.5,
-        fontFamily: CustomFont.poppins);
-    final TextStyle normalStyle = TextStyle(
-        color: Colors.black45, fontSize: 11.5, fontFamily: CustomFont.poppins);
-
-    // Build the text span
-    return TextSpan(
-      children: [
-        TextSpan(text: self, style: selfStyle),
-        TextSpan(text: ' is with ', style: normalStyle),
-        ...mentions.map((mention) => TextSpan(
-              text: mention,
-              style: mentionStyle,
-              children: [TextSpan(text: '', style: normalStyle)],
-            )),
-      ],
-    );
-  }
 
   Widget decideMediaBox(double height) {
     List<PostContent> posts = post.postList;
@@ -482,30 +454,35 @@ class FeedBox extends StatelessWidget {
               ),
 
               // Comment icon and comment count
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Image.asset(
-                      CustomIcon.commentIcon,
-                      height: 25,
+              InkWell(
+                onTap: () {
+                  Get.toNamed(AppRoutes.listCommentsScreen,arguments: post.id);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Image.asset(
+                        CustomIcon.commentIcon,
+                        height: 25,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 3.50),
-                    child: Text(
-                      '3.1K',
-                      style: TextStyle(
-                          fontFamily: CustomFont.poppins,
-                          color: CustomColor.primaryColor,
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  )
-                ],
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 3.50),
+                      child: Text(
+                        '3.1K',
+                        style: TextStyle(
+                            fontFamily: CustomFont.poppins,
+                            color: CustomColor.primaryColor,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    )
+                  ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
