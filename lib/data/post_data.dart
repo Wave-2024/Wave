@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+import 'package:wave/models/comment_post_model.dart';
 import 'package:wave/models/like_post_model.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
@@ -114,26 +116,47 @@ class PostData {
     }
   }
 
-
-
-  static Future<CustomResponse> likePostWithId({required String postId,required String userId})async{
-      Like like = Like(id: userId, userId: userId, createdAt: DateTime.now());
-      try{
-        var res = await Database.getPostLikesDatabase(postId).doc(userId).set(like.toMap());
-        return CustomResponse(responseStatus: true);
-      }on FirebaseException catch(error){
-        return CustomResponse(responseStatus: false,response: error.toString());
-      }
-  }
-
-  static Future<CustomResponse> unLikePostWithId({required String postId,required String userId})async{
+  static Future<CustomResponse> likePostWithId(
+      {required String postId, required String userId}) async {
     Like like = Like(id: userId, userId: userId, createdAt: DateTime.now());
-    try{
-      Database.getPostLikesDatabase(postId).doc(userId).delete();
+    try {
+      var res = await Database.getPostLikesDatabase(postId)
+          .doc(userId)
+          .set(like.toMap());
       return CustomResponse(responseStatus: true);
-    }on FirebaseException catch(error){
-      return CustomResponse(responseStatus: false,response: error.toString());
+    } on FirebaseException catch (error) {
+      return CustomResponse(responseStatus: false, response: error.toString());
     }
   }
 
+  static Future<CustomResponse> unLikePostWithId(
+      {required String postId, required String userId}) async {
+    Like like = Like(id: userId, userId: userId, createdAt: DateTime.now());
+    try {
+      Database.getPostLikesDatabase(postId).doc(userId).delete();
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (error) {
+      return CustomResponse(responseStatus: false, response: error.toString());
+    }
+  }
+
+  static Future<CustomResponse> commentOnPostWithId(
+      {required postId,
+      required String userId,
+      required String commentString}) async {
+    Comment comment = Comment(
+        id: "id",
+        userId: userId,
+        postId: postId,
+        comment: commentString,
+        createdAt: DateTime.now());
+    try{
+      var res = await Database.getPostCommentsDatabase(postId).add(comment.toMap());
+    await Database.getPostCommentsDatabase(postId).doc(res.id).update({'id':res.id});
+    return CustomResponse(responseStatus: true);
+    }on FirebaseException catch(e){
+      return CustomResponse(responseStatus: false,response: e.toString());
+    }
+
+  }
 }

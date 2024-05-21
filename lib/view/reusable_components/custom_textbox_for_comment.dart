@@ -50,15 +50,14 @@ class CustomTextBoxForComments extends StatelessWidget {
           title: Form(
             key: formKey,
             child: SizedBox(
-              height: displayHeight(context)*0.07,
               child: TextFormField(
-                controller: TextEditingController(),
+                controller: commentController,
                 maxLines: 5,
                 minLines: 1,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: CustomFont.poppins,
-                    fontSize: 12.5),
+                    fontSize: 12),
                 decoration: InputDecoration(
                   labelText: "Comment",
 

@@ -11,6 +11,7 @@ class FeedPostController extends ChangeNotifier {
   int currentPostLimit = 15;
   DocumentSnapshot? lastDocument;
 
+
   Future<void> getPosts(List<dynamic> following) async {
     if (following.isEmpty) {
       postState = POSTS_STATE.PRESENT;
@@ -59,4 +60,7 @@ class FeedPostController extends ChangeNotifier {
 
     notifyListeners();
   }
+
+
+
 }
