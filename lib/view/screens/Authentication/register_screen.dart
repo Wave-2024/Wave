@@ -25,6 +25,7 @@ class RegisterScreen extends StatelessWidget {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _obsureText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -99,32 +100,41 @@ class RegisterScreen extends StatelessWidget {
                 const SizedBox(
                   height: 15,
                 ),
-                Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  elevation: 1,
-                  child: AuthTextField(
-                      uniqueKey: Keys.keyForPasswordTextFieldRegister,
-                      controller: passwordController,
-                      label: "Password",
-                      visible: false,
-                      prefixIcon: const Icon(Icons.mail),
-                      validator: (password) {
-                        if (password == null || password.isEmpty) {
-                          return 'Password is required';
-                        } else if (password.length < 6) {
-                          return 'Password must be at least 6 characters long';
-                        }
-                        // The below code is commented only for smooth and faster dev process . Add it before production
+                Consumer<AuthScreenController>(
+                        builder: (context, authController, child) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            elevation: 2,
+                            child: AuthTextField(
+                                uniqueKey: Keys.keyForPasswordTextFieldLogin,
+                                controller: passwordController,
+                                label: "Password",
+                                visible: authController.obscuredText,
+                                prefixIcon: const Icon(Icons.password),
+                                suffixIcon: GestureDetector(
+                                  onTap: () {
+                                    authController.togglePasswordVisibility();
+                                  },
+                                  child: Icon(authController.obscuredText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                ),
+                                validator: (password) {
+                                  if (password == null || password.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  return null;
+                                }),
+                          );
+                        },
+                      ),        // The below code is commented only for smooth and faster dev process . Add it before production
 
                         // else if (!RegExp(
                         //         r'^(?=.*[a-zA-Z].*[a-zA-Z])(?=.*\d.*\d)(?=.*[^a-zA-Z0-9].*[^a-zA-Z0-9]).{6,}$')
                         //     .hasMatch(password)) {
                         //   return 'Password must contain at least 2 alphabets, 2 digits, and 2 special characters';
                         // }
-                        return null;
-                      }),
-                ),
                 const SizedBox(
                   height: 25,
                 ),
@@ -255,13 +265,16 @@ class RegisterScreen extends StatelessWidget {
                             final SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
                             fb.UserCredential googleUserCredential =
-                                loginWithGoogleResponse.response as fb.UserCredential;
+                                loginWithGoogleResponse.response
+                                    as fb.UserCredential;
 
-                            if (googleUserCredential.additionalUserInfo!.isNewUser) {
+                            if (googleUserCredential
+                                .additionalUserInfo!.isNewUser) {
                               await userDataController.createUser(
                                   user: User(
                                       verified: false,
-                                      name: capitalizeWords(googleUserCredential.user!.displayName!),
+                                      name: capitalizeWords(googleUserCredential
+                                          .user!.displayName!),
                                       email: googleUserCredential.user!.email!,
                                       following: [],
                                       followers: [],
@@ -296,8 +309,8 @@ class RegisterScreen extends StatelessWidget {
                               borderRadius: 5,
                               title: "Login Failed",
                               duration: const Duration(seconds: 2),
-                              message:
-                                  loginWithGoogleResponse.response.message.toString(),
+                              message: loginWithGoogleResponse.response.message
+                                  .toString(),
                             ));
                           }
                         },

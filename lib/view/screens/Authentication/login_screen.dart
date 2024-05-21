@@ -28,6 +28,7 @@ class LoginScreen extends StatelessWidget {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _obscuredText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,22 +109,34 @@ class LoginScreen extends StatelessWidget {
                       const SizedBox(
                         height: 15,
                       ),
-                      Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        elevation: 2,
-                        child: AuthTextField(
-                            uniqueKey: Keys.keyForPasswordTextFieldLogin,
-                            controller: passwordController,
-                            label: "Password",
-                            visible: false,
-                            prefixIcon: const Icon(Icons.password),
-                            validator: (password) {
-                              if (password == null || password.isEmpty) {
-                                return 'Password is required';
-                              }
-                              return null;
-                            }),
+                      Consumer<AuthScreenController>(
+                        builder: (context, authController, child) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            elevation: 2,
+                            child: AuthTextField(
+                                uniqueKey: Keys.keyForPasswordTextFieldLogin,
+                                controller: passwordController,
+                                label: "Password",
+                                visible: authController.obscuredText,
+                                prefixIcon: const Icon(Icons.password),
+                                suffixIcon: GestureDetector(
+                                  onTap: () {
+                                    authController.togglePasswordVisibility();
+                                  },
+                                  child: Icon(authController.obscuredText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                ),
+                                validator: (password) {
+                                  if (password == null || password.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  return null;
+                                }),
+                          );
+                        },
                       ),
                       const SizedBox(
                         height: 10,
@@ -268,9 +281,11 @@ class LoginScreen extends StatelessWidget {
                                     await userDataController.createUser(
                                         user: User(
                                             verified: false,
-                                            name: capitalizeWords(googleUserCredential
-                                                .user!.displayName!),
-                                            email: googleUserCredential.user!.email!,
+                                            name: capitalizeWords(
+                                                googleUserCredential
+                                                    .user!.displayName!),
+                                            email: googleUserCredential
+                                                .user!.email!,
                                             following: [],
                                             followers: [],
                                             posts: [],
@@ -286,8 +301,8 @@ class LoginScreen extends StatelessWidget {
                                   }
 
                                   await prefs.setBool(Pref.login_pref, true);
-                                  await prefs.setString(
-                                      Pref.user_id, googleUserCredential.user!.uid);
+                                  await prefs.setString(Pref.user_id,
+                                      googleUserCredential.user!.uid);
 
                                   Get.showSnackbar(GetSnackBar(
                                     duration: const Duration(seconds: 2),

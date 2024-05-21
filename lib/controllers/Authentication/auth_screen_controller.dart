@@ -9,6 +9,14 @@ import 'package:wave/utils/enums.dart';
 class AuthScreenController extends ChangeNotifier {
   LOGIN loginState = LOGIN.IDLE;
   REGISTER registerState = REGISTER.IDLE;
+  bool _obscuredText = false;
+  bool get obscuredText => _obscuredText;
+
+  // Method to toggle password visibility
+  void togglePasswordVisibility() {
+    _obscuredText = !_obscuredText;
+    notifyListeners(); // Notify listeners to update the UI
+  }
 
   Future<CustomResponse> startLoginProcess(
       {required String email,
