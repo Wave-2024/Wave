@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:wave/utils/constants/database.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 
 class UserData {
   static Future<User> getUser({required String userID}) async {

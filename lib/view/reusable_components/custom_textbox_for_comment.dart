@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -22,18 +23,18 @@ class CustomTextBoxForComments extends StatelessWidget {
   FocusNode? focusNode;
   CustomTextBoxForComments(
       {this.child,
-        this.header,
-        this.sendButtonMethod,
-        this.formKey,
-        this.commentController,
-        this.sendWidget,
-        this.userImage,
-        this.labelText,
-        this.focusNode,
-        this.errorText,
-        this.withBorder = true,
-        this.backgroundColor,
-        this.textColor});
+      this.header,
+      this.sendButtonMethod,
+      this.formKey,
+      this.commentController,
+      this.sendWidget,
+      this.userImage,
+      this.labelText,
+      this.focusNode,
+      this.errorText,
+      this.withBorder = true,
+      this.backgroundColor,
+      this.textColor});
 
   @override
   Widget build(BuildContext context) {
@@ -60,24 +61,23 @@ class CustomTextBoxForComments extends StatelessWidget {
                     fontSize: 12),
                 decoration: InputDecoration(
                   labelText: "Comment",
-
                   labelStyle: TextStyle(
                       color: Colors.black,
                       fontFamily: CustomFont.poppins,
                       fontSize: 14),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: CustomColor.authTextBoxBorderColor),
+                        BorderSide(color: CustomColor.authTextBoxBorderColor),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: CustomColor.authTextBoxBorderColor),
+                        BorderSide(color: CustomColor.authTextBoxBorderColor),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   border: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: CustomColor.authTextBoxBorderColor),
+                        BorderSide(color: CustomColor.authTextBoxBorderColor),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   errorBorder: OutlineInputBorder(
@@ -104,7 +104,7 @@ class CustomTextBoxForComments extends StatelessWidget {
       //check if imageURLorPath
       if (imageURLorPath is String) {
         if (imageURLorPath.startsWith('http')) {
-          return NetworkImage(imageURLorPath);
+          return CachedNetworkImageProvider(imageURLorPath);
         } else {
           return AssetImage(imageURLorPath);
         }

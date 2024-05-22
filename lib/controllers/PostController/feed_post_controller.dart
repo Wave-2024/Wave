@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wave/models/post_model.dart';
-import 'package:wave/utils/constants/database.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/enums.dart';
 
 class FeedPostController extends ChangeNotifier {
