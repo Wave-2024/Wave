@@ -59,6 +59,14 @@ class MoreOptionsForSelfProfile extends StatelessWidget {
           },
         ),
         ListTile(
+          leading: Icon(Icons.block_outlined),
+          title: Text('Blocked Contacts',
+          style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
+          onTap: () {
+            //Help
+          },
+        ),
+        ListTile(
           leading: Icon(Icons.info_outline),
           title: Text('About',
           style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
