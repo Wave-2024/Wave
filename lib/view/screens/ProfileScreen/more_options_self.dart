@@ -18,17 +18,6 @@ class MoreOptionsForSelfProfile extends StatelessWidget {
     return Container(
         child: Wrap(
       children: [
-        ListTile(
-          leading: Icon(Icons.logout),
-          title: Text('Logout',
-              style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
-          onTap: () async {
-            // Close the bottom sheet
-            await Provider.of<AuthScreenController>(context, listen: false)
-                .signOut(firebaseAuth: FirebaseAuth.instance);
-            Get.offAllNamed(AppRoutes.loginScreen);
-          },
-        ),
         Consumer<UserDataController>(
           builder: (context, userDataController, child) {
             return ListTile(
@@ -59,6 +48,49 @@ class MoreOptionsForSelfProfile extends StatelessWidget {
                     arguments: userDataController.user!);
               },
             );
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.settings_outlined),
+          title: Text('Settings',
+          style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
+          onTap: () {
+            //Settings
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.block_outlined),
+          title: Text('Blocked Contacts',
+          style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
+          onTap: () {
+            //Help
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.info_outline),
+          title: Text('About',
+          style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
+          onTap: () {
+            //About
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.help_outline_outlined),
+          title: Text('Help',
+          style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
+          onTap: () {
+            //Help
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.logout),
+          title: Text('Logout',
+              style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
+          onTap: () async {
+            // Close the bottom sheet
+            await Provider.of<AuthScreenController>(context, listen: false)
+                .signOut(firebaseAuth: FirebaseAuth.instance);
+            Get.offAllNamed(AppRoutes.loginScreen);
           },
         ),
       ],
