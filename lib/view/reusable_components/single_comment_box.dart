@@ -1,14 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:comment_box/comment/comment.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:wave/data/post_data.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/comment_post_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/util_functions.dart';
-
 import '../../models/user_model.dart';
 import '../../utils/constants/custom_icons.dart';
 
@@ -103,21 +102,46 @@ class SingleCommentBox extends StatelessWidget {
                             size: 18,
                             color: Colors.grey.shade800,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           ),
-                          Text(
-                            "5 Likes",
-                            style: TextStyle(
-                                fontFamily: CustomFont.poppins,
-                                fontSize: 11.5,
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.bold),
+                          StreamBuilder(
+                            stream: Database.getPostCommentsLikesDatabase(
+                                    comment.postId, comment.id)
+                                .snapshots(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> likesSnapshot) {
+                              if ((likesSnapshot.connectionState ==
+                                          ConnectionState.active ||
+                                      likesSnapshot.connectionState ==
+                                          ConnectionState.done) &&
+                                  likesSnapshot.hasData) {
+                                return Text(
+                                  "${likesSnapshot.data!.docs.length} Likes",
+                                  style: TextStyle(
+                                      fontFamily: CustomFont.poppins,
+                                      fontSize: 11.5,
+                                      color: Colors.grey.shade700,
+                                      fontWeight: FontWeight.bold),
+                                );
+                              } else {
+                                return Text(
+                                  "0 Likes",
+                                  style: TextStyle(
+                                      fontFamily: CustomFont.poppins,
+                                      fontSize: 11.5,
+                                      color: Colors.grey.shade700,
+                                      fontWeight: FontWeight.bold),
+                                );
+                              }
+                            },
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(width: 15,),
+                    const SizedBox(
+                      width: 15,
+                    ),
                     InkWell(
                       onTap: () {
                         "Tapped to reply".printInfo();
@@ -129,7 +153,7 @@ class SingleCommentBox extends StatelessWidget {
                             size: 20,
                             color: Colors.grey.shade800,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Text(

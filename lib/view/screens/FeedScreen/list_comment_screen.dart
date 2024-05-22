@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/PostController/feed_post_controller.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/models/comment_post_model.dart';
@@ -12,7 +13,7 @@ import 'package:wave/models/response_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
-import 'package:wave/utils/constants/database.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/view/reusable_components/custom_textbox_for_comment.dart';
 import 'package:wave/view/reusable_components/single_comment_box.dart';
@@ -58,8 +59,8 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
         elevation: 0,
         backgroundColor: CustomColor.primaryBackGround,
       ),
-      body: SafeArea(child: Consumer<FeedPostController>(
-        builder: (context, feedController, child) {
+      body: SafeArea(child: Consumer2<FeedPostController, UserDataController>(
+        builder: (context, feedController, userController, child) {
           return Container(
             child: CustomTextBoxForComments(
               commentController: commentController,
@@ -99,11 +100,15 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                   ));
                 }
               },
-              userImage: CachedNetworkImageProvider(
-                  "https://i.pinimg.com/236x/98/53/22/98532233a2efcc3b75bb544608c2e99c.jpg"),
-              labelText: "label",
+              userImage: (userController.user!.displayPicture != null &&
+                      userController.user!.displayPicture!.isNotEmpty)
+                  ? CachedNetworkImageProvider(
+                      userController.user!.displayPicture!)
+                  : AssetImage(CustomIcon.profileFullIcon) as ImageProvider,
               child: StreamBuilder(
-                stream: Database.getPostCommentsDatabase(postId!).snapshots(),
+                stream: Database.getPostCommentsDatabase(postId!)
+                    .limit(50)
+                    .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> comments) {
                   if ((comments.connectionState == ConnectionState.active ||
                           comments.connectionState == ConnectionState.done) &&
@@ -118,7 +123,7 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                       },
                     );
                   } else {
-                    return CircularProgressIndicator();
+                    return SizedBox();
                   }
                 },
               ),

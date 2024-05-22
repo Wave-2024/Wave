@@ -15,7 +15,7 @@ import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
-import 'package:wave/utils/constants/database.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/image_config.dart';
 import 'package:wave/view/reusable_components/textbox_editprofile.dart';

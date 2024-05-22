@@ -12,17 +12,16 @@ import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
-import 'package:wave/utils/constants/database.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:wave/utils/routing.dart';
-import 'package:wave/view/screens/FeedScreen/list_comment_modal_sheet.dart';
+import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
 
 class FeedBox extends StatelessWidget {
   final Post post;
   final User poster;
   const FeedBox({super.key, required this.post, required this.poster});
-
 
   Widget decideMediaBox(double height) {
     List<PostContent> posts = post.postList;
@@ -391,19 +390,17 @@ class FeedBox extends StatelessWidget {
                       children: [
                         InkWell(
                             onTap: () async {
-                              if(hasLiked){
+                              if (hasLiked) {
                                 await PostData.unLikePostWithId(
                                     postId: post.id,
-                                    userId: fb
-                                        .FirebaseAuth.instance.currentUser!.uid);
-                              }
-                              else{
+                                    userId: fb.FirebaseAuth.instance
+                                        .currentUser!.uid);
+                              } else {
                                 await PostData.likePostWithId(
                                     postId: post.id,
-                                    userId: fb
-                                        .FirebaseAuth.instance.currentUser!.uid);
+                                    userId: fb.FirebaseAuth.instance
+                                        .currentUser!.uid);
                               }
-
                             },
                             child: Icon(
                               hasLiked ? BoxIcons.bxs_like : BoxIcons.bx_like,
@@ -434,7 +431,7 @@ class FeedBox extends StatelessWidget {
                                       .FirebaseAuth.instance.currentUser!.uid);
                             },
                             child: Icon(
-                               BoxIcons.bx_like,
+                              BoxIcons.bx_like,
                               size: 22,
                               color: CustomColor.primaryColor,
                             )),
@@ -456,32 +453,70 @@ class FeedBox extends StatelessWidget {
               // Comment icon and comment count
               InkWell(
                 onTap: () {
-                  Get.toNamed(AppRoutes.listCommentsScreen,arguments: post.id);
+                  Get.toNamed(AppRoutes.listCommentsScreen, arguments: post.id);
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Image.asset(
-                        CustomIcon.commentIcon,
-                        height: 25,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 3.50),
-                      child: Text(
-                        '3.1K',
-                        style: TextStyle(
-                            fontFamily: CustomFont.poppins,
-                            color: CustomColor.primaryColor,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    )
-                  ],
+                child: StreamBuilder(
+                  stream: Database.getPostCommentsDatabase(post.id).snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> commentSnapshot) {
+                    if ((commentSnapshot.connectionState ==
+                                ConnectionState.active ||
+                            commentSnapshot.connectionState ==
+                                ConnectionState.done) &&
+                        commentSnapshot.hasData) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Image.asset(
+                              CustomIcon.commentIcon,
+                              height: 25,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3.50),
+                            child: Text(
+                              '${commentSnapshot.data!.docs.length}',
+                              style: TextStyle(
+                                  fontFamily: CustomFont.poppins,
+                                  color: CustomColor.primaryColor,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          )
+                        ],
+                      );
+                    } else {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Image.asset(
+                              CustomIcon.commentIcon,
+                              height: 25,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3.50),
+                            child: Text(
+                              '0',
+                              style: TextStyle(
+                                  fontFamily: CustomFont.poppins,
+                                  color: CustomColor.primaryColor,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
               Padding(

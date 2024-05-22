@@ -6,7 +6,7 @@ import 'package:wave/data/post_data.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:wave/utils/constants/database.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/util_functions.dart';
 
