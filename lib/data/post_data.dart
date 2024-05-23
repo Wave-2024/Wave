@@ -10,6 +10,7 @@ import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/services/user_notification_service.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
 class PostData {
@@ -154,6 +155,8 @@ class PostData {
     try {
       var res =
           await Database.getPostCommentsDatabase(postId).add(comment.toMap());
+      await UserNotificationService.sendPushNotification(
+          "fJqV9zJAQ6mUE6x2YchXfC:APA91bFLgp5zFgJUGZczeW0p0Q87C6GXp2nepeamp3i925XiyncdB2njesRcyOz98wDV9T6OvTiD_CAmTYw3Qalpi5FDhsP15MNg2HsbnNcJbLJ__gv_vINb7458iQGkP8I8QXs950Um");
       await Database.getPostCommentsDatabase(postId)
           .doc(res.id)
           .update({'id': res.id});
