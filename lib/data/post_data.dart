@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -150,13 +151,46 @@ class PostData {
         postId: postId,
         comment: commentString,
         createdAt: DateTime.now());
-    try{
-      var res = await Database.getPostCommentsDatabase(postId).add(comment.toMap());
-    await Database.getPostCommentsDatabase(postId).doc(res.id).update({'id':res.id});
-    return CustomResponse(responseStatus: true);
-    }on FirebaseException catch(e){
-      return CustomResponse(responseStatus: false,response: e.toString());
+    try {
+      var res =
+          await Database.getPostCommentsDatabase(postId).add(comment.toMap());
+      await Database.getPostCommentsDatabase(postId)
+          .doc(res.id)
+          .update({'id': res.id});
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (e) {
+      return CustomResponse(responseStatus: false, response: e.toString());
     }
+  }
 
+  static Future<CustomResponse> likeOnComment({
+    required String postId,
+    required String commentId,
+    required String userId,
+  }) async {
+    try {
+      Like like = Like(createdAt: DateTime.now(), id: userId, userId: userId);
+      await Database.getPostCommentsLikesDatabase(postId, commentId)
+          .doc(userId)
+          .set(like.toMap());
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (e) {
+      return CustomResponse(responseStatus: false, response: e.toString());
+    }
+  }
+
+  static Future<CustomResponse> unlikeOnComment({
+    required String postId,
+    required String commentId,
+    required String userId,
+  }) async {
+    try {
+      await Database.getPostCommentsLikesDatabase(postId, commentId)
+          .doc(userId)
+          .delete();
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (e) {
+      return CustomResponse(responseStatus: false, response: e.toString());
+    }
   }
 }
