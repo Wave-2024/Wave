@@ -14,6 +14,7 @@ class User {
   String? bio;
   String? url;
   String id;
+  String fcmToken;
   String username;
   List<dynamic> stories;
   List<dynamic>? blocked;
@@ -29,6 +30,7 @@ class User {
     required this.following,
     required this.followers,
     required this.posts,
+    required this.fcmToken,
     this.displayPicture,
     this.bio,
     this.url,
@@ -60,8 +62,10 @@ class User {
     List<dynamic>? savedPosts,
     List<dynamic>? messages,
     ACCOUNT_TYPE? account_type,
+    String? fcmToken, 
   }) {
     return User(
+      fcmToken: fcmToken??this.fcmToken,
       verified: verified ?? this.verified,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -94,6 +98,7 @@ class User {
       'bio': bio,
       'url': url,
       'id': id,
+      'fcmToken':fcmToken,
       'username': username,
       'stories': stories,
       'blocked': blocked,
@@ -106,6 +111,7 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
+      fcmToken: map['fcmToken'] as String,
         verified: map['verified'] as bool,
         name: map['name'] as String,
         email: map['email'] as String,
@@ -144,7 +150,7 @@ class User {
 
   @override
   String toString() {
-    return 'User(verified: $verified, name: $name, email: $email, following: $following, followers: $followers, posts: $posts, displayPicture: $displayPicture, bio: $bio, url: $url, id: $id, username: $username, stories: $stories, blocked: $blocked, coverPicture: $coverPicture, savedPosts: $savedPosts, messages: $messages, account_type: $account_type)';
+    return 'User(verified: $verified, name: $name, email: $email, following: $following, followers: $followers, posts: $posts, displayPicture: $displayPicture, bio: $bio, url: $url, id: $id, username: $username, stories: $stories, blocked: $blocked, coverPicture: $coverPicture, savedPosts: $savedPosts, messages: $messages, account_type: $account_type), fcmToken : $fcmToken';
   }
 
   @override

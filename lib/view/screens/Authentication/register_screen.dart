@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -162,8 +163,10 @@ class RegisterScreen extends StatelessWidget {
                                   registrationResponse.response
                                       as fb.UserCredential;
                               String name = nameController.text.trim();
+                              String? fcmToken = await FirebaseMessaging.instance.getToken();
                               name = capitalizeWords(name);
                               User currentUser = User(
+                                fcmToken: fcmToken!,
                                   verified: false,
                                   account_type: ACCOUNT_TYPE.PUBLIC,
                                   name: name,
@@ -270,8 +273,10 @@ class RegisterScreen extends StatelessWidget {
 
                             if (googleUserCredential
                                 .additionalUserInfo!.isNewUser) {
+                                  String? fcmToken = await FirebaseMessaging.instance.getToken();
                               await userDataController.createUser(
                                   user: User(
+                                    fcmToken: fcmToken!,
                                       verified: false,
                                       name: capitalizeWords(googleUserCredential
                                           .user!.displayName!),
