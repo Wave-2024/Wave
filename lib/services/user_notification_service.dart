@@ -1,8 +1,56 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'dart:convert';
+
+import 'package:wave/services/notification_token.dart';
 
 class UserNotificationService {
   final String _serverToken = 'YOUR_SERVER_KEY';
+
+  // for sending push notification (Updated Codes)
+  static Future<void> sendPushNotification(String fcmToken) async {
+    try {
+      
+      final body = {
+        "message": {
+          "token": fcmToken,
+          "notification": {
+            "title": "my name", //our name should be send
+            "body": "my msgs",
+          },
+        }
+      };
+
+      // Firebase Project > Project Settings > General Tab > Project ID
+      const projectID = 'wave-dev-42598';
+
+      // get firebase admin token
+      final bearerToken = await NotificationAccessToken.getToken;
+
+      log('bearerToken: $bearerToken');
+
+      // handle null token
+      if (bearerToken == null) return;
+
+      var res = await post(
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/$projectID/messages:send'),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $bearerToken'
+        },
+        body: jsonEncode(body),
+      );
+
+      log('Response status: ${res.statusCode}');
+      log('Response body: ${res.body}');
+    } catch (e) {
+      log('\nsendPushNotificationE: $e');
+    }
+  }
 
   Future<void> sendFollowNotification(String followerId, String followedUserId) async {
     try {
