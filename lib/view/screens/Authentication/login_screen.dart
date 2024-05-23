@@ -1,6 +1,7 @@
 //import 'dart:html';
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -279,8 +280,10 @@ class LoginScreen extends StatelessWidget {
 
                                   if (googleUserCredential
                                       .additionalUserInfo!.isNewUser) {
+                                        String? fcmToken = await FirebaseMessaging.instance.getToken();
                                     await userDataController.createUser(
                                         user: User(
+                                          fcmToken: fcmToken!,
                                             verified: false,
                                             name: capitalizeWords(
                                                 googleUserCredential

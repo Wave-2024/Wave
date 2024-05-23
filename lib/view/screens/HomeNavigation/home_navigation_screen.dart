@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +14,14 @@ import 'package:wave/view/screens/FeedScreen/feed_screen.dart';
 import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
 import 'package:wave/view/screens/SearchScreen/search_screen.dart';
 
-class HomeNavigationScreen extends StatelessWidget {
+class HomeNavigationScreen extends StatefulWidget {
   HomeNavigationScreen({super.key});
 
+  @override
+  State<HomeNavigationScreen> createState() => _HomeNavigationScreenState();
+}
+
+class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
   final List<dynamic> screens = [
     FeedScreen(),
     SearchScreen(),
@@ -23,6 +29,72 @@ class HomeNavigationScreen extends StatelessWidget {
     ChatListScreen(),
     ProfileScreen()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Request permission for notifications
+    var res = FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    
+
+    // Get the token for this device
+    FirebaseMessaging.instance.getToken().then((token) {
+      print("FCM Token: $token");
+      // You can save the token to your database here
+    });
+
+    // Handle messages when the app is in the foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Received a message in the foreground: ${message.messageId}');
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+        // Show a dialog or update the UI based on the message
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(message.notification!.title ?? 'No Title'),
+            content: Text(message.notification!.body ?? 'No Body'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+
+    // Handle messages when the app is opened from a terminated state
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      if (message != null) {
+        print('App opened from a terminated state: ${message.messageId}');
+        if (message.notification != null) {
+          print(
+              'Message also contained a notification: ${message.notification}');
+        }
+      }
+    });
+
+    // Handle messages when the app is opened from the background
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
