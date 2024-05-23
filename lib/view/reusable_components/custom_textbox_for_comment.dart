@@ -104,7 +104,8 @@ class CustomTextBoxForComments extends StatelessWidget {
       //check if imageURLorPath
       if (imageURLorPath is String) {
         if (imageURLorPath.startsWith('http')) {
-          return CachedNetworkImageProvider(imageURLorPath);
+          return CachedNetworkImageProvider(
+            imageURLorPath);
         } else {
           return AssetImage(imageURLorPath);
         }

@@ -64,7 +64,7 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
           return Container(
             child: CustomTextBoxForComments(
               commentController: commentController,
-              sendWidget: Icon(Icons.add),
+              sendWidget: Icon(Icons.send),
               sendButtonMethod: () async {
                 if (commentController.text.trim().isNotEmpty) {
                   CustomResponse customResponse =

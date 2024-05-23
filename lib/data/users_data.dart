@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
@@ -21,6 +22,7 @@ class UserData {
     String? name,
     String? username,
     String? bio,
+    String? fcmToken,
     String? coverPicture,
     String? displayPicture,
     List<dynamic>? following,
@@ -38,7 +40,8 @@ class UserData {
         dataToUpdate['displayPicture'] = displayPicture;
       if (following != null) dataToUpdate['following'] = following;
       if (followers != null) dataToUpdate['followers'] = followers;
-
+      if (fcmToken != null) dataToUpdate['fcmToken'] = fcmToken;
+      "I have reached here".printInfo();
       // Update the document in Firestore only if there's something to update
       if (dataToUpdate.isNotEmpty) {
         await Database.userDatabase.doc(userId).update(dataToUpdate);
