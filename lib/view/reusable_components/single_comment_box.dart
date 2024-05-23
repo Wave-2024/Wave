@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:wave/data/post_data.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/comment_post_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
@@ -34,8 +36,18 @@ class SingleCommentBox extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 15,
-                      backgroundImage: CachedNetworkImageProvider(
-                          user.data!.displayPicture!),
+                      backgroundImage: user.data!.displayPicture != null &&
+                              user.data!.displayPicture!.isNotEmpty
+                          ? CachedNetworkImageProvider(
+                              user.data!.displayPicture!)
+                          : null,
+                      child: user.data!.displayPicture == null ||
+                              user.data!.displayPicture!.isEmpty
+                          ? Image.asset(
+                              CustomIcon.profileFullIcon,
+                              height: 12,
+                            )
+                          : null,
                     ),
                     const SizedBox(
                       width: 10,
@@ -91,53 +103,76 @@ class SingleCommentBox extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        "Tapped to like".printInfo();
+                    StreamBuilder(
+                      stream: Database.getPostCommentsLikesDatabase(
+                              comment.postId, comment.id)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> likesSnapshot) {
+                        bool hasLiked = false;
+                        if ((likesSnapshot.connectionState ==
+                                    ConnectionState.active ||
+                                likesSnapshot.connectionState ==
+                                    ConnectionState.done) &&
+                            likesSnapshot.hasData) {
+                          hasLiked = likesSnapshot.data!.docs.any((element) {
+                            return (element.id ==
+                                fb.FirebaseAuth.instance.currentUser!.uid);
+                          });
+                        }
+                        return InkWell(
+                          onTap: () async {
+                            if (hasLiked) {
+                              await PostData.unlikeOnComment(
+                                  postId: comment.postId,
+                                  commentId: comment.id,
+                                  userId: fb
+                                      .FirebaseAuth.instance.currentUser!.uid);
+                            } else {
+                              await PostData.likeOnComment(
+                                  postId: comment.postId,
+                                  commentId: comment.id,
+                                  userId: fb
+                                      .FirebaseAuth.instance.currentUser!.uid);
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              Icon(
+                                hasLiked
+                                    ? Bootstrap.heart_fill
+                                    : Bootstrap.heart,
+                                size: 18,
+                                color: Colors.grey.shade800,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              ((likesSnapshot.connectionState ==
+                                              ConnectionState.active ||
+                                          likesSnapshot.connectionState ==
+                                              ConnectionState.done) &&
+                                      likesSnapshot.hasData)
+                                  ? Text(
+                                      "${likesSnapshot.data!.docs.length} Likes",
+                                      style: TextStyle(
+                                          fontFamily: CustomFont.poppins,
+                                          fontSize: 11.5,
+                                          color: Colors.grey.shade700,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : Text(
+                                      "0 Likes",
+                                      style: TextStyle(
+                                          fontFamily: CustomFont.poppins,
+                                          fontSize: 11.5,
+                                          color: Colors.grey.shade700,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                            ],
+                          ),
+                        );
                       },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Bootstrap.heart,
-                            size: 18,
-                            color: Colors.grey.shade800,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          StreamBuilder(
-                            stream: Database.getPostCommentsLikesDatabase(
-                                    comment.postId, comment.id)
-                                .snapshots(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> likesSnapshot) {
-                              if ((likesSnapshot.connectionState ==
-                                          ConnectionState.active ||
-                                      likesSnapshot.connectionState ==
-                                          ConnectionState.done) &&
-                                  likesSnapshot.hasData) {
-                                return Text(
-                                  "${likesSnapshot.data!.docs.length} Likes",
-                                  style: TextStyle(
-                                      fontFamily: CustomFont.poppins,
-                                      fontSize: 11.5,
-                                      color: Colors.grey.shade700,
-                                      fontWeight: FontWeight.bold),
-                                );
-                              } else {
-                                return Text(
-                                  "0 Likes",
-                                  style: TextStyle(
-                                      fontFamily: CustomFont.poppins,
-                                      fontSize: 11.5,
-                                      color: Colors.grey.shade700,
-                                      fontWeight: FontWeight.bold),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
                     ),
                     const SizedBox(
                       width: 15,
