@@ -1,20 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:comment_box/comment/comment.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/PostController/feed_post_controller.dart';
+import 'package:wave/data/notification_data.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/models/comment_post_model.dart';
+import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
-import 'package:wave/utils/device_size.dart';
+import 'package:wave/models/notification_model.dart' as notification;
 import 'package:wave/view/reusable_components/custom_textbox_for_comment.dart';
 import 'package:wave/view/reusable_components/single_comment_box.dart';
 
@@ -72,6 +73,7 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                           postId: postId,
                           userId: FirebaseAuth.instance.currentUser!.uid,
                           commentString: commentController.text.trim());
+
                   if (customResponse.responseStatus) {
                     commentController.clear();
                     Get.showSnackbar(const GetSnackBar(
@@ -81,6 +83,17 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                       title: "Success",
                       message: "Your comment was posted",
                     ));
+                    Post post = await PostData.getPost(postId!);
+                    notification.Notification not = notification.Notification(
+                        createdAt: DateTime.now(),
+                        forUser: post.userId,
+                        seen: false,
+                        type: "comment",
+                        id: "",
+                        comment: commentController.text.trim(),
+                        userWhoCommented:
+                            FirebaseAuth.instance.currentUser!.uid);
+                    NotificationData.createNotification(notification: not);
                   } else {
                     Get.showSnackbar(GetSnackBar(
                       duration: Duration(seconds: 2),
