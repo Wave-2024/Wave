@@ -1,7 +1,5 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:wave/models/comment_post_model.dart';
@@ -10,7 +8,7 @@ import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:wave/services/user_notification_service.dart';
+import 'package:wave/services/comment_notification_service.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
 class PostData {
@@ -142,6 +140,12 @@ class PostData {
     }
   }
 
+  static Future<Post> getPost(String postId) async {
+    var res = await Database.postDatabase.doc(postId).get();
+    Post post = Post.fromMap(res.data()!);
+    return post;
+  }
+
   static Future<CustomResponse> commentOnPostWithId(
       {required postId,
       required String userId,
@@ -155,11 +159,16 @@ class PostData {
     try {
       var res =
           await Database.getPostCommentsDatabase(postId).add(comment.toMap());
-      await UserNotificationService.sendPushNotification(
-          "fJqV9zJAQ6mUE6x2YchXfC:APA91bFLgp5zFgJUGZczeW0p0Q87C6GXp2nepeamp3i925XiyncdB2njesRcyOz98wDV9T6OvTiD_CAmTYw3Qalpi5FDhsP15MNg2HsbnNcJbLJ__gv_vINb7458iQGkP8I8QXs950Um");
+
       await Database.getPostCommentsDatabase(postId)
           .doc(res.id)
           .update({'id': res.id});
+
+      CommentNotificationService.sendNotification(
+          comment: commentString,
+          myUserId: fb.FirebaseAuth.instance.currentUser!.uid,
+          postId: postId);
+
       return CustomResponse(responseStatus: true);
     } on FirebaseException catch (e) {
       return CustomResponse(responseStatus: false, response: e.toString());

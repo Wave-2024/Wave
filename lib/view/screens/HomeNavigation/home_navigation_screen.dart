@@ -104,12 +104,12 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       bottomNavigationBar: Consumer<HomeNavController>(
         builder: (context, homeNavController, child) {
           return BottomNavigationBar(
-              key: Key(Keys.keyForBottomNavButton),
+              key: const Key(Keys.keyForBottomNavButton),
               onTap: (newScreenIndex) {
                 if (newScreenIndex == 2) {
                   Get.toNamed(AppRoutes.createNewPostScreen);
                 } else {
-                  Get.printInfo(info: "Selected ${newScreenIndex} index");
+                  Get.printInfo(info: "Selected $newScreenIndex index");
                   homeNavController.setCurrentScreenIndex(newScreenIndex);
                 }
               },

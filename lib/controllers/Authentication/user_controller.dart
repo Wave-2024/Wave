@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -105,7 +107,7 @@ class UserDataController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setUser({String? userID, User? user,String? name}) async {
+  Future<void> setUser({String? userID, User? user, String? name}) async {
     if (userState != USER.LOADING) {
       userState = USER.LOADING;
       await Future.delayed(Duration.zero);
@@ -115,6 +117,21 @@ class UserDataController extends ChangeNotifier {
     if (userID != null) {
       printInfo(info: "User id received ${userID}");
       this.user = await UserData.getUser(userID: userID);
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != this.user!.fcmToken) {
+        StreamSubscription<CustomResponse>? sub;
+        sub = updateProfile(fcmToken: fcmToken).listen(
+          (customRes) {
+            if (customRes.responseStatus) {
+              "Modified fcm key".printInfo();
+            }
+          },
+          onDone: () {
+            sub!.cancel();
+          },
+        );
+      }
+
       userState = USER.PRESENT;
     } else {
       this.user = user!;
@@ -158,10 +175,9 @@ class UserDataController extends ChangeNotifier {
     for (var index = 0; index < searchUserResponse.docs.length; index++) {
       var doc = searchUserResponse.docs[index].data();
       User foundUser = User.fromMap(doc);
-      if(!users.contains(foundUser)){
+      if (!users.contains(foundUser)) {
         users.add(foundUser);
       }
-
     }
 
     endString = username.substring(0, username.length - 1) +
@@ -174,12 +190,12 @@ class UserDataController extends ChangeNotifier {
     for (var index = 0; index < searchUserResponse.docs.length; index++) {
       var doc = searchUserResponse.docs[index].data();
       User foundUser = User.fromMap(doc);
-      if(!users.contains(foundUser)){
+      if (!users.contains(foundUser)) {
         users.add(foundUser);
       }
     }
 
-    printInfo(info:"set of searched users : ${users.length}");
+    printInfo(info: "set of searched users : ${users.length}");
 
     searchedUsers = users.toList();
     printInfo(info: "Number of users found : ${searchedUsers.length}");
@@ -189,6 +205,7 @@ class UserDataController extends ChangeNotifier {
   Stream<CustomResponse> updateProfile(
       {String? name,
       String? bio,
+      String? fcmToken,
       String? username,
       List<dynamic>? posts,
       CroppedFile? coverPicture,
@@ -196,13 +213,17 @@ class UserDataController extends ChangeNotifier {
     // First, update the user's text data
     CustomResponse customResponse = await UserData.updateUser(
         userId: user!.id,
+        fcmToken: fcmToken ?? user!.fcmToken,
         name: name ?? user!.name,
         username: username ?? user!.username,
         bio: bio ?? user!.bio ?? "");
 
     if (customResponse.responseStatus) {
       // Update local user instance if the text update is successful
-      user = user!.copyWith(bio: bio, name: name, username: username);
+      user = user!.copyWith(
+          bio: bio, name: name, username: username, fcmToken: fcmToken);
+      "proile getting updated from here".printInfo();
+      notifyListeners();
       yield customResponse; // Yield the result of the text update
     } else {
       yield customResponse; // Yield the failure response and return early

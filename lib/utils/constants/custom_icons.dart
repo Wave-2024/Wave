@@ -24,5 +24,5 @@ class CustomIcon {
   static String noUserFoundIcon = "assets/icons/no_user_found_ico.png";
   static String commentIcon = "assets/icons/comment_ico.png";
   static String shareIcon = "assets/icons/share_ico.png";
-
+  static String notificationIcon = "assets/icons/notification_ico.png";
 }

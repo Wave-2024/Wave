@@ -6,8 +6,7 @@ class Database {
   static var userDatabase = FirebaseFirestore.instance.collection("users");
 
   static CollectionReference getPostLikesDatabase(String postId) {
-    return FirebaseFirestore.instance
-        .collection("posts")
+    return postDatabase
         .doc(postId)
         .collection('likes');
   }
@@ -19,5 +18,9 @@ class Database {
   static CollectionReference getPostCommentsLikesDatabase(
       String postId, String commentId) {
     return getPostCommentsDatabase(postId).doc(commentId).collection("likes");
+  }
+
+  static CollectionReference getNotificationDatabase(String userId) {
+    return userDatabase.doc(userId).collection('notifications');
   }
 }
