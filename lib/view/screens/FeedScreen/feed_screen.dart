@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/PostController/feed_post_controller.dart';
@@ -8,9 +10,11 @@ import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/view/reusable_components/feedbox.dart';
+import 'package:wave/models/notification_model.dart' as notification;
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({Key? key});
@@ -37,10 +41,63 @@ class FeedScreen extends StatelessWidget {
                 floating: true,
                 snap: true,
                 elevation: 0,
-        
+                actions: [
+                  Consumer<UserDataController>(
+                    builder: (context, userController, child) {
+                      return StreamBuilder(
+                        stream: Database.getNotificationDatabase(
+                                userController.user!.id)
+                            .snapshots(),
+                        builder: (context,
+                            AsyncSnapshot<QuerySnapshot> notificationSnapshot) {
+                          int unseenNotification = 4;
+                          if ((notificationSnapshot.connectionState ==
+                                      ConnectionState.active ||
+                                  notificationSnapshot.connectionState ==
+                                      ConnectionState.done) &&
+                              notificationSnapshot.hasData) {
+                            unseenNotification = notificationSnapshot.data!.docs
+                                .where((element) =>
+                                    notification.Notification.fromMap(element
+                                            .data()! as Map<String, dynamic>)
+                                        .seen)
+                                .toList()
+                                .length;
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: InkWell(
+                              onTap: () {
+                                "Tapped on notification".printInfo();
+                              },
+                              child: badge.Badge(
+                                position: badge.BadgePosition.topEnd(end: -4),
+                                badgeAnimation:
+                                    const badge.BadgeAnimation.slide(),
+                                badgeStyle: const badge.BadgeStyle(
+                                    badgeColor: Color(0xfb16db65)),
+                                badgeContent: Text(
+                                  unseenNotification.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                showBadge: unseenNotification > 0,
+                                child: Image.asset(
+                                  CustomIcon.notificationIcon,
+                                  height: 25,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  )
+                ],
               ),
               SliverToBoxAdapter(
-        
                 child: Container(
                   padding: const EdgeInsets.only(left: 14.0, right: 8, top: 2),
                   // color: Colors.amber.shade100,
@@ -57,7 +114,8 @@ class FeedScreen extends StatelessWidget {
                           CircleAvatar(
                             backgroundColor: Colors.transparent,
                             radius: 30,
-                            backgroundImage: AssetImage(CustomIcon.addStoryIcon),
+                            backgroundImage:
+                                AssetImage(CustomIcon.addStoryIcon),
                           ),
                           const SizedBox(
                             height: 2,
@@ -76,7 +134,8 @@ class FeedScreen extends StatelessWidget {
                           itemCount: 10,
                           itemBuilder: (BuildContext context, int index) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -115,7 +174,7 @@ class FeedScreen extends StatelessWidget {
                         return const Center(child: CircularProgressIndicator());
                       case POSTS_STATE.LOADING:
                         return const Center(child: CircularProgressIndicator());
-        
+
                       case POSTS_STATE.PRESENT:
                         return ListView.builder(
                           shrinkWrap: true,
@@ -123,13 +182,19 @@ class FeedScreen extends StatelessWidget {
                           itemCount: feedController.posts.length,
                           itemBuilder: (BuildContext context, int index) {
                             return FutureBuilder<User>(
-                              future: UserData.getUser(userID: feedController.posts[index].userId),
+                              future: UserData.getUser(
+                                  userID: feedController.posts[index].userId),
                               initialData: null,
                               builder: (context, AsyncSnapshot<User> user) {
-                                if(user.connectionState == ConnectionState.done && user.hasData) {
+                                if (user.connectionState ==
+                                        ConnectionState.done &&
+                                    user.hasData) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12.0),
-                                    child: FeedBox(post: feedController.posts[index], poster: user.data!),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 12.0),
+                                    child: FeedBox(
+                                        post: feedController.posts[index],
+                                        poster: user.data!),
                                   );
                                 } else {
                                   return const SizedBox();

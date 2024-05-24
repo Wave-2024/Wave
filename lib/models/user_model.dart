@@ -18,7 +18,6 @@ class User {
   String username;
   List<dynamic> stories;
   List<dynamic>? blocked;
-  List<dynamic>? notifications;
   String coverPicture;
   List<dynamic>? savedPosts;
   List<dynamic>? messages;
@@ -35,7 +34,6 @@ class User {
     this.displayPicture,
     this.bio,
     this.url,
-    this.notifications,
     required this.id,
     required this.username,
     required this.stories,
@@ -64,11 +62,10 @@ class User {
     List<dynamic>? savedPosts,
     List<dynamic>? messages,
     ACCOUNT_TYPE? account_type,
-    List<dynamic>? notifications,
-    String? fcmToken,
+    String? fcmToken, 
   }) {
     return User(
-      fcmToken: fcmToken ?? this.fcmToken,
+      fcmToken: fcmToken??this.fcmToken,
       verified: verified ?? this.verified,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -86,7 +83,6 @@ class User {
       savedPosts: savedPosts ?? this.savedPosts,
       messages: messages ?? this.messages,
       account_type: account_type ?? this.account_type,
-      notifications: notifications ?? this.notifications,
     );
   }
 
@@ -101,9 +97,8 @@ class User {
       'displayPicture': displayPicture,
       'bio': bio,
       'url': url,
-      'notifications':notifications,
       'id': id,
-      'fcmToken': fcmToken,
+      'fcmToken':fcmToken,
       'username': username,
       'stories': stories,
       'blocked': blocked,
@@ -116,11 +111,10 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-        fcmToken: map['fcmToken'] as String,
+      fcmToken: map['fcmToken'] as String,
         verified: map['verified'] as bool,
         name: map['name'] as String,
         email: map['email'] as String,
-        notifications: List<dynamic>.from((map['following'] as List<dynamic>)),
         following: List<dynamic>.from((map['following'] as List<dynamic>)),
         followers: List<dynamic>.from((map['followers'] as List<dynamic>)),
         posts: List<dynamic>.from((map['posts'] as List<dynamic>)),
