@@ -6,8 +6,9 @@ class Notification {
   String id;
   DateTime createdAt;
   bool seen;
+  String forUser;
   // Following notification details
-  String? userWhoFollowed;
+  
   // Comment notification details
   String? postId; // Common for all , likes, comment , and replies
   String? commentId;
@@ -27,7 +28,7 @@ class Notification {
     required this.id,
     required this.createdAt,
     required this.seen,
-    this.userWhoFollowed,
+    required this.forUser,
     this.postId,
     this.commentId,
     this.userWhoCommented,
@@ -45,7 +46,7 @@ class Notification {
     String? id,
     DateTime? createdAt,
     bool? seen,
-    String? userWhoFollowed,
+    String? forUser,
     String? postId,
     String? commentId,
     String? userWhoCommented,
@@ -62,7 +63,7 @@ class Notification {
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       seen: seen ?? this.seen,
-      userWhoFollowed: userWhoFollowed ?? this.userWhoFollowed,
+      forUser: forUser ?? this.forUser,
       postId: postId ?? this.postId,
       commentId: commentId ?? this.commentId,
       userWhoCommented: userWhoCommented ?? this.userWhoCommented,
@@ -82,7 +83,7 @@ class Notification {
       'id': id,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'seen': seen,
-      'userWhoFollowed': userWhoFollowed,
+      'forUser': forUser,
       'postId': postId,
       'commentId': commentId,
       'userWhoCommented': userWhoCommented,
@@ -102,7 +103,7 @@ class Notification {
       id: map['id'] as String,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
       seen: map['seen'] as bool,
-      userWhoFollowed: map['userWhoFollowed'] != null ? map['userWhoFollowed'] as String : null,
+      forUser: map['forUser'] as String,
       postId: map['postId'] != null ? map['postId'] as String : null,
       commentId: map['commentId'] != null ? map['commentId'] as String : null,
       userWhoCommented: map['userWhoCommented'] != null ? map['userWhoCommented'] as String : null,
@@ -118,11 +119,12 @@ class Notification {
 
   String toJson() => json.encode(toMap());
 
-  factory Notification.fromJson(String source) => Notification.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Notification.fromJson(String source) =>
+      Notification.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'Notification(type: $type, id: $id, createdAt: $createdAt, seen: $seen, userWhoFollowed: $userWhoFollowed, postId: $postId, commentId: $commentId, userWhoCommented: $userWhoCommented, comment: $comment, replyId: $replyId, reply: $reply, userWhoReplied: $userWhoReplied, likeId: $likeId, userWhoLiked: $userWhoLiked, userWhoMentioned: $userWhoMentioned)';
+    return 'Notification(type: $type, id: $id, createdAt: $createdAt, seen: $seen, forUser: $forUser, postId: $postId, commentId: $commentId, userWhoCommented: $userWhoCommented, comment: $comment, replyId: $replyId, reply: $reply, userWhoReplied: $userWhoReplied, likeId: $likeId, userWhoLiked: $userWhoLiked, userWhoMentioned: $userWhoMentioned)';
   }
 
   @override
@@ -134,7 +136,7 @@ class Notification {
       other.id == id &&
       other.createdAt == createdAt &&
       other.seen == seen &&
-      other.userWhoFollowed == userWhoFollowed &&
+      other.forUser == forUser &&
       other.postId == postId &&
       other.commentId == commentId &&
       other.userWhoCommented == userWhoCommented &&
@@ -153,7 +155,7 @@ class Notification {
       id.hashCode ^
       createdAt.hashCode ^
       seen.hashCode ^
-      userWhoFollowed.hashCode ^
+      forUser.hashCode ^
       postId.hashCode ^
       commentId.hashCode ^
       userWhoCommented.hashCode ^

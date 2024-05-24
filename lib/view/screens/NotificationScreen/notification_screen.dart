@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
@@ -29,7 +30,7 @@ class NotificationScreen extends StatelessWidget {
                 FirebaseAuth.instance.currentUser!.uid)
             .orderBy('createdAt', descending: true)
             .snapshots(),
-        builder: (context, snapshot) {
+        builder: (context,AsyncSnapshot<QuerySnapshot> commentSnapshot) {
           return SizedBox();
         },
       ),
