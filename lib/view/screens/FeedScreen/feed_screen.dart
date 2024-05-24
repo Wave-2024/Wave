@@ -13,6 +13,7 @@ import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/feedbox.dart';
 import 'package:wave/models/notification_model.dart' as notification;
 
@@ -68,7 +69,7 @@ class FeedScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 12.0),
                             child: InkWell(
                               onTap: () {
-                                "Tapped on notification".printInfo();
+                                Get.toNamed(AppRoutes.notificationScreen);
                               },
                               child: badge.Badge(
                                 position: badge.BadgePosition.topEnd(end: -4),
@@ -184,7 +185,6 @@ class FeedScreen extends StatelessWidget {
                             return FutureBuilder<User>(
                               future: UserData.getUser(
                                   userID: feedController.posts[index].userId),
-                              initialData: null,
                               builder: (context, AsyncSnapshot<User> user) {
                                 if (user.connectionState ==
                                         ConnectionState.done &&
