@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
-                fontFamily: CustomFont.poppins,
+                fontFamily: CustomFont.alex,
                 fontWeight: FontWeight.bold,
               ),
             ),

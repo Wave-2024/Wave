@@ -13,21 +13,29 @@ String capitalizeWords(String input) {
   return capitalizedWords.join(' ');
 }
 
-String getMonthName(int month){
-  Map<int,String> months = {
-    1:"Jan",
-    2:"Feb",
-    3:"Mar",
-    4:"Apr",
-    5:"May",
-    6:"June",
-    7:"July",
-    8:"Aug",
-    9:"Sep",
-    10:"Oct",
-    11:"Nov",
-    12:"Dec",
+DateTime calculateTimeAgo(DateTime createdAt) {
+  DateTime difference = DateTime.now().subtract(Duration(
+      days: DateTime.now().day - createdAt.day,
+      hours: DateTime.now().hour - createdAt.hour,
+      minutes: DateTime.now().minute - createdAt.minute));
 
+  return difference;
+}
+
+String getMonthName(int month) {
+  Map<int, String> months = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec",
   };
   return months[month]!;
 }
