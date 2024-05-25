@@ -69,10 +69,10 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             SizedBox(height: 30),
             Text(
-              'WAVE',
+              'Wave',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 40,
                 fontFamily: CustomFont.alex,
                 fontWeight: FontWeight.bold,
               ),

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:wave/models/comment_post_model.dart';
@@ -116,6 +117,21 @@ class PostData {
     }
   }
 
+  static Future<bool> alreadySentNotificationForThis(
+      {required String postId, required String posterId}) async {
+    String myUserId = fb.FirebaseAuth.instance.currentUser!.uid;
+    var res = await Database.getNotificationDatabase(posterId)
+        .where('type', isEqualTo: 'like')
+        .where('postId', isEqualTo: postId)
+        .where('userWhoLiked', isEqualTo: myUserId)
+        .get();
+    if (res.docs.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   static Future<CustomResponse> likePostWithId(
       {required String postId, required String userId}) async {
     Like like = Like(id: userId, userId: userId, createdAt: DateTime.now());
@@ -123,6 +139,7 @@ class PostData {
       var res = await Database.getPostLikesDatabase(postId)
           .doc(userId)
           .set(like.toMap());
+      
       return CustomResponse(responseStatus: true);
     } on FirebaseException catch (error) {
       return CustomResponse(responseStatus: false, response: error.toString());
@@ -169,7 +186,7 @@ class PostData {
           myUserId: fb.FirebaseAuth.instance.currentUser!.uid,
           postId: postId);
 
-      return CustomResponse(responseStatus: true,response: res.id);
+      return CustomResponse(responseStatus: true, response: res.id);
     } on FirebaseException catch (e) {
       return CustomResponse(responseStatus: false, response: e.toString());
     }
