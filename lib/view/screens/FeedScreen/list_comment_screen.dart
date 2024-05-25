@@ -75,6 +75,7 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                           commentString: commentController.text.trim());
 
                   if (customResponse.responseStatus) {
+                    String comment = commentController.text.trim();
                     commentController.clear();
                     Get.showSnackbar(const GetSnackBar(
                       duration: Duration(seconds: 2),
@@ -90,7 +91,9 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                         seen: false,
                         type: "comment",
                         id: "",
-                        comment: commentController.text.trim(),
+                        comment: comment,
+                        postId: postId,
+                        commentId: customResponse.response.toString(),
                         userWhoCommented:
                             FirebaseAuth.instance.currentUser!.uid);
                     NotificationData.createNotification(notification: not);

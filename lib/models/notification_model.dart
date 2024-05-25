@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 class Notification {
-  String type; // ['newfollower','like','comment','reply','mention']
+  String type; // ['follow','like','comment','reply','mention']
   String id;
   DateTime createdAt;
   bool seen;

@@ -59,9 +59,9 @@ class FeedScreen extends StatelessWidget {
                               notificationSnapshot.hasData) {
                             unseenNotification = notificationSnapshot.data!.docs
                                 .where((element) =>
-                                    notification.Notification.fromMap(element
+                                    !(notification.Notification.fromMap(element
                                             .data()! as Map<String, dynamic>)
-                                        .seen)
+                                        .seen))
                                 .toList()
                                 .length;
                           }

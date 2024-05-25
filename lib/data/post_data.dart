@@ -169,7 +169,7 @@ class PostData {
           myUserId: fb.FirebaseAuth.instance.currentUser!.uid,
           postId: postId);
 
-      return CustomResponse(responseStatus: true);
+      return CustomResponse(responseStatus: true,response: res.id);
     } on FirebaseException catch (e) {
       return CustomResponse(responseStatus: false, response: e.toString());
     }
