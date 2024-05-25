@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:wave/data/notification_data.dart';
 import 'package:wave/data/post_data.dart';
+import 'package:wave/models/notification_model.dart' as not;
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/user_model.dart';
@@ -400,6 +402,23 @@ class FeedBox extends StatelessWidget {
                                     postId: post.id,
                                     userId: fb.FirebaseAuth.instance
                                         .currentUser!.uid);
+                                bool hasAlreadySentNotification = await PostData
+                                    .alreadySentNotificationForThis(
+                                        postId: post.id, posterId: post.userId);
+                                if (!hasAlreadySentNotification) {
+                                  not.Notification notification =
+                                      not.Notification(
+                                          type: 'like',
+                                          id: "id",
+                                          createdAt: DateTime.now(),
+                                          seen: false,
+                                          postId: post.id,
+                                          userWhoLiked: fb.FirebaseAuth.instance
+                                              .currentUser!.uid,
+                                          forUser: poster.id);
+                                  NotificationData.createNotification(
+                                      notification: notification);
+                                }
                               }
                             },
                             child: Icon(
