@@ -20,6 +20,7 @@ import 'package:wave/utils/device_size.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
+import 'package:wave/view/reusable_components/more_option_feed.dart';
 import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
 
 class FeedBox extends StatelessWidget {
@@ -317,7 +318,7 @@ class FeedBox extends StatelessWidget {
                           fontSize: 11.5,
                           fontFamily: CustomFont.poppins),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 2,
                     ),
                     Visibility(
@@ -355,7 +356,7 @@ class FeedBox extends StatelessWidget {
                       fontSize: 11.5,
                       fontFamily: CustomFont.poppins),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 2,
                 ),
                 Visibility(
@@ -367,11 +368,13 @@ class FeedBox extends StatelessWidget {
               ],
             ),
             trailing: IconButton(
-              onPressed: () {
-                "Tapped to see more".printInfo();
+              onPressed: () async {
+                showModalBottomSheet(context: context, builder: (context) {
+                  return MoreOptionsForFeedPost(post: post);
+                },);
               },
               iconSize: 24,
-              icon: Icon(AntDesign.more_outline),
+              icon: const Icon(AntDesign.more_outline),
             ),
             subtitle: Text('${time.format(timeAgo,locale: 'en_short')} ago',
             style: TextStyle(
@@ -381,7 +384,7 @@ class FeedBox extends StatelessWidget {
 
             ),
             ),
-            visualDensity: VisualDensity(vertical: 0,horizontal: -1),
+            visualDensity: const VisualDensity(vertical: 0,horizontal: -1),
           ),
 
           const SizedBox(height: 12),
