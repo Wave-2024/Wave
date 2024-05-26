@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:get/get.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
+
 String capitalizeWords(String input) {
   // Split the string into words
   List<String> words = input.split(' ');
@@ -20,6 +25,40 @@ DateTime calculateTimeAgo(DateTime createdAt) {
       minutes: DateTime.now().minute - createdAt.minute));
 
   return difference;
+}
+
+String getInitials(String fullName) {
+  if (fullName.length >= 3) {
+    "returning substring from full name : ${fullName.replaceAll(' ', '').substring(0, 3).toLowerCase()}"
+        .printInfo();
+    return fullName.replaceAll(' ', '').substring(0, 3).toLowerCase();
+  } else {
+    return "wave";
+  }
+}
+
+String generateUsername(String initials) {
+  final random = Random();
+  final randomDigits =
+      random.nextInt(90000) + 1000; // Generate a random 5-digit number
+  return '$initials$randomDigits';
+}
+
+Future<bool> checkUsernameUniqueness(String username) async {
+  final querySnapshot =
+      await Database.userDatabase.where('username', isEqualTo: username).get();
+  return querySnapshot.docs.isEmpty;
+}
+
+Future<String> getUniqueUsername(String initials) async {
+  initials = getInitials(initials);
+  String username = 'wave';
+  bool isUnique = false;
+  while (!isUnique) {
+    username = generateUsername(initials);
+    isUnique = await checkUsernameUniqueness(username);
+  }
+  return username;
 }
 
 String getMonthName(int month) {

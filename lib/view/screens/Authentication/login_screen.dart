@@ -280,10 +280,15 @@ class LoginScreen extends StatelessWidget {
 
                                   if (googleUserCredential
                                       .additionalUserInfo!.isNewUser) {
-                                        String? fcmToken = await FirebaseMessaging.instance.getToken();
+                                    String username = await getUniqueUsername(
+                                        capitalizeWords(googleUserCredential
+                                            .user!.displayName!));
+                                    String? fcmToken = await FirebaseMessaging
+                                        .instance
+                                        .getToken();
                                     await userDataController.createUser(
                                         user: User(
-                                          fcmToken: fcmToken!,
+                                            fcmToken: fcmToken!,
                                             verified: false,
                                             name: capitalizeWords(
                                                 googleUserCredential
@@ -294,7 +299,7 @@ class LoginScreen extends StatelessWidget {
                                             followers: [],
                                             posts: [],
                                             id: googleUserCredential.user!.uid,
-                                            username: "",
+                                            username: username,
                                             stories: [],
                                             blocked: [],
                                             coverPicture: "",

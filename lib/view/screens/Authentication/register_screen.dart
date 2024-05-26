@@ -102,40 +102,40 @@ class RegisterScreen extends StatelessWidget {
                   height: 15,
                 ),
                 Consumer<AuthScreenController>(
-                        builder: (context, authController, child) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15)),
-                            elevation: 2,
-                            child: AuthTextField(
-                                uniqueKey: Keys.keyForPasswordTextFieldLogin,
-                                controller: passwordController,
-                                label: "Password",
-                                visible: authController.obscuredTextReg,
-                                prefixIcon: const Icon(Icons.password),
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    authController.togglePasswordVisibilityReg();
-                                  },
-                                  child: Icon(authController.obscuredTextReg
-                                      ? Icons.visibility
-                                      : Icons.visibility_off),
-                                ),
-                                validator: (password) {
-                                  if (password == null || password.isEmpty) {
-                                    return 'Password is required';
-                                  }
-                                  return null;
-                                }),
-                          );
-                        },
-                      ),        // The below code is commented only for smooth and faster dev process . Add it before production
+                  builder: (context, authController, child) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                      elevation: 2,
+                      child: AuthTextField(
+                          uniqueKey: Keys.keyForPasswordTextFieldLogin,
+                          controller: passwordController,
+                          label: "Password",
+                          visible: authController.obscuredTextReg,
+                          prefixIcon: const Icon(Icons.password),
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              authController.togglePasswordVisibilityReg();
+                            },
+                            child: Icon(authController.obscuredTextReg
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                          ),
+                          validator: (password) {
+                            if (password == null || password.isEmpty) {
+                              return 'Password is required';
+                            }
+                            return null;
+                          }),
+                    );
+                  },
+                ), // The below code is commented only for smooth and faster dev process . Add it before production
 
-                        // else if (!RegExp(
-                        //         r'^(?=.*[a-zA-Z].*[a-zA-Z])(?=.*\d.*\d)(?=.*[^a-zA-Z0-9].*[^a-zA-Z0-9]).{6,}$')
-                        //     .hasMatch(password)) {
-                        //   return 'Password must contain at least 2 alphabets, 2 digits, and 2 special characters';
-                        // }
+                // else if (!RegExp(
+                //         r'^(?=.*[a-zA-Z].*[a-zA-Z])(?=.*\d.*\d)(?=.*[^a-zA-Z0-9].*[^a-zA-Z0-9]).{6,}$')
+                //     .hasMatch(password)) {
+                //   return 'Password must contain at least 2 alphabets, 2 digits, and 2 special characters';
+                // }
                 const SizedBox(
                   height: 25,
                 ),
@@ -163,16 +163,18 @@ class RegisterScreen extends StatelessWidget {
                                   registrationResponse.response
                                       as fb.UserCredential;
                               String name = nameController.text.trim();
-                              String? fcmToken = await FirebaseMessaging.instance.getToken();
+                              String? fcmToken =
+                                  await FirebaseMessaging.instance.getToken();
                               name = capitalizeWords(name);
+                              String userName = await getUniqueUsername(name);
                               User currentUser = User(
-                                fcmToken: fcmToken!,
+                                  fcmToken: fcmToken!,
                                   verified: false,
                                   account_type: ACCOUNT_TYPE.PUBLIC,
                                   name: name,
                                   email: emailController.text,
                                   displayPicture: "",
-                                  bio: "",
+                                  bio: "I am new to Wave",
                                   messages: [],
                                   savedPosts: [],
                                   url: "",
@@ -180,7 +182,7 @@ class RegisterScreen extends StatelessWidget {
                                   followers: [],
                                   posts: [],
                                   id: userCredential.user!.uid,
-                                  username: "",
+                                  username: userName,
                                   stories: [],
                                   blocked: [],
                                   coverPicture: "");
@@ -273,10 +275,14 @@ class RegisterScreen extends StatelessWidget {
 
                             if (googleUserCredential
                                 .additionalUserInfo!.isNewUser) {
-                                  String? fcmToken = await FirebaseMessaging.instance.getToken();
+                              String userName = await getUniqueUsername(
+                                  capitalizeWords(
+                                      googleUserCredential.user!.displayName!));
+                              String? fcmToken =
+                                  await FirebaseMessaging.instance.getToken();
                               await userDataController.createUser(
                                   user: User(
-                                    fcmToken: fcmToken!,
+                                      fcmToken: fcmToken!,
                                       verified: false,
                                       name: capitalizeWords(googleUserCredential
                                           .user!.displayName!),
@@ -285,7 +291,7 @@ class RegisterScreen extends StatelessWidget {
                                       followers: [],
                                       posts: [],
                                       id: googleUserCredential.user!.uid,
-                                      username: "",
+                                      username: userName,
                                       stories: [],
                                       blocked: [],
                                       coverPicture: "",
