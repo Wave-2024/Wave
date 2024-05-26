@@ -8,7 +8,7 @@ class Notification {
   bool seen;
   String forUser;
   // Following notification details
-  
+  String? userWhoFollowed;
   // Comment notification details
   String? postId; // Common for all , likes, comment , and replies
   String? commentId;
@@ -29,6 +29,7 @@ class Notification {
     required this.createdAt,
     required this.seen,
     required this.forUser,
+    this.userWhoFollowed,
     this.postId,
     this.commentId,
     this.userWhoCommented,
@@ -47,6 +48,7 @@ class Notification {
     DateTime? createdAt,
     bool? seen,
     String? forUser,
+    String? userWhoFollowed,
     String? postId,
     String? commentId,
     String? userWhoCommented,
@@ -64,6 +66,7 @@ class Notification {
       createdAt: createdAt ?? this.createdAt,
       seen: seen ?? this.seen,
       forUser: forUser ?? this.forUser,
+      userWhoFollowed: userWhoFollowed ?? this.userWhoFollowed,
       postId: postId ?? this.postId,
       commentId: commentId ?? this.commentId,
       userWhoCommented: userWhoCommented ?? this.userWhoCommented,
@@ -84,6 +87,7 @@ class Notification {
       'createdAt': createdAt.millisecondsSinceEpoch,
       'seen': seen,
       'forUser': forUser,
+      'userWhoFollowed': userWhoFollowed,
       'postId': postId,
       'commentId': commentId,
       'userWhoCommented': userWhoCommented,
@@ -104,6 +108,7 @@ class Notification {
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
       seen: map['seen'] as bool,
       forUser: map['forUser'] as String,
+      userWhoFollowed: map['userWhoFollowed'] != null ? map['userWhoFollowed'] as String : null,
       postId: map['postId'] != null ? map['postId'] as String : null,
       commentId: map['commentId'] != null ? map['commentId'] as String : null,
       userWhoCommented: map['userWhoCommented'] != null ? map['userWhoCommented'] as String : null,
@@ -124,7 +129,7 @@ class Notification {
 
   @override
   String toString() {
-    return 'Notification(type: $type, id: $id, createdAt: $createdAt, seen: $seen, forUser: $forUser, postId: $postId, commentId: $commentId, userWhoCommented: $userWhoCommented, comment: $comment, replyId: $replyId, reply: $reply, userWhoReplied: $userWhoReplied, likeId: $likeId, userWhoLiked: $userWhoLiked, userWhoMentioned: $userWhoMentioned)';
+    return 'Notification(type: $type, id: $id, createdAt: $createdAt, seen: $seen, forUser: $forUser, userWhoFollowed: $userWhoFollowed, postId: $postId, commentId: $commentId, userWhoCommented: $userWhoCommented, comment: $comment, replyId: $replyId, reply: $reply, userWhoReplied: $userWhoReplied, likeId: $likeId, userWhoLiked: $userWhoLiked, userWhoMentioned: $userWhoMentioned)';
   }
 
   @override
@@ -137,6 +142,7 @@ class Notification {
       other.createdAt == createdAt &&
       other.seen == seen &&
       other.forUser == forUser &&
+      other.userWhoFollowed == userWhoFollowed &&
       other.postId == postId &&
       other.commentId == commentId &&
       other.userWhoCommented == userWhoCommented &&
@@ -156,6 +162,7 @@ class Notification {
       createdAt.hashCode ^
       seen.hashCode ^
       forUser.hashCode ^
+      userWhoFollowed.hashCode ^
       postId.hashCode ^
       commentId.hashCode ^
       userWhoCommented.hashCode ^
