@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -207,10 +208,22 @@ class UserDataController extends ChangeNotifier {
       String? bio,
       String? fcmToken,
       String? username,
-      List<dynamic>? posts,
+      String? newPostId,
       CroppedFile? coverPicture,
       CroppedFile? displayPicture}) async* {
     // First, update the user's text data
+    if (newPostId != null) {
+      // user has posted recently
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        // Add post ID to the user's posts array
+        transaction.update(Database.userDatabase.doc(user!.id), {
+          'posts': FieldValue.arrayUnion([newPostId])
+        });
+      });
+      user = await UserData.getUser(userID: user!.id);
+      notifyListeners();
+    }
+
     CustomResponse customResponse = await UserData.updateUser(
         userId: user!.id,
         fcmToken: fcmToken ?? user!.fcmToken,

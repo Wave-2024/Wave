@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/PostController/create_post_controller.dart';
+import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
@@ -218,13 +221,8 @@ class CreatePostScreen extends StatelessWidget {
                                       fb.FirebaseAuth.instance.currentUser!.uid,
                                   caption: captionController.text);
                               if (res.responseStatus) {
-                                List<dynamic> currentPosts =
-                                    userDataController.user!.posts;
-                                currentPosts.add(res.response.toString());
-                                userDataController.updateProfile(
-                                    posts: currentPosts);
                                 postController.resetController();
-                                Get.showSnackbar(const GetSnackBar(
+                                 Get.showSnackbar(const GetSnackBar(
                                   duration: Duration(seconds: 2),
                                   backgroundColor: Colors.green,
                                   borderRadius: 5,
@@ -232,6 +230,22 @@ class CreatePostScreen extends StatelessWidget {
                                   message:
                                       "Post will be visible in a few minutes",
                                 ));
+                                StreamSubscription<CustomResponse>? sub;
+                                sub = userDataController
+                                    .updateProfile(
+                                        newPostId: res.response.toString())
+                                    .listen(
+                                  (customRes) {
+                                    if (customRes.responseStatus) {
+                                      "Modified post list".printInfo();
+                                    }
+                                  },
+                                  onDone: () {
+                                    sub!.cancel();
+                                  },
+                                );
+
+                               
                               } else {
                                 Get.showSnackbar(GetSnackBar(
                                   backgroundColor: CustomColor.errorColor,
