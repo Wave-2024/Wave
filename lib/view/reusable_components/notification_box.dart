@@ -211,7 +211,80 @@ class NotificationBox extends StatelessWidget {
       case 'mention':
         return Container();
       case 'follow':
-        return Container();
+        return FutureBuilder<User>(
+          future: UserData.getUser(userID: notification.userWhoFollowed!),
+          builder: (BuildContext context, AsyncSnapshot<User> userSnap) {
+            if (userSnap.connectionState == ConnectionState.done &&
+                userSnap.hasData) {
+              final timeOfComment = calculateTimeAgo(notification.createdAt);
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: (userSnap.data!.displayPicture != null &&
+                          userSnap.data!.displayPicture!.isNotEmpty)
+                      ? CachedNetworkImageProvider(
+                          userSnap.data!.displayPicture!)
+                      : null,
+                  radius: 20,
+                  child: userSnap.data!.displayPicture == null ||
+                          userSnap.data!.displayPicture!.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
+                ),
+                title: RichText(
+                  text: TextSpan(
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: userSnap.data!.name, // The name
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontFamily: CustomFont.poppins,
+                          color: Colors.blue, // Change to your desired color
+                          fontSize: 13,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' started following you', // The rest of the text
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: CustomFont.poppins,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 6.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Say Hi to your new follower !",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontFamily: CustomFont.poppins,
+                            fontSize: 12,
+                            color: Colors.grey.shade800),
+                      ),
+                      const SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                          '${timeago.format(timeOfComment, locale: 'en_short')} ago',
+                          style: TextStyle(
+                              fontFamily: CustomFont.poppins,
+                              fontSize: 10,
+                              color: Colors.red.shade700)),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return const SizedBox();
+          },
+        );
       case 'reply':
         return Container();
       default:
