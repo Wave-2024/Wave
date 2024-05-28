@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as time;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:wave/data/notification_data.dart';
@@ -18,6 +19,8 @@ import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:wave/utils/routing.dart';
+import 'package:wave/utils/util_functions.dart';
+import 'package:wave/view/reusable_components/more_option_feed.dart';
 import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
 
 class FeedBox extends StatelessWidget {
@@ -268,6 +271,7 @@ class FeedBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime timeAgo = calculateTimeAgo(post.createdAt);
     return Container(
       color: Colors.white,
       width: double.infinity,
@@ -276,80 +280,114 @@ class FeedBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage:
-                    CachedNetworkImageProvider(poster.displayPicture!),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              (post.mentions.isNotEmpty)
-                  ? Expanded(
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text(
-                            poster.name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 11.5,
-                                fontFamily: CustomFont.poppins),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Visibility(
-                              visible: poster.verified,
-                              child: Image.asset(
-                                CustomIcon.verifiedIcon,
-                                height: 12,
-                              )),
-                          Text(
-                            " is with",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 11.5,
-                                fontFamily: CustomFont.poppins),
-                          ),
-                          Text(
-                            " Aradhana Roy",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 11.5,
-                                fontFamily: CustomFont.poppins),
-                          )
-                        ],
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: SizedBox(
+              height: displayHeight(context) * 0.055,
+              width: displayWidth(context) * 0.11,
+              child: (poster.displayPicture != null &&
+                      poster.displayPicture!.isNotEmpty)
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: CachedNetworkImage(
+                        imageUrl: poster.displayPicture!,
+                        fit: BoxFit.cover,
                       ),
                     )
-                  : Row(
-                      children: [
-                        Text(
-                          poster.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 11.5,
-                              fontFamily: CustomFont.poppins),
-                        ),
-                        SizedBox(
-                          width: 2,
-                        ),
-                        Visibility(
-                            visible: poster.verified,
-                            child: Image.asset(
-                              CustomIcon.verifiedIcon,
-                              height: 12,
-                            ))
-                      ],
+                  : Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: Colors.grey.shade300,
+                      ),
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        CustomIcon.profileFullIcon,
+                        color: Colors.black54,
+                        height: 25,
+                      ),
                     ),
-            ],
+            ),
+            title: (post.mentions.isNotEmpty)
+                ? Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        poster.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Visibility(
+                          visible: poster.verified,
+                          child: Image.asset(
+                            CustomIcon.verifiedIcon,
+                            height: 12,
+                          )),
+                      Text(
+                        " is with",
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                      Text(
+                        " Aradhana Roy",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                    ],
+                  )
+                : Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        poster.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Visibility(
+                          visible: !poster.verified,
+                          child: Image.asset(
+                            CustomIcon.verifiedIcon,
+                            height: 12,
+                          ))
+                    ],
+                  ),
+            trailing: IconButton(
+              onPressed: () async {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return MoreOptionsForFeedPost(post: post);
+                  },
+                );
+              },
+              iconSize: 24,
+              icon: const Icon(AntDesign.more_outline),
+            ),
+            subtitle: Text(
+              '${time.format(timeAgo, locale: 'en_short').substring(1)} ago',
+              style: TextStyle(
+                  fontSize: 11.5,
+                  fontFamily: CustomFont.poppins,
+                  color: Colors.red.shade700,
+                  fontWeight: FontWeight.w500),
+            ),
+            visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
           ),
           const SizedBox(height: 12),
           Padding(

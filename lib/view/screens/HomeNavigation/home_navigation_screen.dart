@@ -1,12 +1,16 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/keys.dart';
+import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ChatScreen/chat_list_screen.dart';
 import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
@@ -23,10 +27,10 @@ class HomeNavigationScreen extends StatefulWidget {
 
 class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
   final List<dynamic> screens = [
-    FeedScreen(),
-    SearchScreen(),
+    const FeedScreen(),
+    const SearchScreen(),
     CreatePostScreen(),
-    ChatListScreen(),
+    const ChatListScreen(),
     ProfileScreen()
   ];
 
@@ -44,7 +48,6 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       provisional: false,
       sound: true,
     );
-    
 
     // Get the token for this device
     FirebaseMessaging.instance.getToken().then((token) {
@@ -58,19 +61,6 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification}');
         // Show a dialog or update the UI based on the message
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(message.notification!.title ?? 'No Title'),
-            content: Text(message.notification!.body ?? 'No Body'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
       }
     });
 
@@ -94,6 +84,74 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
         print('Message also contained a notification: ${message.notification}');
       }
     });
+
+    checkNotificationSettings();
+  }
+
+  Future<void> checkNotificationSettings() async {
+    // less than 33 mean android 10,11,12
+    bool isCurrentlyGettingNotification =
+        await Permission.notification.isGranted;
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    if (!isCurrentlyGettingNotification) {
+      bool alreadyAsked =
+          preferences.getBool(Pref.alreadyAskedForNotification) ?? false;
+      if (!alreadyAsked) {
+        
+        if (mounted) {
+          preferences.setBool(Pref.alreadyAskedForNotification, true);
+          showNotificationPermissionDialog(context);
+        }
+      }
+    }
+  }
+
+  Future<int> checkAndroidVersion() async {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    try {
+      final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+      int sdkInt = androidInfo.version.sdkInt;
+      return sdkInt; // SDK 33 corresponds to Android 13
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  void showNotificationPermissionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Allow Notifications'),
+          content: const Text(
+            'To receive important notifications, please allow notifications in the settings.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                requestNotificationPermission();
+              },
+              child: const Text('Allow Notifications'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> requestNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.status;
+    if (status.isDenied || status.isPermanentlyDenied) {
+      openAppSettings();
+    }
   }
 
   @override
