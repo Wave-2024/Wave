@@ -282,111 +282,113 @@ class FeedBox extends StatelessWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: (poster.displayPicture != null &&
-                    poster.displayPicture!.isNotEmpty)
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: CachedNetworkImage(
-                      imageUrl: poster.displayPicture!,
-                      height: displayHeight(context) * 0.055,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Container(
-                    decoration: BoxDecoration(
+            leading: SizedBox(
+              height: displayHeight(context) * 0.055,
+              width: displayWidth(context) * 0.11,
+              child: (poster.displayPicture != null &&
+                      poster.displayPicture!.isNotEmpty)
+                  ? ClipRRect(
                       borderRadius: BorderRadius.circular(6),
-                      color: Colors.grey.shade300,
+                      child: CachedNetworkImage(
+                        imageUrl: poster.displayPicture!,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: Colors.grey.shade300,
+                      ),
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        CustomIcon.profileFullIcon,
+                        color: Colors.black54,
+                        height: 25,
+                      ),
                     ),
-                    alignment: Alignment.center,
-                    height: displayHeight(context) * 0.055,
-                    width: displayWidth(context) * 0.1,
-                    child: Image.asset(
-                      CustomIcon.profileFullIcon,
-                      color: Colors.black54,
-                      height: 25,
-                    ),
-                  ),
+            ),
             title: (post.mentions.isNotEmpty)
                 ? Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      poster.name,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontSize: 11.5,
-                          fontFamily: CustomFont.poppins),
-                    ),
-                    const SizedBox(
-                      width: 2,
-                    ),
-                    Visibility(
-                        visible: poster.verified,
-                        child: Image.asset(
-                          CustomIcon.verifiedIcon,
-                          height: 12,
-                        )),
-                    Text(
-                      " is with",
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 11.5,
-                          fontFamily: CustomFont.poppins),
-                    ),
-                    Text(
-                      " Aradhana Roy",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontSize: 11.5,
-                          fontFamily: CustomFont.poppins),
-                    ),
-
-                  ],
-                )
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        poster.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Visibility(
+                          visible: poster.verified,
+                          child: Image.asset(
+                            CustomIcon.verifiedIcon,
+                            height: 12,
+                          )),
+                      Text(
+                        " is with",
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                      Text(
+                        " Aradhana Roy",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                    ],
+                  )
                 : Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  poster.name,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 11.5,
-                      fontFamily: CustomFont.poppins),
-                ),
-                const SizedBox(
-                  width: 2,
-                ),
-                Visibility(
-                    visible: !poster.verified,
-                    child: Image.asset(
-                      CustomIcon.verifiedIcon,
-                      height: 12,
-                    ))
-              ],
-            ),
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        poster.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11.5,
+                            fontFamily: CustomFont.poppins),
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Visibility(
+                          visible: !poster.verified,
+                          child: Image.asset(
+                            CustomIcon.verifiedIcon,
+                            height: 12,
+                          ))
+                    ],
+                  ),
             trailing: IconButton(
               onPressed: () async {
-                showModalBottomSheet(context: context, builder: (context) {
-                  return MoreOptionsForFeedPost(post: post);
-                },);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return MoreOptionsForFeedPost(post: post);
+                  },
+                );
               },
               iconSize: 24,
               icon: const Icon(AntDesign.more_outline),
             ),
-            subtitle: Text('${time.format(timeAgo,locale: 'en_short')} ago',
-            style: TextStyle(
-              fontSize: 11.5,fontFamily: CustomFont.poppins,
-                color: Colors.red.shade700,
-              fontWeight: FontWeight.w500
-
+            subtitle: Text(
+              '${time.format(timeAgo, locale: 'en_short').substring(1)} ago',
+              style: TextStyle(
+                  fontSize: 11.5,
+                  fontFamily: CustomFont.poppins,
+                  color: Colors.red.shade700,
+                  fontWeight: FontWeight.w500),
             ),
-            ),
-            visualDensity: const VisualDensity(vertical: 0,horizontal: -1),
+            visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
           ),
-
           const SizedBox(height: 12),
           Padding(
             padding: (post.postList.length == 2)
