@@ -12,9 +12,10 @@ import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ProfileScreen/more_options_self.dart';
+import 'package:wave/view/screens/ProfileScreen/view_posts.dart';
 
 class SelfProfile extends StatelessWidget {
-  const SelfProfile({super.key});
+  SelfProfile({super.key});
 
   Future<void> _handleRefresh(BuildContext context) async {
     // Assume setUser is asynchronous and fetches data
@@ -24,6 +25,7 @@ class SelfProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final widthOfRedBar = displayWidth(context) * 0.2;
     return RefreshIndicator(
       color: CustomColor.primaryColor,
       onRefresh: () => _handleRefresh(context),
@@ -239,16 +241,16 @@ class SelfProfile extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Image.asset(CustomIcon.photosIcon,
-                                      height: 18),
+                                  Image.asset(CustomIcon.textPostIcon,
+                                      height: 16),
                                   const SizedBox(
-                                    width: 10,
+                                    width: 4,
                                   ),
                                   Text(
-                                    'Photos',
+                                    'Blogs',
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
-                                        fontSize: 13),
+                                        fontSize: 11.5),
                                   ),
                                 ],
                               ),
@@ -261,7 +263,7 @@ class SelfProfile extends StatelessWidget {
                                     0,
                                 child: Container(
                                     height: 2.5,
-                                    width: displayWidth(context) * 0.25,
+                                    width: widthOfRedBar,
                                     color: CustomColor.primaryColor
                                         .withOpacity(0.7)),
                               ),
@@ -277,15 +279,16 @@ class SelfProfile extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Image.asset(CustomIcon.videoIcon, height: 18),
+                                  Image.asset(CustomIcon.photosIcon,
+                                      height: 16),
                                   const SizedBox(
-                                    width: 10,
+                                    width: 4,
                                   ),
                                   Text(
-                                    "Videos",
+                                    'Photos',
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
-                                        fontSize: 13),
+                                        fontSize: 11.5),
                                   ),
                                 ],
                               ),
@@ -296,17 +299,11 @@ class SelfProfile extends StatelessWidget {
                                 visible: userDataController
                                         .profilePostViewingOptions ==
                                     1,
-                                child: InkWell(
-                                  onTap: () {
-                                    userDataController
-                                        .changePofileViewingOption(1);
-                                  },
-                                  child: Container(
-                                      height: 2.5,
-                                      width: displayWidth(context) * 0.25,
-                                      color: CustomColor.primaryColor
-                                          .withOpacity(0.7)),
-                                ),
+                                child: Container(
+                                    height: 2.5,
+                                    width: widthOfRedBar,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
                               ),
                             ],
                           ),
@@ -320,15 +317,15 @@ class SelfProfile extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Image.asset(CustomIcon.savedIcon, height: 18),
+                                  Image.asset(CustomIcon.videoIcon, height: 16),
                                   const SizedBox(
-                                    width: 10,
+                                    width: 4,
                                   ),
                                   Text(
-                                    'Saved',
+                                    "Videos",
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
-                                        fontSize: 13),
+                                        fontSize: 11.5),
                                   ),
                                 ],
                               ),
@@ -339,17 +336,48 @@ class SelfProfile extends StatelessWidget {
                                 visible: userDataController
                                         .profilePostViewingOptions ==
                                     2,
-                                child: InkWell(
-                                  onTap: () {
-                                    userDataController
-                                        .changePofileViewingOption(2);
-                                  },
-                                  child: Container(
-                                      height: 2.5,
-                                      width: displayWidth(context) * 0.25,
-                                      color: CustomColor.primaryColor
-                                          .withOpacity(0.7)),
-                                ),
+                                child: Container(
+                                    height: 2.5,
+                                    width: widthOfRedBar,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            userDataController.changePofileViewingOption(3);
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.savedIcon, height: 16),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    'Saved',
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 11.5),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible: userDataController
+                                        .profilePostViewingOptions ==
+                                    3,
+                                child: Container(
+                                    height: 2.5,
+                                    width: widthOfRedBar,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
                               ),
                             ],
                           ),
@@ -360,7 +388,9 @@ class SelfProfile extends StatelessWidget {
                       color: Colors.grey,
                       thickness: 0.2,
                       height: 30,
-                    ), // Second Divider
+                    ),
+                    ViewPosts(
+                        option: userDataController.profilePostViewingOptions,userDataController: userDataController,)
                   ],
                 );
             }

@@ -380,7 +380,7 @@ class FeedBox extends StatelessWidget {
               icon: const Icon(AntDesign.more_outline),
             ),
             subtitle: Text(
-              '${time.format(timeAgo, locale: 'en_short').substring(1)} ago',
+              '${time.format(timeAgo, locale: 'en_short')} ago',
               style: TextStyle(
                   fontSize: 11.5,
                   fontFamily: CustomFont.poppins,

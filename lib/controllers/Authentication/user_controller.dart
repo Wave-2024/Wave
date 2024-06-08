@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:wave/data/users_data.dart';
+import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/services/storage_service.dart';
@@ -17,10 +18,37 @@ class UserDataController extends ChangeNotifier {
   int otherProfileViewOptions = 0;
   User? user;
   USER userState = USER.ABSENT;
+  bool fetchingPosts = false;
+
   FOLLOWING_USER following_user = FOLLOWING_USER.IDLE;
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
   Map<String, User> otherUsers = {};
+  Map<String, Post> blogPosts = {};
+  Map<String, Post> imagePosts = {};
+  Map<String, Post> savedPosts = {};
+  Map<String, Post> videoPosts = {};
+
+  Future<void> getAllBlogPosts() async {
+    if (!fetchingPosts) {
+      fetchingPosts = true;
+      await Future.delayed(Duration.zero);
+    }
+    StreamSubscription<Post>? sub;
+    sub = fetchPostStreamUsingPostId(user!.posts).listen(
+      (post) {
+        imagePosts[post.id] = post;
+      },
+      onDone: () {
+        sub!.cancel();
+        fetchingPosts = false;
+        notifyListeners();
+        'All post done'.printInfo();
+      },
+    );
+  }
+
+  Stream<Post> fetchPostStreamUsingPostId(List<dynamic> postIdList) async* {}
 
   bool otherUserDataPresent(String otherUserId) =>
       otherUsers.containsKey(otherUserId);
