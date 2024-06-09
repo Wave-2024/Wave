@@ -5,7 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:wave/data/post_data.dart';
 import 'package:wave/data/users_data.dart';
+import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
@@ -18,37 +20,110 @@ class UserDataController extends ChangeNotifier {
   int otherProfileViewOptions = 0;
   User? user;
   USER userState = USER.ABSENT;
-  bool fetchingPosts = false;
+  FETCH_SELF_POST fetch_self_post = FETCH_SELF_POST.NOT_FETCHED;
 
   FOLLOWING_USER following_user = FOLLOWING_USER.IDLE;
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
   Map<String, User> otherUsers = {};
-  Map<String, Post> blogPosts = {};
-  Map<String, Post> imagePosts = {};
-  Map<String, Post> savedPosts = {};
-  Map<String, Post> videoPosts = {};
+  Map<POST_TYPE, List<Post>> selfPosts = {};
 
-  Future<void> getAllBlogPosts() async {
-    if (!fetchingPosts) {
-      fetchingPosts = true;
-      await Future.delayed(Duration.zero);
-    }
-    StreamSubscription<Post>? sub;
-    sub = fetchPostStreamUsingPostId(user!.posts).listen(
-      (post) {
-        imagePosts[post.id] = post;
-      },
-      onDone: () {
-        sub!.cancel();
-        fetchingPosts = false;
-        notifyListeners();
-        'All post done'.printInfo();
-      },
-    );
+  UserDataController() {
+    selfPosts[POST_TYPE.IMAGE] = [];
+    selfPosts[POST_TYPE.VIDEO] = [];
+    selfPosts[POST_TYPE.TEXT] = [];
   }
 
-  Stream<Post> fetchPostStreamUsingPostId(List<dynamic> postIdList) async* {}
+  Future<void> getAllPosts() async {
+    "enterng here".printInfo();
+    if (fetch_self_post != FETCH_SELF_POST.FETCHING) {
+      fetch_self_post = FETCH_SELF_POST.FETCHING;
+      await Future.delayed(Duration
+          .zero); // Not sure if this is needed, but keeping it as per your code
+
+      StreamSubscription<Post>? sub;
+
+      sub = fetchPostStreamUsingPostId(user!.posts).listen(
+        (post) {
+          if (post.postList.isEmpty) {
+            selfPosts[POST_TYPE.TEXT]!.add(post);
+          } else {
+            Post imagePost = Post(
+                id: post.id,
+                postList: [],
+                createdAt: post.createdAt,
+                userId: post.userId,
+                caption: post.caption,
+                mentions: post.mentions);
+            Post videoPost = Post(
+                id: post.id,
+                postList: [],
+                createdAt: post.createdAt,
+                userId: post.userId,
+                caption: post.caption,
+                mentions: post.mentions);
+            List<PostContent> imagePostList = [];
+            List<PostContent> videoPostList = [];
+
+            for (var index = 0; index < post.postList.length; ++index) {
+              if (post.postList[index].type == 'image') {
+                imagePostList.add(post.postList[index]);
+              } else {
+                videoPostList.add(post.postList[index]);
+              }
+            }
+
+            if (imagePostList.isNotEmpty) {
+              imagePost = imagePost.copyWith(postList: imagePostList);
+              selfPosts[POST_TYPE.IMAGE]!.add(imagePost);
+            }
+            if (videoPostList.isNotEmpty) {
+              videoPost = imagePost.copyWith(postList: videoPostList);
+              selfPosts[POST_TYPE.VIDEO]!.add(videoPost);
+            }
+          }
+
+          "Fetched post with id : ${post.id}".printInfo();
+        },
+        onDone: () {
+          sub!.cancel();
+          fetch_self_post = FETCH_SELF_POST.FETCHED;
+          notifyListeners();
+          'All posts done'.printInfo();
+        },
+        onError: (error) {
+          fetch_self_post = FETCH_SELF_POST.FETCHED;
+          notifyListeners();
+          print('Error fetching posts: $error');
+          sub!.cancel();
+        },
+      );
+    }
+  }
+
+  // Stream function to fetch posts concurrently by their IDs
+  Stream<Post> fetchPostStreamUsingPostId(List<dynamic> postIdList) async* {
+    List<Future<Post>> futures =
+        postIdList.map((postId) => PostData.getPost(postId)).toList();
+
+    // Use Future.wait to wait for all futures to complete and handle errors
+    List<Future<Post?>> completedFutures = futures.map((future) async {
+      try {
+        return await future;
+      } catch (e) {
+        print('Error fetching post: $e');
+        return null; // Handle error, return null or use an alternative approach
+      }
+    }).toList();
+
+    List<Post?> results = await Future.wait(completedFutures);
+
+    for (var post in results) {
+      if (post != null) {
+        yield post;
+      }
+    }
+  }
 
   bool otherUserDataPresent(String otherUserId) =>
       otherUsers.containsKey(otherUserId);

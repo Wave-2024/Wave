@@ -70,42 +70,23 @@ Future<List<XFile>?> pickMultipleMediaFiles(BuildContext context) async {
   }
 
   // If permissions are granted, proceed to pick an image
-  final List<XFile> pickedFile = await picker.pickMultipleMedia(limit: 5,);
+  final List<XFile> pickedFile = await picker.pickMultipleMedia(
+    limit: 5,
+  );
   return pickedFile;
 }
 
 Future<CroppedFile?> cropImage(File pickedFile,
     {List<CropAspectRatioPreset>? list, CropStyle? cropStyle}) async {
-  CroppedFile? croppedFile = await ImageCropper().cropImage(
-      sourcePath: pickedFile.path,
-      cropStyle: cropStyle ?? CropStyle.rectangle,
-      aspectRatioPresets: Platform.isAndroid
-          ? list ??
-              [
-                CropAspectRatioPreset.square,
-                CropAspectRatioPreset.ratio3x2,
-                CropAspectRatioPreset.original,
-                CropAspectRatioPreset.ratio4x3,
-                CropAspectRatioPreset.ratio16x9
-              ]
-          : [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio5x3,
-              CropAspectRatioPreset.ratio5x4,
-              CropAspectRatioPreset.ratio7x5,
-              CropAspectRatioPreset.ratio16x9
-            ],
-      uiSettings: [
-        AndroidUiSettings(
-            toolbarTitle: 'Adjust Photo',
-            toolbarColor: CustomColor.primaryColor,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-      ]);
+  CroppedFile? croppedFile =
+      await ImageCropper().cropImage(sourcePath: pickedFile.path, uiSettings: [
+    AndroidUiSettings(
+        toolbarTitle: 'Adjust Photo',
+        toolbarColor: CustomColor.primaryColor,
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.original,
+        lockAspectRatio: false),
+  ]);
 
   return croppedFile;
 }
