@@ -1,5 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/models/post_model.dart';
+import 'package:wave/utils/enums.dart';
+import 'package:wave/view/reusable_components/feedbox.dart';
 
 class ViewPosts extends StatelessWidget {
   final int option;
@@ -9,32 +13,68 @@ class ViewPosts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (option == 0) {
-      if (userDataController.blogPosts.isEmpty) {
-        userDataController.getAllBlogPosts();
-      }
-      if (userDataController.fetchingPosts) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      } else {
-        if (userDataController.blogPosts.isNotEmpty) {
-          return ListView.builder(
-            itemCount: userDataController.blogPosts.length,
-            itemBuilder: (BuildContext context, int index) {
-              return const Text("");
-            },
-          );
-        } else {
-          return const SizedBox();
-        }
-      }
-    } else if (option == 1) {
-      return const SizedBox();
-    } else if (option == 2) {
-      return const SizedBox();
+    if (userDataController.fetch_self_post == FETCH_SELF_POST.FETCHING) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     } else {
-      return const SizedBox();
+      if (userDataController.fetch_self_post == FETCH_SELF_POST.NOT_FETCHED) {
+        userDataController.getAllPosts();
+      }
+      switch (option) {
+        case 0:
+          List<Post> posts = userDataController.selfPosts[POST_TYPE.TEXT]!;
+          if (posts.isEmpty) {
+            return SizedBox();
+          } else {
+            return ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: posts.length,
+              itemBuilder: (BuildContext context, int index) {
+                return FeedBox(
+                    post: posts[index], poster: userDataController.user!);
+              },
+            );
+          }
+
+        case 1:
+          List<Post> posts = userDataController.selfPosts[POST_TYPE.IMAGE]!;
+          if (posts.isEmpty) {
+            return SizedBox();
+          } else {
+            return GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 3,
+                mainAxisSpacing: 3,
+              ),
+              itemCount: posts.length,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: CachedNetworkImage(
+                    fadeInCurve: Curves.easeInBack,
+                    imageUrl: posts[index].postList.first.url,
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            );
+          }
+        case 2:
+          return SizedBox();
+
+        case 3:
+          return SizedBox();
+
+        default:
+          return SizedBox();
+      }
     }
   }
 }

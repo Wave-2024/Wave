@@ -13,6 +13,7 @@ import 'package:wave/services/comment_notification_service.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
 class PostData {
+
   static Future<Post> createPostModel(
       {String? caption,
       List<User>? mentionedUsers,
@@ -139,7 +140,7 @@ class PostData {
       var res = await Database.getPostLikesDatabase(postId)
           .doc(userId)
           .set(like.toMap());
-      
+
       return CustomResponse(responseStatus: true);
     } on FirebaseException catch (error) {
       return CustomResponse(responseStatus: false, response: error.toString());

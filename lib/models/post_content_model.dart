@@ -2,7 +2,8 @@
 import 'dart:convert';
 
 class PostContent {
-  String type;
+  String type; 
+  /* type cane be of image,video */
   String url;
   PostContent({
     required this.type,

@@ -41,7 +41,6 @@ class UserData {
       if (following != null) dataToUpdate['following'] = following;
       if (followers != null) dataToUpdate['followers'] = followers;
       if (fcmToken != null) dataToUpdate['fcmToken'] = fcmToken;
-      "I have reached here".printInfo();
       // Update the document in Firestore only if there's something to update
       if (dataToUpdate.isNotEmpty) {
         await Database.userDatabase.doc(userId).update(dataToUpdate);

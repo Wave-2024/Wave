@@ -390,7 +390,9 @@ class SelfProfile extends StatelessWidget {
                       height: 30,
                     ),
                     ViewPosts(
-                        option: userDataController.profilePostViewingOptions,userDataController: userDataController,)
+                      option: userDataController.profilePostViewingOptions,
+                      userDataController: userDataController,
+                    )
                   ],
                 );
             }
