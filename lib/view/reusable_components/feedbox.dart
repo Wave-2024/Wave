@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as time;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
@@ -24,7 +23,6 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/more_option_feed.dart';
-import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
 
 class FeedBox extends StatelessWidget {
   final Post post;
@@ -278,7 +276,6 @@ class FeedBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime timeAgo = calculateTimeAgo(post.createdAt);
     return Container(
       color: Colors.white,
       width: double.infinity,
@@ -387,7 +384,7 @@ class FeedBox extends StatelessWidget {
               icon: const Icon(AntDesign.more_outline),
             ),
             subtitle: Text(
-              '${time.format(timeAgo, locale: 'en_short')} ago',
+              timeAgo(post.createdAt),
               style: TextStyle(
                   fontSize: 11.5,
                   fontFamily: CustomFont.poppins,

@@ -18,13 +18,19 @@ String capitalizeWords(String input) {
   return capitalizedWords.join(' ');
 }
 
-DateTime calculateTimeAgo(DateTime createdAt) {
-  DateTime difference = DateTime.now().subtract(Duration(
-      days: DateTime.now().day - createdAt.day,
-      hours: DateTime.now().hour - createdAt.hour,
-      minutes: DateTime.now().minute - createdAt.minute));
+String timeAgo(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
 
-  return difference;
+  if (difference.inSeconds < 60) {
+    return 'just now';
+  } else if (difference.inMinutes < 60) {
+    return '${difference.inMinutes}m ago';
+  } else if (difference.inHours < 24) {
+    return '${difference.inHours}h ago';
+  } else {
+    return '${difference.inDays}d ago';
+  }
 }
 
 String getInitials(String fullName) {
