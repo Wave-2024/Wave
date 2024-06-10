@@ -5,7 +5,6 @@ import 'package:wave/data/users_data.dart';
 import 'package:wave/models/notification_model.dart' as not;
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/util_functions.dart';
 
@@ -22,7 +21,6 @@ class NotificationBox extends StatelessWidget {
           builder: (BuildContext context, AsyncSnapshot<User> userSnap) {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
-              final timeOfComment = calculateTimeAgo(notification.createdAt);
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: (userSnap.data!.displayPicture != null &&
@@ -77,8 +75,7 @@ class NotificationBox extends StatelessWidget {
                       const SizedBox(
                         height: 2,
                       ),
-                      Text(
-                          '${timeago.format(timeOfComment, locale: 'en_short')} ago',
+                      Text(timeAgo(notification.createdAt),
                           style: TextStyle(
                               fontFamily: CustomFont.poppins,
                               fontSize: 10,
@@ -127,7 +124,6 @@ class NotificationBox extends StatelessWidget {
           builder: (BuildContext context, AsyncSnapshot<User> userSnap) {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
-              final timeOfComment = calculateTimeAgo(notification.createdAt);
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: (userSnap.data!.displayPicture != null &&
@@ -167,7 +163,7 @@ class NotificationBox extends StatelessWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 6.0),
                   child: Text(
-                      '${timeago.format(timeOfComment, locale: 'en_short')} ago',
+                      timeAgo(notification.createdAt),
                       style: TextStyle(
                           fontFamily: CustomFont.poppins,
                           fontSize: 10,
@@ -216,7 +212,6 @@ class NotificationBox extends StatelessWidget {
           builder: (BuildContext context, AsyncSnapshot<User> userSnap) {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
-              final timeOfComment = calculateTimeAgo(notification.createdAt);
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: (userSnap.data!.displayPicture != null &&
@@ -272,7 +267,7 @@ class NotificationBox extends StatelessWidget {
                         height: 2,
                       ),
                       Text(
-                          '${timeago.format(timeOfComment, locale: 'en_short')} ago',
+                          timeAgo(notification.createdAt),
                           style: TextStyle(
                               fontFamily: CustomFont.poppins,
                               fontSize: 10,

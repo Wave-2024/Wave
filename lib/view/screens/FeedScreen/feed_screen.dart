@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badge;
@@ -43,56 +44,55 @@ class FeedScreen extends StatelessWidget {
                 snap: true,
                 elevation: 0,
                 actions: [
-                  Consumer<UserDataController>(
-                    builder: (context, userController, child) {
-                      return StreamBuilder(
-                        stream: Database.getNotificationDatabase(
-                                userController.user!.id)
-                            .snapshots(),
-                        builder: (context,
-                            AsyncSnapshot<QuerySnapshot> notificationSnapshot) {
-                          int unseenNotification = 4;
-                          if ((notificationSnapshot.connectionState ==
-                                      ConnectionState.active ||
-                                  notificationSnapshot.connectionState ==
-                                      ConnectionState.done) &&
-                              notificationSnapshot.hasData) {
-                            unseenNotification = notificationSnapshot.data!.docs
-                                .where((element) =>
-                                    !(notification.Notification.fromMap(element
-                                            .data()! as Map<String, dynamic>)
-                                        .seen))
-                                .toList()
-                                .length;
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 12.0),
-                            child: InkWell(
-                              onTap: () {
-                                Get.toNamed(AppRoutes.notificationScreen);
-                              },
-                              child: badge.Badge(
-                                position: badge.BadgePosition.topEnd(end: -4),
-                                badgeAnimation:
-                                    const badge.BadgeAnimation.slide(),
-                                badgeStyle: const badge.BadgeStyle(
-                                    badgeColor: Color(0xfb16db65)),
-                                badgeContent: Text(
-                                  unseenNotification.toString(),
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                showBadge: unseenNotification > 0,
-                                child: Image.asset(
-                                  CustomIcon.notificationIcon,
-                                  height: 25,
-                                ),
-                              ),
+                  StreamBuilder(
+                    stream: Database.getNotificationDatabase(
+                            fb.FirebaseAuth.instance.currentUser!.uid)
+                        .snapshots(),
+                    builder: (context,
+                        AsyncSnapshot<QuerySnapshot> notificationSnapshot) {
+                      int unseenNotification = 4;
+                      if ((notificationSnapshot.connectionState ==
+                                  ConnectionState.active ||
+                              notificationSnapshot.connectionState ==
+                                  ConnectionState.done) &&
+                          notificationSnapshot.hasData) {
+                        unseenNotification = notificationSnapshot.data!.docs
+                            .where((element) =>
+                                !(notification.Notification.fromMap(
+                                        element.data()! as Map<String, dynamic>)
+                                    .seen))
+                            .toList()
+                            .length;
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.notificationScreen);
+                          },
+                          child: badge.Badge(
+                            position: badge.BadgePosition.topEnd(end: -4),
+                            badgeAnimation: const badge.BadgeAnimation.fade(
+                                animationDuration: Duration.zero,
+                                disappearanceFadeAnimationDuration:
+                                    Duration.zero,
+                                toAnimate: true),
+                            badgeStyle: const badge.BadgeStyle(
+                                badgeColor: Color(0xfb16db65)),
+                            badgeContent: Text(
+                              unseenNotification.toString(),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
                             ),
-                          );
-                        },
+                            showBadge: unseenNotification > 0,
+                            child: Image.asset(
+                              CustomIcon.notificationIcon,
+                              height: 25,
+                            ),
+                          ),
+                        ),
                       );
                     },
                   )
@@ -168,11 +168,16 @@ class FeedScreen extends StatelessWidget {
                 ),
               ),
               SliverToBoxAdapter(
-                child: Consumer2<FeedPostController, UserDataController>(
-                  builder: (context, feedController, userController, child) {
+                child: Consumer<FeedPostController>(
+                  builder: (context, feedController, child) {
                     "saving post maybe".printInfo();
                     if (feedController.postState == POSTS_STATE.ABSENT) {
-                      feedController.getPosts(userController.user!.following);
+                      List<dynamic> followingUserList =
+                          Provider.of<UserDataController>(context,
+                                  listen: false)
+                              .user!
+                              .following;
+                      feedController.getPosts(followingUserList);
                     }
                     switch (feedController.postState) {
                       case POSTS_STATE.ABSENT:
