@@ -23,7 +23,7 @@ class ViewPosts extends StatelessWidget {
       }
       switch (option) {
         case 0:
-          List<Post> posts = userDataController.selfPosts[POST_TYPE.TEXT]!;
+          List<Post> posts = userDataController.selfPosts[POST_TYPE.TEXT]!.toList();
           if (posts.isEmpty) {
             return SizedBox();
           } else {
@@ -40,7 +40,7 @@ class ViewPosts extends StatelessWidget {
           }
 
         case 1:
-          List<Post> posts = userDataController.selfPosts[POST_TYPE.IMAGE]!;
+          List<Post> posts = userDataController.selfPosts[POST_TYPE.IMAGE]!.toList();
           if (posts.isEmpty) {
             return SizedBox();
           } else {

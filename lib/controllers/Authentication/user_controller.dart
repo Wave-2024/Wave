@@ -26,20 +26,19 @@ class UserDataController extends ChangeNotifier {
   int profilePostViewingOptions = 0;
   List<User> searchedUsers = [];
   Map<String, User> otherUsers = {};
-  Map<POST_TYPE, List<Post>> selfPosts = {};
+  Map<POST_TYPE, Set<Post>> selfPosts = {};
 
   UserDataController() {
-    selfPosts[POST_TYPE.IMAGE] = [];
-    selfPosts[POST_TYPE.VIDEO] = [];
-    selfPosts[POST_TYPE.TEXT] = [];
+    selfPosts[POST_TYPE.IMAGE] = {};
+    selfPosts[POST_TYPE.VIDEO] = {};
+    selfPosts[POST_TYPE.TEXT] = {};
   }
 
   Future<void> getAllPosts() async {
-    "enterng here".printInfo();
     if (fetch_self_post != FETCH_SELF_POST.FETCHING) {
       fetch_self_post = FETCH_SELF_POST.FETCHING;
       await Future.delayed(Duration
-          .zero); // Not sure if this is needed, but keeping it as per your code
+          .zero); // Not sure if this is needed, but keeping it
 
       StreamSubscription<Post>? sub;
 
@@ -83,7 +82,6 @@ class UserDataController extends ChangeNotifier {
             }
           }
 
-          "Fetched post with id : ${post.id}".printInfo();
         },
         onDone: () {
           sub!.cancel();
