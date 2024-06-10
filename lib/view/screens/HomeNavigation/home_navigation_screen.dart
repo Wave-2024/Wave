@@ -26,7 +26,7 @@ class HomeNavigationScreen extends StatefulWidget {
 }
 
 class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
-  final List<dynamic> screens = [
+  final List<Widget> screens = [
     const FeedScreen(),
     const SearchScreen(),
     CreatePostScreen(),
@@ -167,7 +167,7 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
                 if (newScreenIndex == 2) {
                   Get.toNamed(AppRoutes.createNewPostScreen);
                 } else {
-                  Get.printInfo(info: "Selected $newScreenIndex index");
+                 printInfo(info: "Selected $newScreenIndex index");
                   homeNavController.setCurrentScreenIndex(newScreenIndex);
                 }
               },
@@ -264,7 +264,10 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       ),
       body: Consumer<HomeNavController>(
         builder: (context, homeNavController, child) {
-          return screens[homeNavController.currentScreenIndex];
+          return IndexedStack(
+            index: homeNavController.currentScreenIndex,
+            children: screens,
+          );
         },
       ),
     );
