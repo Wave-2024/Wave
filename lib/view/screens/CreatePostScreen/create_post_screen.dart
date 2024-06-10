@@ -216,13 +216,14 @@ class CreatePostScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(15)),
                             height: displayHeight(context) * 0.06,
                             onPressed: () async {
+                              final navigator = Navigator.of(context);
                               final res = await postController.createNewPost(
                                   userId:
                                       fb.FirebaseAuth.instance.currentUser!.uid,
                                   caption: captionController.text);
                               if (res.responseStatus) {
                                 postController.resetController();
-                                 Get.showSnackbar(const GetSnackBar(
+                                Get.showSnackbar(const GetSnackBar(
                                   duration: Duration(seconds: 2),
                                   backgroundColor: Colors.green,
                                   borderRadius: 5,
@@ -242,10 +243,10 @@ class CreatePostScreen extends StatelessWidget {
                                   },
                                   onDone: () {
                                     sub!.cancel();
+                                    userDataController.getAllPosts();
                                   },
                                 );
-
-                               
+                                navigator.pop();
                               } else {
                                 Get.showSnackbar(GetSnackBar(
                                   backgroundColor: CustomColor.errorColor,

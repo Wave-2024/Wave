@@ -85,24 +85,11 @@ class Post {
   }
 
   @override
-  bool operator ==(covariant Post other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
-    return other.id == id &&
-        listEquals(other.postList, postList) &&
-        other.createdAt == createdAt &&
-        other.userId == userId &&
-        other.caption == caption &&
-        listEquals(other.mentions, mentions);
+    return other is Post && other.id == id;
   }
 
   @override
-  int get hashCode {
-    return id.hashCode ^
-        postList.hashCode ^
-        createdAt.hashCode ^
-        userId.hashCode ^
-        caption.hashCode ^
-        mentions.hashCode;
-  }
+  int get hashCode => id.hashCode;
 }
