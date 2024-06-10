@@ -3,14 +3,17 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as time;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/notification_data.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/models/notification_model.dart' as not;
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
+import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
@@ -28,7 +31,7 @@ class FeedBox extends StatelessWidget {
   final User poster;
   const FeedBox({super.key, required this.post, required this.poster});
 
-  Widget decideMediaBox(double height) {
+  Widget decideMediaBox(double height, BuildContext context) {
     List<PostContent> posts = post.postList;
     // If number of media files is 0
     if (posts.isEmpty) {
@@ -39,7 +42,11 @@ class FeedBox extends StatelessWidget {
         return ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: CachedNetworkImage(
-                imageUrl: posts.first.url, fit: BoxFit.cover));
+              imageUrl: posts.first.url,
+              fit: BoxFit.cover,
+              height: height,
+              width: displayWidth(context),
+            ));
       } else {
         // TODO : Handle video files
         return const SizedBox();
@@ -405,7 +412,7 @@ class FeedBox extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          decideMediaBox(displayHeight(context) * 0.47),
+          decideMediaBox(displayHeight(context) * 0.47, context),
           SizedBox(
             height: post.postList.isEmpty ? 0 : 15,
           ),
@@ -583,13 +590,37 @@ class FeedBox extends StatelessWidget {
                   height: 22,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 4.0),
-                child: Icon(
-                  Icons.bookmark_add_outlined,
-                  size: 20,
-                ),
-              ),
+              Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Consumer<UserDataController>(
+                    builder: (context, userDataController, child) {
+                      bool saved =
+                          (userDataController.user!.savedPosts != null &&
+                              userDataController.user!.savedPosts!
+                                  .contains(post.id));
+                      return InkWell(
+                        onTap: () async {
+                          if (!saved) {
+                            CustomResponse customResponse =
+                                await userDataController.savePost(post.id);
+                            if (!customResponse.responseStatus) {
+                              "${customResponse.response}".printError();
+                            }
+                          } else {
+                            CustomResponse customResponse =
+                                await userDataController.unsavePost(post.id);
+                            if (!customResponse.responseStatus) {
+                              "${customResponse.response}".printError();
+                            }
+                          }
+                        },
+                        child: Icon(
+                          saved ? Icons.bookmark : Icons.bookmark_add_outlined,
+                          size: 20,
+                        ),
+                      );
+                    },
+                  )),
             ],
           )
         ],

@@ -17,6 +17,44 @@ class UserData {
     return user;
   }
 
+  static Future<CustomResponse> savePost({required String userId, required String postId}) async {
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentReference userDocRef = Database.userDatabase.doc(userId);
+        DocumentSnapshot userDoc = await transaction.get(userDocRef);
+        if (userDoc.exists) {
+          List<dynamic> savedPosts = (userDoc.data() as Map<String, dynamic>)['savedPosts'] ?? [];
+          if (!savedPosts.contains(postId)) {
+            savedPosts.add(postId);
+            transaction.update(userDocRef, {'savedPosts': savedPosts});
+          }
+        }
+      });
+      return CustomResponse(responseStatus: true, response: 'Post saved successfully.');
+    } catch (e) {
+      return CustomResponse(responseStatus: false, response: 'Failed to save post: $e');
+    }
+  }
+
+  static Future<CustomResponse> unsavePost({required String userId, required String postId}) async {
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentReference userDocRef = Database.userDatabase.doc(userId);
+        DocumentSnapshot userDoc = await transaction.get(userDocRef);
+        if (userDoc.exists) {
+          List<dynamic> savedPosts = (userDoc.data() as Map<String, dynamic>)['savedPosts'] ?? [];
+          if (savedPosts.contains(postId)) {
+            savedPosts.remove(postId);
+            transaction.update(userDocRef, {'savedPosts': savedPosts});
+          }
+        }
+      });
+      return CustomResponse(responseStatus: true, response: 'Post removed successfully.');
+    } catch (e) {
+      return CustomResponse(responseStatus: false, response: 'Failed to unsave post: $e');
+    }
+  }
+
   static Future<CustomResponse> updateUser({
     required String userId,
     String? name,
