@@ -37,8 +37,8 @@ class UserDataController extends ChangeNotifier {
   Future<void> getAllPosts() async {
     if (fetch_self_post != FETCH_SELF_POST.FETCHING) {
       fetch_self_post = FETCH_SELF_POST.FETCHING;
-      await Future.delayed(Duration
-          .zero); // Not sure if this is needed, but keeping it
+      await Future.delayed(
+          Duration.zero); // Not sure if this is needed, but keeping it
 
       StreamSubscription<Post>? sub;
 
@@ -81,7 +81,6 @@ class UserDataController extends ChangeNotifier {
               selfPosts[POST_TYPE.VIDEO]!.add(videoPost);
             }
           }
-
         },
         onDone: () {
           sub!.cancel();
@@ -411,5 +410,37 @@ class UserDataController extends ChangeNotifier {
       return CustomResponse(
           responseStatus: false, response: "Upload failed: $e");
     }
+  }
+
+  Future<CustomResponse> savePost(String postId) async {
+    CustomResponse response =
+        await UserData.savePost(userId: user!.id, postId: postId);
+
+    if (response.responseStatus) {
+      // Update the local user instance
+      List<dynamic> updatedSavedPosts = List.from(user!.savedPosts ?? []);
+      if (!updatedSavedPosts.contains(postId)) {
+        updatedSavedPosts.add(postId);
+        user = user!.copyWith(savedPosts: updatedSavedPosts);
+        notifyListeners();
+      }
+    }
+    return response;
+  }
+
+  Future<CustomResponse> unsavePost(String postId) async {
+    CustomResponse response =
+        await UserData.unsavePost(userId: user!.id, postId: postId);
+
+    if (response.responseStatus) {
+      // Update the local user instance
+      List<dynamic> updatedSavedPosts = List.from(user!.savedPosts ?? []);
+      if (updatedSavedPosts.contains(postId)) {
+        updatedSavedPosts.remove(postId);
+        user = user!.copyWith(savedPosts: updatedSavedPosts);
+        notifyListeners();
+      }
+    }
+    return response;
   }
 }

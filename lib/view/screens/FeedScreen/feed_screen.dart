@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:badges/badges.dart' as badge;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/PostController/feed_post_controller.dart';
 import 'package:wave/data/users_data.dart';
@@ -15,7 +11,6 @@ import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
-import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/routing.dart';
@@ -175,6 +170,7 @@ class FeedScreen extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Consumer2<FeedPostController, UserDataController>(
                   builder: (context, feedController, userController, child) {
+                    "saving post maybe".printInfo();
                     if (feedController.postState == POSTS_STATE.ABSENT) {
                       feedController.getPosts(userController.user!.following);
                     }
