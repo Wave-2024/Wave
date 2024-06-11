@@ -22,6 +22,9 @@ class NotificationBox extends StatelessWidget {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
               return ListTile(
+                tileColor: (!notification.seen)
+                    ? Colors.teal.shade100.withOpacity(0.4)
+                    : null,
                 leading: CircleAvatar(
                   backgroundImage: (userSnap.data!.displayPicture != null &&
                           userSnap.data!.displayPicture!.isNotEmpty)
@@ -125,6 +128,9 @@ class NotificationBox extends StatelessWidget {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
               return ListTile(
+                tileColor: (!notification.seen)
+                    ? Colors.teal.shade100.withOpacity(0.4)
+                    : null,
                 leading: CircleAvatar(
                   backgroundImage: (userSnap.data!.displayPicture != null &&
                           userSnap.data!.displayPicture!.isNotEmpty)
@@ -162,8 +168,7 @@ class NotificationBox extends StatelessWidget {
                 ),
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 6.0),
-                  child: Text(
-                      timeAgo(notification.createdAt),
+                  child: Text(timeAgo(notification.createdAt),
                       style: TextStyle(
                           fontFamily: CustomFont.poppins,
                           fontSize: 10,
@@ -213,6 +218,9 @@ class NotificationBox extends StatelessWidget {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
               return ListTile(
+                tileColor: (!notification.seen)
+                    ? Colors.teal.shade100.withOpacity(0.4)
+                    : null,
                 leading: CircleAvatar(
                   backgroundImage: (userSnap.data!.displayPicture != null &&
                           userSnap.data!.displayPicture!.isNotEmpty)
@@ -266,8 +274,7 @@ class NotificationBox extends StatelessWidget {
                       const SizedBox(
                         height: 2,
                       ),
-                      Text(
-                          timeAgo(notification.createdAt),
+                      Text(timeAgo(notification.createdAt),
                           style: TextStyle(
                               fontFamily: CustomFont.poppins,
                               fontSize: 10,
