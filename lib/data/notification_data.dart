@@ -38,4 +38,15 @@ class NotificationData {
       return CustomResponse(responseStatus: false, response: e.message!);
     }
   }
+
+  static Future<CustomResponse> deleteNotification(
+      {required String userId, required String notificationId}) async {
+    try {
+      var docRef = Database.getNotificationDatabase(userId).doc(notificationId);
+      await docRef.delete();
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (e) {
+      return CustomResponse(responseStatus: false, response: e.message!);
+    }
+  }
 }

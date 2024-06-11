@@ -79,7 +79,17 @@ class NotificationScreen extends StatelessWidget {
                           width: 1,
                         ),
                         SlidableAction(
-                          onPressed: (context) {},
+                          onPressed: (context) async {
+                            CustomResponse customResponse =
+                                await NotificationData.deleteNotification(
+                                    userId:
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                    notificationId:
+                                        notificationSnap.data!.docs[index].id);
+                            if (!customResponse.responseStatus) {
+                              "${customResponse.response}".printError();
+                            }
+                          },
                           borderRadius: BorderRadius.circular(4),
                           backgroundColor: Colors.blue.shade700,
                           foregroundColor: Colors.white,
