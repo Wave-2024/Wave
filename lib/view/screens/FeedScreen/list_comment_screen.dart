@@ -116,11 +116,9 @@ class _ListCommentsScreenState extends State<ListCommentsScreen> {
                   ));
                 }
               },
-              userImage: (userController.user!.displayPicture != null &&
-                      userController.user!.displayPicture!.isNotEmpty)
-                  ? CachedNetworkImageProvider(
-                      userController.user!.displayPicture!)
-                  : AssetImage(CustomIcon.profileFullIcon) as ImageProvider,
+              imageUrl: userController.user!.displayPicture,
+                      
+                  
               child: StreamBuilder(
                 stream: Database.getPostCommentsDatabase(postId!)
                     .limit(50)

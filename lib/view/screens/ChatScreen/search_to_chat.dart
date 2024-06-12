@@ -129,38 +129,46 @@ class _SearchToChatState extends State<SearchToChat> {
                         itemBuilder: (BuildContext context, int index) {
                           return UserContainerTile(
                               onTap: () async {
-                                // Check if there is already a chat that exists on the database
-                                /// This code snippet is checking if a chat already exists between the
-                                /// current user and the searched user. Here's a breakdown of what it
-                                /// does:
-                                CustomResponse chatExists =
-                                    await ChatData.checkIfChatExists(
-                                        userDataController.user!.id,
-                                        userDataController
-                                            .searchedUsers[index].id);
-                                if (chatExists.responseStatus) {
-                                  Get.offNamed(AppRoutes.inboxScreen,
-                                      arguments: {
-                                        'chatId':
-                                            chatExists.response.toString(),
-                                        'otherUser': userDataController
-                                            .searchedUsers[index]
-                                      });
-                                } else {
-                                  CustomResponse customResponse =
-                                      await ChatData.createChat(
+                                if (userDataController
+                                    .searchedUsers[index].followers
+                                    .contains(userDataController.user!.id)) {
+                                  // Check if there is already a chat that exists on the database
+                                  /// This code snippet is checking if a chat already exists between the
+                                  /// current user and the searched user. Here's a breakdown of what it
+                                  /// does:
+                                  CustomResponse chatExists =
+                                      await ChatData.checkIfChatExists(
                                           userDataController.user!.id,
                                           userDataController
                                               .searchedUsers[index].id);
-                                  if (customResponse.responseStatus) {
+                                  if (chatExists.responseStatus) {
                                     Get.offNamed(AppRoutes.inboxScreen,
                                         arguments: {
-                                          'chatId': customResponse.response
-                                              .toString(),
+                                          'chatId':
+                                              chatExists.response.toString(),
                                           'otherUser': userDataController
-                                              .searchedUsers[index]
+                                              .searchedUsers[index],
+                                            'selfUser' : userDataController.user!
                                         });
+                                  } else {
+                                    CustomResponse customResponse =
+                                        await ChatData.createChat(
+                                            userDataController.user!.id,
+                                            userDataController
+                                                .searchedUsers[index].id);
+                                    if (customResponse.responseStatus) {
+                                      Get.offNamed(AppRoutes.inboxScreen,
+                                          arguments: {
+                                            'chatId': customResponse.response
+                                                .toString(),
+                                            'otherUser': userDataController
+                                                .searchedUsers[index],
+                                                'selfUser' : userDataController.user!
+                                          });
+                                    }
                                   }
+                                } else {
+                                  "Not following".printError();
                                 }
                               },
                               user: userDataController.searchedUsers[index]);

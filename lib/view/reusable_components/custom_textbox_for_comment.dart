@@ -12,7 +12,8 @@ class CustomTextBoxForComments extends StatelessWidget {
   dynamic formKey;
   dynamic sendButtonMethod;
   dynamic commentController;
-  ImageProvider? userImage;
+  String? imageUrl;
+  
   String? labelText;
   String? errorText;
   Widget? sendWidget;
@@ -28,7 +29,7 @@ class CustomTextBoxForComments extends StatelessWidget {
       this.formKey,
       this.commentController,
       this.sendWidget,
-      this.userImage,
+      this.imageUrl,
       this.labelText,
       this.focusNode,
       this.errorText,
@@ -47,11 +48,22 @@ class CustomTextBoxForComments extends StatelessWidget {
         header ?? SizedBox.shrink(),
         ListTile(
           tileColor: backgroundColor,
-          leading: CircleAvatar(radius: 20, backgroundImage: userImage),
+          leading: CircleAvatar(
+            radius: 20,
+            backgroundImage: (imageUrl != null &&
+                              imageUrl!.isNotEmpty)
+                          ? CachedNetworkImageProvider(imageUrl!)
+                          : null,
+                      child: imageUrl == null ||
+                              imageUrl!.isEmpty
+                          ? const Icon(Icons.person)
+                          : null,
+          ),
           title: Form(
             key: formKey,
             child: SizedBox(
               child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
                 controller: commentController,
                 maxLines: 5,
                 minLines: 1,
@@ -60,7 +72,7 @@ class CustomTextBoxForComments extends StatelessWidget {
                     fontFamily: CustomFont.poppins,
                     fontSize: 12),
                 decoration: InputDecoration(
-                  labelText: "Comment",
+                  labelText: labelText ?? "Comment",
                   labelStyle: TextStyle(
                       color: Colors.black,
                       fontFamily: CustomFont.poppins,
@@ -73,7 +85,7 @@ class CustomTextBoxForComments extends StatelessWidget {
                   enabledBorder: OutlineInputBorder(
                     borderSide:
                         BorderSide(color: CustomColor.authTextBoxBorderColor),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   border: OutlineInputBorder(
                     borderSide:
@@ -82,39 +94,18 @@ class CustomTextBoxForComments extends StatelessWidget {
                   ),
                   errorBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.red),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
               ),
             ),
           ),
-          trailing: GestureDetector(
+          trailing: InkWell(
             onTap: sendButtonMethod,
             child: sendWidget,
           ),
         ),
       ],
     );
-  }
-
-  /// This method is used to parse the image from the URL or the path.
-  /// `CommentBox.commentImageParser(imageURLorPath: 'url_or_path_to_image')`
-  static ImageProvider commentImageParser({imageURLorPath}) {
-    try {
-      //check if imageURLorPath
-      if (imageURLorPath is String) {
-        if (imageURLorPath.startsWith('http')) {
-          return CachedNetworkImageProvider(
-            imageURLorPath);
-        } else {
-          return AssetImage(imageURLorPath);
-        }
-      } else {
-        return imageURLorPath;
-      }
-    } catch (e) {
-      //throw error
-      throw Exception('Error parsing image: $e');
-    }
   }
 }
