@@ -5,11 +5,15 @@ class Database {
 
   static var userDatabase = FirebaseFirestore.instance.collection("users");
 
+  static var chatDatabase = FirebaseFirestore.instance.collection("chats");
+
   static CollectionReference getPostLikesDatabase(String postId) {
     return postDatabase
         .doc(postId)
         .collection('likes');
   }
+
+
 
   static CollectionReference getPostCommentsDatabase(String postId) {
     return postDatabase.doc(postId).collection('comments');
@@ -22,5 +26,11 @@ class Database {
 
   static CollectionReference getNotificationDatabase(String userId) {
     return userDatabase.doc(userId).collection('notifications');
+  }
+
+  static CollectionReference getUserChats(String userId) {
+    return userDatabase
+        .doc(userId)
+        .collection('chats');
   }
 }

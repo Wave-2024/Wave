@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:wave/view/screens/Authentication/login_screen.dart';
 import 'package:wave/view/screens/Authentication/register_screen.dart';
+import 'package:wave/view/screens/ChatScreen/inbox_screen.dart';
+import 'package:wave/view/screens/ChatScreen/search_to_chat.dart';
 import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
 import 'package:wave/view/screens/CreatePostScreen/search_to_mention.dart';
 import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
@@ -23,6 +25,11 @@ class AppRoutes {
   static const String listUsersScreen = '/listUsersScreen';
   static const String listCommentsScreen = '/listCommentsScreen';
   static const String notificationScreen = '/notificationScreen';
+  static const String searchToChatScreen = '/searchToChatScreen';
+  static const String inboxScreen = '/inboxScreen';
+  static const String blockedContactsScreen = '/blockedContacts';
+
+  
 
   static final List<GetPage> routes = [
     GetPage(
@@ -35,10 +42,10 @@ class AppRoutes {
         transition: Transition.leftToRightWithFade),
     GetPage(name: loginScreen, page: () => LoginScreen()),
     GetPage(name: registerScreen, page: () => RegisterScreen()),
-    GetPage(name: splashScreen, page: () => SplashScreen()),
+    GetPage(name: splashScreen, page: () => const SplashScreen()),
     GetPage(
         name: searchToMentionScreen,
-        page: () => SearchToMention(),
+        page: () => const SearchToMention(),
         transition: Transition.leftToRight),
     GetPage(name: editProfileScreen, page: () => EditProfileScreen()),
     GetPage(
@@ -49,11 +56,20 @@ class AppRoutes {
     GetPage(name: editProfileScreen, page: () => EditProfileScreen()),
     GetPage(
         name: listCommentsScreen,
-        page: () => ListCommentsScreen(),
+        page: () => const ListCommentsScreen(),
+        transition: Transition.leftToRight),
+    GetPage(
+        name: inboxScreen,
+        page: () => const InboxScreen(),
         transition: Transition.leftToRight),
     GetPage(
         name: notificationScreen,
-        page: () => NotificationScreen(),
+        page: () => const NotificationScreen(),
         transition: Transition.leftToRight),
+                GetPage(name: blockedContactsScreen, page: () => BlockedContacts()),
+    GetPage(
+        name: searchToChatScreen,
+        page: () => const SearchToChat(),
+        transition: Transition.rightToLeftWithFade),
   ];
 }
