@@ -23,6 +23,14 @@ class User {
   List<dynamic>? messages;
   ACCOUNT_TYPE account_type;
 
+  /* Collections
+
+  notifications
+  chats
+
+  */
+
+
   User({
     required this.verified,
     required this.name,

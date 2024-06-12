@@ -7,14 +7,19 @@ import 'package:wave/utils/routing.dart';
 
 class UserContainerTile extends StatelessWidget {
   User user;
-  UserContainerTile({super.key, required this.user});
+  final VoidCallback? onTap;
+  UserContainerTile({super.key, required this.user, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      visualDensity: VisualDensity(vertical: -0.5),
-      onTap: () {
-        Get.toNamed(AppRoutes.profileScreen, arguments: user.id);
+      visualDensity: const VisualDensity(vertical: -0.5),
+      onTap: () async {
+        if (onTap != null) {
+          onTap!();
+        } else {
+          Get.toNamed(AppRoutes.profileScreen, arguments: user.id);
+        }
       },
       subtitle: Text(
         user.username,
