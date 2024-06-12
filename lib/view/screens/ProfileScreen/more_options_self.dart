@@ -63,7 +63,8 @@ class MoreOptionsForSelfProfile extends StatelessWidget {
           title: Text('Blocked Contacts',
           style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 14)),
           onTap: () {
-            //Help
+            Navigator.pop(context); // Close the bottom sheet
+            Get.toNamed(AppRoutes.blockedContactsScreen);
           },
         ),
         ListTile(
