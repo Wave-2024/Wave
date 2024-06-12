@@ -1,4 +1,5 @@
 import 'package:wave/models/chat_model.dart';
+import 'package:wave/models/message_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
@@ -61,12 +62,20 @@ class ChatData {
           .doc(chatCreationResponse.id)
           .update({'id': chatCreationResponse.id});
 
+      chat = chat.copyWith(id: chatCreationResponse.id);
+
       /// `await Database.getUserChats(firstUser).doc(chatCreationResponse.id).set({'id':
       /// chatCreationResponse.id});` is updating the user's chat list in the database with the newly
       /// created chat's ID.
-      await Database.getUserChats(firstUser)
-          .doc(chatCreationResponse.id)
-          .set({'id': chatCreationResponse.id});
+
+      await Database.getUserChats(firstUser).doc(chat.id).set(chat.toMap());
+
+      /// This line of code is updating the user's chat list in the database with the newly created
+      /// chat's ID for the `secondUser`. It is using the `getUserChats` method from the `Database` class
+      /// to access the document corresponding to the `secondUser` and then setting a new field with the
+      /// key `'id'` and the value of `chatCreationResponse.id`. This ensures that the `secondUser` has a
+      /// reference to the newly created chat in their chat list for future retrieval and management.
+      await Database.getUserChats(secondUser).doc(chat.id).set(chat.toMap());
 
       return CustomResponse(
           responseStatus: true, response: chatCreationResponse.id);
@@ -74,6 +83,56 @@ class ChatData {
       print('Error creating chat: $e');
       return CustomResponse(
           responseStatus: false, response: 'Failed to create chat.');
+    }
+  }
+
+  static Future<CustomResponse> sendMessage(
+      Message message, String firstUser, String secondUser) async {
+    try {
+      // Add the message to the 'messages' subcollection of the appropriate chat document
+      var messageResponse = await Database.chatDatabase
+          .doc(message.chatId)
+          .collection('messages')
+          .add(message.toMap());
+      // Update the message id
+      Database.chatDatabase
+          .doc(message.chatId)
+          .collection('messages')
+          .doc(messageResponse.id)
+          .update({'id': messageResponse.id});
+
+      // Update the lastMessage and timeOfLastMessage fields in the chat document
+      Database.chatDatabase.doc(message.chatId).update({
+        'lastMessage': message.message,
+        'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+      });
+
+      // Update the latest message for both the users
+
+      Database.userDatabase
+          .doc(firstUser)
+          .collection('chats')
+          .doc(message.chatId)
+          .update({
+        'lastMessage': message.message,
+        'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+      });
+
+      Database.userDatabase
+          .doc(secondUser)
+          .collection('chats')
+          .doc(message.chatId)
+          .update({
+        'lastMessage': message.message,
+        'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+      });
+
+      return CustomResponse(
+          responseStatus: true, response: 'Message sent successfully.');
+    } catch (e) {
+      print('Error sending message: $e');
+      return CustomResponse(
+          responseStatus: false, response: 'Failed to send message.');
     }
   }
 }

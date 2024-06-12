@@ -8,6 +8,7 @@ import 'package:wave/view/screens/CreatePostScreen/search_to_mention.dart';
 import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
 import 'package:wave/view/screens/HomeNavigation/home_navigation_screen.dart';
 import 'package:wave/view/screens/NotificationScreen/notification_screen.dart';
+import 'package:wave/view/screens/ProfileScreen/blocked_contacts_screen.dart';
 import 'package:wave/view/screens/ProfileScreen/edit_profile_screen.dart';
 import 'package:wave/view/screens/ProfileScreen/list_users.dart';
 import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
