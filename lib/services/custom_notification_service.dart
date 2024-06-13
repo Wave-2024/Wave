@@ -19,14 +19,20 @@ class CustomNotificationService {
     );
   }
 
-  static Future<void> sendNotificationForMessage(
-      {required String message,
-      required User otherUser,
-      required User me}) async {
+  static Future<void> sendNotificationForMessage({
+    required String message,
+    required User otherUser,
+    required User me,
+    required String chatId,
+  }) async {
     await NotificationService.sendPushNotification(
-      fcmToken: otherUser.fcmToken,
-      message: "${me.name}: $message",
-      title: "You received a new message",
-    );
+        fcmToken: otherUser.fcmToken,
+        message: "${me.name}: $message",
+        title: "You received a new message",
+        data: {
+          'chatId': chatId,
+          'otherUserId': otherUser.id,
+          'selfUserId' : me.id
+        });
   }
 }

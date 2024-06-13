@@ -122,7 +122,7 @@ class _InboxScreenState extends State<InboxScreen> {
               CustomNotificationService.sendNotificationForMessage(
                   otherUser: otherUser!,
                   me: selfUser!,
-                  message: message.message);
+                  message: message.message, chatId: chatId!);
             } else {
               log(customResponse.response.toString());
             }
