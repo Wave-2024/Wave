@@ -9,6 +9,8 @@ import 'package:wave/data/chat_data.dart';
 import 'package:wave/models/message_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/services/custom_notification_service.dart';
+import 'package:wave/services/notification_service.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -17,6 +19,7 @@ import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/view/reusable_components/custom_textbox_for_comment.dart';
 import 'package:wave/view/reusable_components/message_container.dart';
+import 'package:wave/view/screens/NotificationScreen/notification_screen.dart';
 
 class InboxScreen extends StatefulWidget {
   const InboxScreen({
@@ -104,7 +107,8 @@ class _InboxScreenState extends State<InboxScreen> {
         sendWidget: const Icon(Bootstrap.send_plus),
         labelText: "Message",
         sendButtonMethod: () async {
-          if (messageController!.text.isNotEmpty) {
+          if (messageController!.text.trim().isNotEmpty) {
+            messageController!.text.length.printInfo();
             Message message = Message(
                 message: messageController!.text.trim(),
                 sender: selfUser!.id,
@@ -114,7 +118,12 @@ class _InboxScreenState extends State<InboxScreen> {
                 chatId: chatId!);
             CustomResponse customResponse = await ChatData.sendMessage(
                 message, selfUser!.id, otherUser!.id);
-            if (!customResponse.responseStatus) {
+            if (customResponse.responseStatus) {
+              CustomNotificationService.sendNotificationForMessage(
+                  otherUser: otherUser!,
+                  me: selfUser!,
+                  message: message.message, chatId: chatId!);
+            } else {
               log(customResponse.response.toString());
             }
             messageController!.clear();

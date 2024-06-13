@@ -9,8 +9,11 @@ import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
 import 'package:wave/controllers/PostController/create_post_controller.dart';
 import 'package:wave/controllers/PostController/feed_post_controller.dart';
+import 'package:wave/data/users_data.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:provider/provider.dart';
+
+import 'models/user_model.dart';
 
 // Background message handler
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -22,16 +25,37 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
+void handleNotificationClick(Map<String, dynamic> messageData) async {
+  if (messageData.containsKey('chatId') &&
+      messageData.containsKey('otherUserId')) {
+    User otherUser = await UserData.getUser(userID: messageData['otherUserId']);
+    User selfUser = await UserData.getUser(userID: messageData['selfUserId']);
+    Get.toNamed(AppRoutes.inboxScreen, arguments: {
+      'chatId': messageData['chatId'],
+      'otherUser': otherUser,
+      'selfUser': selfUser,
+    });
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  runApp(Wave());
+  RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    handleNotificationClick(message.data);
+  });
+  runApp(Wave(
+    initialMessage: initialMessage,
+  ));
 }
 
 class Wave extends StatelessWidget {
-  const Wave({super.key});
+  final RemoteMessage? initialMessage;
+  const Wave({Key? key, this.initialMessage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +77,14 @@ class Wave extends StatelessWidget {
           create: (context) => FeedPostController(),
         ),
       ],
+      builder: (context, child) {
+        if (initialMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            handleNotificationClick(initialMessage!.data);
+          });
+        } else {}
+        return child!;
+      },
       child: GetMaterialApp(
         getPages: AppRoutes.routes,
         initialRoute: AppRoutes.splashScreen,
