@@ -30,6 +30,8 @@ class ChatHeadContainer extends StatelessWidget {
       },
       subtitle: Text(
         chat.lastMessage,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 12),
       ),
       trailing: Text(
