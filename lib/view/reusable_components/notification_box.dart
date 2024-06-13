@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/notification_model.dart' as not;
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 
 class NotificationBox extends StatelessWidget {
@@ -218,6 +220,8 @@ class NotificationBox extends StatelessWidget {
             if (userSnap.connectionState == ConnectionState.done &&
                 userSnap.hasData) {
               return ListTile(
+                onTap: () => Get.toNamed(AppRoutes.profileScreen,
+                    arguments: userSnap.data!.id),
                 tileColor: (!notification.seen)
                     ? Colors.teal.shade100.withOpacity(0.4)
                     : null,
