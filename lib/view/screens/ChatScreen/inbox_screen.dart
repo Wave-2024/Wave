@@ -104,7 +104,8 @@ class _InboxScreenState extends State<InboxScreen> {
         sendWidget: const Icon(Bootstrap.send_plus),
         labelText: "Message",
         sendButtonMethod: () async {
-          if (messageController!.text.isNotEmpty) {
+          if (messageController!.text.trim().isNotEmpty) {
+            messageController!.text.length.printInfo();
             Message message = Message(
                 message: messageController!.text.trim(),
                 sender: selfUser!.id,
