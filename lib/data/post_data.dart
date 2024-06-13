@@ -9,7 +9,7 @@ import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:wave/services/comment_notification_service.dart';
+import 'package:wave/services/custom_notification_service.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
 class PostData {
@@ -182,7 +182,7 @@ class PostData {
           .doc(res.id)
           .update({'id': res.id});
 
-      CommentNotificationService.sendNotification(
+      CustomNotificationService.sendNotificationForComment(
           comment: commentString,
           myUserId: fb.FirebaseAuth.instance.currentUser!.uid,
           postId: postId);
