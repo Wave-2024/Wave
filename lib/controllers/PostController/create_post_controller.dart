@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/models/post_model.dart';
@@ -32,6 +33,15 @@ class CreatePostController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeMediaFileAtIndex(int index) {
+    try {
+      selectedMediaFiles.removeAt(index);
+      notifyListeners();
+    } catch (e) {
+      "some exception occured $e".printError();
+    }
+  }
+
   Future<CustomResponse> createNewPost(
       {required String userId, String? caption}) async {
     create_post = CREATE_POST.CREATING;
@@ -58,7 +68,7 @@ class CreatePostController extends ChangeNotifier {
       await Database.postDatabase.doc(postId).update(post.toMap());
       create_post = CREATE_POST.IDLE;
       notifyListeners();
-      return CustomResponse(responseStatus: true,response: postId);
+      return CustomResponse(responseStatus: true, response: postId);
     } on FirebaseException catch (e) {
       create_post = CREATE_POST.IDLE;
       notifyListeners();

@@ -42,7 +42,7 @@ class MentionUserTile extends StatelessWidget {
             style:
                 TextStyle(fontFamily: CustomFont.poppins, letterSpacing: 0.1),
           ),
-          SizedBox(
+          const SizedBox(
             width: 2,
           ),
           Visibility(

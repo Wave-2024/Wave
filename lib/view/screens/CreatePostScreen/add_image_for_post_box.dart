@@ -49,9 +49,31 @@ class AddImageForPostBox extends StatelessWidget {
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
-                child: file.path.endsWith('.mp4')
-                    ? VideoThumbnail(file: file)
-                    : ImageThumbnail(file: file),
+                child: Stack(
+                  children: [
+                    file.path.endsWith('.mp4')
+                        ? VideoThumbnail(file: file)
+                        : ImageThumbnail(file: file),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: InkWell(
+                        onTap: () {
+                          postController.removeMediaFileAtIndex(index);
+                        },
+                        child: const CircleAvatar(
+                          backgroundColor: Colors.white70,
+                          radius: 11,
+                          child: Icon(
+                            Icons.close,
+                            size: 15.4,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               );
             },
           )),

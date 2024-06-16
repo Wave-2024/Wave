@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:wave/models/message_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
-import 'package:wave/utils/constants/custom_icons.dart';
 
 import 'package:wave/utils/device_size.dart';
 
@@ -57,7 +56,7 @@ class MessageContainer extends StatelessWidget {
                     ? const Icon(Icons.person)
                     : null,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Flexible(
@@ -65,7 +64,7 @@ class MessageContainer extends StatelessWidget {
                   constraints:
                       BoxConstraints(maxWidth: displayWidth(context) * 0.7),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
                         colors: [
