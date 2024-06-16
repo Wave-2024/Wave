@@ -149,6 +149,8 @@ class _InboxScreenState extends State<InboxScreen> {
                   Message message = Message.fromMap(
                       messageSnap.data!.docs[index].data()
                           as Map<String, dynamic>);
+                  message = message.copyWith(
+                      message: ChatData.getDecryptedMessage(message.message));
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: InkWell(

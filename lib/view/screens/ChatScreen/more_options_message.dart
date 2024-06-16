@@ -74,6 +74,7 @@ class MoreOptionsForMessage extends StatelessWidget {
                           onPressed: () async {
                             ChatData.unsendMessage(
                                 message, firstUser, secondUser);
+                            Navigator.pop(context);
                           },
                           child: Text(
                             "Delete",
