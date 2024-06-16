@@ -10,16 +10,14 @@ import 'package:wave/models/message_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/services/custom_notification_service.dart';
-import 'package:wave/services/notification_service.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
-import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/view/reusable_components/custom_textbox_for_comment.dart';
 import 'package:wave/view/reusable_components/message_container.dart';
-import 'package:wave/view/screens/NotificationScreen/notification_screen.dart';
+import 'package:wave/view/screens/ChatScreen/more_options_message.dart';
 
 class InboxScreen extends StatefulWidget {
   const InboxScreen({
@@ -38,7 +36,6 @@ class _InboxScreenState extends State<InboxScreen> {
   TextEditingController? messageController;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     messageController = TextEditingController();
     otherUser = Get.arguments['otherUser'];
@@ -122,7 +119,8 @@ class _InboxScreenState extends State<InboxScreen> {
               CustomNotificationService.sendNotificationForMessage(
                   otherUser: otherUser!,
                   me: selfUser!,
-                  message: message.message, chatId: chatId!);
+                  message: message.message,
+                  chatId: chatId!);
             } else {
               log(customResponse.response.toString());
             }
@@ -143,7 +141,8 @@ class _InboxScreenState extends State<InboxScreen> {
                     messageSnap.connectionState == ConnectionState.done) &&
                 messageSnap.hasData) {
               return ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 reverse: true,
                 itemCount: messageSnap.data!.docs.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -152,17 +151,31 @@ class _InboxScreenState extends State<InboxScreen> {
                           as Map<String, dynamic>);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
-                    child: MessageContainer(
-                        currentUser: selfUser!,
-                        sender: message.sender == selfUser!.id
-                            ? selfUser!
-                            : otherUser!,
-                        message: message),
+                    child: InkWell(
+                      onLongPress: () async {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return MoreOptionsForMessage(
+                              message: message,
+                              firstUser: selfUser!.id,
+                              secondUser: otherUser!.id,
+                            );
+                          },
+                        );
+                      },
+                      child: MessageContainer(
+                          currentUser: selfUser!,
+                          sender: message.sender == selfUser!.id
+                              ? selfUser!
+                              : otherUser!,
+                          message: message),
+                    ),
                   );
                 },
               );
             } else {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }

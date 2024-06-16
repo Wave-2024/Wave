@@ -135,4 +135,53 @@ class ChatData {
           responseStatus: false, response: 'Failed to send message.');
     }
   }
+
+  static Future<CustomResponse> unsendMessage(
+      Message message, String firstUser, String secondUser) async {
+    try {
+      // Remove the message from 'messages' subcollection of the appropriate chat document
+      await Database.chatDatabase
+          .doc(message.chatId)
+          .collection('messages')
+          .doc(message.id)
+          .delete();
+
+      var lastChatDetail =
+          await Database.chatDatabase.doc(message.chatId).get();
+      Chat chat = Chat.fromMap(lastChatDetail.data()!);
+
+      // Update the lastMessage and timeOfLastMessage fields in the chat document only if deleted message was the last message
+      if (chat.timeOfLastMessage == message.createdAt) {
+        Database.chatDatabase.doc(message.chatId).update({
+          'lastMessage': 'Last message was deleted',
+        });
+      }
+
+      // Update the latest message for both the users only if deleted message was the last message
+      if (chat.timeOfLastMessage == message.createdAt) {
+        Database.userDatabase
+            .doc(firstUser)
+            .collection('chats')
+            .doc(message.chatId)
+            .update({
+          'lastMessage': message.message,
+        });
+
+        Database.userDatabase
+            .doc(secondUser)
+            .collection('chats')
+            .doc(message.chatId)
+            .update({
+          'lastMessage': message.message,
+        });
+      }
+
+      return CustomResponse(
+          responseStatus: true, response: 'Message deleted successfully.');
+    } catch (e) {
+      print('Error deleting message: $e');
+      return CustomResponse(
+          responseStatus: false, response: 'Failed to deleted message.');
+    }
+  }
 }
