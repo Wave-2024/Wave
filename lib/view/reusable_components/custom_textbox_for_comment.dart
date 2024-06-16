@@ -1,9 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
-import 'package:wave/utils/constants/custom_icons.dart';
-import 'package:wave/utils/device_size.dart';
-
 import '../../utils/constants/custom_fonts.dart';
 
 // ignore: must_be_immutable
@@ -13,7 +10,7 @@ class CustomTextBoxForComments extends StatelessWidget {
   dynamic sendButtonMethod;
   dynamic commentController;
   String? imageUrl;
-  
+
   String? labelText;
   String? errorText;
   Widget? sendWidget;
@@ -42,22 +39,20 @@ class CustomTextBoxForComments extends StatelessWidget {
     return Column(
       children: [
         Expanded(child: child!),
-        Divider(
+        const Divider(
           height: 1,
         ),
-        header ?? SizedBox.shrink(),
+        header ?? const SizedBox.shrink(),
         ListTile(
           tileColor: backgroundColor,
           leading: CircleAvatar(
             radius: 20,
-            backgroundImage: (imageUrl != null &&
-                              imageUrl!.isNotEmpty)
-                          ? CachedNetworkImageProvider(imageUrl!)
-                          : null,
-                      child: imageUrl == null ||
-                              imageUrl!.isEmpty
-                          ? const Icon(Icons.person)
-                          : null,
+            backgroundImage: (imageUrl != null && imageUrl!.isNotEmpty)
+                ? CachedNetworkImageProvider(imageUrl!)
+                : null,
+            child: imageUrl == null || imageUrl!.isEmpty
+                ? const Icon(Icons.person)
+                : null,
           ),
           title: Form(
             key: formKey,

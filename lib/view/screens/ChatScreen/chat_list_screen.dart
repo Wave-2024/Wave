@@ -6,7 +6,6 @@ import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/chat_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
@@ -71,7 +70,7 @@ class ChatListScreen extends StatelessWidget {
                         )),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Expanded(

@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
-import 'package:wave/models/response_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/cutom_logo.dart';
 import 'package:wave/utils/constants/preferences.dart';
@@ -40,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
-    await Future.delayed(Duration(milliseconds: 3000), () {});
+    await Future.delayed(const Duration(milliseconds: 3000), () {});
     Get.offNamed(AppRoutes.loginScreen);
   }
 
@@ -56,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfbE30B5C),
+      backgroundColor: const Color(0xfbE30B5C),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -67,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: 200,
               height: 200,
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Text(
               'Wave',
               style: TextStyle(
