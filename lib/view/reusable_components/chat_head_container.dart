@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wave/data/chat_data.dart';
 import 'package:wave/models/chat_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
@@ -29,7 +30,7 @@ class ChatHeadContainer extends StatelessWidget {
         });
       },
       subtitle: Text(
-        chat.lastMessage,
+        ChatData.getDecryptedMessage(chat.lastMessage),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 12),

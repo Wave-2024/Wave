@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   custom_refresh_indicator: ^3.1.0
   device_info_plus: ^10.1.0
+  encrypt: ^5.0.3
   firebase_auth: ^5.0.0
   firebase_core: ^3.0.0
   firebase_messaging: ^15.0.0

@@ -1,9 +1,15 @@
+import 'package:encrypt/encrypt.dart';
 import 'package:wave/models/chat_model.dart';
 import 'package:wave/models/message_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
 class ChatData {
+  // TODO : Hide the secret key before deploying
+  static const String _secretKey =
+      'a7JdK9MzxL2cV4HfU6Qw1NpRbY8tZ3Ps'; // Do not expose this is production code
+  static const String _secret_iv = 'iamalpha';
+
   ///   The `checkIfChatExists` function returns a `Future<bool>`. The function performs two queries to
   /// check if a chat exists between two users based on the provided `firstUser` and `secondUser`. It
   /// checks if there is a document in the database where either `firstUser` is paired with `secondUser`
@@ -86,10 +92,30 @@ class ChatData {
     }
   }
 
+  static String getEncryptedMessage(String plainMessage) {
+    final key = Key.fromUtf8(_secretKey);
+    final iv = IV.fromUtf8(_secret_iv);
+
+    final encrypter = Encrypter(AES(key));
+
+    final encrypted = encrypter.encrypt(plainMessage, iv: iv);
+    return encrypted.base64;
+  }
+
+  static String getDecryptedMessage(String encryptedMessage) {
+    final key = Key.fromUtf8(_secretKey);
+    final iv = IV.fromUtf8(_secret_iv);
+
+    final encrypter = Encrypter(AES(key));
+    final decrypted = encrypter.decrypt64(encryptedMessage, iv: iv);
+    return decrypted;
+  }
+
   static Future<CustomResponse> sendMessage(
       Message message, String firstUser, String secondUser) async {
     try {
       // Add the message to the 'messages' subcollection of the appropriate chat document
+      message = message.copyWith(message: getEncryptedMessage(message.message));
       var messageResponse = await Database.chatDatabase
           .doc(message.chatId)
           .collection('messages')
