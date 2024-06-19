@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/post_data.dart';
 import 'package:wave/data/users_data.dart';
@@ -9,6 +10,7 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/feedbox.dart';
 
 class ViewPosts extends StatelessWidget {
@@ -99,12 +101,20 @@ class ViewPosts extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: CachedNetworkImage(
-                    fadeInCurve: Curves.easeInBack,
-                    imageUrl: posts[index].postList.first.url,
-                    fit: BoxFit.cover,
+                return InkWell(
+                  onTap: () {
+                    Get.toNamed(AppRoutes.postDetailScreen, arguments: {
+                      'post': posts[index],
+                      'poster': userDataController.user!
+                    });
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CachedNetworkImage(
+                      fadeInCurve: Curves.easeInBack,
+                      imageUrl: posts[index].postList.first.url,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 );
               },

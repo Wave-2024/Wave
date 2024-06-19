@@ -364,10 +364,13 @@ class FeedBox extends StatelessWidget {
                         width: 2,
                       ),
                       Visibility(
-                          visible: !poster.verified,
-                          child: Image.asset(
-                            CustomIcon.verifiedIcon,
-                            height: 12,
+                          visible: poster.verified,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 1.0),
+                            child: Image.asset(
+                              CustomIcon.verifiedIcon,
+                              height: 12,
+                            ),
                           ))
                     ],
                   ),
@@ -409,7 +412,12 @@ class FeedBox extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          decideMediaBox(displayHeight(context) * 0.47, context),
+          InkWell(
+              onTap: () {
+                Get.toNamed(AppRoutes.postDetailScreen,
+                    arguments: {'post': post, 'poster': poster});
+              },
+              child: decideMediaBox(displayHeight(context) * 0.47, context)),
           SizedBox(
             height: post.postList.isEmpty ? 0 : 15,
           ),
