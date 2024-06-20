@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wave/models/message_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 
 import 'package:wave/utils/device_size.dart';
+import 'package:wave/utils/routing.dart';
 
 class MessageContainer extends StatelessWidget {
   Message message;
@@ -46,15 +48,20 @@ class MessageContainer extends StatelessWidget {
         : Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              CircleAvatar(
-                backgroundImage: (sender.displayPicture != null &&
-                        sender.displayPicture!.isNotEmpty)
-                    ? CachedNetworkImageProvider(sender.displayPicture!)
-                    : null,
-                child: sender.displayPicture == null ||
-                        sender.displayPicture!.isEmpty
-                    ? const Icon(Icons.person)
-                    : null,
+              InkWell(
+                onTap: () {
+                  Get.toNamed(AppRoutes.profileScreen,arguments: sender.id);
+                },
+                child: CircleAvatar(
+                  backgroundImage: (sender.displayPicture != null &&
+                          sender.displayPicture!.isNotEmpty)
+                      ? CachedNetworkImageProvider(sender.displayPicture!)
+                      : null,
+                  child: sender.displayPicture == null ||
+                          sender.displayPicture!.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
+                ),
               ),
               const SizedBox(
                 width: 4,

@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
+import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/custom_textbox_for_comment.dart';
 import 'package:wave/view/reusable_components/message_container.dart';
 import 'package:wave/view/screens/ChatScreen/more_options_message.dart';
@@ -56,44 +56,49 @@ class _InboxScreenState extends State<InboxScreen> {
       appBar: AppBar(
         backgroundColor: CustomColor.primaryBackGround,
         leadingWidth: displayWidth(context) * 0.1,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundImage: (otherUser!.displayPicture != null &&
-                      otherUser!.displayPicture!.isNotEmpty)
-                  ? CachedNetworkImageProvider(otherUser!.displayPicture!)
-                  : null,
-              radius: 20,
-              child: otherUser!.displayPicture == null ||
-                      otherUser!.displayPicture!.isEmpty
-                  ? const Icon(Icons.person)
-                  : null,
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  otherUser!.name,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      fontFamily: CustomFont.poppins),
-                ),
-                Text(
-                  otherUser!.username,
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey,
-                      fontFamily: CustomFont.poppins),
-                ),
-              ],
-            )
-          ],
+        title: InkWell(
+          onTap: () {
+            Get.toNamed(AppRoutes.profileScreen,arguments: otherUser!.id);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundImage: (otherUser!.displayPicture != null &&
+                        otherUser!.displayPicture!.isNotEmpty)
+                    ? CachedNetworkImageProvider(otherUser!.displayPicture!)
+                    : null,
+                radius: 20,
+                child: otherUser!.displayPicture == null ||
+                        otherUser!.displayPicture!.isEmpty
+                    ? const Icon(Icons.person)
+                    : null,
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    otherUser!.name,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: CustomFont.poppins),
+                  ),
+                  Text(
+                    otherUser!.username,
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey,
+                        fontFamily: CustomFont.poppins),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(AntDesign.more_outline))
