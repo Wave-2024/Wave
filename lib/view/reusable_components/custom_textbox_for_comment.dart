@@ -44,7 +44,9 @@ class CustomTextBoxForComments extends StatelessWidget {
         ),
         header ?? const SizedBox.shrink(),
         ListTile(
+          visualDensity: VisualDensity(horizontal: -2),
           tileColor: backgroundColor,
+
           leading: CircleAvatar(
             radius: 20,
             backgroundImage: (imageUrl != null && imageUrl!.isNotEmpty)

@@ -58,7 +58,7 @@ class _InboxScreenState extends State<InboxScreen> {
         leadingWidth: displayWidth(context) * 0.1,
         title: InkWell(
           onTap: () {
-            Get.toNamed(AppRoutes.profileScreen,arguments: otherUser!.id);
+            Get.toNamed(AppRoutes.profileScreen, arguments: otherUser!.id);
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -106,7 +106,9 @@ class _InboxScreenState extends State<InboxScreen> {
       ),
       body: CustomTextBoxForComments(
         commentController: messageController,
-        sendWidget: const Icon(Bootstrap.send_plus),
+        sendWidget: Container(
+            padding: const EdgeInsets.all(8),
+            child: const Icon(Bootstrap.send_plus)),
         labelText: "Message",
         sendButtonMethod: () async {
           if (messageController!.text.trim().isNotEmpty) {

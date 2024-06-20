@@ -17,6 +17,8 @@ class MessageContainer extends StatelessWidget {
       required this.sender,
       required this.message});
 
+  final double fontsize = 14;
+
   @override
   Widget build(BuildContext context) {
     return (sender.id == currentUser.id)
@@ -32,14 +34,33 @@ class MessageContainer extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    message.message,
-                    style: TextStyle(
-                      color: Colors.black87,
-                      letterSpacing: 0.08,
-                      fontFamily: CustomFont.inter,
-                      fontSize: displayWidth(context) * 0.038,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.message,
+                        style: TextStyle(
+                          color: Colors.black87,
+                          letterSpacing: 0.08,
+                          fontFamily: CustomFont.poppins,
+                          fontSize: fontsize,
+                        ),
+                      ),
+                      Wrap(
+                        textDirection: TextDirection.rtl,
+                        verticalDirection: VerticalDirection.down,
+                        children: [
+                          Text(
+                            '${message.createdAt.hour}:${message.createdAt.minute}',
+                            style: const TextStyle(
+                                fontSize: 8,
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
               )
@@ -50,7 +71,7 @@ class MessageContainer extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Get.toNamed(AppRoutes.profileScreen,arguments: sender.id);
+                  Get.toNamed(AppRoutes.profileScreen, arguments: sender.id);
                 },
                 child: CircleAvatar(
                   backgroundImage: (sender.displayPicture != null &&
@@ -71,23 +92,37 @@ class MessageContainer extends StatelessWidget {
                   constraints:
                       BoxConstraints(maxWidth: displayWidth(context) * 0.7),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [
-                          Color(0xfb2193b0),
-                          Color(0xfb6dd5ed)
-                          // Colors.orange[600]!,
-                        ]),
+                    color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   padding: const EdgeInsets.all(7.0),
-                  child: Text(
-                    message.message,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: displayWidth(context) * 0.036,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.message,
+                        style: TextStyle(
+                          color: Colors.black87,
+                          letterSpacing: 0.08,
+                          fontFamily: CustomFont.poppins,
+                          fontSize: fontsize,
+                        ),
+                      ),
+                      Wrap(
+                        textDirection: TextDirection.rtl,
+                        verticalDirection: VerticalDirection.down,
+                        children: [
+                          Text(
+                            '${message.createdAt.hour}:${message.createdAt.minute}',
+                            style: const TextStyle(
+                                fontSize: 8,
+                                color: Colors.teal,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
               )
