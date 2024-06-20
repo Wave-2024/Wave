@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
+import 'package:wave/view/reusable_components/view_image.dart';
 import 'package:wave/view/screens/Authentication/login_screen.dart';
 import 'package:wave/view/screens/Authentication/register_screen.dart';
 import 'package:wave/view/screens/ChatScreen/inbox_screen.dart';
 import 'package:wave/view/screens/ChatScreen/search_to_chat.dart';
 import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
+import 'package:wave/view/screens/CreatePostScreen/post_detail_screen.dart';
 import 'package:wave/view/screens/CreatePostScreen/search_to_mention.dart';
 import 'package:wave/view/screens/FeedScreen/list_comment_screen.dart';
 import 'package:wave/view/screens/HomeNavigation/home_navigation_screen.dart';
@@ -29,6 +31,9 @@ class AppRoutes {
   static const String searchToChatScreen = '/searchToChatScreen';
   static const String inboxScreen = '/inboxScreen';
   static const String blockedContactsScreen = '/blockedContacts';
+    static const String postDetailScreen = '/postDetailScreen';
+  static const String viewImageScreen = '/viewImageScreen';
+
 
   
 
@@ -36,7 +41,11 @@ class AppRoutes {
     GetPage(
         name: profileScreen,
         page: () => ProfileScreen(),
-        transition: Transition.downToUp),
+        transition: Transition.leftToRight),
+    GetPage(
+        name: viewImageScreen,
+        page: () => ViewImage(),
+        transition: Transition.circularReveal),
     GetPage(
         name: listUsersScreen,
         page: () => ListUsers(),
@@ -71,6 +80,10 @@ class AppRoutes {
     GetPage(
         name: searchToChatScreen,
         page: () => const SearchToChat(),
+        transition: Transition.rightToLeftWithFade),
+        GetPage(
+        name: postDetailScreen,
+        page: () => PostDetailScreen(),
         transition: Transition.rightToLeftWithFade),
   ];
 }

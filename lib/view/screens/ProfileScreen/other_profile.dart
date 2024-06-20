@@ -1,11 +1,11 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
+import 'package:wave/data/chat_data.dart';
 import 'package:wave/data/notification_data.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
-import 'package:wave/services/notification_service.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
@@ -59,12 +59,18 @@ class _OtherProfileState extends State<OtherProfile> {
                       children: [
                         // Cover photo
                         (otherUser.coverPicture.isNotEmpty)
-                            ? CachedNetworkImage(
-                                imageUrl: otherUser.coverPicture,
-                                height: displayHeight(context) * 0.22,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              )
+                            ? InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.viewImageScreen,arguments: otherUser.coverPicture);
+
+                          },
+                              child: CachedNetworkImage(
+                                  imageUrl: otherUser.coverPicture,
+                                  height: displayHeight(context) * 0.22,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                            )
                             : Image.asset(
                                 CustomLogo.logo,
                                 height: displayHeight(context) * 0.22,
@@ -84,18 +90,27 @@ class _OtherProfileState extends State<OtherProfile> {
                             )),
                         Positioned(
                           bottom: 0,
-                          child: CircleAvatar(
-                            radius: displayWidth(context) * 0.162,
-                            backgroundColor: Colors.white,
+                          child: InkWell(
+                            onTap: () {
+                              if(otherUser.displayPicture != null &&
+                                  otherUser.displayPicture!.isNotEmpty){
+                                Get.toNamed(AppRoutes.viewImageScreen,arguments: otherUser.displayPicture);
+                              }
+                            },
                             child: CircleAvatar(
-                              radius: displayWidth(context) * 0.15,
-                              backgroundImage:
-                                  (otherUser.displayPicture != null &&
-                                          otherUser.displayPicture!.isNotEmpty)
-                                      ? CachedNetworkImageProvider(
-                                          otherUser.displayPicture!)
-                                      : const AssetImage("assets/logo/logo.png")
-                                          as ImageProvider,
+                              radius: displayWidth(context) * 0.162,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: displayWidth(context) * 0.15,
+                                backgroundImage:
+                                    (otherUser.displayPicture != null &&
+                                            otherUser.displayPicture!.isNotEmpty)
+                                        ?
+                                    CachedNetworkImageProvider(
+                                            otherUser.displayPicture!)
+                                        : const AssetImage("assets/logo/logo.png")
+                                            as ImageProvider,
+                              ),
                             ),
                           ),
                         ),
@@ -268,6 +283,59 @@ class _OtherProfileState extends State<OtherProfile> {
                                 color: Colors.white,
                                 fontFamily: CustomFont.poppins,
                                 fontSize: 13)),
+                      ),
+                      SizedBox(
+                        width: displayWidth(context) * 0.1,
+                        child: MaterialButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () async {
+                            if (otherUser.followers
+                                .contains(userDataController.user!.id)) {
+                              // Check if there is already a chat that exists on the database
+                              /// This code snippet is checking if a chat already exists between the
+                              /// current user and the searched user. Here's a breakdown of what it
+                              /// does:
+                              CustomResponse chatExists =
+                                  await ChatData.checkIfChatExists(
+                                      userDataController.user!.id,
+                                      otherUser.id);
+                              if (chatExists.responseStatus) {
+                                Get.toNamed(AppRoutes.inboxScreen, arguments: {
+                                  'chatId': chatExists.response.toString(),
+                                  'otherUser': otherUser,
+                                  'selfUser': userDataController.user!
+                                });
+                              } else {
+                                CustomResponse customResponse =
+                                    await ChatData.createChat(
+                                        userDataController.user!.id,
+                                        otherUser.id);
+                                if (customResponse.responseStatus) {
+                                  Get.toNamed(AppRoutes.inboxScreen,
+                                      arguments: {
+                                        'chatId':
+                                            customResponse.response.toString(),
+                                        'otherUser': otherUser,
+                                        'selfUser': userDataController.user!
+                                      });
+                                }
+                              }
+                            } else {
+                              "Not following".printError();
+                            }
+                          },
+                          shape: RoundedRectangleBorder(
+                            side: const BorderSide(
+                                width: 0.3, color: Colors.black), // Bo
+                            borderRadius: BorderRadius.circular(10.0),
+                            // Border color
+                          ),
+                          child: const Icon(
+                            BoxIcons.bxs_message_rounded_add,
+                            size: 22,
+                            color: Colors.green,
+                          ),
+                        ),
                       ),
                       SizedBox(
                         width: displayWidth(context) * 0.1,
