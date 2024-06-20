@@ -220,7 +220,7 @@ class CreatePostScreen extends StatelessWidget {
                               final res = await postController.createNewPost(
                                   userId:
                                       fb.FirebaseAuth.instance.currentUser!.uid,
-                                  caption: captionController.text);
+                                  caption: captionController.text.trim());
                               if (res.responseStatus) {
                                 postController.resetController();
                                 Get.showSnackbar(const GetSnackBar(
