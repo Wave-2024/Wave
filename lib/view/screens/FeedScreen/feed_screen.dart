@@ -198,10 +198,12 @@ class FeedScreen extends StatelessWidget {
                                 if (user.connectionState ==
                                         ConnectionState.done &&
                                     user.hasData) {
+
                                   return Padding(
                                     padding:
                                         const EdgeInsets.only(bottom: 12.0),
                                     child: FeedBox(
+                                      firstMentioned: feedController.posts[index].mentions.isNotEmpty ? feedController.posts[index].mentions.first : null,
                                         post: feedController.posts[index],
                                         poster: user.data!),
                                   );

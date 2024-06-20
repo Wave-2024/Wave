@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:wave/view/reusable_components/view_image.dart';
 import 'package:wave/view/screens/Authentication/login_screen.dart';
 import 'package:wave/view/screens/Authentication/register_screen.dart';
 import 'package:wave/view/screens/ChatScreen/inbox_screen.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const String inboxScreen = '/inboxScreen';
   static const String blockedContactsScreen = '/blockedContacts';
     static const String postDetailScreen = '/postDetailScreen';
+  static const String viewImageScreen = '/viewImageScreen';
 
 
   
@@ -39,7 +41,11 @@ class AppRoutes {
     GetPage(
         name: profileScreen,
         page: () => ProfileScreen(),
-        transition: Transition.downToUp),
+        transition: Transition.leftToRight),
+    GetPage(
+        name: viewImageScreen,
+        page: () => ViewImage(),
+        transition: Transition.circularReveal),
     GetPage(
         name: listUsersScreen,
         page: () => ListUsers(),

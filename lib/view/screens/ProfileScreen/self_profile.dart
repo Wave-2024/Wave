@@ -58,13 +58,18 @@ class SelfProfile extends StatelessWidget {
                         fit: StackFit.loose,
                         children: [
                           (userDataController.user!.coverPicture.isNotEmpty)
-                              ? CachedNetworkImage(
-                                  imageUrl:
-                                      userDataController.user!.coverPicture,
-                                  height: displayHeight(context) * 0.22,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                )
+                              ? InkWell(
+                            onTap: () {
+                              Get.toNamed(AppRoutes.viewImageScreen,arguments: userDataController.user!.coverPicture);
+                            },
+                                child: CachedNetworkImage(
+                                    imageUrl:
+                                        userDataController.user!.coverPicture,
+                                    height: displayHeight(context) * 0.22,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                              )
                               : Image.asset(
                                   CustomLogo.logo,
                                   height: displayHeight(context) * 0.22,
@@ -73,21 +78,34 @@ class SelfProfile extends StatelessWidget {
                                 ),
                           Positioned(
                             bottom: 0,
-                            child: CircleAvatar(
-                              radius: displayWidth(context) * 0.162,
-                              backgroundColor: Colors.white,
+                            child: InkWell(
+                              onTap: () {
+                                if(userDataController
+                                    .user!.displayPicture !=
+                                    null &&
+                                    userDataController
+                                        .user!.displayPicture!.isNotEmpty){
+                                  Get.toNamed(AppRoutes.viewImageScreen,arguments: userDataController.user!.displayPicture);
+
+                                }
+
+                              },
                               child: CircleAvatar(
-                                radius: displayWidth(context) * 0.15,
-                                backgroundImage: (userDataController
-                                                .user!.displayPicture !=
-                                            null &&
-                                        userDataController
-                                            .user!.displayPicture!.isNotEmpty)
-                                    ? CachedNetworkImageProvider(
-                                        userDataController
-                                            .user!.displayPicture!)
-                                    : const AssetImage("assets/logo/logo.png")
-                                        as ImageProvider,
+                                radius: displayWidth(context) * 0.162,
+                                backgroundColor: Colors.white,
+                                child: CircleAvatar(
+                                  radius: displayWidth(context) * 0.15,
+                                  backgroundImage: (userDataController
+                                                  .user!.displayPicture !=
+                                              null &&
+                                          userDataController
+                                              .user!.displayPicture!.isNotEmpty)
+                                      ? CachedNetworkImageProvider(
+                                          userDataController
+                                              .user!.displayPicture!)
+                                      : const AssetImage("assets/logo/logo.png")
+                                          as ImageProvider,
+                                ),
                               ),
                             ),
                           )

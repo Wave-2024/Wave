@@ -59,12 +59,18 @@ class _OtherProfileState extends State<OtherProfile> {
                       children: [
                         // Cover photo
                         (otherUser.coverPicture.isNotEmpty)
-                            ? CachedNetworkImage(
-                                imageUrl: otherUser.coverPicture,
-                                height: displayHeight(context) * 0.22,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              )
+                            ? InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.viewImageScreen,arguments: otherUser.coverPicture);
+
+                          },
+                              child: CachedNetworkImage(
+                                  imageUrl: otherUser.coverPicture,
+                                  height: displayHeight(context) * 0.22,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                            )
                             : Image.asset(
                                 CustomLogo.logo,
                                 height: displayHeight(context) * 0.22,
@@ -84,18 +90,27 @@ class _OtherProfileState extends State<OtherProfile> {
                             )),
                         Positioned(
                           bottom: 0,
-                          child: CircleAvatar(
-                            radius: displayWidth(context) * 0.162,
-                            backgroundColor: Colors.white,
+                          child: InkWell(
+                            onTap: () {
+                              if(otherUser.displayPicture != null &&
+                                  otherUser.displayPicture!.isNotEmpty){
+                                Get.toNamed(AppRoutes.viewImageScreen,arguments: otherUser.displayPicture);
+                              }
+                            },
                             child: CircleAvatar(
-                              radius: displayWidth(context) * 0.15,
-                              backgroundImage:
-                                  (otherUser.displayPicture != null &&
-                                          otherUser.displayPicture!.isNotEmpty)
-                                      ? CachedNetworkImageProvider(
-                                          otherUser.displayPicture!)
-                                      : const AssetImage("assets/logo/logo.png")
-                                          as ImageProvider,
+                              radius: displayWidth(context) * 0.162,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: displayWidth(context) * 0.15,
+                                backgroundImage:
+                                    (otherUser.displayPicture != null &&
+                                            otherUser.displayPicture!.isNotEmpty)
+                                        ?
+                                    CachedNetworkImageProvider(
+                                            otherUser.displayPicture!)
+                                        : const AssetImage("assets/logo/logo.png")
+                                            as ImageProvider,
+                              ),
                             ),
                           ),
                         ),

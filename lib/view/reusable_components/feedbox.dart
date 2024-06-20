@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/notification_data.dart';
 import 'package:wave/data/post_data.dart';
+import 'package:wave/data/users_data.dart';
 import 'package:wave/models/notification_model.dart' as not;
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
@@ -24,13 +25,22 @@ import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/more_option_feed.dart';
 
-class FeedBox extends StatelessWidget {
+class FeedBox extends StatefulWidget {
   final Post post;
   final User poster;
-  const FeedBox({super.key, required this.post, required this.poster});
+  String? firstMentioned;
+  FeedBox({super.key, required this.post, required this.poster,this.firstMentioned});
+
+  @override
+  State<FeedBox> createState() => _FeedBoxState();
+}
+
+class _FeedBoxState extends State<FeedBox> {
+
+
 
   Widget decideMediaBox(double height, BuildContext context) {
-    List<PostContent> posts = post.postList;
+    List<PostContent> posts = widget.post.postList;
     // If number of media files is 0
     if (posts.isEmpty) {
       return const SizedBox();
@@ -273,6 +283,23 @@ class FeedBox extends StatelessWidget {
       return const SizedBox();
     }
   }
+  User? userMentioned;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.firstMentioned!=null){
+      getMentionedUserDetail();
+    }
+  }
+
+  Future<void> getMentionedUserDetail()async{
+    userMentioned = await UserData.getUser(userID: widget.firstMentioned!);
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -286,37 +313,42 @@ class FeedBox extends StatelessWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: SizedBox(
-              height: displayHeight(context) * 0.055,
-              width: displayWidth(context) * 0.11,
-              child: (poster.displayPicture != null &&
-                      poster.displayPicture!.isNotEmpty)
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: CachedNetworkImage(
-                        imageUrl: poster.displayPicture!,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Container(
-                      decoration: BoxDecoration(
+            leading: InkWell(
+              onTap: () {
+                Get.toNamed(AppRoutes.profileScreen,arguments: widget.poster.id);
+              },
+              child: SizedBox(
+                height: displayHeight(context) * 0.055,
+                width: displayWidth(context) * 0.11,
+                child: (widget.poster.displayPicture != null &&
+                        widget.poster.displayPicture!.isNotEmpty)
+                    ? ClipRRect(
                         borderRadius: BorderRadius.circular(6),
-                        color: Colors.grey.shade300,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.poster.displayPicture!,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color: Colors.grey.shade300,
+                        ),
+                        alignment: Alignment.center,
+                        child: Image.asset(
+                          CustomIcon.profileFullIcon,
+                          color: Colors.black54,
+                          height: 25,
+                        ),
                       ),
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        CustomIcon.profileFullIcon,
-                        color: Colors.black54,
-                        height: 25,
-                      ),
-                    ),
+              ),
             ),
-            title: (post.mentions.isNotEmpty)
+            title: (widget.post.mentions.isNotEmpty)
                 ? Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
-                        poster.name,
+                        widget.poster.name,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -327,20 +359,21 @@ class FeedBox extends StatelessWidget {
                         width: 2,
                       ),
                       Visibility(
-                          visible: poster.verified,
+                          visible: widget.poster.verified,
                           child: Image.asset(
                             CustomIcon.verifiedIcon,
                             height: 12,
                           )),
+
                       Text(
-                        " is with",
+                        " is with ",
                         style: TextStyle(
                             color: Colors.black87,
                             fontSize: 11.5,
                             fontFamily: CustomFont.poppins),
                       ),
                       Text(
-                        " Aradhana Roy",
+                        userMentioned!=null?userMentioned!.name:"",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -349,37 +382,42 @@ class FeedBox extends StatelessWidget {
                       ),
                     ],
                   )
-                : Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        poster.name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 11.5,
-                            fontFamily: CustomFont.poppins),
-                      ),
-                      const SizedBox(
-                        width: 2,
-                      ),
-                      Visibility(
-                          visible: poster.verified,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 1.0),
-                            child: Image.asset(
-                              CustomIcon.verifiedIcon,
-                              height: 12,
-                            ),
-                          ))
-                    ],
-                  ),
+                : InkWell(
+              onTap: () {
+                Get.toNamed(AppRoutes.profileScreen,arguments: widget.poster.id);
+              },
+                  child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          widget.poster.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 11.5,
+                              fontFamily: CustomFont.poppins),
+                        ),
+                        const SizedBox(
+                          width: 2,
+                        ),
+                        Visibility(
+                            visible: widget.poster.verified,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 1.0),
+                              child: Image.asset(
+                                CustomIcon.verifiedIcon,
+                                height: 12,
+                              ),
+                            ))
+                      ],
+                    ),
+                ),
             trailing: IconButton(
               onPressed: () async {
                 showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    return MoreOptionsForFeedPost(post: post);
+                    return MoreOptionsForFeedPost(post: widget.post);
                   },
                 );
               },
@@ -387,7 +425,7 @@ class FeedBox extends StatelessWidget {
               icon: const Icon(AntDesign.more_outline),
             ),
             subtitle: Text(
-              timeAgo(post.createdAt),
+              timeAgo(widget.post.createdAt),
               style: TextStyle(
                   fontSize: 11.5,
                   fontFamily: CustomFont.poppins,
@@ -398,12 +436,12 @@ class FeedBox extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Padding(
-            padding: (post.postList.length == 2)
+            padding: (widget.post.postList.length == 2)
                 ? const EdgeInsets.only(left: 20)
                 : const EdgeInsets.all(0),
             child: Text(
-              post.caption,
-              maxLines: (post.postList.isEmpty) ? 8 : 4,
+              widget.post.caption,
+              maxLines: (widget.post.postList.isEmpty) ? 8 : 4,
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
@@ -415,18 +453,18 @@ class FeedBox extends StatelessWidget {
           InkWell(
               onTap: () {
                 Get.toNamed(AppRoutes.postDetailScreen,
-                    arguments: {'post': post, 'poster': poster});
+                    arguments: {'post': widget.post, 'poster': widget.poster});
               },
               child: decideMediaBox(displayHeight(context) * 0.47, context)),
           SizedBox(
-            height: post.postList.isEmpty ? 0 : 15,
+            height: widget.post.postList.isEmpty ? 0 : 15,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               // Like count and like icon
               StreamBuilder(
-                stream: Database.getPostLikesDatabase(post.id).snapshots(),
+                stream: Database.getPostLikesDatabase(widget.post.id).snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> likes) {
                   if ((likes.connectionState == ConnectionState.active ||
                           likes.connectionState == ConnectionState.done) &&
@@ -444,17 +482,17 @@ class FeedBox extends StatelessWidget {
                             onTap: () async {
                               if (hasLiked) {
                                 await PostData.unLikePostWithId(
-                                    postId: post.id,
+                                    postId: widget.post.id,
                                     userId: fb.FirebaseAuth.instance
                                         .currentUser!.uid);
                               } else {
                                 await PostData.likePostWithId(
-                                    postId: post.id,
+                                    postId: widget.post.id,
                                     userId: fb.FirebaseAuth.instance
                                         .currentUser!.uid);
                                 bool hasAlreadySentNotification = await PostData
                                     .alreadySentNotificationForThis(
-                                        postId: post.id, posterId: post.userId);
+                                        postId: widget.post.id, posterId: widget.post.userId);
                                 if (!hasAlreadySentNotification) {
                                   not.Notification notification =
                                       not.Notification(
@@ -462,10 +500,10 @@ class FeedBox extends StatelessWidget {
                                           id: "id",
                                           createdAt: DateTime.now(),
                                           seen: false,
-                                          postId: post.id,
+                                          postId: widget.post.id,
                                           userWhoLiked: fb.FirebaseAuth.instance
                                               .currentUser!.uid,
-                                          forUser: poster.id);
+                                          forUser: widget.poster.id);
                                   NotificationData.createNotification(
                                       notification: notification);
                                 }
@@ -495,7 +533,7 @@ class FeedBox extends StatelessWidget {
                         InkWell(
                             onTap: () async {
                               await PostData.likePostWithId(
-                                  postId: post.id,
+                                  postId: widget.post.id,
                                   userId: fb
                                       .FirebaseAuth.instance.currentUser!.uid);
                             },
@@ -522,10 +560,10 @@ class FeedBox extends StatelessWidget {
               // Comment icon and comment count
               InkWell(
                 onTap: () {
-                  Get.toNamed(AppRoutes.listCommentsScreen, arguments: post.id);
+                  Get.toNamed(AppRoutes.listCommentsScreen, arguments: widget.post.id);
                 },
                 child: StreamBuilder(
-                  stream: Database.getPostCommentsDatabase(post.id).snapshots(),
+                  stream: Database.getPostCommentsDatabase(widget.post.id).snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> commentSnapshot) {
                     if ((commentSnapshot.connectionState ==
@@ -602,18 +640,18 @@ class FeedBox extends StatelessWidget {
                       bool saved =
                           (userDataController.user!.savedPosts != null &&
                               userDataController.user!.savedPosts!
-                                  .contains(post.id));
+                                  .contains(widget.post.id));
                       return InkWell(
                         onTap: () async {
                           if (!saved) {
                             CustomResponse customResponse =
-                                await userDataController.savePost(post.id);
+                                await userDataController.savePost(widget.post.id);
                             if (!customResponse.responseStatus) {
                               "${customResponse.response}".printError();
                             }
                           } else {
                             CustomResponse customResponse =
-                                await userDataController.unsavePost(post.id);
+                                await userDataController.unsavePost(widget.post.id);
                             if (!customResponse.responseStatus) {
                               "${customResponse.response}".printError();
                             }
