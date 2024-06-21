@@ -7,6 +7,7 @@ import 'package:wave/data/users_data.dart';
 import 'package:wave/models/chat_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/routing.dart';
@@ -84,36 +85,66 @@ class ChatListScreen extends StatelessWidget {
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> chatSnaps) {
                       if ((chatSnaps.connectionState ==
-                                  ConnectionState.active ||
-                              chatSnaps.connectionState ==
-                                  ConnectionState.done) &&
-                          chatSnaps.hasData) {
-                        return ListView.builder(
-                          itemCount: chatSnaps.data!.docs.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            Chat chat = Chat.fromMap(chatSnaps.data!.docs[index]
-                                .data() as Map<String, dynamic>);
-                            String otherUserId =
+                              ConnectionState.active ||
+                          chatSnaps.connectionState == ConnectionState.done)) {
+                        if (chatSnaps.hasData) {
+                          return ListView.builder(
+                            itemCount: chatSnaps.data!.docs.length,
+                            itemBuilder: (BuildContext context, int index) {
+
+                              Chat chat = Chat.fromMap(
+                                  chatSnaps.data!.docs[index].data()
+                                      as Map<String, dynamic>);
+                              if(chat.lastMessage.isNotEmpty){
+                                String otherUserId =
                                 chat.firstUser == userDataController.user!.id
                                     ? chat.secondUser
                                     : chat.firstUser;
-                            return FutureBuilder<User>(
-                              future: UserData.getUser(userID: otherUserId),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<User> otherUserSnap) {
-                                if (otherUserSnap.connectionState ==
+                                return FutureBuilder<User>(
+                                  future: UserData.getUser(userID: otherUserId),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<User> otherUserSnap) {
+                                    if (otherUserSnap.connectionState ==
                                         ConnectionState.done &&
-                                    otherUserSnap.hasData) {
-                                  return ChatHeadContainer(
-                                      chat: chat,
-                                      selfUser: userDataController.user!,
-                                      otherUser: otherUserSnap.data!);
-                                }
-                                return const SizedBox();
-                              },
-                            );
-                          },
-                        );
+                                        otherUserSnap.hasData) {
+                                      return ChatHeadContainer(
+                                          chat: chat,
+                                          selfUser: userDataController.user!,
+                                          otherUser: otherUserSnap.data!);
+                                    }
+                                    return const SizedBox();
+                                  },
+                                );
+                              }
+                              else{
+                                return SizedBox();
+                              }
+
+                            },
+                          );
+                        } else {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Image.asset(
+                                  CustomIcon.emptyIcon,
+                                  height: 100,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Text(
+                                "No chats to display",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: CustomFont.poppins),
+                              )
+                            ],
+                          );
+                        }
                       } else {
                         return const Center(
                           child: CircularProgressIndicator(),

@@ -6,13 +6,18 @@ class Chat {
   String firstUser;
   String secondUser;
   String lastMessage;
+  String lastSender;
   DateTime timeOfLastMessage;
+  bool seenLastMessage;
   Chat({
     required this.id,
     required this.firstUser,
     required this.secondUser,
+    required this.lastSender,
     required this.lastMessage,
     required this.timeOfLastMessage,
+    required this.seenLastMessage,
+
   });
 
 
@@ -20,12 +25,17 @@ class Chat {
   Chat copyWith({
     String? id,
     String? firstUser,
+    String? lastSender,
     String? secondUser,
     String? lastMessage,
     DateTime? timeOfLastMessage,
+    bool? seenLastMessage,
+
   }) {
     return Chat(
       id: id ?? this.id,
+      lastSender: lastSender?? this.lastSender,
+      seenLastMessage: seenLastMessage??this.seenLastMessage,
       firstUser: firstUser ?? this.firstUser,
       secondUser: secondUser ?? this.secondUser,
       lastMessage: lastMessage ?? this.lastMessage,
@@ -36,7 +46,9 @@ class Chat {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'lastSender':lastSender,
       'firstUser': firstUser,
+      'seenLastMessage':seenLastMessage,
       'secondUser': secondUser,
       'lastMessage': lastMessage,
       'timeOfLastMessage': timeOfLastMessage.millisecondsSinceEpoch,
@@ -45,6 +57,8 @@ class Chat {
 
   factory Chat.fromMap(Map<String, dynamic> map) {
     return Chat(
+      lastSender: map['lastSender']as String,
+      seenLastMessage: map['seenLastMessage'] as bool,
       id: map['id'] as String,
       firstUser: map['firstUser'] as String,
       secondUser: map['secondUser'] as String,
@@ -59,7 +73,7 @@ class Chat {
 
   @override
   String toString() {
-    return 'Chat(id: $id, firstUser: $firstUser, secondUser: $secondUser, lastMessage: $lastMessage, timeOfLastMessage: $timeOfLastMessage)';
+    return 'Chat(id: $id, firstUser: $firstUser, secondUser: $secondUser,seenLastMessage :$seenLastMessage , lastMessage: $lastMessage, timeOfLastMessage: $timeOfLastMessage)';
   }
 
   @override

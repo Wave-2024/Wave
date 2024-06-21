@@ -70,7 +70,7 @@ class AppRoutes {
         transition: Transition.leftToRight),
     GetPage(
         name: inboxScreen,
-        page: () => const InboxScreen(),
+        page: () =>  InboxScreen(),
         transition: Transition.leftToRight),
     GetPage(
         name: notificationScreen,
