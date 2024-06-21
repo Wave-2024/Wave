@@ -1,7 +1,9 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +31,6 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
   final List<Widget> screens = [
     const FeedScreen(),
     const SearchScreen(),
-    CreatePostScreen(),
     const ChatListScreen(),
     ProfileScreen()
   ];
@@ -98,7 +99,6 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       bool alreadyAsked =
           preferences.getBool(Pref.alreadyAskedForNotification) ?? false;
       if (!alreadyAsked) {
-        
         if (mounted) {
           preferences.setBool(Pref.alreadyAskedForNotification, true);
           showNotificationPermissionDialog(context);
@@ -154,112 +154,148 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
     }
   }
 
+  List<String> icons = [
+    CustomIcon.exploreFullIcon,
+    CustomIcon.searchFullIcon,
+    CustomIcon.chatFullIcon,
+    CustomIcon.profileFullIcon
+  ];
+
   @override
   Widget build(BuildContext context) {
     double bottomNavBarItemHeight = 25;
     return Scaffold(
+      floatingActionButton: FloatingActionButton.small(
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        backgroundColor: Colors.black87,
+        onPressed: () {
+          Get.toNamed(AppRoutes.createNewPostScreen);
+        },
+        child: const Icon(
+          Bootstrap.plus,
+          color: Colors.white,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       backgroundColor: CustomColor.primaryBackGround,
       bottomNavigationBar: Consumer<HomeNavController>(
         builder: (context, homeNavController, child) {
-          return BottomNavigationBar(
-              key: const Key(Keys.keyForBottomNavButton),
-              onTap: (newScreenIndex) {
-                if (newScreenIndex == 2) {
-                  Get.toNamed(AppRoutes.createNewPostScreen);
-                } else {
-                 printInfo(info: "Selected $newScreenIndex index");
-                  homeNavController.setCurrentScreenIndex(newScreenIndex);
-                }
-              },
-              elevation: 0,
-              currentIndex: homeNavController.currentScreenIndex,
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
-              showUnselectedLabels: false,
-              selectedItemColor: CustomColor.primaryColor,
-              showSelectedLabels: true,
-              selectedLabelStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: CustomFont.poppins,
-                  letterSpacing: -0.1,
-                  fontSize: 10.5),
-              // iconSize: 25,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Image.asset(
-                      (homeNavController.currentScreenIndex == 0)
-                          ? CustomIcon.exploreFullIcon
-                          : CustomIcon.exploreIcon,
-                      key: const Key(Keys.keyForExploreIcon),
-                      color: (homeNavController.currentScreenIndex == 0)
-                          ? CustomColor.primaryColor
-                          : null,
-                      height: bottomNavBarItemHeight,
-                    ),
-                  ),
-                  label: "Explore",
-                ),
-                BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Image.asset(
-                        (homeNavController.currentScreenIndex == 1)
-                            ? CustomIcon.searchFullIcon
-                            : CustomIcon.searchIcon,
-                        key: const Key(Keys.keyForSearchIcon),
-                        color: (homeNavController.currentScreenIndex == 1)
-                            ? CustomColor.primaryColor
-                            : null,
-                        height: bottomNavBarItemHeight,
-                      ),
-                    ),
-                    label: "Search"),
-                BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Image.asset(
-                        CustomIcon.addPostIcon,
-                        key: const Key(Keys.keyForAddPostIcon),
-                        color: (homeNavController.currentScreenIndex == 2)
-                            ? CustomColor.primaryColor
-                            : null,
-                        height: bottomNavBarItemHeight,
-                      ),
-                    ),
-                    label: "New"),
-                BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Image.asset(
-                        (homeNavController.currentScreenIndex == 3)
-                            ? CustomIcon.chatFullIcon
-                            : CustomIcon.chatIcon,
-                        key: const Key(Keys.keyForChatIcon),
-                        color: (homeNavController.currentScreenIndex == 3)
-                            ? CustomColor.primaryColor
-                            : null,
-                        height: bottomNavBarItemHeight,
-                      ),
-                    ),
-                    label: "Chat"),
-                BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Image.asset(
-                        (homeNavController.currentScreenIndex == 4)
-                            ? CustomIcon.profileFullIcon
-                            : CustomIcon.profileIcon,
-                        key: const Key(Keys.keyForProfileIcon),
-                        color: (homeNavController.currentScreenIndex == 4)
-                            ? CustomColor.primaryColor
-                            : null,
-                        height: bottomNavBarItemHeight,
-                      ),
-                    ),
-                    label: "Profile")
-              ]);
+          return AnimatedBottomNavigationBar(
+            icons: const [
+              Icons.home_filled,
+              AntDesign.search_outline,
+              AntDesign.message_fill,
+              Bootstrap.person_circle
+            ],
+            activeColor: Colors.black87,
+            inactiveColor: Colors.black45,
+            activeIndex: homeNavController.currentScreenIndex,
+            gapLocation: GapLocation.center,
+            notchSmoothness: NotchSmoothness.verySmoothEdge,
+            onTap: (index) => homeNavController.setCurrentScreenIndex(index),
+            //other params
+          );
+
+          // return BottomNavigationBar(
+          //     key: const Key(Keys.keyForBottomNavButton),
+          //     onTap: (newScreenIndex) {
+          //       if (newScreenIndex == 2) {
+          //         Get.toNamed(AppRoutes.createNewPostScreen);
+          //       } else {
+          //        printInfo(info: "Selected $newScreenIndex index");
+          //         homeNavController.setCurrentScreenIndex(newScreenIndex);
+          //       }
+          //     },
+          //     elevation: 0,
+          //     currentIndex: homeNavController.currentScreenIndex,
+          //     type: BottomNavigationBarType.fixed,
+          //     backgroundColor: Colors.white,
+          //     showUnselectedLabels: false,
+          //     selectedItemColor: CustomColor.primaryColor,
+          //     showSelectedLabels: true,
+          //     selectedLabelStyle: TextStyle(
+          //         fontWeight: FontWeight.bold,
+          //         fontFamily: CustomFont.poppins,
+          //         letterSpacing: -0.1,
+          //         fontSize: 10.5),
+          //     // iconSize: 25,
+          //     items: [
+          //       BottomNavigationBarItem(
+          //         icon: Padding(
+          //           padding: const EdgeInsets.only(top: 10.0),
+          //           child: Image.asset(
+          //             (homeNavController.currentScreenIndex == 0)
+          //                 ? CustomIcon.exploreFullIcon
+          //                 : CustomIcon.exploreIcon,
+          //             key: const Key(Keys.keyForExploreIcon),
+          //             color: (homeNavController.currentScreenIndex == 0)
+          //                 ? CustomColor.primaryColor
+          //                 : null,
+          //             height: bottomNavBarItemHeight,
+          //           ),
+          //         ),
+          //         label: "Explore",
+          //       ),
+          //       BottomNavigationBarItem(
+          //           icon: Padding(
+          //             padding: const EdgeInsets.only(top: 10.0),
+          //             child: Image.asset(
+          //               (homeNavController.currentScreenIndex == 1)
+          //                   ? CustomIcon.searchFullIcon
+          //                   : CustomIcon.searchIcon,
+          //               key: const Key(Keys.keyForSearchIcon),
+          //               color: (homeNavController.currentScreenIndex == 1)
+          //                   ? CustomColor.primaryColor
+          //                   : null,
+          //               height: bottomNavBarItemHeight,
+          //             ),
+          //           ),
+          //           label: "Search"),
+          //       BottomNavigationBarItem(
+          //           icon: Padding(
+          //             padding: const EdgeInsets.only(top: 10.0),
+          //             child: Image.asset(
+          //               CustomIcon.addPostIcon,
+          //               key: const Key(Keys.keyForAddPostIcon),
+          //               color: (homeNavController.currentScreenIndex == 2)
+          //                   ? CustomColor.primaryColor
+          //                   : null,
+          //               height: bottomNavBarItemHeight,
+          //             ),
+          //           ),
+          //           label: "New"),
+          //       BottomNavigationBarItem(
+          //           icon: Padding(
+          //             padding: const EdgeInsets.only(top: 10.0),
+          //             child: Image.asset(
+          //               (homeNavController.currentScreenIndex == 3)
+          //                   ? CustomIcon.chatFullIcon
+          //                   : CustomIcon.chatIcon,
+          //               key: const Key(Keys.keyForChatIcon),
+          //               color: (homeNavController.currentScreenIndex == 3)
+          //                   ? CustomColor.primaryColor
+          //                   : null,
+          //               height: bottomNavBarItemHeight,
+          //             ),
+          //           ),
+          //           label: "Chat"),
+          //       BottomNavigationBarItem(
+          //           icon: Padding(
+          //             padding: const EdgeInsets.only(top: 10.0),
+          //             child: Image.asset(
+          //               (homeNavController.currentScreenIndex == 4)
+          //                   ? CustomIcon.profileFullIcon
+          //                   : CustomIcon.profileIcon,
+          //               key: const Key(Keys.keyForProfileIcon),
+          //               color: (homeNavController.currentScreenIndex == 4)
+          //                   ? CustomColor.primaryColor
+          //                   : null,
+          //               height: bottomNavBarItemHeight,
+          //             ),
+          //           ),
+          //           label: "Profile")
+          //     ]);
         },
       ),
       body: Consumer<HomeNavController>(
