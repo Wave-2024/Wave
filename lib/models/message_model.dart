@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:wave/utils/enums.dart';
 
 class Message {
@@ -10,6 +8,8 @@ class Message {
   MESSAGE_TYPE message_type;
   String id;
   String chatId;
+  bool seen;
+
   Message({
     required this.message,
     required this.sender,
@@ -17,6 +17,7 @@ class Message {
     required this.message_type,
     required this.id,
     required this.chatId,
+    this.seen = false,
   });
 
   Message copyWith({
@@ -26,6 +27,7 @@ class Message {
     MESSAGE_TYPE? message_type,
     String? id,
     String? chatId,
+    bool? seen,
   }) {
     return Message(
       message: message ?? this.message,
@@ -34,6 +36,7 @@ class Message {
       message_type: message_type ?? this.message_type,
       id: id ?? this.id,
       chatId: chatId ?? this.chatId,
+      seen: seen ?? this.seen,
     );
   }
 
@@ -45,6 +48,7 @@ class Message {
       'message_type': message_type.toString().split('.').last,
       'id': id,
       'chatId': chatId,
+      'seen': seen,
     };
   }
 
@@ -57,9 +61,10 @@ class Message {
       chatId: map['chatId'] as String,
       message_type: map['message_type'] != null
           ? (map['message_type'] == 'TEXT')
-              ? MESSAGE_TYPE.TEXT
-              : MESSAGE_TYPE.IMAGE
+          ? MESSAGE_TYPE.TEXT
+          : MESSAGE_TYPE.IMAGE
           : MESSAGE_TYPE.TEXT,
+      seen: map['seen'] as bool? ?? false,
     );
   }
 
@@ -70,7 +75,7 @@ class Message {
 
   @override
   String toString() {
-    return 'Message(message: $message, sender: $sender, createdAt: $createdAt, message_type: $message_type, id: $id, chatId: $chatId)';
+    return 'Message(message: $message, sender: $sender, createdAt: $createdAt, message_type: $message_type, id: $id, chatId: $chatId, seen: $seen)';
   }
 
   @override
@@ -82,22 +87,18 @@ class Message {
         other.createdAt == createdAt &&
         other.message_type == message_type &&
         other.id == id &&
-        other.chatId == chatId;
+        other.chatId == chatId &&
+        other.seen == seen;
   }
 
   @override
   int get hashCode {
     return message.hashCode ^
-        sender.hashCode ^
-        createdAt.hashCode ^
-        message_type.hashCode ^
-        id.hashCode ^
-        chatId.hashCode;
+    sender.hashCode ^
+    createdAt.hashCode ^
+    message_type.hashCode ^
+    id.hashCode ^
+    chatId.hashCode ^
+    seen.hashCode;
   }
 }
-
-
-/*
-
-
-*/

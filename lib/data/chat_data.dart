@@ -1,4 +1,5 @@
 import 'package:encrypt/encrypt.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wave/models/chat_model.dart';
 import 'package:wave/models/message_model.dart';
 import 'package:wave/models/response_model.dart';
@@ -50,10 +51,12 @@ class ChatData {
       String firstUser, String secondUser) async {
     try {
       Chat chat = Chat(
+        lastSender: FirebaseAuth.instance.currentUser!.uid,
+        seenLastMessage: false,
           id: 'id',
           firstUser: firstUser,
           secondUser: secondUser,
-          lastMessage: "Say Hi to your friend !",
+          lastMessage: '',
           timeOfLastMessage: DateTime.now());
 
       /// The line `var chatCreationResponse = await Database.chatDatabase.add(chat.toMap());` is creating a
@@ -111,11 +114,51 @@ class ChatData {
     return decrypted;
   }
 
+  static Future<CustomResponse> markLastMessageAsRead(String chatId) async {
+    try {
+      // Get the latest message in the chat
+      var querySnapshot = await Database.chatDatabase
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Update the latest message to mark it as read
+        var lastMessageDoc = querySnapshot.docs.first;
+        Message lastMessage = Message.fromMap(lastMessageDoc.data());
+        // Check if the last message was sent by someone other than the current user
+        if(lastMessage.sender!=FirebaseAuth.instance.currentUser!.uid){
+          await Database.chatDatabase
+              .doc(chatId)
+              .collection('messages')
+              .doc(lastMessageDoc.id)
+              .update({'seen': true});
+
+          // Update the chat's seenLastMessage field
+          await Database.chatDatabase.doc(chatId).update({'seenLastMessage': true});
+        }
+      }
+
+      return CustomResponse(
+          responseStatus: true, response: 'Last message marked as read.');
+    } catch (e) {
+      print('Error marking last message as read: $e');
+      return CustomResponse(
+          responseStatus: false, response: 'Failed to mark last message as read.');
+    }
+  }
+
+
   static Future<CustomResponse> sendMessage(
       Message message, String firstUser, String secondUser) async {
     try {
-      // Add the message to the 'messages' subcollection of the appropriate chat document
-      message = message.copyWith(message: getEncryptedMessage(message.message));
+      // Add the message to the 'messages' sub collection of the appropriate chat document
+      message = message.copyWith(
+        message: getEncryptedMessage(message.message),
+        seen: false,
+      );
       var messageResponse = await Database.chatDatabase
           .doc(message.chatId)
           .collection('messages')
@@ -131,10 +174,10 @@ class ChatData {
       Database.chatDatabase.doc(message.chatId).update({
         'lastMessage': message.message,
         'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+        'seenLastMessage': false,
       });
 
-      // Update the latest message for both the users
-
+      // Update the latest message for both users
       Database.userDatabase
           .doc(firstUser)
           .collection('chats')
