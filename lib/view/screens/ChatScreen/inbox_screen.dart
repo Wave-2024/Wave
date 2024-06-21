@@ -20,7 +20,7 @@ import 'package:wave/view/reusable_components/message_container.dart';
 import 'package:wave/view/screens/ChatScreen/more_options_message.dart';
 
 class InboxScreen extends StatelessWidget {
-   InboxScreen({
+  InboxScreen({
     super.key,
   });
 
@@ -30,13 +30,11 @@ class InboxScreen extends StatelessWidget {
 
   String chatId = Get.arguments['chatId'];
 
-  TextEditingController messageController= TextEditingController();
+  TextEditingController messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return
-
-      Scaffold(
+    return Scaffold(
       backgroundColor: CustomColor.primaryBackGround,
       appBar: AppBar(
         backgroundColor: CustomColor.primaryBackGround,
@@ -105,8 +103,8 @@ class InboxScreen extends StatelessWidget {
                 message_type: MESSAGE_TYPE.TEXT,
                 id: 'id',
                 chatId: chatId);
-            CustomResponse customResponse = await ChatData.sendMessage(
-                message, selfUser.id, otherUser.id);
+            CustomResponse customResponse =
+                await ChatData.sendMessage(message, selfUser.id, otherUser.id);
             if (customResponse.responseStatus) {
               CustomNotificationService.sendNotificationForMessage(
                   otherUser: otherUser,
@@ -121,42 +119,37 @@ class InboxScreen extends StatelessWidget {
         },
         imageUrl: selfUser.displayPicture,
         child: StreamBuilder(
-
           stream: Database.chatDatabase
               .doc(chatId)
               .collection('messages')
               .orderBy('createdAt', descending: true)
               .limit(50)
               .snapshots(),
-
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> messageSnap) {
-
-            if(messageSnap.connectionState == ConnectionState.waiting){
+            if (messageSnap.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            }
-
-            else if(messageSnap.connectionState == ConnectionState.active ||
-                messageSnap.connectionState == ConnectionState.done){
-
-              if(messageSnap.hasData){
+            } else if (messageSnap.connectionState == ConnectionState.active ||
+                messageSnap.connectionState == ConnectionState.done) {
+              if (messageSnap.hasData && messageSnap.data!.docs.isNotEmpty) {
                 Message lastMessage = Message.fromMap(
                     messageSnap.data!.docs.first.data()
-                    as Map<String, dynamic>);
-                if(lastMessage.sender!=selfUser.id && !lastMessage.seen){
+                        as Map<String, dynamic>);
+                if (lastMessage.sender != selfUser.id && !lastMessage.seen) {
+                  'seeing the message'.printInfo();
                   ChatData.markLastMessageAsRead(chatId);
                 }
                 return ListView.builder(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   reverse: true,
                   itemCount: messageSnap.data!.docs.length,
                   itemBuilder: (BuildContext context, int index) {
                     Message message = Message.fromMap(
                         messageSnap.data!.docs[index].data()
-                        as Map<String, dynamic>);
+                            as Map<String, dynamic>);
                     message = message.copyWith(
                         message: ChatData.getDecryptedMessage(message.message));
                     return Padding(
@@ -185,14 +178,12 @@ class InboxScreen extends StatelessWidget {
                                 message: message),
                           ),
                           Visibility(
-                              visible:
-                              (index == 0 &&
+                              visible: (index == 0 &&
                                   message.sender == selfUser.id &&
                                   message.seen),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-
                                   Image.asset(
                                     CustomIcon.doubleCheckIcon,
                                     height: 15,
@@ -204,8 +195,7 @@ class InboxScreen extends StatelessWidget {
                     );
                   },
                 );
-              }
-              else{
+              } else {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -222,25 +212,17 @@ class InboxScreen extends StatelessWidget {
                     Text(
                       "No messages to display",
                       style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: CustomFont.poppins),
+                          fontSize: 14, fontFamily: CustomFont.poppins),
                     )
                   ],
                 );
               }
-
-            }
-            else{
+            } else {
               return SizedBox();
             }
-
-
           },
         ),
       ),
     );
   }
 }
-
-
-
