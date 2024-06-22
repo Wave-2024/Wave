@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/post_data.dart';
+import 'package:wave/data/users_data.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/user_model.dart';
@@ -33,7 +34,24 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   final CarouselController _carouselController = CarouselController();
   Post post = Get.arguments['post'];
   User poster = Get.arguments['poster'];
+  String? firstMentioned = Get.arguments['mentionedUserId'];
+
+  User? userMentioned;
   int currentImage = 0;
+
+  Future<void> getMentionedUserDetail() async {
+    userMentioned = await UserData.getUser(userID: firstMentioned!);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (firstMentioned != null) {
+      getMentionedUserDetail();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -318,14 +336,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               height: 12,
                             )),
                         Text(
-                          " is with",
+                          " is with ",
                           style: TextStyle(
                               color: Colors.black87,
                               fontSize: 11.5,
                               fontFamily: CustomFont.poppins),
                         ),
                         Text(
-                          " Aradhana Roy",
+                          userMentioned != null ? userMentioned!.name : "",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
@@ -384,53 +402,63 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 height: 15,
               ),
             ),
-            CarouselSlider(
-                carouselController: _carouselController,
-                items: post.postList.map((pc) {
-                  if (pc.type == 'image') {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: CachedNetworkImage(
-                        height: displayHeight(context) * 0.55,
-                        width: double.infinity,
-                        imageUrl: pc.url,
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  } else {
-                    // TODO : Render video
-                    return const SizedBox();
-                  }
-                }).toList(),
-                options: CarouselOptions(
-                  height: displayHeight(context) * 0.55,
-                  viewportFraction: 0.9,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: false,
-                  pauseAutoPlayOnManualNavigate: true,
-                  enlargeCenterPage: true,
-                  enlargeFactor: 0.3,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      currentImage = index;
-                    });
-                  },
-                  scrollDirection: Axis.horizontal,
-                )),
-            SizedBox(
+            post.postList.length == 1
+                ? CachedNetworkImage(
+                    imageUrl: post.postList.first.url,
+                    height: Get.height * 0.55,
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  )
+                : CarouselSlider(
+                    carouselController: _carouselController,
+                    items: post.postList.map((pc) {
+                      if (pc.type == 'image') {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: CachedNetworkImage(
+                            height: displayHeight(context) * 0.55,
+                            // width: double.infinity,
+                            imageUrl: pc.url,
+                            fit: BoxFit.contain,
+                          ),
+                        );
+                      } else {
+                        // TODO : Render video
+                        return const SizedBox();
+                      }
+                    }).toList(),
+                    options: CarouselOptions(
+                      height: displayHeight(context) * 0.53,
+                      viewportFraction: 0.9,
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      reverse: false,
+                      autoPlay: false,
+                      pauseAutoPlayOnManualNavigate: true,
+                      enlargeCenterPage: true,
+                      enlargeFactor: 0.3,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          currentImage = index;
+                        });
+                      },
+                      scrollDirection: Axis.horizontal,
+                    )),
+            const SizedBox(
               height: 15,
             ),
-            Center(
-              child: AnimatedSmoothIndicator(
-                activeIndex: currentImage,
-                count: post.postList.length,
-                effect: WormEffect(
-                    activeDotColor: CustomColor.primaryColor, dotHeight: 8),
-                onDotClicked: (index) {
-                  _carouselController.animateToPage(index);
-                },
+            Visibility(
+              visible: post.postList.length > 1,
+              child: Center(
+                child: AnimatedSmoothIndicator(
+                  activeIndex: currentImage,
+                  count: post.postList.length,
+                  effect: WormEffect(
+                      activeDotColor: CustomColor.primaryColor, dotHeight: 8),
+                  onDotClicked: (index) {
+                    _carouselController.animateToPage(index);
+                  },
+                ),
               ),
             )
           ],

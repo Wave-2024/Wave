@@ -105,7 +105,10 @@ class ViewPosts extends StatelessWidget {
                   onTap: () {
                     Get.toNamed(AppRoutes.postDetailScreen, arguments: {
                       'post': posts[index],
-                      'poster': userDataController.user!
+                      'poster': userDataController.user!,
+                      'mentionedUserId': posts[index].mentions.isNotEmpty
+                          ? posts[index].mentions.first
+                          : null
                     });
                   },
                   child: ClipRRect(
