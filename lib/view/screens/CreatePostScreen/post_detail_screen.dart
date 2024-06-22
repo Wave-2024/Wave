@@ -403,23 +403,35 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               ),
             ),
             post.postList.length == 1
-                ? CachedNetworkImage(
-                    imageUrl: post.postList.first.url,
-                    height: Get.height * 0.55,
-                    width: double.infinity,
-                    fit: BoxFit.contain,
+                ? InkWell(
+                    onTap: () {
+                      Get.toNamed(AppRoutes.viewImageScreen,
+                          arguments: post.postList.first.url);
+                    },
+                    child: CachedNetworkImage(
+                      imageUrl: post.postList.first.url,
+                      height: Get.height * 0.55,
+                      width: double.infinity,
+                      fit: BoxFit.contain,
+                    ),
                   )
                 : CarouselSlider(
                     carouselController: _carouselController,
                     items: post.postList.map((pc) {
                       if (pc.type == 'image') {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: CachedNetworkImage(
-                            height: displayHeight(context) * 0.55,
-                            // width: double.infinity,
-                            imageUrl: pc.url,
-                            fit: BoxFit.contain,
+                        return InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.viewImageScreen,
+                                arguments: pc.url);
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: CachedNetworkImage(
+                              height: displayHeight(context) * 0.55,
+                              // width: double.infinity,
+                              imageUrl: pc.url,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         );
                       } else {

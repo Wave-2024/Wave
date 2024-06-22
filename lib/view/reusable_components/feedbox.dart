@@ -434,7 +434,7 @@ class _FeedBoxState extends State<FeedBox> {
             ),
             visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: widget.post.caption.isEmpty ? 5:12),
           Padding(
             padding: (widget.post.postList.length == 2)
                 ? const EdgeInsets.only(left: 20)
@@ -447,8 +447,8 @@ class _FeedBoxState extends State<FeedBox> {
               style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
             ),
           ),
-          const SizedBox(
-            height: 15,
+          SizedBox(
+            height: widget.post.caption.isEmpty?0:15,
           ),
           InkWell(
               onTap: () {
