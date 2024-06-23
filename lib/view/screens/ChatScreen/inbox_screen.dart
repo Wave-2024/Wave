@@ -98,6 +98,7 @@ class InboxScreen extends StatelessWidget {
             if (messageController.text.length > 1000) {
               // Show a message indicating the limit has been exceeded
               Get.showSnackbar(GetSnackBar(
+                title: "Message length exceeded:",
                 backgroundColor: CustomColor.errorColor,
                 borderRadius: 5,
                 duration: const Duration(seconds: 2),
