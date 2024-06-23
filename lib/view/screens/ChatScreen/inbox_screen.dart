@@ -95,26 +95,37 @@ class InboxScreen extends StatelessWidget {
         labelText: "Message",
         sendButtonMethod: () async {
           if (messageController.text.trim().isNotEmpty) {
-            messageController.text.length.printInfo();
-            Message message = Message(
-                message: messageController.text.trim(),
-                sender: selfUser.id,
-                createdAt: DateTime.now(),
-                message_type: MESSAGE_TYPE.TEXT,
-                id: 'id',
-                chatId: chatId);
-            CustomResponse customResponse =
-                await ChatData.sendMessage(message, selfUser.id, otherUser.id);
-            if (customResponse.responseStatus) {
-              CustomNotificationService.sendNotificationForMessage(
-                  otherUser: otherUser,
-                  me: selfUser,
-                  message: message.message,
-                  chatId: chatId);
+            if (messageController.text.length > 1000) {
+              // Show a message indicating the limit has been exceeded
+              Get.showSnackbar(GetSnackBar(
+                title: "Message length exceeded:",
+                backgroundColor: CustomColor.errorColor,
+                borderRadius: 5,
+                duration: const Duration(seconds: 2),
+                message: "Message cannot exceed 1000 characters.",
+              ));
             } else {
-              log(customResponse.response.toString());
+              messageController.text.length.printInfo();
+              Message message = Message(
+                  message: messageController.text.trim(),
+                  sender: selfUser.id,
+                  createdAt: DateTime.now(),
+                  message_type: MESSAGE_TYPE.TEXT,
+                  id: 'id',
+                  chatId: chatId);
+              CustomResponse customResponse = await ChatData.sendMessage(
+                  message, selfUser.id, otherUser.id);
+              if (customResponse.responseStatus) {
+                CustomNotificationService.sendNotificationForMessage(
+                    otherUser: otherUser,
+                    me: selfUser,
+                    message: message.message,
+                    chatId: chatId);
+              } else {
+                log(customResponse.response.toString());
+              }
+              messageController.clear();
             }
-            messageController.clear();
           }
         },
         imageUrl: selfUser.displayPicture,
