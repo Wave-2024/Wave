@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wave/models/comment_post_model.dart';
 import 'package:wave/models/like_post_model.dart';
 import 'package:wave/models/post_content_model.dart';
@@ -13,7 +15,6 @@ import 'package:wave/services/custom_notification_service.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
 
 class PostData {
-
   static Future<Post> createPostModel(
       {String? caption,
       List<User>? mentionedUsers,
@@ -52,8 +53,11 @@ class PostData {
       await for (var response in getMediaDetails(mediaFiles, post.id)) {
         if (response.responseStatus) {
           Map<String, String> mediaDetail = response.response;
-          PostContent pc =
-              PostContent(type: mediaDetail['type']!, url: mediaDetail['url']!);
+          PostContent pc = PostContent(
+              isMediaLandscape:
+                  mediaDetail['isMediaLandscape'] == 'true' ? true : false,
+              type: mediaDetail['type']!,
+              url: mediaDetail['url']!);
           postList.add(pc);
         }
       }
@@ -75,6 +79,19 @@ class PostData {
         String fileExtension = fileName.split('.').last.toLowerCase();
         String fileType = getFileType(fileExtension);
 
+        bool isLandScape = true;
+        if (fileType == 'image') {
+          var decodedImage = await decodeImageFromList(file.readAsBytesSync());
+          isLandScape = decodedImage.width > decodedImage.height;
+        } else {
+          final controller = VideoPlayerController.file(file);
+          await controller.initialize();
+          final videoWidth = controller.value.size.width;
+          final videoHeight = controller.value.size.height;
+          isLandScape = videoWidth > videoHeight;
+          await controller.dispose();
+        }
+
         Reference ref =
             storage.ref().child('posts/$postId/$fileType/$fileName');
         UploadTask uploadTask = ref.putFile(file);
@@ -87,6 +104,7 @@ class PostData {
         return {
           'url': downloadUrl,
           'type': fileType,
+          'isMediaLandscape': isLandScape.toString()
         };
       } on FirebaseException catch (e) {
         // Handle Firebase exceptions
