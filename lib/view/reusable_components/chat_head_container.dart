@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wave/data/chat_data.dart';
@@ -13,10 +14,12 @@ class ChatHeadContainer extends StatelessWidget {
       {super.key,
       required this.chat,
       required this.otherUser,
+      required this.seenLastMessage,
       required this.selfUser});
   final Chat chat;
   final User otherUser;
   final User selfUser;
+  final bool seenLastMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +36,41 @@ class ChatHeadContainer extends StatelessWidget {
         ChatData.getDecryptedMessage(chat.lastMessage),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontFamily: CustomFont.poppins, fontSize: 12),
+        style: TextStyle(
+            fontFamily: CustomFont.poppins,
+            fontSize: 12,
+            // color: seenLastMessage ? Colors.black : Colors.black87,
+            fontWeight: seenLastMessage ? FontWeight.normal : FontWeight.bold),
       ),
-      trailing: Text(
-        timeAgo(chat.timeOfLastMessage),
-        style: const TextStyle(color: Colors.green),
-      ),
+      trailing: seenLastMessage
+          ? Text(
+              timeAgo(chat.timeOfLastMessage),
+              style: const TextStyle(
+                color: Colors.green,
+              ),
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  timeAgo(chat.timeOfLastMessage),
+                  style: const TextStyle(
+                      color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+                const CircleAvatar(
+                  backgroundColor: Colors.green,
+                  radius: 10,
+                  child: Text(
+                    '1',
+                    style: TextStyle(color: Colors.white, fontSize: 10),
+                  ),
+                )
+              ],
+            ),
       leading: CircleAvatar(
         backgroundImage: (otherUser.displayPicture != null &&
                 otherUser.displayPicture!.isNotEmpty)
-            ? NetworkImage(otherUser.displayPicture!)
+            ? CachedNetworkImageProvider(otherUser.displayPicture!)
             : null,
         radius: 25,
         child: otherUser.displayPicture == null ||
@@ -58,7 +86,8 @@ class ChatHeadContainer extends StatelessWidget {
             otherUser.name,
             style: TextStyle(
                 fontFamily: CustomFont.poppins,
-                fontSize: 14,
+                fontSize: 14.5,
+                fontWeight: FontWeight.w600,
                 letterSpacing: 0.1),
           ),
           const SizedBox(
