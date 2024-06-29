@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/notification_data.dart';
 import 'package:wave/data/post_data.dart';
@@ -39,68 +40,10 @@ class FeedBox extends StatefulWidget {
 }
 
 class _FeedBoxState extends State<FeedBox> {
-  Widget decideMediaBox(double height, BuildContext context) {
-    List<PostContent> posts = widget.post.postList;
-    // If number of media files is 0
-    if (posts.isEmpty) {
-      return const SizedBox.shrink();
-    } // If number of media files is 1
-    else if (posts.length == 1) {
-      if (posts.first.type == "image") {
-        return ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: CachedNetworkImage(
-              imageUrl: posts.first.url,
-              fit: (posts.first.isMediaLandscape)
-                  ? BoxFit.contain
-                  : BoxFit.cover,
-              // height: height,
-              width: displayWidth(context),
-            ));
-      } else {
-        // TODO : Handle video files
-        return VideoPlayerWidget(url: posts.first.url);
-      }
-    } // If number of media files is 2
-
-    else {
-      return SizedBox(
-        height: height,
-        child: PageView.builder(
-          itemCount: posts.length,
-          itemBuilder: (context, index) {
-            if (posts[index].type == 'image') {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: CachedNetworkImage(
-                  imageUrl: posts[index].url,
-                  fit: (posts[index].isMediaLandscape)
-                      ? BoxFit.contain
-                      : BoxFit.cover,
-                ),
-              );
-            } else {
-              return ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: SizedBox(
-                          width: height *
-                              (3 / 2), // Assuming 16:9 aspect ratio for videos
-                          height: height,
-                          child: VideoPlayerWidget(url: posts[index].url))));
-            }
-          },
-        ),
-      );
-    }
-  }
-
   User? userMentioned;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.firstMentioned != null) {
       getMentionedUserDetail();
@@ -244,7 +187,8 @@ class _FeedBoxState extends State<FeedBox> {
                   color: Colors.red.shade700,
                   fontWeight: FontWeight.w500),
             ),
-            visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
+            isThreeLine: false,
+            visualDensity: const VisualDensity(vertical: -3, horizontal: 0),
           ),
           SizedBox(height: widget.post.caption.isEmpty ? 0 : 12),
           Text(
@@ -255,7 +199,7 @@ class _FeedBoxState extends State<FeedBox> {
             style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
           ),
           SizedBox(
-            height: widget.post.caption.isEmpty ? 0 : 15,
+            height: widget.post.caption.isEmpty ? 0 : 10,
           ),
           Container(
             height: displayHeight(context) * 0.475,
@@ -270,7 +214,10 @@ class _FeedBoxState extends State<FeedBox> {
                     'poster': widget.poster
                   });
                 },
-                child: decideMediaBox(displayHeight(context) * 0.47, context)),
+                child: DecideMediaBox(
+                  height: displayHeight(context) * 0.47,
+                  posts: widget.post.postList,
+                )),
           ),
           SizedBox(
             height: widget.post.postList.isEmpty ? 0 : 15,
@@ -491,5 +438,98 @@ class _FeedBoxState extends State<FeedBox> {
         ],
       ),
     );
+  }
+}
+
+class DecideMediaBox extends StatefulWidget {
+  List<PostContent> posts;
+  double height;
+  DecideMediaBox({super.key, required this.posts, required this.height});
+
+  @override
+  State<DecideMediaBox> createState() => _DecideMediaBoxState();
+}
+
+class _DecideMediaBoxState extends State<DecideMediaBox> {
+  int currentImage = 0;
+  PageController pageController = PageController();
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.posts.isEmpty) {
+      return const SizedBox.shrink();
+    } // If number of media files is 1
+    else if (widget.posts.length == 1) {
+      if (widget.posts.first.type == "image") {
+        return ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: CachedNetworkImage(
+              imageUrl: widget.posts.first.url,
+              fit: (widget.posts.first.isMediaLandscape)
+                  ? BoxFit.contain
+                  : BoxFit.cover,
+              // height: height,
+              width: displayWidth(context),
+            ));
+      } else {
+        return VideoPlayerWidget(url: widget.posts.first.url);
+      }
+    } // If number of media files is 2
+
+    else {
+      return SizedBox(
+        height: widget.height,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            PageView.builder(
+              controller: pageController,
+              onPageChanged: (value) {
+                setState(() {
+                  currentImage = value;
+                });
+              },
+              itemCount: widget.posts.length,
+              itemBuilder: (context, index) {
+                if (widget.posts[index].type == 'image') {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.posts[index].url,
+                      fit: (widget.posts[index].isMediaLandscape)
+                          ? BoxFit.contain
+                          : BoxFit.cover,
+                    ),
+                  );
+                } else {
+                  return ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                              width: widget.height *
+                                  (3 /
+                                      2), // Assuming 16:9 aspect ratio for videos
+                              height: widget.height,
+                              child: VideoPlayerWidget(
+                                  url: widget.posts[index].url))));
+                }
+              },
+            ),
+            Positioned(
+              bottom: 20,
+              child: AnimatedSmoothIndicator(
+                activeIndex: currentImage,
+                count: widget.posts.length,
+                effect: WormEffect(
+                    activeDotColor: CustomColor.primaryColor,
+                    dotHeight: 6,
+                    dotWidth: 6),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
