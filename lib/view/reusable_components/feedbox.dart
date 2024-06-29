@@ -1,11 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/notification_data.dart';
 import 'package:wave/data/post_data.dart';
@@ -24,281 +23,36 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/utils/util_functions.dart';
 import 'package:wave/view/reusable_components/more_option_feed.dart';
+import 'package:wave/view/reusable_components/video_play.dart';
 
 class FeedBox extends StatefulWidget {
   final Post post;
   final User poster;
   String? firstMentioned;
-  FeedBox({super.key, required this.post, required this.poster,this.firstMentioned});
+  FeedBox(
+      {super.key,
+      required this.post,
+      required this.poster,
+      this.firstMentioned});
 
   @override
   State<FeedBox> createState() => _FeedBoxState();
 }
 
 class _FeedBoxState extends State<FeedBox> {
-
-
-
-  Widget decideMediaBox(double height, BuildContext context) {
-    List<PostContent> posts = widget.post.postList;
-    // If number of media files is 0
-    if (posts.isEmpty) {
-      return const SizedBox();
-    } // If number of media files is 1
-    else if (posts.length == 1) {
-      if (posts.first.type == "image") {
-        return ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: CachedNetworkImage(
-              imageUrl: posts.first.url,
-              fit: BoxFit.cover,
-              height: height,
-              width: displayWidth(context),
-            ));
-      } else {
-        // TODO : Handle video files
-        return const SizedBox();
-      }
-    } // If number of media files is 2
-    else if (posts.length == 2) {
-      return CarouselSlider(
-          items: posts.map((pc) {
-            if (pc.type == 'image') {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: CachedNetworkImage(
-                  height: height,
-                  width: double.infinity,
-                  imageUrl: pc.url,
-                  fit: BoxFit.cover,
-                ),
-              );
-            } else {
-              // TODO : Render video
-              return const SizedBox();
-            }
-          }).toList(),
-          options: CarouselOptions(
-            height: height,
-            viewportFraction: 0.9,
-            initialPage: 0,
-            enableInfiniteScroll: true,
-            reverse: false,
-            autoPlay: true,
-            pauseAutoPlayOnManualNavigate: true,
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enlargeCenterPage: true,
-            enlargeFactor: 0.3,
-            onPageChanged: (index, reason) {},
-            scrollDirection: Axis.horizontal,
-          ));
-    }
-    // If number of media files is 3
-    else if (posts.length == 3) {
-      return StaggeredGrid.count(
-        crossAxisCount: 2,
-        mainAxisSpacing: 5,
-        crossAxisSpacing: 4,
-        children: [
-          StaggeredGridTile.count(
-            crossAxisCellCount: 3,
-            mainAxisCellCount: 1.2,
-            child: (posts[0].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[0].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 1,
-            mainAxisCellCount: 1.2,
-            child: (posts[1].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[1].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 1,
-            mainAxisCellCount: 1.2,
-            child: (posts[2].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[2].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,
-          ),
-        ],
-      );
-    }
-    // If number of media files is 4
-    else if (posts.length == 4) {
-      return StaggeredGrid.count(
-        crossAxisCount: 4,
-        mainAxisSpacing: 5,
-        crossAxisSpacing: 4,
-        children: [
-          StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            child: (posts[0].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[0].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            child: (posts[1].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[1].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            child: (posts[2].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[2].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            child: (posts[3].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[3].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,
-          ),
-        ],
-      );
-    }
-    // If number of media files is 5
-    else if (posts.length == 5) {
-      return StaggeredGrid.count(
-        crossAxisCount: 4,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
-        children: [
-          StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2.1,
-            child: (posts[0].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[0].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1.2,
-            child: (posts[1].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[1].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 1,
-            mainAxisCellCount: 1,
-            child: (posts[2].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[2].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 1,
-            mainAxisCellCount: 1,
-            child: (posts[3].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[3].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,,
-          ),
-          StaggeredGridTile.count(
-            crossAxisCellCount: 4,
-            mainAxisCellCount: 2,
-            child: (posts[4].type == 'image')
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: posts[4].url,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const SizedBox(), // TODO : Video player ,,
-          ),
-        ],
-      );
-    } else {
-      return const SizedBox();
-    }
-  }
   User? userMentioned;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    if(widget.firstMentioned!=null){
+    if (widget.firstMentioned != null) {
       getMentionedUserDetail();
     }
   }
 
-  Future<void> getMentionedUserDetail()async{
+  Future<void> getMentionedUserDetail() async {
     userMentioned = await UserData.getUser(userID: widget.firstMentioned!);
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -315,7 +69,8 @@ class _FeedBoxState extends State<FeedBox> {
             contentPadding: EdgeInsets.zero,
             leading: InkWell(
               onTap: () {
-                Get.toNamed(AppRoutes.profileScreen,arguments: widget.poster.id);
+                Get.toNamed(AppRoutes.profileScreen,
+                    arguments: widget.poster.id);
               },
               child: SizedBox(
                 height: displayHeight(context) * 0.055,
@@ -364,7 +119,6 @@ class _FeedBoxState extends State<FeedBox> {
                             CustomIcon.verifiedIcon,
                             height: 12,
                           )),
-
                       Text(
                         " is with ",
                         style: TextStyle(
@@ -373,7 +127,7 @@ class _FeedBoxState extends State<FeedBox> {
                             fontFamily: CustomFont.poppins),
                       ),
                       Text(
-                        userMentioned!=null?userMentioned!.name:"",
+                        userMentioned != null ? userMentioned!.name : "",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -383,10 +137,11 @@ class _FeedBoxState extends State<FeedBox> {
                     ],
                   )
                 : InkWell(
-              onTap: () {
-                Get.toNamed(AppRoutes.profileScreen,arguments: widget.poster.id);
-              },
-                  child: Wrap(
+                    onTap: () {
+                      Get.toNamed(AppRoutes.profileScreen,
+                          arguments: widget.poster.id);
+                    },
+                    child: Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
@@ -411,7 +166,7 @@ class _FeedBoxState extends State<FeedBox> {
                             ))
                       ],
                     ),
-                ),
+                  ),
             trailing: IconButton(
               onPressed: () async {
                 showModalBottomSheet(
@@ -432,30 +187,38 @@ class _FeedBoxState extends State<FeedBox> {
                   color: Colors.red.shade700,
                   fontWeight: FontWeight.w500),
             ),
-            visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
+            isThreeLine: false,
+            visualDensity: const VisualDensity(vertical: -3, horizontal: 0),
           ),
-          SizedBox(height: widget.post.caption.isEmpty ? 5:12),
-          Padding(
-            padding: (widget.post.postList.length == 2)
-                ? const EdgeInsets.only(left: 20)
-                : const EdgeInsets.all(0),
-            child: Text(
-              widget.post.caption,
-              maxLines: (widget.post.postList.isEmpty) ? 8 : 4,
-              textAlign: TextAlign.start,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
-            ),
+          SizedBox(height: widget.post.caption.isEmpty ? 0 : 12),
+          Text(
+            widget.post.caption,
+            maxLines: (widget.post.postList.isEmpty) ? 8 : 4,
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
           ),
           SizedBox(
-            height: widget.post.caption.isEmpty?0:15,
+            height: widget.post.caption.isEmpty ? 0 : 10,
           ),
-          InkWell(
-              onTap: () {
-                Get.toNamed(AppRoutes.postDetailScreen,
-                    arguments: {'post': widget.post, 'poster': widget.poster});
-              },
-              child: decideMediaBox(displayHeight(context) * 0.47, context)),
+          Container(
+            height: displayHeight(context) * 0.475,
+            width: displayWidth(context),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.black26, width: 0.25)),
+            child: InkWell(
+                onTap: () {
+                  Get.toNamed(AppRoutes.postDetailScreen, arguments: {
+                    'post': widget.post,
+                    'poster': widget.poster
+                  });
+                },
+                child: DecideMediaBox(
+                  height: displayHeight(context) * 0.47,
+                  posts: widget.post.postList,
+                )),
+          ),
           SizedBox(
             height: widget.post.postList.isEmpty ? 0 : 15,
           ),
@@ -464,7 +227,8 @@ class _FeedBoxState extends State<FeedBox> {
             children: [
               // Like count and like icon
               StreamBuilder(
-                stream: Database.getPostLikesDatabase(widget.post.id).snapshots(),
+                stream:
+                    Database.getPostLikesDatabase(widget.post.id).snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> likes) {
                   if ((likes.connectionState == ConnectionState.active ||
                           likes.connectionState == ConnectionState.done) &&
@@ -492,7 +256,8 @@ class _FeedBoxState extends State<FeedBox> {
                                         .currentUser!.uid);
                                 bool hasAlreadySentNotification = await PostData
                                     .alreadySentNotificationForThis(
-                                        postId: widget.post.id, posterId: widget.post.userId);
+                                        postId: widget.post.id,
+                                        posterId: widget.post.userId);
                                 if (!hasAlreadySentNotification) {
                                   not.Notification notification =
                                       not.Notification(
@@ -560,10 +325,12 @@ class _FeedBoxState extends State<FeedBox> {
               // Comment icon and comment count
               InkWell(
                 onTap: () {
-                  Get.toNamed(AppRoutes.listCommentsScreen, arguments: widget.post.id);
+                  Get.toNamed(AppRoutes.listCommentsScreen,
+                      arguments: widget.post.id);
                 },
                 child: StreamBuilder(
-                  stream: Database.getPostCommentsDatabase(widget.post.id).snapshots(),
+                  stream: Database.getPostCommentsDatabase(widget.post.id)
+                      .snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> commentSnapshot) {
                     if ((commentSnapshot.connectionState ==
@@ -645,13 +412,15 @@ class _FeedBoxState extends State<FeedBox> {
                         onTap: () async {
                           if (!saved) {
                             CustomResponse customResponse =
-                                await userDataController.savePost(widget.post.id);
+                                await userDataController
+                                    .savePost(widget.post.id);
                             if (!customResponse.responseStatus) {
                               "${customResponse.response}".printError();
                             }
                           } else {
                             CustomResponse customResponse =
-                                await userDataController.unsavePost(widget.post.id);
+                                await userDataController
+                                    .unsavePost(widget.post.id);
                             if (!customResponse.responseStatus) {
                               "${customResponse.response}".printError();
                             }
@@ -669,5 +438,98 @@ class _FeedBoxState extends State<FeedBox> {
         ],
       ),
     );
+  }
+}
+
+class DecideMediaBox extends StatefulWidget {
+  List<PostContent> posts;
+  double height;
+  DecideMediaBox({super.key, required this.posts, required this.height});
+
+  @override
+  State<DecideMediaBox> createState() => _DecideMediaBoxState();
+}
+
+class _DecideMediaBoxState extends State<DecideMediaBox> {
+  int currentImage = 0;
+  PageController pageController = PageController();
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.posts.isEmpty) {
+      return const SizedBox.shrink();
+    } // If number of media files is 1
+    else if (widget.posts.length == 1) {
+      if (widget.posts.first.type == "image") {
+        return ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: CachedNetworkImage(
+              imageUrl: widget.posts.first.url,
+              fit: (widget.posts.first.isMediaLandscape)
+                  ? BoxFit.contain
+                  : BoxFit.cover,
+              // height: height,
+              width: displayWidth(context),
+            ));
+      } else {
+        return VideoPlayerWidget(url: widget.posts.first.url);
+      }
+    } // If number of media files is 2
+
+    else {
+      return SizedBox(
+        height: widget.height,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            PageView.builder(
+              controller: pageController,
+              onPageChanged: (value) {
+                setState(() {
+                  currentImage = value;
+                });
+              },
+              itemCount: widget.posts.length,
+              itemBuilder: (context, index) {
+                if (widget.posts[index].type == 'image') {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.posts[index].url,
+                      fit: (widget.posts[index].isMediaLandscape)
+                          ? BoxFit.contain
+                          : BoxFit.cover,
+                    ),
+                  );
+                } else {
+                  return ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                              width: widget.height *
+                                  (3 /
+                                      2), // Assuming 16:9 aspect ratio for videos
+                              height: widget.height,
+                              child: VideoPlayerWidget(
+                                  url: widget.posts[index].url))));
+                }
+              },
+            ),
+            Positioned(
+              bottom: 20,
+              child: AnimatedSmoothIndicator(
+                activeIndex: currentImage,
+                count: widget.posts.length,
+                effect: WormEffect(
+                    activeDotColor: CustomColor.primaryColor,
+                    dotHeight: 6,
+                    dotWidth: 6),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

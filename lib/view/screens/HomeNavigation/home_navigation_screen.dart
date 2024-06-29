@@ -168,7 +168,7 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       floatingActionButton: FloatingActionButton.small(
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         onPressed: () {
           Get.toNamed(AppRoutes.createNewPostScreen);
         },
@@ -182,6 +182,7 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       bottomNavigationBar: Consumer<HomeNavController>(
         builder: (context, homeNavController, child) {
           return AnimatedBottomNavigationBar(
+            elevation: 0,
             icons: const [
               Icons.home_filled,
               AntDesign.search_outline,
@@ -192,7 +193,7 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
             inactiveColor: Colors.black45,
             activeIndex: homeNavController.currentScreenIndex,
             gapLocation: GapLocation.center,
-            notchSmoothness: NotchSmoothness.verySmoothEdge,
+            notchSmoothness: NotchSmoothness.sharpEdge,
             onTap: (index) => homeNavController.setCurrentScreenIndex(index),
             //other params
           );
