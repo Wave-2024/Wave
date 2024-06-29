@@ -19,11 +19,16 @@ import 'package:wave/view/reusable_components/custom_textbox_for_comment.dart';
 import 'package:wave/view/reusable_components/message_container.dart';
 import 'package:wave/view/screens/ChatScreen/more_options_message.dart';
 
-class InboxScreen extends StatelessWidget {
+class InboxScreen extends StatefulWidget {
   InboxScreen({
     super.key,
   });
 
+  @override
+  State<InboxScreen> createState() => _InboxScreenState();
+}
+
+class _InboxScreenState extends State<InboxScreen> {
   User otherUser = Get.arguments['otherUser'];
 
   User selfUser = Get.arguments['selfUser'];
@@ -31,6 +36,12 @@ class InboxScreen extends StatelessWidget {
   String chatId = Get.arguments['chatId'];
 
   TextEditingController messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ChatData.markMessagesRead(chatId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +99,7 @@ class InboxScreen extends StatelessWidget {
         ],
       ),
       body: CustomTextBoxForComments(
+        fontFamily: CustomFont.inter,
         commentController: messageController,
         sendWidget: Container(
             padding: const EdgeInsets.all(8),

@@ -51,8 +51,8 @@ class ChatData {
       String firstUser, String secondUser) async {
     try {
       Chat chat = Chat(
-        lastSender: FirebaseAuth.instance.currentUser!.uid,
-        seenLastMessage: false,
+          lastSender: FirebaseAuth.instance.currentUser!.uid,
+          seenLastMessage: false,
           id: 'id',
           firstUser: firstUser,
           secondUser: secondUser,
@@ -114,6 +114,21 @@ class ChatData {
     return decrypted;
   }
 
+  static Future<CustomResponse> markMessagesRead(String chatId) async {
+    try {
+      Database.userDatabase
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('chats')
+          .doc(chatId)
+          .update({
+        'seenLastMessage': true,
+      });
+      return CustomResponse(responseStatus: true);
+    } on FirebaseException catch (e) {
+      return CustomResponse(responseStatus: true, response: e.message);
+    }
+  }
+
   static Future<CustomResponse> markLastMessageAsRead(String chatId) async {
     try {
       // Get the latest message in the chat
@@ -129,7 +144,7 @@ class ChatData {
         var lastMessageDoc = querySnapshot.docs.first;
         Message lastMessage = Message.fromMap(lastMessageDoc.data());
         // Check if the last message was sent by someone other than the current user
-        if(lastMessage.sender!=FirebaseAuth.instance.currentUser!.uid){
+        if (lastMessage.sender != FirebaseAuth.instance.currentUser!.uid) {
           await Database.chatDatabase
               .doc(chatId)
               .collection('messages')
@@ -137,7 +152,9 @@ class ChatData {
               .update({'seen': true});
 
           // Update the chat's seenLastMessage field
-          await Database.chatDatabase.doc(chatId).update({'seenLastMessage': true});
+          await Database.chatDatabase
+              .doc(chatId)
+              .update({'seenLastMessage': true});
         }
       }
 
@@ -146,10 +163,10 @@ class ChatData {
     } catch (e) {
       print('Error marking last message as read: $e');
       return CustomResponse(
-          responseStatus: false, response: 'Failed to mark last message as read.');
+          responseStatus: false,
+          response: 'Failed to mark last message as read.');
     }
   }
-
 
   static Future<CustomResponse> sendMessage(
       Message message, String firstUser, String secondUser) async {
@@ -178,23 +195,50 @@ class ChatData {
       });
 
       // Update the latest message for both users
-      Database.userDatabase
-          .doc(firstUser)
-          .collection('chats')
-          .doc(message.chatId)
-          .update({
-        'lastMessage': message.message,
-        'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
-      });
 
-      Database.userDatabase
-          .doc(secondUser)
-          .collection('chats')
-          .doc(message.chatId)
-          .update({
-        'lastMessage': message.message,
-        'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
-      });
+      if (message.sender == firstUser) {
+        // First user is sending the message , so second user should see 1 unread message
+        Database.userDatabase
+            .doc(secondUser)
+            .collection('chats')
+            .doc(message.chatId)
+            .update({
+          'lastMessage': message.message,
+          'seenLastMessage': false,
+          'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+        });
+
+        Database.userDatabase
+            .doc(firstUser)
+            .collection('chats')
+            .doc(message.chatId)
+            .update({
+          'lastMessage': message.message,
+          'seenLastMessage': true,
+          'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+        });
+      } else {
+        // Second user is sending the message , so first user should see 1 unread message
+        Database.userDatabase
+            .doc(firstUser)
+            .collection('chats')
+            .doc(message.chatId)
+            .update({
+          'lastMessage': message.message,
+          'seenLastMessage': false,
+          'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+        });
+
+        Database.userDatabase
+            .doc(secondUser)
+            .collection('chats')
+            .doc(message.chatId)
+            .update({
+          'lastMessage': message.message,
+          'seenLastMessage': true,
+          'timeOfLastMessage': message.createdAt.millisecondsSinceEpoch,
+        });
+      }
 
       return CustomResponse(
           responseStatus: true, response: 'Message sent successfully.');

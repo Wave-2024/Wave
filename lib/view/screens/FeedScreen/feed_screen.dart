@@ -41,7 +41,7 @@ class FeedScreen extends StatelessWidget {
                   style: TextStyle(fontFamily: CustomFont.alex, fontSize: 40),
                 ),
                 floating: true,
-                snap: true,
+                snap: true, 
                 elevation: 0,
                 actions: [
                   StreamBuilder(
@@ -198,12 +198,17 @@ class FeedScreen extends StatelessWidget {
                                 if (user.connectionState ==
                                         ConnectionState.done &&
                                     user.hasData) {
-
                                   return Padding(
                                     padding:
                                         const EdgeInsets.only(bottom: 12.0),
                                     child: FeedBox(
-                                      firstMentioned: feedController.posts[index].mentions.isNotEmpty ? feedController.posts[index].mentions.first : null,
+                                        firstMentioned: feedController
+                                                .posts[index]
+                                                .mentions
+                                                .isNotEmpty
+                                            ? feedController
+                                                .posts[index].mentions.first
+                                            : null,
                                         post: feedController.posts[index],
                                         poster: user.data!),
                                   );

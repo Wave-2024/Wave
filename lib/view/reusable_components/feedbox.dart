@@ -207,17 +207,13 @@ class _FeedBoxState extends State<FeedBox> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.black26, width: 0.25)),
-            child: InkWell(
-                onTap: () {
-                  Get.toNamed(AppRoutes.postDetailScreen, arguments: {
-                    'post': widget.post,
-                    'poster': widget.poster
-                  });
-                },
-                child: DecideMediaBox(
-                  height: displayHeight(context) * 0.47,
-                  posts: widget.post.postList,
-                )),
+            child: DecideMediaBox(
+              post: widget.post,
+              poster: widget.poster,
+              shouldZoomImage: false,
+              height: displayHeight(context) * 0.47,
+              posts: widget.post.postList,
+            ),
           ),
           SizedBox(
             height: widget.post.postList.isEmpty ? 0 : 15,
@@ -443,8 +439,17 @@ class _FeedBoxState extends State<FeedBox> {
 
 class DecideMediaBox extends StatefulWidget {
   List<PostContent> posts;
+  bool shouldZoomImage;
   double height;
-  DecideMediaBox({super.key, required this.posts, required this.height});
+  dynamic post;
+  dynamic poster;
+  DecideMediaBox(
+      {super.key,
+      required this.posts,
+      this.post,
+      this.poster,
+      required this.height,
+      required this.shouldZoomImage});
 
   @override
   State<DecideMediaBox> createState() => _DecideMediaBoxState();
@@ -461,18 +466,40 @@ class _DecideMediaBoxState extends State<DecideMediaBox> {
     } // If number of media files is 1
     else if (widget.posts.length == 1) {
       if (widget.posts.first.type == "image") {
-        return ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: CachedNetworkImage(
-              imageUrl: widget.posts.first.url,
-              fit: (widget.posts.first.isMediaLandscape)
-                  ? BoxFit.contain
-                  : BoxFit.cover,
-              // height: height,
-              width: displayWidth(context),
-            ));
+        return InkWell(
+          onTap: () {
+            if (widget.shouldZoomImage) {
+              Get.toNamed(AppRoutes.viewImageScreen,
+                  arguments: widget.posts.first.url);
+            } else {
+              Get.toNamed(AppRoutes.postDetailScreen,
+                  arguments: {'post': widget.post, 'poster': widget.poster});
+            }
+          },
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                height: widget.height,
+                imageUrl: widget.posts.first.url,
+                fit: (widget.posts.first.isMediaLandscape)
+                    ? BoxFit.contain
+                    : BoxFit.cover,
+                // height: height,
+                width: displayWidth(context),
+              )),
+        );
       } else {
-        return VideoPlayerWidget(url: widget.posts.first.url);
+        return InkWell(
+            onTap: () {
+              if (widget.shouldZoomImage) {
+                Get.toNamed(AppRoutes.viewImageScreen,
+                    arguments: widget.posts.first.url);
+              } else {
+                Get.toNamed(AppRoutes.postDetailScreen,
+                    arguments: {'post': widget.post, 'poster': widget.poster});
+              }
+            },
+            child: VideoPlayerWidget(url: widget.posts.first.url));
       }
     } // If number of media files is 2
 
@@ -492,27 +519,54 @@ class _DecideMediaBoxState extends State<DecideMediaBox> {
               itemCount: widget.posts.length,
               itemBuilder: (context, index) {
                 if (widget.posts[index].type == 'image') {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.posts[index].url,
-                      fit: (widget.posts[index].isMediaLandscape)
-                          ? BoxFit.contain
-                          : BoxFit.cover,
+                  return InkWell(
+                    onTap: () {
+                      if (widget.shouldZoomImage) {
+                        Get.toNamed(AppRoutes.viewImageScreen,
+                            arguments: widget.posts[index].url);
+                      } else {
+                        Get.toNamed(AppRoutes.postDetailScreen, arguments: {
+                          'post': widget.post,
+                          'poster': widget.poster
+                        });
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: CachedNetworkImage(
+                        width: displayWidth(context),
+                        imageUrl: widget.posts[index].url,
+                        fit: (widget.posts[index].isMediaLandscape)
+                            ? BoxFit.contain
+                            : BoxFit.cover,
+                      ),
                     ),
                   );
                 } else {
-                  return ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: SizedBox(
-                              width: widget.height *
-                                  (3 /
-                                      2), // Assuming 16:9 aspect ratio for videos
-                              height: widget.height,
-                              child: VideoPlayerWidget(
-                                  url: widget.posts[index].url))));
+                  return InkWell(
+                    onTap: () {
+                      if (widget.shouldZoomImage) {
+                        Get.toNamed(AppRoutes.viewImageScreen,
+                            arguments: widget.posts[index].url);
+                      } else {
+                        Get.toNamed(AppRoutes.postDetailScreen, arguments: {
+                          'post': widget.post,
+                          'poster': widget.poster
+                        });
+                      }
+                    },
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: SizedBox(
+                                width: widget.height *
+                                    (3 /
+                                        2), // Assuming 16:9 aspect ratio for videos
+                                height: widget.height,
+                                child: VideoPlayerWidget(
+                                    url: widget.posts[index].url)))),
+                  );
                 }
               },
             ),
