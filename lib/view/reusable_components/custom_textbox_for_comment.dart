@@ -10,7 +10,7 @@ class CustomTextBoxForComments extends StatelessWidget {
   dynamic sendButtonMethod;
   dynamic commentController;
   String? imageUrl;
-
+  String? fontFamily;
   String? labelText;
   String? errorText;
   Widget? sendWidget;
@@ -28,6 +28,7 @@ class CustomTextBoxForComments extends StatelessWidget {
       this.sendWidget,
       this.imageUrl,
       this.labelText,
+      this.fontFamily,
       this.focusNode,
       this.errorText,
       this.withBorder = true,
@@ -46,7 +47,6 @@ class CustomTextBoxForComments extends StatelessWidget {
         ListTile(
           visualDensity: VisualDensity(horizontal: -2),
           tileColor: backgroundColor,
-
           leading: CircleAvatar(
             radius: 20,
             backgroundImage: (imageUrl != null && imageUrl!.isNotEmpty)
@@ -66,8 +66,8 @@ class CustomTextBoxForComments extends StatelessWidget {
                 minLines: 1,
                 style: TextStyle(
                     color: Colors.black,
-                    fontFamily: CustomFont.poppins,
-                    fontSize: 12),
+                    fontFamily: fontFamily ?? CustomFont.poppins,
+                    fontSize: fontFamily != null ? 14 : 12),
                 decoration: InputDecoration(
                   labelText: labelText ?? "Comment",
                   labelStyle: TextStyle(

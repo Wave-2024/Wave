@@ -1,5 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,16 +11,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/controllers/HomeNavController/home_nav_controller.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
-import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
-import 'package:wave/utils/constants/keys.dart';
+import 'package:wave/utils/constants/database_endpoints.dart';
 import 'package:wave/utils/constants/preferences.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/screens/ChatScreen/chat_list_screen.dart';
-import 'package:wave/view/screens/CreatePostScreen/create_post_screen.dart';
 import 'package:wave/view/screens/FeedScreen/feed_screen.dart';
 import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
 import 'package:wave/view/screens/SearchScreen/search_screen.dart';
+import 'package:badges/badges.dart' as badge;
 
 class HomeNavigationScreen extends StatefulWidget {
   HomeNavigationScreen({super.key});
@@ -168,7 +169,7 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       floatingActionButton: FloatingActionButton.small(
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         onPressed: () {
           Get.toNamed(AppRoutes.createNewPostScreen);
         },
@@ -181,20 +182,125 @@ class _HomeNavigationScreenState extends State<HomeNavigationScreen> {
       backgroundColor: CustomColor.primaryBackGround,
       bottomNavigationBar: Consumer<HomeNavController>(
         builder: (context, homeNavController, child) {
-          return AnimatedBottomNavigationBar(
-            icons: const [
-              Icons.home_filled,
-              AntDesign.search_outline,
-              AntDesign.message_fill,
-              Bootstrap.person_circle
-            ],
-            activeColor: Colors.black87,
-            inactiveColor: Colors.black45,
-            activeIndex: homeNavController.currentScreenIndex,
-            gapLocation: GapLocation.center,
-            notchSmoothness: NotchSmoothness.verySmoothEdge,
-            onTap: (index) => homeNavController.setCurrentScreenIndex(index),
-            //other params
+          return StreamBuilder(
+            stream: Database.userDatabase
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection('chats')
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.active ||
+                  snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  int unreadMessages = snapshot.data!.docs
+                      .where((element) => !(element.data()!
+                          as Map<String, dynamic>)['seenLastMessage'])
+                      .length;
+                  'unread messages = $unreadMessages'.printInfo();
+                  return AnimatedBottomNavigationBar.builder(
+                    gapLocation: GapLocation.center,
+                    itemCount: 4,
+                    tabBuilder: (index, isActive) {
+                      if (index == 0) {
+                        return Icon(
+                          Icons.home_filled,
+                          color: isActive ? Colors.black87 : Colors.black45,
+                        );
+                      } else if (index == 1) {
+                        return Icon(
+                          AntDesign.search_outline,
+                          color: isActive ? Colors.black87 : Colors.black45,
+                        );
+                      } else if (index == 2) {
+                        return badge.Badge(
+                          stackFit: StackFit.expand,
+                          position: badge.BadgePosition.topEnd(end: 18, top: 8),
+                          badgeAnimation: badge.BadgeAnimation.fade(
+                              animationDuration: Duration.zero,
+                              disappearanceFadeAnimationDuration: Duration.zero,
+                              toAnimate: true),
+                          badgeStyle: const badge.BadgeStyle(
+                              badgeColor: Colors.black87),
+                          badgeContent: Text(
+                            unreadMessages.toString(),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          showBadge: unreadMessages > 0,
+                          child: Icon(
+                            AntDesign.message_fill,
+                            color: isActive ? Colors.black87 : Colors.black45,
+                          ),
+                        );
+                      } else {
+                        return Icon(
+                          Bootstrap.person_circle,
+                          color: isActive ? Colors.black87 : Colors.black45,
+                        );
+                      }
+                    },
+                    activeIndex: homeNavController.currentScreenIndex,
+                    onTap: (index) {
+                      homeNavController.setCurrentScreenIndex(index);
+                    },
+                  );
+                  return AnimatedBottomNavigationBar(
+                    elevation: 0,
+                    icons: const [
+                      Icons.home_filled,
+                      AntDesign.search_outline,
+                      AntDesign.message_fill,
+                      Bootstrap.person_circle
+                    ],
+
+                    activeIndex: homeNavController.currentScreenIndex,
+                    gapLocation: GapLocation.center,
+                    notchSmoothness: NotchSmoothness.sharpEdge,
+                    onTap: (index) =>
+                        homeNavController.setCurrentScreenIndex(index),
+                    //other params
+                  );
+                } else {
+                  return AnimatedBottomNavigationBar(
+                    elevation: 0,
+                    icons: const [
+                      Icons.home_filled,
+                      AntDesign.search_outline,
+                      AntDesign.message_fill,
+                      Bootstrap.person_circle
+                    ],
+                    activeColor: Colors.black87,
+                    inactiveColor: Colors.black45,
+                    activeIndex: homeNavController.currentScreenIndex,
+                    gapLocation: GapLocation.center,
+                    notchSmoothness: NotchSmoothness.sharpEdge,
+                    onTap: (index) =>
+                        homeNavController.setCurrentScreenIndex(index),
+                    //other params
+                  );
+                }
+              } else {
+                return AnimatedBottomNavigationBar(
+                  elevation: 0,
+                  icons: const [
+                    Icons.home_filled,
+                    AntDesign.search_outline,
+                    AntDesign.message_fill,
+                    Bootstrap.person_circle
+                  ],
+                  activeColor: Colors.black87,
+                  inactiveColor: Colors.black45,
+                  activeIndex: homeNavController.currentScreenIndex,
+                  gapLocation: GapLocation.center,
+                  notchSmoothness: NotchSmoothness.sharpEdge,
+                  onTap: (index) =>
+                      homeNavController.setCurrentScreenIndex(index),
+                  //other params
+                );
+              }
+            },
           );
 
           // return BottomNavigationBar(

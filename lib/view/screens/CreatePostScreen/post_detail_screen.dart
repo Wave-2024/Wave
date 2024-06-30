@@ -22,6 +22,7 @@ import 'package:wave/utils/util_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:wave/data/notification_data.dart';
 import 'package:wave/models/notification_model.dart' as not;
+import 'package:wave/view/reusable_components/feedbox.dart';
 
 class PostDetailScreen extends StatefulWidget {
   PostDetailScreen({super.key});
@@ -283,197 +284,131 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           child: Padding(
         padding:
             const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: SizedBox(
-                height: displayHeight(context) * 0.055,
-                width: displayWidth(context) * 0.11,
-                child: (poster.displayPicture != null &&
-                        poster.displayPicture!.isNotEmpty)
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: CachedNetworkImage(
-                          imageUrl: poster.displayPicture!,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: SizedBox(
+                  height: displayHeight(context) * 0.055,
+                  width: displayWidth(context) * 0.11,
+                  child: (poster.displayPicture != null &&
+                          poster.displayPicture!.isNotEmpty)
+                      ? ClipRRect(
                           borderRadius: BorderRadius.circular(6),
-                          color: Colors.grey.shade300,
+                          child: CachedNetworkImage(
+                            imageUrl: poster.displayPicture!,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            color: Colors.grey.shade300,
+                          ),
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            CustomIcon.profileFullIcon,
+                            color: Colors.black54,
+                            height: 25,
+                          ),
                         ),
-                        alignment: Alignment.center,
-                        child: Image.asset(
-                          CustomIcon.profileFullIcon,
-                          color: Colors.black54,
-                          height: 25,
-                        ),
-                      ),
-              ),
-              title: (post.mentions.isNotEmpty)
-                  ? Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          poster.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 11.5,
-                              fontFamily: CustomFont.poppins),
-                        ),
-                        const SizedBox(
-                          width: 2,
-                        ),
-                        Visibility(
-                            visible: poster.verified,
-                            child: Image.asset(
-                              CustomIcon.verifiedIcon,
-                              height: 12,
-                            )),
-                        Text(
-                          " is with ",
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 11.5,
-                              fontFamily: CustomFont.poppins),
-                        ),
-                        Text(
-                          userMentioned != null ? userMentioned!.name : "",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 11.5,
-                              fontFamily: CustomFont.poppins),
-                        ),
-                      ],
-                    )
-                  : Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          poster.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 11.5,
-                              fontFamily: CustomFont.poppins),
-                        ),
-                        const SizedBox(
-                          width: 2,
-                        ),
-                        Visibility(
-                            visible: poster.verified,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 1.0),
+                ),
+                title: (post.mentions.isNotEmpty)
+                    ? Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            poster.name,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
+                          ),
+                          const SizedBox(
+                            width: 2,
+                          ),
+                          Visibility(
+                              visible: poster.verified,
                               child: Image.asset(
                                 CustomIcon.verifiedIcon,
                                 height: 12,
-                              ),
-                            ))
-                      ],
-                    ),
-              subtitle: Text(
-                timeAgo(post.createdAt),
-                style: TextStyle(
-                    fontSize: 11.5,
-                    fontFamily: CustomFont.poppins,
-                    color: Colors.red.shade700,
-                    fontWeight: FontWeight.w500),
-              ),
-              visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
-            ),
-            const SizedBox(height: 12),
-            Visibility(
-              visible: post.caption.isNotEmpty,
-              child: Text(
-                post.caption,
-                textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
-              ),
-            ),
-            Visibility(
-              visible: post.caption.isNotEmpty,
-              child: const SizedBox(
-                height: 15,
-              ),
-            ),
-            post.postList.length == 1
-                ? InkWell(
-                    onTap: () {
-                      Get.toNamed(AppRoutes.viewImageScreen,
-                          arguments: post.postList.first.url);
-                    },
-                    child: CachedNetworkImage(
-                      imageUrl: post.postList.first.url,
-                      height: Get.height * 0.55,
-                      width: double.infinity,
-                      fit: BoxFit.contain,
-                    ),
-                  )
-                : CarouselSlider(
-                    carouselController: _carouselController,
-                    items: post.postList.map((pc) {
-                      if (pc.type == 'image') {
-                        return InkWell(
-                          onTap: () {
-                            Get.toNamed(AppRoutes.viewImageScreen,
-                                arguments: pc.url);
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: CachedNetworkImage(
-                              height: displayHeight(context) * 0.55,
-                              // width: double.infinity,
-                              imageUrl: pc.url,
-                              fit: BoxFit.contain,
-                            ),
+                              )),
+                          Text(
+                            " is with ",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
                           ),
-                        );
-                      } else {
-                        // TODO : Render video
-                        return const SizedBox();
-                      }
-                    }).toList(),
-                    options: CarouselOptions(
-                      height: displayHeight(context) * 0.53,
-                      viewportFraction: 0.9,
-                      initialPage: 0,
-                      enableInfiniteScroll: true,
-                      reverse: false,
-                      autoPlay: false,
-                      pauseAutoPlayOnManualNavigate: true,
-                      enlargeCenterPage: true,
-                      enlargeFactor: 0.3,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          currentImage = index;
-                        });
-                      },
-                      scrollDirection: Axis.horizontal,
-                    )),
-            const SizedBox(
-              height: 15,
-            ),
-            Visibility(
-              visible: post.postList.length > 1,
-              child: Center(
-                child: AnimatedSmoothIndicator(
-                  activeIndex: currentImage,
-                  count: post.postList.length,
-                  effect: WormEffect(
-                      activeDotColor: CustomColor.primaryColor, dotHeight: 8),
-                  onDotClicked: (index) {
-                    _carouselController.animateToPage(index);
-                  },
+                          Text(
+                            userMentioned != null ? userMentioned!.name : "",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
+                          ),
+                        ],
+                      )
+                    : Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            poster.name,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 11.5,
+                                fontFamily: CustomFont.poppins),
+                          ),
+                          const SizedBox(
+                            width: 2,
+                          ),
+                          Visibility(
+                              visible: poster.verified,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 1.0),
+                                child: Image.asset(
+                                  CustomIcon.verifiedIcon,
+                                  height: 12,
+                                ),
+                              ))
+                        ],
+                      ),
+                subtitle: Text(
+                  timeAgo(post.createdAt),
+                  style: TextStyle(
+                      fontSize: 11.5,
+                      fontFamily: CustomFont.poppins,
+                      color: Colors.red.shade700,
+                      fontWeight: FontWeight.w500),
+                ),
+                visualDensity: const VisualDensity(vertical: 0, horizontal: -1),
+              ),
+              Visibility(
+                visible: post.caption.isNotEmpty,
+                child: Text(
+                  post.caption,
+                  textAlign: TextAlign.start,
+                  style:
+                      TextStyle(fontSize: 12, fontFamily: CustomFont.poppins),
                 ),
               ),
-            )
-          ],
+              Visibility(
+                visible: post.caption.isNotEmpty,
+                child: const SizedBox(
+                  height: 15,
+                ),
+              ),
+              DecideMediaBox(
+                shouldZoomImage: true,
+                  posts: post.postList, height: displayHeight(context) * 0.6),
+            ],
+          ),
         ),
       )),
     );

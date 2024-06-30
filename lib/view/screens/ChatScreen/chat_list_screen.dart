@@ -108,6 +108,7 @@ class ChatListScreen extends StatelessWidget {
                                         ConnectionState.done &&
                                         otherUserSnap.hasData) {
                                       return ChatHeadContainer(
+                                        seenLastMessage: chat.seenLastMessage,
                                           chat: chat,
                                           selfUser: userDataController.user!,
                                           otherUser: otherUserSnap.data!);

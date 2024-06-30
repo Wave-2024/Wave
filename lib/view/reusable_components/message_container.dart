@@ -42,8 +42,7 @@ class MessageContainer extends StatelessWidget {
                         message.message,
                         style: TextStyle(
                           color: Colors.black87,
-                          letterSpacing: 0.08,
-                          fontFamily: CustomFont.poppins,
+                          fontFamily: CustomFont.inter,
                           fontSize: fontsize,
                         ),
                       ),
@@ -104,8 +103,7 @@ class MessageContainer extends StatelessWidget {
                         message.message,
                         style: TextStyle(
                           color: Colors.black87,
-                          letterSpacing: 0.08,
-                          fontFamily: CustomFont.poppins,
+                          fontFamily: CustomFont.inter,
                           fontSize: fontsize,
                         ),
                       ),
