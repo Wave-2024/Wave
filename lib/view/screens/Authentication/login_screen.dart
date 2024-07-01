@@ -300,7 +300,6 @@ class LoginScreen extends StatelessWidget {
                                             posts: [],
                                             id: googleUserCredential.user!.uid,
                                             username: username,
-                                            stories: [],
                                             blocked: [],
                                             coverPicture: "",
                                             account_type: ACCOUNT_TYPE.PUBLIC));

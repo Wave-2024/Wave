@@ -16,11 +16,9 @@ class User {
   String id;
   String fcmToken;
   String username;
-  List<dynamic> stories;
   List<dynamic>? blocked;
   String coverPicture;
   List<dynamic>? savedPosts;
-  List<dynamic>? messages;
   ACCOUNT_TYPE account_type;
 
   /* Collections
@@ -44,11 +42,9 @@ class User {
     this.url,
     required this.id,
     required this.username,
-    required this.stories,
     required this.blocked,
     required this.coverPicture,
     this.savedPosts,
-    this.messages,
     required this.account_type,
   });
 
@@ -85,11 +81,9 @@ class User {
       url: url ?? this.url,
       id: id ?? this.id,
       username: username ?? this.username,
-      stories: stories ?? this.stories,
       blocked: blocked ?? this.blocked,
       coverPicture: coverPicture ?? this.coverPicture,
       savedPosts: savedPosts ?? this.savedPosts,
-      messages: messages ?? this.messages,
       account_type: account_type ?? this.account_type,
     );
   }
@@ -108,11 +102,9 @@ class User {
       'id': id,
       'fcmToken':fcmToken,
       'username': username,
-      'stories': stories,
       'blocked': blocked,
       'coverPicture': coverPicture,
       'savedPosts': savedPosts,
-      'messages': messages,
       'account_type': account_type.toString().split('.').last,
     };
   }
@@ -133,7 +125,6 @@ class User {
         url: map['url'] != null ? map['url'] as String : null,
         id: map['id'] as String,
         username: map['username'] as String,
-        stories: List<dynamic>.from((map['stories'] as List<dynamic>)),
         blocked: map['blocked'] != null
             ? List<dynamic>.from((map['blocked'] as List<dynamic>))
             : null,
@@ -141,9 +132,7 @@ class User {
         savedPosts: map['savedPosts'] != null
             ? List<dynamic>.from((map['savedPosts'] as List<dynamic>))
             : null,
-        messages: map['messages'] != null
-            ? List<dynamic>.from((map['messages'] as List<dynamic>))
-            : null,
+       
         account_type: map['account_type'] != null
             ? (map['account_type'] == 'PRIVATE')
                 ? ACCOUNT_TYPE.PRIVATE
@@ -158,7 +147,7 @@ class User {
 
   @override
   String toString() {
-    return 'User(verified: $verified, name: $name, email: $email, following: $following, followers: $followers, posts: $posts, displayPicture: $displayPicture, bio: $bio, url: $url, id: $id, username: $username, stories: $stories, blocked: $blocked, coverPicture: $coverPicture, savedPosts: $savedPosts, messages: $messages, account_type: $account_type), fcmToken : $fcmToken';
+    return 'User(verified: $verified, name: $name, email: $email, following: $following, followers: $followers, posts: $posts, displayPicture: $displayPicture, bio: $bio, url: $url, id: $id, username: $username, blocked: $blocked, coverPicture: $coverPicture, savedPosts: $savedPosts,  account_type: $account_type), fcmToken : $fcmToken';
   }
 
   @override

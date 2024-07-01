@@ -28,6 +28,18 @@ class UserDataController extends ChangeNotifier {
   Map<String, User> otherUsers = {};
   Map<POST_TYPE, Set<Post>> selfPosts = {};
 
+  bool isUploadingStory = false;
+
+  void startUploadingStory() {
+    isUploadingStory = true;
+    notifyListeners();
+  }
+
+  void finishUploadingStory() {
+    isUploadingStory = false;
+    notifyListeners();
+  }
+
   UserDataController() {
     selfPosts[POST_TYPE.IMAGE] = {};
     selfPosts[POST_TYPE.VIDEO] = {};

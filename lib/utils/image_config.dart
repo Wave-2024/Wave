@@ -8,6 +8,38 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 
+Future<XFile?> pickMediaForStory(BuildContext context) async {
+  final ImagePicker picker = ImagePicker();
+  final androidInfo = await DeviceInfoPlugin().androidInfo;
+
+  // Check if we are running on Android
+
+  int sdkInt = androidInfo.version.sdkInt;
+
+  // Check API level for handling permissions
+  if (sdkInt >= 29) {
+    "sdk version greater than 29".printInfo();
+    // Android 10 and above, handle scoped storage
+    var status = await Permission.photos.request();
+    if (!status.isGranted) {
+      // Permission not granted, handle accordingly
+      return null;
+    }
+  } else {
+    // For Android versions below 10, check for storage permission
+    "sdk version less than 29".printInfo();
+
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      // Permission not granted, handle accordingly
+      return null;
+    }
+  }
+  // If permissions are granted, proceed to pick an image
+  final XFile? pickedFile = await picker.pickMedia(imageQuality: 85);
+  return pickedFile;
+}
+
 Future<XFile?> pickImage(BuildContext context) async {
   final ImagePicker picker = ImagePicker();
   final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -35,7 +67,6 @@ Future<XFile?> pickImage(BuildContext context) async {
       return null;
     }
   }
-
   // If permissions are granted, proceed to pick an image
   final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
   return pickedFile;
