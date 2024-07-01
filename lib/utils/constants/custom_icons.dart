@@ -26,6 +26,7 @@ class CustomIcon {
   static String shareIcon = "assets/icons/share_ico.png";
   static String textPostIcon = "assets/icons/text_post_ico.png";
   static String emptyIcon = "assets/icons/empty_ico.png";
+  static String viewedByIcon = "assets/icons/viewed_by_ico.png";
 
   static String notificationIcon = "assets/icons/notification_ico.png";
 }

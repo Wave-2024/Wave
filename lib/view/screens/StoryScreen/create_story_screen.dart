@@ -2,8 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:wave/controllers/Authentication/user_controller.dart';
 import 'package:wave/data/post_data.dart';
+import 'package:wave/data/story_data.dart';
+import 'package:wave/models/response_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
+import 'package:wave/utils/enums.dart';
 import 'package:wave/view/reusable_components/video_play.dart';
 
 class CreateStoryScreen extends StatefulWidget {
@@ -18,6 +23,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
   bool isDeciding = true;
   String fileType = 'other';
+  STORY_TYPE story_type = STORY_TYPE.IMAGE;
 
   @override
   void initState() {
@@ -29,6 +35,11 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
     String fileName = mediaFile.path.split('/').last;
     String fileExtension = fileName.split('.').last.toLowerCase();
     fileType = PostData.getFileType(fileExtension);
+    if (fileType == 'image') {
+      story_type = STORY_TYPE.IMAGE;
+    } else {
+      story_type = STORY_TYPE.VIDEO;
+    }
     isDeciding = false;
     setState(() {});
   }
@@ -97,33 +108,55 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
           backgroundColor: Colors.black87,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        bottomNavigationBar: Container(
-          alignment: Alignment.center,
-          height: Get.height * 0.08,
-          width: Get.width,
-          // color: Colors.red,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Finish",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: CustomFont.poppins,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              const Icon(
-                Icons.arrow_forward,
-                color: Colors.white,
-                size: 25,
-              ),
-            ],
-          ),
+        bottomNavigationBar: Consumer<UserDataController>(
+          builder: (context, userDataController, child) {
+            return Container(
+              alignment: Alignment.center,
+              height: Get.height * 0.08,
+              width: Get.width,
+              // color: Colors.red,
+              child: userDataController.isUploadingStory
+                  ? CircularProgressIndicator(
+                      color: Colors.white,
+                    )
+                  : InkWell(
+                      onTap: () async {
+                        userDataController.startUploadingStory();
+                        CustomResponse customResponse =
+                            await StoryData.createStory(File(mediaFile.path),
+                                story_type, userDataController.user!.id);
+                        if (customResponse.responseStatus) {
+                          'Success in story uploading'.printInfo();
+                        } else {
+                          customResponse.response.printError();
+                        }
+                        userDataController.finishUploadingStory();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Finish",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: CustomFont.poppins,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 25,
+                          ),
+                        ],
+                      ),
+                    ),
+            );
+          },
         ),
         body: isDeciding
             ? Center(
