@@ -17,6 +17,7 @@ import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/feedbox.dart';
 import 'package:wave/models/notification_model.dart' as notification;
+import 'package:wave/view/screens/StoryScreen/list_stories.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({Key? key});
@@ -41,7 +42,7 @@ class FeedScreen extends StatelessWidget {
                   style: TextStyle(fontFamily: CustomFont.alex, fontSize: 40),
                 ),
                 floating: true,
-                snap: true, 
+                snap: true,
                 elevation: 0,
                 actions: [
                   StreamBuilder(
@@ -98,75 +99,7 @@ class FeedScreen extends StatelessWidget {
                   )
                 ],
               ),
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.only(left: 14.0, right: 8, top: 2),
-                  // color: Colors.amber.shade100,
-                  height: displayHeight(context) * 0.12,
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () async {},
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 30,
-                              backgroundImage:
-                                  AssetImage(CustomIcon.addStoryIcon),
-                            ),
-                            const SizedBox(
-                              height: 2,
-                            ),
-                            Text(
-                              "You",
-                              style: TextStyle(
-                                  fontFamily: CustomFont.poppins, fontSize: 10),
-                            )
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          itemCount: 10,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 6.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: Colors.blue.shade100,
-                                  ),
-                                  const SizedBox(
-                                    height: 2,
-                                  ),
-                                  Text(
-                                    "alpha3109",
-                                    style: TextStyle(
-                                        fontFamily: CustomFont.poppins,
-                                        fontSize: 10),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              ListStories(),
               SliverToBoxAdapter(
                 child: Consumer<FeedPostController>(
                   builder: (context, feedController, child) {
