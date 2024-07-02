@@ -74,10 +74,11 @@ class StoryData {
     }
   }
 
-  static Future<CustomResponse> fetchMyStory() async {
+  static Future<CustomResponse> fetchMyStory({String? userId}) async {
     try {
       var storyDocRes =
-          await Database.getStories(FirebaseAuth.instance.currentUser!.uid)
+          await Database.getStories(
+            userId??FirebaseAuth.instance.currentUser!.uid)
               .limit(1)
               .get();
       if (storyDocRes.docs.isEmpty) {

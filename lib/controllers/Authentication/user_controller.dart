@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:wave/data/post_data.dart';
+import 'package:wave/data/story_data.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/post_content_model.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/response_model.dart';
+import 'package:wave/models/story_model.dart';
 import 'package:wave/models/user_model.dart';
 import 'package:wave/services/storage_service.dart';
 import 'package:wave/utils/constants/database_endpoints.dart';
@@ -28,6 +30,10 @@ class UserDataController extends ChangeNotifier {
   Map<String, User> otherUsers = {};
   Map<POST_TYPE, Set<Post>> selfPosts = {};
 
+  Map<String, Story> feedStories = {};
+
+  FETCH_FEED_STORY fetch_feed_story = FETCH_FEED_STORY.NOT_FETCHED;
+
   bool isUploadingStory = false;
 
   void startUploadingStory() {
@@ -37,6 +43,23 @@ class UserDataController extends ChangeNotifier {
 
   void finishUploadingStory() {
     isUploadingStory = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchFeedStories() async {
+    fetch_feed_story = FETCH_FEED_STORY.FETCHING;
+    await Future.delayed(Duration.zero);
+    notifyListeners();
+    List<dynamic> following = user!.following;
+    for (var index = 0; index < following.length; ++index) {
+      CustomResponse response =
+          await StoryData.fetchMyStory(userId: following[index]);
+      if (response.responseStatus) {
+        Story story = response.response as Story;
+        feedStories[following[index]] = story;
+      }
+    }
+    fetch_feed_story = FETCH_FEED_STORY.FETCHED;
     notifyListeners();
   }
 

@@ -64,7 +64,7 @@ class _ViewStoryScreenState extends State<ViewStoryScreen> {
               Positioned(
                 bottom: Get.height * 0.05,
                 child: Visibility(
-                  visible: true,
+                  visible: story.contents.length > 1,
                   child: AnimatedSmoothIndicator(
                     activeIndex: currentStoryIndex,
                     count: story.contents.length,
