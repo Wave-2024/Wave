@@ -40,7 +40,7 @@ class Story {
       userId: map['userId'] as String,
       id: map['id'] as String,
       contents: List<StoryContent>.from(
-        (map['contents'] as List<int>).map<StoryContent>(
+        (map['contents'] as List<dynamic>).map<StoryContent>(
           (x) => StoryContent.fromMap(x as Map<String, dynamic>),
         ),
       ),

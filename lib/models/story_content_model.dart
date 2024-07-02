@@ -10,21 +10,25 @@ class StoryContent {
   DateTime createdAt;
   STORY_TYPE story_type;
   List<dynamic> seenBy;
+  String url;
   StoryContent({
     required this.id,
     required this.createdAt,
     required this.story_type,
     required this.seenBy,
+    required this.url,
   });
 
   StoryContent copyWith({
     String? id,
+    String?url,
     DateTime? createdAt,
     STORY_TYPE? story_type,
     List<dynamic>? seenBy,
   }) {
     return StoryContent(
       id: id ?? this.id,
+      url: url ??this.url,
       createdAt: createdAt ?? this.createdAt,
       story_type: story_type ?? this.story_type,
       seenBy: seenBy ?? this.seenBy,
@@ -37,6 +41,7 @@ class StoryContent {
       'createdAt': createdAt.millisecondsSinceEpoch,
       'story_type': story_type.toString().split('.').last,
       'seenBy': seenBy,
+      'url':url,
     };
   }
 
@@ -53,7 +58,7 @@ class StoryContent {
   }
 
   factory StoryContent.fromMap(Map<String, dynamic> map) {
-    return StoryContent(
+    return StoryContent(url: map['url'] as String,
       id: map['id'] as String,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
       story_type: decideStoryType(map['story_type']),

@@ -27,4 +27,8 @@ class Database {
   static CollectionReference getUserChats(String userId) {
     return userDatabase.doc(userId).collection('chats');
   }
+
+  static CollectionReference getStories(String userId) {
+    return userDatabase.doc(userId).collection('stories');
+  }
 }

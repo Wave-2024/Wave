@@ -16,6 +16,7 @@ import 'package:wave/view/screens/ProfileScreen/list_users.dart';
 import 'package:wave/view/screens/ProfileScreen/profile_screen.dart';
 import 'package:wave/view/screens/SplashScreen/splash_screen.dart';
 import 'package:wave/view/screens/StoryScreen/create_story_screen.dart';
+import 'package:wave/view/screens/StoryScreen/view_story_screen.dart';
 
 class AppRoutes {
   static const String loginScreen = '/login';
@@ -36,6 +37,7 @@ class AppRoutes {
   static const String viewImageScreen = '/viewImageScreen';
   static const String creatStoryScreen = '/creatStoryScreen';
 
+  static const String viewStoryScreen = '/viewStoryScreen';
 
   
 
@@ -90,6 +92,10 @@ class AppRoutes {
         GetPage(
         name: creatStoryScreen,
         page: () => CreateStoryScreen(),
+        transition: Transition.rightToLeftWithFade),
+        GetPage(
+        name: viewStoryScreen,
+        page: () => ViewStoryScreen(),
         transition: Transition.rightToLeftWithFade),
   ];
 }

@@ -175,7 +175,6 @@ class RegisterScreen extends StatelessWidget {
                                   email: emailController.text,
                                   displayPicture: "",
                                   bio: "I am new to Wave",
-                                  messages: [],
                                   savedPosts: [],
                                   url: "",
                                   following: [],
@@ -183,7 +182,6 @@ class RegisterScreen extends StatelessWidget {
                                   posts: [],
                                   id: userCredential.user!.uid,
                                   username: userName,
-                                  stories: [],
                                   blocked: [],
                                   coverPicture: "");
                               await userController.createUser(
@@ -292,7 +290,6 @@ class RegisterScreen extends StatelessWidget {
                                       posts: [],
                                       id: googleUserCredential.user!.uid,
                                       username: userName,
-                                      stories: [],
                                       blocked: [],
                                       coverPicture: "",
                                       account_type: ACCOUNT_TYPE.PUBLIC));
