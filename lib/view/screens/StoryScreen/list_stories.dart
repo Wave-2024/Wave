@@ -8,9 +8,11 @@ import 'package:wave/data/story_data.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/response_model.dart';
 import 'package:wave/models/story_model.dart';
+import 'package:wave/models/user_model.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/device_size.dart';
+import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/image_config.dart';
 import 'package:wave/utils/routing.dart';
 
@@ -162,36 +164,98 @@ class ListStories extends StatelessWidget {
                     }
                   },
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    itemCount: 10,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.blue.shade100,
-                            ),
-                            const SizedBox(
-                              height: 2,
-                            ),
-                            Text(
-                              "alpha3109",
-                              style: TextStyle(
-                                  fontFamily: CustomFont.poppins, fontSize: 10),
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                )
+                Expanded(child: Consumer<UserDataController>(
+                  builder: (context, userDataController, child) {
+                    if (userDataController.fetch_feed_story ==
+                        FETCH_FEED_STORY.NOT_FETCHED) {
+                      userDataController.fetchFeedStories();
+                    }
+                    switch (userDataController.fetch_feed_story) {
+                      case FETCH_FEED_STORY.FETCHING:
+                        return LinearProgressIndicator();
+                      case FETCH_FEED_STORY.FETCHED:
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          itemCount: userDataController.feedStories.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return FutureBuilder<User>(
+                              future: UserData.getUser(
+                                  userID: userDataController.feedStories.keys
+                                      .toList()[index]),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<User> userSnap) {
+                                if (userSnap.connectionState ==
+                                    ConnectionState.done) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            Get.toNamed(
+                                                AppRoutes.viewStoryScreen,
+                                                arguments: userDataController
+                                                        .feedStories[
+                                                    userSnap.data!.id]);
+                                          },
+                                          child: CircleAvatar(
+                                            radius: 30,
+                                            backgroundColor:
+                                                Colors.green.shade300,
+                                            child: CircleAvatar(
+                                              radius: 26.9,
+                                              backgroundImage: (userSnap.data!
+                                                              .displayPicture !=
+                                                          null &&
+                                                      userSnap
+                                                          .data!
+                                                          .displayPicture!
+                                                          .isNotEmpty)
+                                                  ? CachedNetworkImageProvider(
+                                                      userSnap.data!
+                                                          .displayPicture!)
+                                                  : null,
+                                              child: userSnap.data!
+                                                              .displayPicture ==
+                                                          null ||
+                                                      userSnap
+                                                          .data!
+                                                          .displayPicture!
+                                                          .isEmpty
+                                                  ? const Icon(Icons.person)
+                                                  : null,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 2,
+                                        ),
+                                        Text(
+                                          userSnap.data!.username,
+                                          style: TextStyle(
+                                              fontFamily: CustomFont.poppins,
+                                              fontSize: 10),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return SizedBox();
+                              },
+                            );
+                          },
+                        );
+                      case FETCH_FEED_STORY.NOT_FETCHED:
+                        return LinearProgressIndicator();
+                    }
+                  },
+                ))
               ],
             ),
           ),

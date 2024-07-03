@@ -74,12 +74,12 @@ class StoryData {
     }
   }
 
-  static Future<CustomResponse> fetchMyStory() async {
+  static Future<CustomResponse> fetchMyStory({String? userId}) async {
     try {
-      var storyDocRes =
-          await Database.getStories(FirebaseAuth.instance.currentUser!.uid)
-              .limit(1)
-              .get();
+      var storyDocRes = await Database.getStories(
+              userId ?? FirebaseAuth.instance.currentUser!.uid)
+          .limit(1)
+          .get();
       if (storyDocRes.docs.isEmpty) {
         return CustomResponse(responseStatus: false);
       } else {
@@ -89,6 +89,51 @@ class StoryData {
       }
     } on FirebaseException catch (e) {
       return CustomResponse(responseStatus: false, response: e.message);
+    }
+  }
+
+  static Future<void> increaseViewCountOnStory(
+      {required String userId,
+      required String storyId,
+      required String subStoryId}) async {
+    try {
+      if (userId == FirebaseAuth.instance.currentUser!.uid) {
+        return;
+      }
+
+      DocumentReference storyDocRef = Database.getStories(userId).doc(storyId);
+      DocumentSnapshot storySnapshot = await storyDocRef.get();
+
+      if (storySnapshot.exists) {
+        Story story =
+            Story.fromMap(storySnapshot.data() as Map<String, dynamic>);
+
+        // Find the specific subStory content
+        StoryContent subStory = story.contents.firstWhere(
+            (content) => content.id == subStoryId,
+            orElse: () => throw Exception('SubStory not found'));
+
+        String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+        if (!subStory.seenBy.contains(currentUserId)) {
+          subStory.seenBy.add(currentUserId);
+
+          // Update the story content with the new seenBy list
+          int index =
+              story.contents.indexWhere((content) => content.id == subStoryId);
+          story.contents[index] = subStory;
+
+          // Update Firestore with the new data
+          await storyDocRef.update(story.toMap());
+          "View count increased successfully.".printInfo();
+        } else {
+          "User has already viewed this story.".printInfo();
+        }
+      } else {
+        "Story does not exist.".printError();
+      }
+    } on FirebaseException catch (e) {
+      "Error increasing view count: ${e.message}".printError();
     }
   }
 }

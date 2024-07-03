@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:wave/data/story_data.dart';
 import 'package:wave/models/story_model.dart';
 import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
@@ -26,6 +28,14 @@ class _ViewStoryScreenState extends State<ViewStoryScreen> {
   void changeStoryIndex(int index) {
     currentStoryIndex = index;
     setState(() {});
+    increaseViewCounter();
+  }
+
+  increaseViewCounter() {
+    StoryData.increaseViewCountOnStory(
+        storyId: story.id,
+        subStoryId: currentStoryIndex.toString(),
+        userId: story.userId);
   }
 
   @override
@@ -64,7 +74,7 @@ class _ViewStoryScreenState extends State<ViewStoryScreen> {
               Positioned(
                 bottom: Get.height * 0.05,
                 child: Visibility(
-                  visible: true,
+                  visible: story.contents.length > 1,
                   child: AnimatedSmoothIndicator(
                     activeIndex: currentStoryIndex,
                     count: story.contents.length,
@@ -78,28 +88,32 @@ class _ViewStoryScreenState extends State<ViewStoryScreen> {
               Positioned(
                   bottom: Get.height * 0.042,
                   left: Get.width * 0.05,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        CustomIcon.viewedByIcon,
-                        height: 20,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(
-                        width: 6,
-                      ),
-                      Text(
-                        story.contents[currentStoryIndex].seenBy.length
-                            .toString(),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: CustomFont.inter),
-                      )
-                    ],
+                  child: Visibility(
+                    visible:
+                        story.userId == FirebaseAuth.instance.currentUser!.uid,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          CustomIcon.viewedByIcon,
+                          height: 20,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(
+                          width: 6,
+                        ),
+                        Text(
+                          story.contents[currentStoryIndex].seenBy.length
+                              .toString(),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: CustomFont.inter),
+                        )
+                      ],
+                    ),
                   ))
             ],
           ),
