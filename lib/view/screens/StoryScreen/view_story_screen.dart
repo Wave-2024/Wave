@@ -10,6 +10,7 @@ import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/view/reusable_components/video_play.dart';
+import 'package:wave/view/screens/StoryScreen/viewers_modal_sheet.dart';
 
 class ViewStoryScreen extends StatefulWidget {
   ViewStoryScreen({super.key});
@@ -91,28 +92,44 @@ class _ViewStoryScreenState extends State<ViewStoryScreen> {
                   child: Visibility(
                     visible:
                         story.userId == FirebaseAuth.instance.currentUser!.uid,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          CustomIcon.viewedByIcon,
-                          height: 20,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        Text(
-                          story.contents[currentStoryIndex].seenBy.length
-                              .toString(),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: CustomFont.inter),
-                        )
-                      ],
+                    child: InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          isDismissible: true,
+                          enableDrag: true,
+                          
+                          context: context,
+                          builder: (context) {
+                            return ViewersModalSheet(
+                                viewers:
+                                    story.contents[currentStoryIndex].seenBy);
+                          },
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            CustomIcon.viewedByIcon,
+                            height: 20,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(
+                            width: 6,
+                          ),
+                          Text(
+                            story.contents[currentStoryIndex].seenBy.length
+                                .toString(),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: CustomFont.inter),
+                          )
+                        ],
+                      ),
                     ),
                   ))
             ],
