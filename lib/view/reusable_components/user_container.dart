@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wave/models/user_model.dart';
@@ -28,7 +29,7 @@ class UserContainerTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage:
             (user.displayPicture != null && user.displayPicture!.isNotEmpty)
-                ? NetworkImage(user.displayPicture!)
+                ? CachedNetworkImageProvider(user.displayPicture!)
                 : null,
         radius: 20,
         child: user.displayPicture == null || user.displayPicture!.isEmpty
