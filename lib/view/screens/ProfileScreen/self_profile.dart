@@ -59,17 +59,19 @@ class SelfProfile extends StatelessWidget {
                         children: [
                           (userDataController.user!.coverPicture.isNotEmpty)
                               ? InkWell(
-                            onTap: () {
-                              Get.toNamed(AppRoutes.viewImageScreen,arguments: userDataController.user!.coverPicture);
-                            },
-                                child: CachedNetworkImage(
+                                  onTap: () {
+                                    Get.toNamed(AppRoutes.viewImageScreen,
+                                        arguments: userDataController
+                                            .user!.coverPicture);
+                                  },
+                                  child: CachedNetworkImage(
                                     imageUrl:
                                         userDataController.user!.coverPicture,
                                     height: displayHeight(context) * 0.22,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
                                   ),
-                              )
+                                )
                               : Image.asset(
                                   CustomLogo.logo,
                                   height: displayHeight(context) * 0.22,
@@ -80,15 +82,14 @@ class SelfProfile extends StatelessWidget {
                             bottom: 0,
                             child: InkWell(
                               onTap: () {
-                                if(userDataController
-                                    .user!.displayPicture !=
-                                    null &&
+                                if (userDataController.user!.displayPicture !=
+                                        null &&
                                     userDataController
-                                        .user!.displayPicture!.isNotEmpty){
-                                  Get.toNamed(AppRoutes.viewImageScreen,arguments: userDataController.user!.displayPicture);
-
+                                        .user!.displayPicture!.isNotEmpty) {
+                                  Get.toNamed(AppRoutes.viewImageScreen,
+                                      arguments: userDataController
+                                          .user!.displayPicture);
                                 }
-
                               },
                               child: CircleAvatar(
                                 radius: displayWidth(context) * 0.162,
@@ -161,7 +162,7 @@ class SelfProfile extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: CustomFont.poppins,
-                              color: const Color(0xfbA9A9A9),
+                              color: Colors.black54,
                               fontSize: 13.6,
                               fontWeight: FontWeight.w100),
                         ),

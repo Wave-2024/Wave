@@ -201,18 +201,21 @@ class _FeedBoxState extends State<FeedBox> {
           SizedBox(
             height: widget.post.caption.isEmpty ? 0 : 10,
           ),
-          Container(
-            height: displayHeight(context) * 0.475,
-            width: displayWidth(context),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.black26, width: 0.25)),
-            child: DecideMediaBox(
-              post: widget.post,
-              poster: widget.poster,
-              shouldZoomImage: false,
-              height: displayHeight(context) * 0.47,
-              posts: widget.post.postList,
+          Visibility(
+            visible: widget.post.postList.isNotEmpty,
+            child: Container(
+              height: displayHeight(context) * 0.475,
+              width: displayWidth(context),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.black26, width: 0.25)),
+              child: DecideMediaBox(
+                post: widget.post,
+                poster: widget.poster,
+                shouldZoomImage: false,
+                height: displayHeight(context) * 0.47,
+                posts: widget.post.postList,
+              ),
             ),
           ),
           SizedBox(
@@ -221,7 +224,6 @@ class _FeedBoxState extends State<FeedBox> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // Like count and like icon
               StreamBuilder(
                 stream:
                     Database.getPostLikesDatabase(widget.post.id).snapshots(),
@@ -234,75 +236,73 @@ class _FeedBoxState extends State<FeedBox> {
                       return (element.id ==
                           fb.FirebaseAuth.instance.currentUser!.uid);
                     });
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        InkWell(
-                            onTap: () async {
-                              if (hasLiked) {
-                                await PostData.unLikePostWithId(
-                                    postId: widget.post.id,
-                                    userId: fb.FirebaseAuth.instance
-                                        .currentUser!.uid);
-                              } else {
-                                await PostData.likePostWithId(
-                                    postId: widget.post.id,
-                                    userId: fb.FirebaseAuth.instance
-                                        .currentUser!.uid);
-                                bool hasAlreadySentNotification = await PostData
-                                    .alreadySentNotificationForThis(
-                                        postId: widget.post.id,
-                                        posterId: widget.post.userId);
-                                if (!hasAlreadySentNotification) {
-                                  not.Notification notification =
-                                      not.Notification(
-                                          type: 'like',
-                                          id: "id",
-                                          createdAt: DateTime.now(),
-                                          seen: false,
-                                          postId: widget.post.id,
-                                          userWhoLiked: fb.FirebaseAuth.instance
-                                              .currentUser!.uid,
-                                          forUser: widget.poster.id);
-                                  NotificationData.createNotification(
-                                      notification: notification);
-                                }
-                              }
-                            },
-                            child: Icon(
+                    return InkWell(
+                      onTap: () async {
+                        if (hasLiked) {
+                          await PostData.unLikePostWithId(
+                              postId: widget.post.id,
+                              userId:
+                                  fb.FirebaseAuth.instance.currentUser!.uid);
+                        } else {
+                          await PostData.likePostWithId(
+                              postId: widget.post.id,
+                              userId:
+                                  fb.FirebaseAuth.instance.currentUser!.uid);
+                          bool hasAlreadySentNotification =
+                              await PostData.alreadySentNotificationForThis(
+                                  postId: widget.post.id,
+                                  posterId: widget.post.userId);
+                          if (!hasAlreadySentNotification) {
+                            not.Notification notification = not.Notification(
+                                type: 'like',
+                                id: "id",
+                                createdAt: DateTime.now(),
+                                seen: false,
+                                postId: widget.post.id,
+                                userWhoLiked:
+                                    fb.FirebaseAuth.instance.currentUser!.uid,
+                                forUser: widget.poster.id);
+                            NotificationData.createNotification(
+                                notification: notification);
+                          }
+                        }
+                      },
+                      child: Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        width: Get.width * 0.22,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Icon(
                               hasLiked ? BoxIcons.bxs_like : BoxIcons.bx_like,
                               size: 22,
                               color: CustomColor.primaryColor,
-                            )),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${likes.data!.docs.length}',
-                          style: TextStyle(
-                              fontFamily: CustomFont.poppins,
-                              color: CustomColor.primaryColor,
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w600),
-                        )
-                      ],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${likes.data!.docs.length}',
+                              style: TextStyle(
+                                  fontFamily: CustomFont.poppins,
+                                  color: CustomColor.primaryColor,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                      ),
                     );
                   } else {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        InkWell(
-                            onTap: () async {
-                              await PostData.likePostWithId(
-                                  postId: widget.post.id,
-                                  userId: fb
-                                      .FirebaseAuth.instance.currentUser!.uid);
-                            },
-                            child: Icon(
-                              BoxIcons.bx_like,
-                              size: 22,
-                              color: CustomColor.primaryColor,
-                            )),
+                        Icon(
+                          BoxIcons.bx_like,
+                          size: 22,
+                          color: CustomColor.primaryColor,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '${0}',
@@ -318,117 +318,132 @@ class _FeedBoxState extends State<FeedBox> {
                 },
               ),
 
+              // Like count and like icon
+
               // Comment icon and comment count
               InkWell(
                 onTap: () {
                   Get.toNamed(AppRoutes.listCommentsScreen,
                       arguments: widget.post.id);
                 },
-                child: StreamBuilder(
-                  stream: Database.getPostCommentsDatabase(widget.post.id)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> commentSnapshot) {
-                    if ((commentSnapshot.connectionState ==
-                                ConnectionState.active ||
-                            commentSnapshot.connectionState ==
-                                ConnectionState.done) &&
-                        commentSnapshot.hasData) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Image.asset(
-                              CustomIcon.commentIcon,
-                              height: 25,
+                child: Container(
+                  height: 40,
+                  alignment: Alignment.center,
+                  width: Get.width * 0.22,
+                  // color: Colors.red,
+                  child: StreamBuilder(
+                    stream: Database.getPostCommentsDatabase(widget.post.id)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> commentSnapshot) {
+                      if ((commentSnapshot.connectionState ==
+                                  ConnectionState.active ||
+                              commentSnapshot.connectionState ==
+                                  ConnectionState.done) &&
+                          commentSnapshot.hasData) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Image.asset(
+                                CustomIcon.commentIcon,
+                                height: 25,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3.50),
-                            child: Text(
-                              '${commentSnapshot.data!.docs.length}',
-                              style: TextStyle(
-                                  fontFamily: CustomFont.poppins,
-                                  color: CustomColor.primaryColor,
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600),
+                            const SizedBox(width: 4),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 3.50),
+                              child: Text(
+                                '${commentSnapshot.data!.docs.length}',
+                                style: TextStyle(
+                                    fontFamily: CustomFont.poppins,
+                                    color: CustomColor.primaryColor,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            )
+                          ],
+                        );
+                      } else {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Image.asset(
+                                CustomIcon.commentIcon,
+                                height: 25,
+                              ),
                             ),
-                          )
-                        ],
-                      );
-                    } else {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Image.asset(
-                              CustomIcon.commentIcon,
-                              height: 25,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3.50),
-                            child: Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: CustomFont.poppins,
-                                  color: CustomColor.primaryColor,
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          )
-                        ],
-                      );
-                    }
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Image.asset(
-                  CustomIcon.shareIcon,
-                  height: 22,
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Consumer<UserDataController>(
-                    builder: (context, userDataController, child) {
-                      bool saved =
-                          (userDataController.user!.savedPosts != null &&
-                              userDataController.user!.savedPosts!
-                                  .contains(widget.post.id));
-                      return InkWell(
-                        onTap: () async {
-                          if (!saved) {
-                            CustomResponse customResponse =
-                                await userDataController
-                                    .savePost(widget.post.id);
-                            if (!customResponse.responseStatus) {
-                              "${customResponse.response}".printError();
-                            }
-                          } else {
-                            CustomResponse customResponse =
-                                await userDataController
-                                    .unsavePost(widget.post.id);
-                            if (!customResponse.responseStatus) {
-                              "${customResponse.response}".printError();
-                            }
-                          }
-                        },
-                        child: Icon(
-                          saved ? Icons.bookmark : Icons.bookmark_add_outlined,
-                          size: 20,
-                        ),
-                      );
+                            const SizedBox(width: 4),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 3.50),
+                              child: Text(
+                                '0',
+                                style: TextStyle(
+                                    fontFamily: CustomFont.poppins,
+                                    color: CustomColor.primaryColor,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            )
+                          ],
+                        );
+                      }
                     },
-                  )),
+                  ),
+                ),
+              ),
+              Container(
+                height: 40,
+                alignment: Alignment.center,
+                width: Get.width * 0.22,
+                // color: Colors.red,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Image.asset(
+                    CustomIcon.shareIcon,
+                    height: 22,
+                  ),
+                ),
+              ),
+              Consumer<UserDataController>(
+                builder: (context, userDataController, child) {
+                  bool saved = (userDataController.user!.savedPosts != null &&
+                      userDataController.user!.savedPosts!
+                          .contains(widget.post.id));
+                  return InkWell(
+                    onTap: () async {
+                      if (!saved) {
+                        CustomResponse customResponse =
+                            await userDataController.savePost(widget.post.id);
+                        if (!customResponse.responseStatus) {
+                          "${customResponse.response}".printError();
+                        }
+                      } else {
+                        CustomResponse customResponse =
+                            await userDataController.unsavePost(widget.post.id);
+                        if (!customResponse.responseStatus) {
+                          "${customResponse.response}".printError();
+                        }
+                      }
+                    },
+                    child: Container(
+                      height: 40,
+                      padding: EdgeInsets.only(top: 4),
+                      alignment: Alignment.center,
+                      width: Get.width * 0.22,
+                      child: Icon(
+                        saved ? Icons.bookmark : Icons.bookmark_add_outlined,
+                        size: 20,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
           )
         ],

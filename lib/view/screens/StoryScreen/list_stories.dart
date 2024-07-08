@@ -48,29 +48,33 @@ class ListStories extends StatelessWidget {
                                 InkWell(
                                   onTap: () {
                                     Get.toNamed(AppRoutes.viewStoryScreen,
-                                        arguments: story);
+                                        arguments: {'story':story,'storyPoster':userDataController.user!});
                                   },
                                   child: CircleAvatar(
-                                    radius: 30,
+                                    radius: 36,
                                     backgroundColor: Colors.green.shade300,
                                     child: CircleAvatar(
-                                      radius: 26.9,
-                                      backgroundImage: (userDataController
-                                                      .user!.displayPicture !=
-                                                  null &&
-                                              userDataController.user!
-                                                  .displayPicture!.isNotEmpty)
-                                          ? CachedNetworkImageProvider(
-                                              userDataController
-                                                  .user!.displayPicture!)
-                                          : null,
-                                      child: userDataController
-                                                      .user!.displayPicture ==
-                                                  null ||
-                                              userDataController
-                                                  .user!.displayPicture!.isEmpty
-                                          ? const Icon(Icons.person)
-                                          : null,
+                                      radius: 34,
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 31.5,
+                                        backgroundImage: (userDataController
+                                                        .user!.displayPicture !=
+                                                    null &&
+                                                userDataController.user!
+                                                    .displayPicture!.isNotEmpty)
+                                            ? CachedNetworkImageProvider(
+                                                userDataController
+                                                    .user!.displayPicture!)
+                                            : null,
+                                        child: userDataController
+                                                        .user!.displayPicture ==
+                                                    null ||
+                                                userDataController.user!
+                                                    .displayPicture!.isEmpty
+                                            ? const Icon(Icons.person)
+                                            : null,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -123,7 +127,7 @@ class ListStories extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 backgroundColor: Colors.transparent,
-                                radius: 30,
+                                radius: 36,
                                 backgroundImage:
                                     AssetImage(CustomIcon.addStoryIcon),
                               ),
@@ -147,7 +151,7 @@ class ListStories extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             backgroundColor: Colors.transparent,
-                            radius: 30,
+                            radius: 36,
                             backgroundImage:
                                 AssetImage(CustomIcon.addStoryIcon),
                           ),
@@ -200,36 +204,41 @@ class ListStories extends StatelessWidget {
                                           onTap: () {
                                             Get.toNamed(
                                                 AppRoutes.viewStoryScreen,
-                                                arguments: userDataController
+                                                 arguments: {'story':userDataController
                                                         .feedStories[
-                                                    userSnap.data!.id]);
+                                                    userSnap.data!.id],'storyPoster':userSnap.data!},
+                                               );
                                           },
                                           child: CircleAvatar(
-                                            radius: 30,
+                                            radius: 36,
                                             backgroundColor:
                                                 Colors.green.shade300,
                                             child: CircleAvatar(
-                                              radius: 26.9,
-                                              backgroundImage: (userSnap.data!
-                                                              .displayPicture !=
-                                                          null &&
-                                                      userSnap
-                                                          .data!
-                                                          .displayPicture!
-                                                          .isNotEmpty)
-                                                  ? CachedNetworkImageProvider(
-                                                      userSnap.data!
-                                                          .displayPicture!)
-                                                  : null,
-                                              child: userSnap.data!
-                                                              .displayPicture ==
-                                                          null ||
-                                                      userSnap
-                                                          .data!
-                                                          .displayPicture!
-                                                          .isEmpty
-                                                  ? const Icon(Icons.person)
-                                                  : null,
+                                              radius: 34,
+                                              backgroundColor: Colors.white,
+                                              child: CircleAvatar(
+                                                radius: 31.5,
+                                                backgroundImage: (userSnap.data!
+                                                                .displayPicture !=
+                                                            null &&
+                                                        userSnap
+                                                            .data!
+                                                            .displayPicture!
+                                                            .isNotEmpty)
+                                                    ? CachedNetworkImageProvider(
+                                                        userSnap.data!
+                                                            .displayPicture!)
+                                                    : null,
+                                                child: userSnap.data!
+                                                                .displayPicture ==
+                                                            null ||
+                                                        userSnap
+                                                            .data!
+                                                            .displayPicture!
+                                                            .isEmpty
+                                                    ? const Icon(Icons.person)
+                                                    : null,
+                                              ),
                                             ),
                                           ),
                                         ),
