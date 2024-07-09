@@ -192,6 +192,7 @@ class SelfProfile extends StatelessWidget {
                               style: TextStyle(
                                   color: Colors.blue,
                                   fontFamily: CustomFont.poppins,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 13)),
                         ),
                         MaterialButton(
@@ -212,6 +213,7 @@ class SelfProfile extends StatelessWidget {
                               style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: CustomFont.poppins,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 13)),
                         ),
                         SizedBox(

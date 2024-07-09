@@ -60,17 +60,17 @@ class _OtherProfileState extends State<OtherProfile> {
                         // Cover photo
                         (otherUser.coverPicture.isNotEmpty)
                             ? InkWell(
-                          onTap: () {
-                            Get.toNamed(AppRoutes.viewImageScreen,arguments: otherUser.coverPicture);
-
-                          },
-                              child: CachedNetworkImage(
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.viewImageScreen,
+                                      arguments: otherUser.coverPicture);
+                                },
+                                child: CachedNetworkImage(
                                   imageUrl: otherUser.coverPicture,
                                   height: displayHeight(context) * 0.22,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                 ),
-                            )
+                              )
                             : Image.asset(
                                 CustomLogo.logo,
                                 height: displayHeight(context) * 0.22,
@@ -92,9 +92,10 @@ class _OtherProfileState extends State<OtherProfile> {
                           bottom: 0,
                           child: InkWell(
                             onTap: () {
-                              if(otherUser.displayPicture != null &&
-                                  otherUser.displayPicture!.isNotEmpty){
-                                Get.toNamed(AppRoutes.viewImageScreen,arguments: otherUser.displayPicture);
+                              if (otherUser.displayPicture != null &&
+                                  otherUser.displayPicture!.isNotEmpty) {
+                                Get.toNamed(AppRoutes.viewImageScreen,
+                                    arguments: otherUser.displayPicture);
                               }
                             },
                             child: CircleAvatar(
@@ -102,14 +103,13 @@ class _OtherProfileState extends State<OtherProfile> {
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
                                 radius: displayWidth(context) * 0.15,
-                                backgroundImage:
-                                    (otherUser.displayPicture != null &&
-                                            otherUser.displayPicture!.isNotEmpty)
-                                        ?
-                                    CachedNetworkImageProvider(
-                                            otherUser.displayPicture!)
-                                        : const AssetImage("assets/logo/logo.png")
-                                            as ImageProvider,
+                                backgroundImage: (otherUser.displayPicture !=
+                                            null &&
+                                        otherUser.displayPicture!.isNotEmpty)
+                                    ? CachedNetworkImageProvider(
+                                        otherUser.displayPicture!)
+                                    : const AssetImage("assets/logo/logo.png")
+                                        as ImageProvider,
                               ),
                             ),
                           ),
@@ -180,6 +180,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                     style: TextStyle(
                                         fontFamily: CustomFont.poppins,
                                         fontSize: 12,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.blue)), // Text with color
                               ],
                             ),
@@ -264,6 +265,7 @@ class _OtherProfileState extends State<OtherProfile> {
                             '${otherUser.followers.length}${(otherUser.followers.length > 1) ? ' Followers' : ' Follower'}',
                             style: TextStyle(
                                 color: Colors.blue,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: CustomFont.poppins,
                                 fontSize: 13)),
                       ),
@@ -280,6 +282,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         color: CustomColor.primaryColor.withOpacity(0.8),
                         child: Text('${otherUser.following.length} Following',
                             style: TextStyle(
+                                fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 fontFamily: CustomFont.poppins,
                                 fontSize: 13)),
