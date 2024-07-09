@@ -20,6 +20,7 @@ import 'package:wave/utils/util_functions.dart';
 
 class UserDataController extends ChangeNotifier {
   int otherProfileViewOptions = 0;
+  int savedPostOptions = 0;
   User? user;
   USER userState = USER.ABSENT;
   FETCH_SELF_POST fetch_self_post = FETCH_SELF_POST.NOT_FETCHED;
@@ -31,6 +32,10 @@ class UserDataController extends ChangeNotifier {
   Map<POST_TYPE, Set<Post>> selfPosts = {};
 
   Map<String, Story> feedStories = {};
+
+  Map<POST_TYPE, Set<Post>> savedPosts = {};
+
+  FETCH_SAVED_POSTS fetch_saved_posts = FETCH_SAVED_POSTS.NOT_FETCHED;
 
   FETCH_FEED_STORY fetch_feed_story = FETCH_FEED_STORY.NOT_FETCHED;
 
@@ -67,6 +72,85 @@ class UserDataController extends ChangeNotifier {
     selfPosts[POST_TYPE.IMAGE] = {};
     selfPosts[POST_TYPE.VIDEO] = {};
     selfPosts[POST_TYPE.TEXT] = {};
+    savedPosts[POST_TYPE.IMAGE] = {};
+    savedPosts[POST_TYPE.VIDEO] = {};
+    savedPosts[POST_TYPE.TEXT] = {};
+  }
+
+  void changeSavedPostOptions(int newIndex) {
+    savedPostOptions = newIndex;
+    notifyListeners();
+  }
+
+  Future<void> getSavedPosts() async {
+    if (user!.savedPosts == null || user!.savedPosts!.isEmpty) {
+      return;
+    }
+
+    if (fetch_saved_posts != FETCH_SAVED_POSTS.FETCHING) {
+      savedPosts[POST_TYPE.IMAGE] = {};
+      savedPosts[POST_TYPE.VIDEO] = {};
+      savedPosts[POST_TYPE.TEXT] = {};
+      fetch_saved_posts = FETCH_SAVED_POSTS.FETCHING;
+      await Future.delayed(
+          Duration.zero); // Not sure if this is needed, but keeping it
+
+      StreamSubscription<Post>? sub;
+
+      sub = fetchPostStreamUsingPostId(user!.savedPosts!).listen(
+        (post) {
+          if (post.postList.isEmpty) {
+            savedPosts[POST_TYPE.TEXT]!.add(post);
+          } else {
+            Post imagePost = Post(
+                id: post.id,
+                postList: [],
+                createdAt: post.createdAt,
+                userId: post.userId,
+                caption: post.caption,
+                mentions: post.mentions);
+            Post videoPost = Post(
+                id: post.id,
+                postList: [],
+                createdAt: post.createdAt,
+                userId: post.userId,
+                caption: post.caption,
+                mentions: post.mentions);
+            List<PostContent> imagePostList = [];
+            List<PostContent> videoPostList = [];
+
+            for (var index = 0; index < post.postList.length; ++index) {
+              if (post.postList[index].type == 'image') {
+                imagePostList.add(post.postList[index]);
+              } else {
+                videoPostList.add(post.postList[index]);
+              }
+            }
+
+            if (imagePostList.isNotEmpty) {
+              imagePost = imagePost.copyWith(postList: imagePostList);
+              savedPosts[POST_TYPE.IMAGE]!.add(imagePost);
+            }
+            if (videoPostList.isNotEmpty) {
+              videoPost = imagePost.copyWith(postList: videoPostList);
+              savedPosts[POST_TYPE.VIDEO]!.add(videoPost);
+            }
+          }
+        },
+        onDone: () {
+          sub!.cancel();
+          fetch_saved_posts = FETCH_SAVED_POSTS.FETCHED;
+          notifyListeners();
+          'All posts done'.printInfo();
+        },
+        onError: (error) {
+          fetch_saved_posts = FETCH_SAVED_POSTS.FETCHED;
+          notifyListeners();
+          print('Error fetching posts: $error');
+          sub!.cancel();
+        },
+      );
+    }
   }
 
   Future<void> getAllPosts() async {
@@ -273,6 +357,7 @@ class UserDataController extends ChangeNotifier {
       this.user = user!;
       userState = USER.PRESENT;
     }
+    await StoryData.deleteExpiredStoryContents(this.user!.id);
     notifyListeners();
   }
 
@@ -457,7 +542,7 @@ class UserDataController extends ChangeNotifier {
       if (!updatedSavedPosts.contains(postId)) {
         updatedSavedPosts.add(postId);
         user = user!.copyWith(savedPosts: updatedSavedPosts);
-        notifyListeners();
+        getSavedPosts();
       }
     }
     return response;
@@ -473,7 +558,7 @@ class UserDataController extends ChangeNotifier {
       if (updatedSavedPosts.contains(postId)) {
         updatedSavedPosts.remove(postId);
         user = user!.copyWith(savedPosts: updatedSavedPosts);
-        notifyListeners();
+        getSavedPosts();
       }
     }
     return response;

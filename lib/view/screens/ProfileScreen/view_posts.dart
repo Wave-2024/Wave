@@ -6,17 +6,21 @@ import 'package:wave/data/post_data.dart';
 import 'package:wave/data/users_data.dart';
 import 'package:wave/models/post_model.dart';
 import 'package:wave/models/user_model.dart';
+import 'package:wave/utils/constants/custom_colors.dart';
 import 'package:wave/utils/constants/custom_fonts.dart';
 import 'package:wave/utils/constants/custom_icons.dart';
 import 'package:wave/utils/device_size.dart';
 import 'package:wave/utils/enums.dart';
 import 'package:wave/utils/routing.dart';
 import 'package:wave/view/reusable_components/feedbox.dart';
+import 'package:wave/view/screens/ProfileScreen/view_saved_posts.dart';
 
 class ViewPosts extends StatelessWidget {
+  final widthOfRedBar = Get.width * 0.2;
+
   final int option;
   final UserDataController userDataController;
-  const ViewPosts(
+  ViewPosts(
       {super.key, required this.option, required this.userDataController});
 
   @override
@@ -149,43 +153,146 @@ class ViewPosts extends StatelessWidget {
               ),
             );
           } else {
-            return ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: userDataController.user!.savedPosts!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return FutureBuilder<Post>(
-                  future: PostData.getPost(
-                      userDataController.user!.savedPosts![index]),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<Post> postSnap) {
-                    if (postSnap.connectionState == ConnectionState.done &&
-                        postSnap.hasData) {
-                      return FutureBuilder<User>(
-                        future: UserData.getUser(userID: postSnap.data!.userId),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<User> posterSnap) {
-                          if (posterSnap.connectionState ==
-                                  ConnectionState.done &&
-                              posterSnap.hasData) {
-                            return FeedBox(
-                                post: postSnap.data!, poster: posterSnap.data!);
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+            return Column(
+              children: [
+                Container(
+                  height: Get.height * 0.06,
+                  width: Get.width,
+                  // color: Colors.blue.shade100,
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          userDataController.changeSavedPostOptions(0);
                         },
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                );
-              },
+                        child: Container(
+                          width: Get.width * 0.33,
+                          // color: Colors.pink.shade100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.textPostIcon,
+                                      height: 16),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    'Blogs',
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 11.5),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible:
+                                    userDataController.savedPostOptions == 0,
+                                child: Container(
+                                    height: 2.5,
+                                    width: widthOfRedBar,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          userDataController.changeSavedPostOptions(1);
+                        },
+                        child: Container(
+                          width: Get.width * 0.33,
+                          // color: Colors.green.shade100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.photosIcon,
+                                      height: 16),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    'Photos',
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 11.5),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible:
+                                    userDataController.savedPostOptions == 1,
+                                child: Container(
+                                    height: 2.5,
+                                    width: widthOfRedBar,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          userDataController.changeSavedPostOptions(2);
+                        },
+                        child: Container(
+                          width: Get.width * 0.33,
+                          // color: Colors.yellow.shade100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image.asset(CustomIcon.videoIcon, height: 16),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    "Videos",
+                                    style: TextStyle(
+                                        fontFamily: CustomFont.poppins,
+                                        fontSize: 11.5),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Visibility(
+                                visible:
+                                    userDataController.savedPostOptions == 2,
+                                child: Container(
+                                    height: 2.5,
+                                    width: widthOfRedBar,
+                                    color: CustomColor.primaryColor
+                                        .withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ViewSavedPosts(
+                  userDataController: userDataController,
+                ),
+              ],
             );
           }
         default:

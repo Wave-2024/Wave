@@ -74,6 +74,37 @@ class StoryData {
     }
   }
 
+  static Future<void> deleteExpiredStoryContents(String userId) async {
+    try {
+      // Fetch the user's stories
+      var storyDocs = await Database.getStories(userId).get();
+
+      // Get the current time
+      DateTime now = DateTime.now();
+
+      if (storyDocs.docs.isEmpty) {
+        return;
+      } else {
+        var storyDoc = storyDocs.docs.first;
+        Story story = Story.fromMap(storyDoc.data() as Map<String, dynamic>);
+        List<StoryContent> validContents = story.contents.where((content) {
+          return now.difference(content.createdAt).inHours < 12;
+        }).toList();
+
+        // If there are no valid contents left, delete the entire story document
+        if (validContents.isEmpty) {
+          await Database.getStories(userId).doc(story.id).delete();
+        } else {
+          // Otherwise, update the story document with the valid contents
+          story = story.copyWith(contents: validContents);
+          await Database.getStories(userId).doc(story.id).update(story.toMap());
+        }
+      }
+    } on FirebaseException catch (e) {
+      print("Error deleting expired story contents: ${e.message}");
+    }
+  }
+
   static Future<CustomResponse> fetchMyStory({String? userId}) async {
     try {
       var storyDocRes = await Database.getStories(
@@ -85,6 +116,20 @@ class StoryData {
       } else {
         Story story = Story.fromMap(
             storyDocRes.docs.first.data() as Map<String, dynamic>);
+
+        // Filter the story contents to only include those created within the last 12 hours
+        DateTime now = DateTime.now();
+        List<StoryContent> validContents = story.contents
+            .where((content) => now.difference(content.createdAt).inHours < 12)
+            .toList();
+
+        // If there are no valid contents, return an empty response
+        if (validContents.isEmpty) {
+          return CustomResponse(responseStatus: false);
+        }
+
+        // Return the filtered story
+        story = story.copyWith(contents: validContents);
         return CustomResponse(responseStatus: true, response: story);
       }
     } on FirebaseException catch (e) {
